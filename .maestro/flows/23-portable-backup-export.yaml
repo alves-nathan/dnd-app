@@ -1,0 +1,11 @@
+appId: com.nalves.dndcombatmathmvp
+name: Exportar backup portátil com catálogo e auditoria
+---
+- launchApp
+- openLink: dndcombatmath://backup
+- assertVisible: "Backup portátil e restauração"
+- assertVisible:
+    id: backup-toggle-catalog-audit
+- assertVisible: "dnd-combat-character-backup.v3"
+- assertVisible:
+    id: backup-share-portable

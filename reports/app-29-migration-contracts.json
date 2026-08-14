@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "dnd-combat-app29-migration-contracts.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:22.062Z",
+  "results": [
+    {
+      "file": "src/store/buildPresetStore.ts",
+      "version": "BUILD_PRESET_STORE_VERSION = 1",
+      "migrate": "migrateBuildPresetPersistenceState",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/catalogDistributionStore.ts",
+      "version": "CATALOG_DISTRIBUTION_STORE_VERSION = 2",
+      "migrate": "migrateCatalogDistributionPersistenceState",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/catalogUpdateSessionStore.ts",
+      "version": "CATALOG_UPDATE_SESSION_STORE_VERSION = 2",
+      "migrate": "migrateCatalogUpdateSessionPersistenceState",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/catalogOperationalAuthorizationStore.ts",
+      "version": "CATALOG_OPERATIONAL_AUTHORIZATION_STORE_VERSION = 2",
+      "migrate": "migrate:",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/portableRestoreSessionStore.ts",
+      "version": "PORTABLE_RESTORE_SESSION_STORE_VERSION = 3",
+      "migrate": "migrate:",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/characterStore.ts",
+      "version": "CHARACTER_STORE_VERSION",
+      "migrate": "migrateCharacterStoreState",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/store/combatScenarioStore.ts",
+      "version": "version: 3",
+      "migrate": "migrate:",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "file": "src/storage/sqliteCompendiumMigrations.ts",
+      "version": "COMPENDIUM_SQLITE_SCHEMA_VERSION = 3",
+      "migrate": "currentVersion < 3",
+      "status": "PASS",
+      "errors": []
+    }
+  ],
+  "safetyChecks": [
+    {
+      "id": "v1-update-session-is-not-resumed",
+      "pass": true
+    },
+    {
+      "id": "history-is-preserved",
+      "pass": true
+    },
+    {
+      "id": "preset-array-is-sanitized",
+      "pass": true
+    },
+    {
+      "id": "distribution-records-are-sanitized",
+      "pass": true
+    }
+  ]
+}

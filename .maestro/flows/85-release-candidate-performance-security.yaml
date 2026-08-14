@@ -1,0 +1,11 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Ensaio do release candidate"
+- scrollUntilVisible:
+    element:
+      text: "PASS · Orçamento de desempenho"
+    direction: DOWN
+- assertVisible: "PASS · Orçamento de desempenho"
+- assertVisible: "PASS · Hardening de segurança"

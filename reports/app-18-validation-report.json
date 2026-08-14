@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "dnd-combat-app18-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T17:07:17.885379Z",
+  "sourceArchive": "dnd-combat-math-mvp-app17-transactional-catalog-update.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "canonicalSha256": "0728e21b17ce768039d9873da7ee32d80b36480ab871297143944ad7fce50c43"
+  },
+  "trust": {
+    "signedEnvelopeSchema": "dnd-signed-catalog-bundle.v1",
+    "registrySchema": "dnd-catalog-trust-registry.v1",
+    "rotationSchema": "dnd-catalog-key-rotation.v1",
+    "revocationSchema": "dnd-catalog-key-revocation.v1",
+    "algorithm": "ECDSA_P256_SHA256",
+    "officialPublisherId": "dnd-combat-official",
+    "officialKeyId": "root-2026-01",
+    "officialPublicKeyFingerprint": "6c36087606050d42e5ccef7f4b4490351b62e811a0074ffdd812ccca451391a6",
+    "privateKeyIncludedInArchive": false
+  },
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "completed": 38,
+      "total": 38
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 335
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "contracts": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 38
+    },
+    "signingCliRealBundle": "PASS",
+    "keyGenerationCli": "PASS",
+    "keyRotationCli": "PASS",
+    "nativeGate": {
+      "status": "BLOCKED",
+      "flowsFound": 39,
+      "flowsExpected": 39
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJestSuite": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "zipIntegrity": "PASS"
+  },
+  "securityScenarios": {
+    "validSignature": "PASS",
+    "catalogTampering": "REJECTED",
+    "invalidSignature": "REJECTED",
+    "wrongPreviousChecksum": "REJECTED",
+    "unknownPublisher": "REJECTED",
+    "expiredEnvelope": "REJECTED",
+    "replay": "REJECTED",
+    "keyRotation": "PASS",
+    "keyRevocation": "PASS",
+    "communityFingerprintApproval": "PASS",
+    "receiptProvenanceTampering": "REJECTED"
+  },
+  "blockers": {
+    "nodeModules": "ABSENT",
+    "fullTypecheck": [
+      "expo/tsconfig.base absent",
+      "React/Node/Jest type definitions absent"
+    ],
+    "fullJest": [
+      "jest executable absent"
+    ],
+    "native": [
+      "ADB absent",
+      "Maestro absent",
+      "Android device/emulator absent"
+    ]
+  }
+}

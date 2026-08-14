@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+name: Confirmar plano de remediação em commit individual
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-remediation-commit
+- assertVisible: "Cenário E2E de commit do plano de remediação preparado."
+- openLink: dndcombatmath://characters/e2e-compatibility-remediation/compatibility
+- tapOn:
+    id: compatibility-commit-remediation
+- tapOn: "Aplicar plano"
+- assertVisible: "Remediação concluída"

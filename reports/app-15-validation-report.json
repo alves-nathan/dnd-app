@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "dnd-combat-app15-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T14:21:05.567092Z",
+  "sourceArchive": "dnd-combat-math-mvp-app14-portable-restore-transaction-session.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "bundledCompendiumItems": 1284
+  },
+  "implementation": {
+    "verificationSchema": "dnd-portable-restore-verification.v1",
+    "receiptSchema": "dnd-portable-restore-integrity-receipt.v1",
+    "evidenceSchema": "dnd-portable-restore-evidence.v1",
+    "restoreSessionStoreVersion": 2,
+    "nativeFlows": 27,
+    "app15Flows": 4
+  },
+  "checks": {
+    "linearRegressionApp02ToApp14": "PASS",
+    "app15StaticContracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 320
+    },
+    "isolatedStrictTypecheck": {
+      "core": "PASS",
+      "sessionStore": "PASS",
+      "tests": "PASS"
+    },
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 21
+    },
+    "receiptIntegrity": "PASS",
+    "evidenceIntegrity": "PASS",
+    "nativeFlowDiscovery": {
+      "status": "PASS",
+      "flows": 27
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJestSuite": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "androidNativeExecution": "BLOCKED"
+  },
+  "blockers": {
+    "fullTypecheck": [
+      "node_modules absent",
+      "expo/tsconfig.base absent",
+      "React/Node/Jest type definitions absent"
+    ],
+    "jest": [
+      "jest executable absent"
+    ],
+    "native": [
+      "node_modules absent",
+      "ADB unavailable",
+      "Maestro unavailable",
+      "no Android device/emulator accessible"
+    ]
+  }
+}

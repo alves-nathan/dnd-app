@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "dnd-combat-app13-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T08:50:00-03:00",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385
+  },
+  "checks": {
+    "app02ThroughApp12Regression": "PASS",
+    "app13Contracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 313
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedTestTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 27
+    },
+    "maestroFlows": {
+      "status": "DEFINED",
+      "app13": 4,
+      "total": 19
+    },
+    "fullTypecheck": "BLOCKED_NOT_RUNNABLE",
+    "fullJest": "BLOCKED_NOT_RUNNABLE",
+    "nativeGate": "BLOCKED"
+  },
+  "backup": {
+    "schemaVersion": "dnd-combat-character-backup.v3",
+    "integrity": "7b083904",
+    "characters": 1
+  },
+  "audit": {
+    "revision": 2,
+    "commits": 2,
+    "checksum": "57a106ac",
+    "plans": 1
+  },
+  "comparison": {
+    "incomingAhead": "incomingAhead",
+    "divergent": "diverged",
+    "conflictingCommits": 1,
+    "planConflicts": 1
+  },
+  "import": {
+    "acceptedPlans": 1,
+    "preservedLocalPlanConflicts": 1,
+    "localHistoryCommitsAfterImport": 1,
+    "sourceHistoryEmbedded": 2
+  },
+  "blockers": [
+    "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+    "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+    "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+  ]
+}

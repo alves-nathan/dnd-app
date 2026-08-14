@@ -1,0 +1,10 @@
+{
+  "bundleBytes": 10548880,
+  "bundleSha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08",
+  "catalogVersion": "4.8.0",
+  "registryEntries": 5841,
+  "runtimeEntries": 5841,
+  "dependencyEdges": 15385,
+  "categories": 57,
+  "aliases": 127
+}

@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+name: Criar plano de remediação sem alterar ficha
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-remediation-create
+- assertVisible: "Cenário E2E de criação do plano de remediação preparado."
+- openLink: dndcombatmath://characters/e2e-compatibility-remediation/compatibility
+- tapOn:
+    id: compatibility-create-remediation-plan
+- assertVisible: "Plano de remediação"
+- assertVisible: "Nada será alterado até a confirmação final."

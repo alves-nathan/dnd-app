@@ -1,0 +1,62 @@
+
+> dnd-combat-math-mvp@0.1.0 app06:native:gate:offline
+> node scripts/run-app06-native-gate.js --allow-blocked
+
+{
+  "schemaVersion": "dnd-combat-app06-native-gate.v1",
+  "status": "BLOCKED",
+  "generatedAt": "2026-08-04T01:11:58.285Z",
+  "executeRequested": false,
+  "checks": [
+    {
+      "id": "flow:.maestro/flows/08-progression-recovery-commit.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/09-progression-recovery-discard.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/10-progression-recovery-conflict.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/11-progression-rollback.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "dependencies",
+      "status": "BLOCKED",
+      "detail": "node_modules ausente; a build/dev client não pode ser iniciada neste ambiente."
+    },
+    {
+      "id": "adb",
+      "status": "BLOCKED",
+      "detail": "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT."
+    },
+    {
+      "id": "maestro",
+      "status": "BLOCKED",
+      "detail": "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    }
+  ],
+  "flows": [
+    ".maestro/flows/08-progression-recovery-commit.yaml",
+    ".maestro/flows/09-progression-recovery-discard.yaml",
+    ".maestro/flows/10-progression-recovery-conflict.yaml",
+    ".maestro/flows/11-progression-rollback.yaml"
+  ],
+  "execution": {
+    "status": "NOT_RUN",
+    "reason": "Use --execute para executar os quatro fluxos no dispositivo conectado."
+  },
+  "remediation": [
+    "node_modules ausente; a build/dev client não pode ser iniciada neste ambiente.",
+    "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+    "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+  ]
+}

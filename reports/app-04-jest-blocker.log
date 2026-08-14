@@ -1,0 +1,5 @@
+
+> dnd-combat-math-mvp@0.1.0 test:catalog-dependency-progression
+> jest src/tests/catalogCharacterDependencyResolver.test.ts --runInBand
+
+sh: 1: jest: not found

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"],
+    "esModuleInterop": true
+  },
+  "files": [
+    "../src/catalog/catalogBundleDigest.ts",
+    "../src/catalog/utils.ts",
+    "../src/catalog/catalogTrust.ts",
+    "../src/catalog/catalogTransparency.ts",
+    "../src/catalog/catalogDistribution.ts",
+    "../src/catalog/catalogPublication.ts",
+    "../src/catalog/catalogRolloutHealth.ts"
+  ]
+}

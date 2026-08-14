@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "dnd-combat-app29-security-hardening.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:22.042Z",
+  "filesScanned": 263,
+  "checks": [
+    {
+      "id": "android-permissions",
+      "status": "PASS",
+      "detail": "Permissões Android declaradas: []."
+    },
+    {
+      "id": "no-private-key-material",
+      "status": "PASS",
+      "detail": "Nenhum material de chave privada pode existir no runtime."
+    },
+    {
+      "id": "no-runtime-http",
+      "status": "PASS",
+      "detail": "URLs HTTP sem TLS não são aceitas no runtime."
+    },
+    {
+      "id": "no-dynamic-code",
+      "status": "PASS",
+      "detail": "Execução dinâmica de código não é aceita."
+    },
+    {
+      "id": "no-automatic-release-execution",
+      "status": "PASS",
+      "detail": "Operações de release não podem habilitar execução automática."
+    },
+    {
+      "id": "runtime-version-pinned",
+      "status": "PASS",
+      "detail": "runtimeVersion deve seguir appVersion."
+    },
+    {
+      "id": "e2e-seed-disabled-default",
+      "status": "PASS",
+      "detail": "Seed E2E deve permanecer desabilitado por padrão."
+    }
+  ],
+  "issues": []
+}

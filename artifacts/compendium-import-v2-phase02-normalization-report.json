@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-08-11T01:41:03.987Z",
+  "baseline": "Import V2 Phase 01",
+  "phase": "Phase 02 normalization + V1 compatibility",
+  "templateVersion": "dnd-combat-import.v2",
+  "itemCount": 1284,
+  "uniqueIds": 1284,
+  "countsByKind": {
+    "condition": 24,
+    "feature": 546,
+    "weapon": 38,
+    "armor": 13,
+    "equipment": 42,
+    "magicItem": 3,
+    "creatureStatBlock": 66,
+    "spell": 391,
+    "class": 12,
+    "subclass": 48,
+    "feat": 75,
+    "background": 16,
+    "species": 10
+  },
+  "structuralErrors": [],
+  "semanticReferenceCheck": {
+    "missingFeatures": 0,
+    "missingSubclassOwners": 0,
+    "wrongFeatureKinds": 0,
+    "missingClasses": 0,
+    "missingSpellClasses": 0
+  },
+  "issuesBySeverity": {
+    "info": 1993,
+    "warning": 54
+  },
+  "issuesByCode": {
+    "IMPORT_V1_MIGRATED_TO_V2": 1,
+    "IMPORT_INFERRED_RULES_ERA": 1285,
+    "IMPORT_NORMALIZED_ACTION_COST_ALIAS": 279,
+    "IMPORT_NORMALIZED_CURRENCY": 153,
+    "IMPORT_NORMALIZED_ABILITY_CHOICE": 12,
+    "IMPORT_NORMALIZED_VARIABLE_DAMAGE_TYPE": 9,
+    "IMPORT_NORMALIZED_CONDITIONAL_SPEED": 11,
+    "IMPORT_NORMALIZED_DAMAGE_TYPE_CHOICE": 14,
+    "IMPORT_NORMALIZED_MULTIPLE_DAMAGE_TYPES": 14,
+    "IMPORT_NORMALIZED_TARGET_DESCRIPTION": 164,
+    "IMPORT_NORMALIZED_SCALING_KIND": 11,
+    "IMPORT_PRESERVED_CUSTOM_DAMAGE_TYPE": 2,
+    "IMPORT_NORMALIZED_ACTION_COST_TRIGGER": 14,
+    "IMPORT_PRESERVED_VARIABLE_ABILITY": 1,
+    "IMPORT_NORMALIZED_AMBIGUOUS_ABILITY_CHOICE": 2,
+    "IMPORT_NORMALIZED_RESOURCE_MAX_BY_LEVEL": 18,
+    "IMPORT_NORMALIZED_RESOURCE_RECOVERY": 26,
+    "IMPORT_NORMALIZED_RESOURCE_MAX_FORMULA": 12,
+    "IMPORT_NORMALIZED_DAMAGE_SAME_AS_ATTACK": 1,
+    "IMPORT_DERIVED_ACTION_NAME": 7,
+    "IMPORT_NORMALIZED_DAMAGE_SAME_AS_WEAPON": 1,
+    "IMPORT_DERIVED_EFFECT_NAME": 5,
+    "IMPORT_NORMALIZED_RESOURCE_MAX_STRING": 5
+  },
+  "canonicalization": {
+    "stringItemCosts": 0,
+    "legacyResourceMaxLeftovers": 0,
+    "unresolvedSpellClassIds": 0,
+    "spellCastingTimeKinds": {
+      "action": 336,
+      "duration": 55
+    },
+    "conditionalCreatureSpeeds": 11
+  }
+}

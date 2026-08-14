@@ -1,0 +1,11 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Ensaio do release candidate"
+- scrollUntilVisible:
+    element:
+      text: "PASS · Contratos de migração"
+    direction: DOWN
+- assertVisible: "PASS · Contratos de migração"
+- assertVisible: "PASS · Upgrade"

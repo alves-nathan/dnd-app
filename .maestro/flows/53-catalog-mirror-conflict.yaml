@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Distribuição offline do catálogo"
+- assertVisible: "O documento assinado fixa os mirrors"
+- assertVisible:
+    id: "catalog-distribution-manifest-json"

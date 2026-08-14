@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Transparência e distribuição"
+- scrollUntilVisible:
+    element:
+      text: "Política de recuperação em quórum"
+    direction: DOWN
+- assertVisible:
+    id: "catalog-recovery-policy-save"
+- assertVisible:
+    id: "catalog-recovery-apply"

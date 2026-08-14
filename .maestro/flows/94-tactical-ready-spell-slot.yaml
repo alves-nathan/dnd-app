@@ -1,0 +1,58 @@
+appId: com.nalves.dndcombatmathmvp
+name: Combate tático - Ready com magia e slot comprometido
+tags:
+  - tactical-mobile-closure
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-tactical-mobile
+- tapOn:
+    id: e2e-open-tactical-mobile
+- scrollUntilVisible:
+    element:
+      id: tactical-start-turn-character
+    direction: DOWN
+- tapOn:
+    id: tactical-start-turn-character
+- scrollUntilVisible:
+    element:
+      id: tactical-ready-select-spell_e2e-tactical-ready-spell
+    direction: DOWN
+- tapOn:
+    id: tactical-ready-select-spell_e2e-tactical-ready-spell
+- tapOn:
+    id: tactical-ready-slot-1
+- tapOn:
+    id: tactical-ready-prepare
+- assertVisible: "Ações preparadas"
+- assertVisible: "Recursos já comprometidos."
+- scrollUntilVisible:
+    element:
+      id: tactical-character-spell-slots
+    direction: UP
+- assertVisible: "Slots: 1º 0/1"
+- assertVisible: "Concentração: Ready: E2E Arcane Lance"
+- scrollUntilVisible:
+    element:
+      id: tactical-ready-trigger-now
+    direction: DOWN
+- tapOn:
+    id: tactical-ready-trigger-now
+- scrollUntilVisible:
+    element:
+      id: tactical-reaction-damage
+    direction: UP
+- tapOn:
+    id: tactical-reaction-damage
+- eraseText
+- inputText: "9"
+- tapOn:
+    id: tactical-reaction-resolve
+- scrollUntilVisible:
+    element:
+      id: tactical-character-concentration
+    direction: UP
+- assertVisible: "Concentração: Nenhuma"
+- assertVisible: "Slots: 1º 0/1"

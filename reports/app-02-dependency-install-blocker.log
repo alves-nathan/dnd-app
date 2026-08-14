@@ -1,0 +1,24 @@
+APP-02 dependency installation blocker
+Date: 2026-08-03
+
+Attempt 1
+Command: npm ci --no-audit --no-fund
+Registry: configured internal npm mirror
+Result: BLOCKED
+Error: 404 for zustand@5.0.14 tarball.
+
+Diagnostic attempt
+Zustand was removed only from a temporary copy of package.json/package-lock.json.
+Command: npm ci --no-audit --no-fund
+Result: BLOCKED
+Error: 404 for zod@4.4.3 tarball.
+
+Attempt 2
+Command: npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
+Result: BLOCKED
+Error: EAI_AGAIN while resolving registry.npmjs.org.
+
+Final source state
+- Original dependency declarations restored.
+- No package version was downgraded or replaced.
+- node_modules is not included in the deliverable.

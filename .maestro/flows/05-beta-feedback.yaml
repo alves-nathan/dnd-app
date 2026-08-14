@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Registrar feedback local da beta
+---
+- launchApp
+- openLink: dndcombatmath://beta-feedback
+- assertVisible: "Feedback local"
+- tapOn:
+    id: beta-feedback-summary
+- inputText: "Feedback criado pelo fluxo E2E"
+- tapOn:
+    id: beta-feedback-save
+- assertVisible: "Feedback salvo"
+- tapOn: "OK"
+- assertVisible: "Feedback criado pelo fluxo E2E"

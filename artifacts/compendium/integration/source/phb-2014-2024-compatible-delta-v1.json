@@ -1,0 +1,3335 @@
+{
+  "templateVersion": "dnd-combat-import.v1",
+  "id": "phb-2014-2024-compatible-delta-v1",
+  "source": {
+    "id": "phb-2014",
+    "book": "players-handbook",
+    "version": "2014+official-errata",
+    "status": "needsReview",
+    "confidence": "importedNeedsReview",
+    "rulesEra": "legacy",
+    "contentType": "official",
+    "page": "38-41, 59-63, 116-119, 166-168",
+    "notes": "Delta-only extraction from the attached 2014 Player’s Handbook, projected for PHB 2024-first character creation. Applicable official PHB 2014 errata is reconciled."
+  },
+  "metadata": {
+    "contentSystem": "D&D",
+    "edition": "2024+legacy",
+    "language": "en",
+    "extractionScope": "PHB 2014 delta only — official exceptions retained under PHB 2024 compatibility policy",
+    "schemaTarget": "dnd-combat-math-current",
+    "printedPages": "38-41, 59-63, 116-119, 166-168",
+    "itemRecords": 56,
+    "itemsByKind": {
+      "feature": 44,
+      "subclass": 7,
+      "species": 2,
+      "feat": 3
+    },
+    "compatibility": {
+      "profile": "2024-first+legacy",
+      "reusesPhb2024Classes": true,
+      "reusesPhb2024Spells": true,
+      "speciesAbilityScoresFromLegacyIgnored": true,
+      "clericBlessedStrikesId": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    "officialErrata": {
+      "applied": true,
+      "source": "D&D Beyond Sage Advice & Errata — Player’s Handbook (2014)",
+      "changesMaterialized": [
+        "Half-Elf Alignment removed",
+        "Half-Orc Alignment removed",
+        "Acolyte of Nature cantrip counts as cleric cantrip and not against cleric cantrips known",
+        "Minor Conjuration ends if object takes or deals damage",
+        "Dungeon Delver fast-pace passive Perception wording",
+        "Martial Adept one d6 superiority die added to other superiority dice"
+      ]
+    },
+    "validation": {
+      "status": "READY_FOR_RUNTIME_PREVIEW",
+      "uniqueItemIds": 56,
+      "duplicateItemIds": 0,
+      "brokenExternalReferences": 0
+    },
+    "externalDependencies": {
+      "phb2024": [
+        "phb-2024-class-cleric",
+        "phb-2024-class-druid",
+        "phb-2024-class-wizard",
+        "phb-2024-feature-cleric-blessed-strikes",
+        "phb-2024-feature-fighter-battle-master-combat-superiority",
+        "phb-2024-spell-animal-friendship",
+        "phb-2024-spell-animate-dead",
+        "phb-2024-spell-arcane-eye",
+        "phb-2024-spell-augury",
+        "phb-2024-spell-barkskin",
+        "phb-2024-spell-call-lightning",
+        "phb-2024-spell-command",
+        "phb-2024-spell-confusion",
+        "phb-2024-spell-control-water",
+        "phb-2024-spell-destructive-wave",
+        "phb-2024-spell-dominate-beast",
+        "phb-2024-spell-fog-cloud",
+        "phb-2024-spell-grasping-vine",
+        "phb-2024-spell-gust-of-wind",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-identify",
+        "phb-2024-spell-insect-plague",
+        "phb-2024-spell-legend-lore",
+        "phb-2024-spell-nondetection",
+        "phb-2024-spell-plant-growth",
+        "phb-2024-spell-polymorph",
+        "phb-2024-spell-raise-dead",
+        "phb-2024-spell-scrying",
+        "phb-2024-spell-shatter",
+        "phb-2024-spell-sleet-storm",
+        "phb-2024-spell-speak-with-animals",
+        "phb-2024-spell-speak-with-dead",
+        "phb-2024-spell-spike-growth",
+        "phb-2024-spell-suggestion",
+        "phb-2024-spell-thunderwave",
+        "phb-2024-spell-tree-stride",
+        "phb-2024-spell-wind-wall",
+        "phb-2024-subclass-fighter-battle-master"
+      ],
+      "tasha2020": [
+        "tcoe-2020-feature-maneuver-ambush",
+        "tcoe-2020-feature-maneuver-bait-and-switch",
+        "tcoe-2020-feature-maneuver-brace",
+        "tcoe-2020-feature-maneuver-commanding-presence",
+        "tcoe-2020-feature-maneuver-grappling-strike",
+        "tcoe-2020-feature-maneuver-quick-toss",
+        "tcoe-2020-feature-maneuver-tactical-assessment"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "phb-2014-feature-cleric-knowledge-domain-domain-spells",
+      "kind": "feature",
+      "name": "Domain Spells",
+      "summary": "Magias do Knowledge Domain ficam sempre preparadas conforme os níveis clericais da tabela legacy, usando as versões PHB 2024 das magias.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "59-60"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.knowledge.domain.domain.spells",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "domain": "Knowledge Domain",
+          "domainSpellTable": {
+            "1": [
+              "phb-2024-spell-command",
+              "phb-2024-spell-identify"
+            ],
+            "3": [
+              "phb-2024-spell-augury",
+              "phb-2024-spell-suggestion"
+            ],
+            "5": [
+              "phb-2024-spell-nondetection",
+              "phb-2024-spell-speak-with-dead"
+            ],
+            "7": [
+              "phb-2024-spell-arcane-eye",
+              "phb-2024-spell-confusion"
+            ],
+            "9": [
+              "phb-2024-spell-legend-lore",
+              "phb-2024-spell-scrying"
+            ]
+          },
+          "alwaysPrepared": true,
+          "countsAgainstPreparedSpells": false,
+          "spellVersionPolicy": "PHB 2024 spell entity"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-knowledge-domain-blessings-of-knowledge",
+      "kind": "feature",
+      "name": "Blessings of Knowledge",
+      "summary": "Aprende dois idiomas e escolhe duas entre Arcana, History, Nature e Religion; nos checks escolhidos aplica o dobro do bônus de proficiência.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "59"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.knowledge.domain.blessings.of.knowledge",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "languageChoice": {
+            "count": 2
+          },
+          "skillChoice": {
+            "count": 2,
+            "options": [
+              "Arcana",
+              "History",
+              "Nature",
+              "Religion"
+            ]
+          },
+          "proficiencyMultiplierForChosenSkills": 2
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-knowledge-domain-channel-divinity-knowledge-of-the-ages",
+      "kind": "feature",
+      "name": "Channel Divinity: Knowledge of the Ages",
+      "summary": "Como Action, escolhe uma skill ou tool e ganha proficiência nela por 10 minutos.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "59"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "levelGained": 3,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.knowledge.domain.channel.divinity.knowledge.of.the.ages",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "usesChannelDivinity": true,
+          "choice": {
+            "count": 1,
+            "from": [
+              "skills",
+              "tools"
+            ]
+          },
+          "grantsProficiency": true,
+          "duration": "10 minutes"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-knowledge-domain-channel-divinity-read-thoughts",
+      "kind": "feature",
+      "name": "Channel Divinity: Read Thoughts",
+      "summary": "Lê pensamentos superficiais de uma criatura a 60 ft. após Wisdom save e pode encerrar para aplicar Suggestion sem slot, com falha automática do alvo.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "59"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "levelGained": 6,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.knowledge.domain.channel.divinity.read.thoughts",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "usesChannelDivinity": true,
+          "rangeFeet": 60,
+          "target": "one creature owner can see",
+          "save": {
+            "ability": "WIS",
+            "dc": "cleric spell save DC"
+          },
+          "onSaveSuccess": {
+            "cannotTargetAgainUntil": "longRest"
+          },
+          "onSaveFailure": {
+            "surfaceThoughts": true,
+            "duration": "1 minute",
+            "requiresWithinFeet": 60
+          },
+          "followUpAction": {
+            "actionCost": "action",
+            "endsReadThoughts": true,
+            "spellId": "phb-2024-spell-suggestion",
+            "expendsSpellSlot": false,
+            "targetAutomaticallyFailsSave": true
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-knowledge-domain-visions-of-the-past",
+      "kind": "feature",
+      "name": "Visions of the Past",
+      "summary": "Meditação psicométrica para ler eventos passados ligados a um objeto ou a uma área, com duração máxima baseada em Wisdom.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "60"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "levelGained": 17,
+        "actionCost": "special",
+        "actionTiming": {
+          "actionCost": "special",
+          "subtype": "other",
+          "original": "special"
+        },
+        "requiresConcentration": true,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.knowledge.domain.visions.of.the.past",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 17,
+          "activationMinimum": "1 minute meditation",
+          "concentrationLikeSpell": true,
+          "maximumMinutes": "WIS score",
+          "recharge": [
+            "shortRest",
+            "longRest"
+          ],
+          "modes": {
+            "objectReading": {
+              "learnOwnerHistory": true,
+              "recentSignificantEvent": true
+            },
+            "areaReading": {
+              "area": "50-ft cube centered on owner",
+              "daysBack": "WIS score",
+              "significantEventPerMinute": true
+            }
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-cleric-knowledge-domain",
+      "kind": "subclass",
+      "name": "Knowledge Domain",
+      "summary": "Cleric Domain legacy focado em idiomas, perícias, leitura de pensamentos e psicometria.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "59-60"
+      },
+      "payload": {
+        "classId": "phb-2024-class-cleric",
+        "featureIds": [
+          "phb-2014-feature-cleric-knowledge-domain-domain-spells",
+          "phb-2014-feature-cleric-knowledge-domain-blessings-of-knowledge",
+          "phb-2014-feature-cleric-knowledge-domain-channel-divinity-knowledge-of-the-ages",
+          "phb-2014-feature-cleric-knowledge-domain-channel-divinity-read-thoughts",
+          "phb-2014-feature-cleric-knowledge-domain-visions-of-the-past",
+          "phb-2024-feature-cleric-blessed-strikes"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-cleric-knowledge-domain-domain-spells",
+              "phb-2014-feature-cleric-knowledge-domain-blessings-of-knowledge",
+              "phb-2014-feature-cleric-knowledge-domain-channel-divinity-knowledge-of-the-ages"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-cleric-knowledge-domain-channel-divinity-read-thoughts"
+            ]
+          },
+          {
+            "level": 8,
+            "featureIds": [
+              "phb-2024-feature-cleric-blessed-strikes"
+            ]
+          },
+          {
+            "level": 17,
+            "featureIds": [
+              "phb-2014-feature-cleric-knowledge-domain-visions-of-the-past"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.cleric.knowledge.domain",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-cleric",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-domain-spells",
+      "kind": "feature",
+      "name": "Domain Spells",
+      "summary": "Magias do Nature Domain ficam sempre preparadas conforme os níveis clericais da tabela legacy, usando as versões PHB 2024 das magias.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "61-62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.domain.spells",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "domain": "Nature Domain",
+          "domainSpellTable": {
+            "1": [
+              "phb-2024-spell-animal-friendship",
+              "phb-2024-spell-speak-with-animals"
+            ],
+            "3": [
+              "phb-2024-spell-barkskin",
+              "phb-2024-spell-spike-growth"
+            ],
+            "5": [
+              "phb-2024-spell-plant-growth",
+              "phb-2024-spell-wind-wall"
+            ],
+            "7": [
+              "phb-2024-spell-dominate-beast",
+              "phb-2024-spell-grasping-vine"
+            ],
+            "9": [
+              "phb-2024-spell-insect-plague",
+              "phb-2024-spell-tree-stride"
+            ]
+          },
+          "alwaysPrepared": true,
+          "countsAgainstPreparedSpells": false,
+          "spellVersionPolicy": "PHB 2024 spell entity"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-acolyte-of-nature",
+      "kind": "feature",
+      "name": "Acolyte of Nature",
+      "summary": "Escolhe um Druid cantrip e proficiência em Animal Handling, Nature ou Survival; pela errata, o cantrip conta como Cleric cantrip e não ocupa o limite de cantrips.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.acolyte.of.nature",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "cantripChoice": {
+            "count": 1,
+            "sourceClassId": "phb-2024-class-druid",
+            "spellLevel": 0
+          },
+          "chosenCantripCountsAs": "cleric",
+          "countsAgainstClericCantrips": false,
+          "skillChoice": {
+            "count": 1,
+            "options": [
+              "Animal Handling",
+              "Nature",
+              "Survival"
+            ]
+          },
+          "officialErrataApplied": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-bonus-proficiency",
+      "kind": "feature",
+      "name": "Bonus Proficiency",
+      "summary": "Ganha treinamento com Heavy Armor.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.bonus.proficiency",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "armorTraining": [
+            "Heavy Armor"
+          ]
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-channel-divinity-charm-animals-and-plants",
+      "kind": "feature",
+      "name": "Channel Divinity: Charm Animals and Plants",
+      "summary": "Beasts e Plants a 30 ft. que vejam o cleric fazem Wisdom save; em falha ficam Charmed por 1 minuto ou até sofrer dano.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 3,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.channel.divinity.charm.animals.and.plants",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "usesChannelDivinity": true,
+          "rangeFeet": 30,
+          "targetCreatureTypes": [
+            "Beast",
+            "Plant"
+          ],
+          "targetMustSeeOwner": true,
+          "save": {
+            "ability": "WIS",
+            "dc": "cleric spell save DC"
+          },
+          "onFail": {
+            "condition": "Charmed",
+            "duration": "1 minute",
+            "endsOnDamage": true,
+            "friendlyTo": [
+              "owner",
+              "owner-designated creatures"
+            ]
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-dampen-elements",
+      "kind": "feature",
+      "name": "Dampen Elements",
+      "summary": "Reaction para conceder resistência contra uma instância de acid, cold, fire, lightning ou thunder damage a si ou criatura a 30 ft.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 6,
+        "actionCost": "reaction",
+        "actionTiming": {
+          "actionCost": "reaction",
+          "subtype": "triggered",
+          "trigger": "owner or creature within 30 ft takes eligible damage",
+          "original": "reaction"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.dampen.elements",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "trigger": "owner or creature within 30 ft takes eligible damage",
+          "rangeFeet": 30,
+          "damageTypes": [
+            "acid",
+            "cold",
+            "fire",
+            "lightning",
+            "thunder"
+          ],
+          "effect": "resistance to triggering damage instance"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-nature-domain-master-of-nature",
+      "kind": "feature",
+      "name": "Master of Nature",
+      "summary": "Bonus Action para comandar verbalmente cada criatura atualmente Charmed por Charm Animals and Plants sobre o que fará no próximo turno.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "levelGained": 17,
+        "actionCost": "bonusAction",
+        "actionTiming": {
+          "actionCost": "bonusAction",
+          "subtype": "other",
+          "original": "bonus action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.nature.domain.master.of.nature",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 17,
+          "requiresFeatureId": "phb-2014-feature-cleric-nature-domain-channel-divinity-charm-animals-and-plants",
+          "targets": "creatures currently charmed by that feature",
+          "commandTiming": "what each target will do on its next turn"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-cleric-nature-domain",
+      "kind": "subclass",
+      "name": "Nature Domain",
+      "summary": "Cleric Domain legacy com Druid cantrip, Heavy Armor, controle de beasts/plants e proteção elemental.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "61-62"
+      },
+      "payload": {
+        "classId": "phb-2024-class-cleric",
+        "featureIds": [
+          "phb-2014-feature-cleric-nature-domain-domain-spells",
+          "phb-2014-feature-cleric-nature-domain-acolyte-of-nature",
+          "phb-2014-feature-cleric-nature-domain-bonus-proficiency",
+          "phb-2014-feature-cleric-nature-domain-channel-divinity-charm-animals-and-plants",
+          "phb-2014-feature-cleric-nature-domain-dampen-elements",
+          "phb-2014-feature-cleric-nature-domain-master-of-nature",
+          "phb-2024-feature-cleric-blessed-strikes"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-cleric-nature-domain-domain-spells",
+              "phb-2014-feature-cleric-nature-domain-acolyte-of-nature",
+              "phb-2014-feature-cleric-nature-domain-bonus-proficiency",
+              "phb-2014-feature-cleric-nature-domain-channel-divinity-charm-animals-and-plants"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-cleric-nature-domain-dampen-elements"
+            ]
+          },
+          {
+            "level": 8,
+            "featureIds": [
+              "phb-2024-feature-cleric-blessed-strikes"
+            ]
+          },
+          {
+            "level": 17,
+            "featureIds": [
+              "phb-2014-feature-cleric-nature-domain-master-of-nature"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.cleric.nature.domain",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-cleric",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-domain-spells",
+      "kind": "feature",
+      "name": "Domain Spells",
+      "summary": "Magias do Tempest Domain ficam sempre preparadas conforme os níveis clericais da tabela legacy, usando as versões PHB 2024 das magias.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62-63"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.domain.spells",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "domain": "Tempest Domain",
+          "domainSpellTable": {
+            "1": [
+              "phb-2024-spell-fog-cloud",
+              "phb-2024-spell-thunderwave"
+            ],
+            "3": [
+              "phb-2024-spell-gust-of-wind",
+              "phb-2024-spell-shatter"
+            ],
+            "5": [
+              "phb-2024-spell-call-lightning",
+              "phb-2024-spell-sleet-storm"
+            ],
+            "7": [
+              "phb-2024-spell-control-water",
+              "phb-2024-spell-ice-storm"
+            ],
+            "9": [
+              "phb-2024-spell-destructive-wave",
+              "phb-2024-spell-insect-plague"
+            ]
+          },
+          "alwaysPrepared": true,
+          "countsAgainstPreparedSpells": false,
+          "spellVersionPolicy": "PHB 2024 spell entity"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-bonus-proficiencies",
+      "kind": "feature",
+      "name": "Bonus Proficiencies",
+      "summary": "Ganha treinamento com Martial Weapons e Heavy Armor.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.bonus.proficiencies",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "weaponTraining": [
+            "Martial Weapons"
+          ],
+          "armorTraining": [
+            "Heavy Armor"
+          ]
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-wrath-of-the-storm",
+      "kind": "feature",
+      "name": "Wrath of the Storm",
+      "summary": "Reaction quando criatura visível a 5 ft. acerta o cleric: Dexterity save contra 2d8 lightning ou thunder, metade no sucesso; usos por Long Rest baseados em Wisdom.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 3,
+        "actionCost": "reaction",
+        "actionTiming": {
+          "actionCost": "reaction",
+          "subtype": "triggered",
+          "trigger": "visible creature within 5 ft hits owner with an attack",
+          "original": "reaction"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "resource": {
+          "id": "phb2014-tempest-wrath-of-the-storm",
+          "name": "Wrath of the Storm",
+          "max": {
+            "kind": "abilityModifier",
+            "formula": "max(1, WIS modifier)"
+          },
+          "recharge": "longRest"
+        },
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.wrath.of.the.storm",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 1,
+          "trigger": "visible creature within 5 ft hits owner with an attack",
+          "rangeFeet": 5,
+          "damageTypeChoice": [
+            "lightning",
+            "thunder"
+          ],
+          "save": {
+            "ability": "DEX",
+            "dc": "cleric spell save DC"
+          },
+          "damageFormula": "2d8",
+          "damageOnSaveSuccess": "half"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 1 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-channel-divinity-destructive-wrath",
+      "kind": "feature",
+      "name": "Channel Divinity: Destructive Wrath",
+      "summary": "Ao rolar lightning ou thunder damage, pode gastar Channel Divinity para causar o máximo possível em vez de rolar.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "when owner rolls lightning or thunder damage",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.channel.divinity.destructive.wrath",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "usesChannelDivinity": true,
+          "trigger": "when owner rolls lightning or thunder damage",
+          "damageTypes": [
+            "lightning",
+            "thunder"
+          ],
+          "replaceDamageRollWithMaximum": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-thunderbolt-strike",
+      "kind": "feature",
+      "name": "Thunderbolt Strike",
+      "summary": "Quando causa lightning damage a criatura Large ou menor, pode empurrá-la até 10 ft. para longe.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 6,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "owner deals lightning damage",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.thunderbolt.strike",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "trigger": "owner deals lightning damage",
+          "maximumTargetSize": "Large",
+          "pushFeet": 10,
+          "direction": "away from owner"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-cleric-tempest-domain-stormborn",
+      "kind": "feature",
+      "name": "Stormborn",
+      "summary": "Ganha Fly Speed igual ao Walking Speed enquanto não estiver underground nem indoors.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "63"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "levelGained": 17,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.cleric.tempest.domain.stormborn",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 17,
+          "flySpeed": "current walking speed",
+          "unavailableWhen": [
+            "underground",
+            "indoors"
+          ]
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-cleric-tempest-domain",
+      "kind": "subclass",
+      "name": "Tempest Domain",
+      "summary": "Cleric Domain legacy de tempestade com armas marciais, Heavy Armor, retaliação elétrica/trovejante e voo.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "62-63"
+      },
+      "payload": {
+        "classId": "phb-2024-class-cleric",
+        "featureIds": [
+          "phb-2014-feature-cleric-tempest-domain-domain-spells",
+          "phb-2014-feature-cleric-tempest-domain-bonus-proficiencies",
+          "phb-2014-feature-cleric-tempest-domain-wrath-of-the-storm",
+          "phb-2014-feature-cleric-tempest-domain-channel-divinity-destructive-wrath",
+          "phb-2014-feature-cleric-tempest-domain-thunderbolt-strike",
+          "phb-2014-feature-cleric-tempest-domain-stormborn",
+          "phb-2024-feature-cleric-blessed-strikes"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-cleric-tempest-domain-domain-spells",
+              "phb-2014-feature-cleric-tempest-domain-bonus-proficiencies",
+              "phb-2014-feature-cleric-tempest-domain-wrath-of-the-storm",
+              "phb-2014-feature-cleric-tempest-domain-channel-divinity-destructive-wrath"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-cleric-tempest-domain-thunderbolt-strike"
+            ]
+          },
+          {
+            "level": 8,
+            "featureIds": [
+              "phb-2024-feature-cleric-blessed-strikes"
+            ]
+          },
+          {
+            "level": 17,
+            "featureIds": [
+              "phb-2014-feature-cleric-tempest-domain-stormborn"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.cleric.tempest.domain",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-cleric",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-conjuration-conjuration-savant",
+      "kind": "feature",
+      "name": "Conjuration Savant",
+      "summary": "Tempo e ouro para copiar Conjuration spells para o spellbook são reduzidos pela metade.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.conjuration.conjuration.savant",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "spellbookCopySchool": "Conjuration",
+          "timeMultiplier": 0.5,
+          "goldCostMultiplier": 0.5
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-conjuration-minor-conjuration",
+      "kind": "feature",
+      "name": "Minor Conjuration",
+      "summary": "Action para conjurar temporariamente um objeto inanimado não mágico já visto, de até 3 ft. por lado e 10 lb, na mão ou espaço visível a 10 ft.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "levelGained": 3,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.conjuration.minor.conjuration",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "rangeFeet": 10,
+          "object": {
+            "inanimate": true,
+            "nonmagical": true,
+            "mustHaveBeenSeen": true,
+            "maxDimensionFeet": 3,
+            "maxWeightLb": 10,
+            "visiblyMagical": true,
+            "dimLightFeet": 5
+          },
+          "duration": "1 hour",
+          "endsOn": [
+            "use feature again",
+            "object takes any damage",
+            "object deals any damage"
+          ],
+          "officialErrataApplied": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-conjuration-benign-transposition",
+      "kind": "feature",
+      "name": "Benign Transposition",
+      "summary": "Action para teleportar até 30 ft. ou trocar de lugar com criatura willing Small/Medium; recarrega em Long Rest ou ao conjurar Conjuration spell de 1º+.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "levelGained": 6,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.conjuration.benign.transposition",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "rangeFeet": 30,
+          "modeChoice": [
+            "teleport to visible unoccupied space",
+            "swap with willing Small or Medium creature"
+          ],
+          "recharge": {
+            "longRest": true,
+            "alsoWhenCast": {
+              "school": "Conjuration",
+              "minimumSpellLevel": 1
+            }
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-conjuration-focused-conjuration",
+      "kind": "feature",
+      "name": "Focused Conjuration",
+      "summary": "Dano recebido não pode quebrar sua concentração em Conjuration spells.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "levelGained": 10,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.conjuration.focused.conjuration",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 10,
+          "concentrationProtection": {
+            "school": "Conjuration",
+            "cannotBeBrokenByTakingDamage": true
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-conjuration-durable-summons",
+      "kind": "feature",
+      "name": "Durable Summons",
+      "summary": "Criaturas summoned ou created por Conjuration spells ganham 30 Temporary Hit Points.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "levelGained": 14,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "creature summoned or created with a Conjuration spell",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.conjuration.durable.summons",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 14,
+          "trigger": "creature summoned or created with a Conjuration spell",
+          "temporaryHitPoints": 30
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-wizard-school-of-conjuration",
+      "kind": "subclass",
+      "name": "School of Conjuration",
+      "summary": "Arcane Tradition legacy focada em conjuração de objetos, teleporte e reforço de conjurações.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "116"
+      },
+      "payload": {
+        "classId": "phb-2024-class-wizard",
+        "featureIds": [
+          "phb-2014-feature-wizard-school-of-conjuration-conjuration-savant",
+          "phb-2014-feature-wizard-school-of-conjuration-minor-conjuration",
+          "phb-2014-feature-wizard-school-of-conjuration-benign-transposition",
+          "phb-2014-feature-wizard-school-of-conjuration-focused-conjuration",
+          "phb-2014-feature-wizard-school-of-conjuration-durable-summons"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-conjuration-conjuration-savant",
+              "phb-2014-feature-wizard-school-of-conjuration-minor-conjuration"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-conjuration-benign-transposition"
+            ]
+          },
+          {
+            "level": 10,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-conjuration-focused-conjuration"
+            ]
+          },
+          {
+            "level": 14,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-conjuration-durable-summons"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.wizard.school.of.conjuration",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-wizard",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-enchantment-enchantment-savant",
+      "kind": "feature",
+      "name": "Enchantment Savant",
+      "summary": "Tempo e ouro para copiar Enchantment spells para o spellbook são reduzidos pela metade.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.enchantment.enchantment.savant",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "spellbookCopySchool": "Enchantment",
+          "timeMultiplier": 0.5,
+          "goldCostMultiplier": 0.5
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-enchantment-hypnotic-gaze",
+      "kind": "feature",
+      "name": "Hypnotic Gaze",
+      "summary": "Action para tentar Charm uma criatura adjacente; em falha no Wisdom save ela fica com Speed 0 e Incapacitated enquanto o efeito for mantido.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "levelGained": 3,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.enchantment.hypnotic.gaze",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "rangeFeet": 5,
+          "targetMustSeeOrHearOwner": true,
+          "save": {
+            "ability": "WIS",
+            "dc": "wizard spell save DC"
+          },
+          "onFail": {
+            "condition": "Charmed",
+            "speed": 0,
+            "conditionIds": [
+              "incapacitated"
+            ],
+            "duration": "until end of owner next turn",
+            "maintainWithActionEachTurn": true
+          },
+          "endsIf": [
+            "owner moves more than 5 ft away",
+            "target can neither see nor hear owner",
+            "target takes damage"
+          ],
+          "perTargetLockout": "longRest after effect ends or initial save succeeds"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-enchantment-instinctive-charm",
+      "kind": "feature",
+      "name": "Instinctive Charm",
+      "summary": "Reaction antes de saber se um ataque acerta para tentar redirecioná-lo à criatura mais próxima, mediante Wisdom save do atacante.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "levelGained": 6,
+        "actionCost": "reaction",
+        "actionTiming": {
+          "actionCost": "reaction",
+          "subtype": "triggered",
+          "trigger": "visible creature within 30 ft makes an attack roll against owner and another creature is in range",
+          "original": "reaction"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.enchantment.instinctive.charm",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "trigger": "visible creature within 30 ft makes an attack roll against owner and another creature is in range",
+          "rangeFeet": 30,
+          "useBeforeHitKnown": true,
+          "save": {
+            "ability": "WIS",
+            "dc": "wizard spell save DC"
+          },
+          "onFail": {
+            "mustTargetClosestOtherCreature": true,
+            "tieChoiceByAttacker": true
+          },
+          "onSuccess": {
+            "cannotUseOnAttackerAgainUntil": "longRest"
+          },
+          "charmImmuneTargetsImmune": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-enchantment-split-enchantment",
+      "kind": "feature",
+      "name": "Split Enchantment",
+      "summary": "Enchantment spell de 1º+ que teria apenas uma criatura como alvo pode atingir uma segunda criatura.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "levelGained": 10,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.enchantment.split.enchantment",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 10,
+          "school": "Enchantment",
+          "minimumSpellLevel": 1,
+          "requiresOriginalTargetCount": 1,
+          "additionalTargets": 1
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-enchantment-alter-memories",
+      "kind": "feature",
+      "name": "Alter Memories",
+      "summary": "Pode ocultar de uma criatura o fato de ela estar Charmed por sua magia e, uma vez antes do spell terminar, tentar apagar parte desse período da memória.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "levelGained": 14,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "cast Enchantment spell that charms one or more creatures",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.enchantment.alter.memories",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 14,
+          "trigger": "cast Enchantment spell that charms one or more creatures",
+          "chooseOneCharmedCreature": true,
+          "hideAwarenessOfCharm": true,
+          "forgetMemoryAction": {
+            "actionCost": "action",
+            "usesMaxOnceBeforeSpellExpires": true,
+            "save": {
+              "ability": "INT",
+              "dc": "wizard spell save DC"
+            },
+            "hoursForgottenFormula": "max(1, 1 + CHA modifier)",
+            "cannotExceedSpellDuration": true
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-wizard-school-of-enchantment",
+      "kind": "subclass",
+      "name": "School of Enchantment",
+      "summary": "Arcane Tradition legacy de charms, desvio de ataques e manipulação de memórias.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "117"
+      },
+      "payload": {
+        "classId": "phb-2024-class-wizard",
+        "featureIds": [
+          "phb-2014-feature-wizard-school-of-enchantment-enchantment-savant",
+          "phb-2014-feature-wizard-school-of-enchantment-hypnotic-gaze",
+          "phb-2014-feature-wizard-school-of-enchantment-instinctive-charm",
+          "phb-2014-feature-wizard-school-of-enchantment-split-enchantment",
+          "phb-2014-feature-wizard-school-of-enchantment-alter-memories"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-enchantment-enchantment-savant",
+              "phb-2014-feature-wizard-school-of-enchantment-hypnotic-gaze"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-enchantment-instinctive-charm"
+            ]
+          },
+          {
+            "level": 10,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-enchantment-split-enchantment"
+            ]
+          },
+          {
+            "level": 14,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-enchantment-alter-memories"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.wizard.school.of.enchantment",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-wizard",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-necromancy-necromancy-savant",
+      "kind": "feature",
+      "name": "Necromancy Savant",
+      "summary": "Tempo e ouro para copiar Necromancy spells para o spellbook são reduzidos pela metade.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "118"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.necromancy.necromancy.savant",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "spellbookCopySchool": "Necromancy",
+          "timeMultiplier": 0.5,
+          "goldCostMultiplier": 0.5
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-necromancy-grim-harvest",
+      "kind": "feature",
+      "name": "Grim Harvest",
+      "summary": "Uma vez por turno, ao matar uma ou mais criaturas com spell de 1º+, recupera HP igual a 2×spell level, ou 3× para Necromancy; não funciona com Constructs ou Undead.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "118"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "kill one or more creatures with a spell of level 1+",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.necromancy.grim.harvest",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "oncePerTurn": true,
+          "trigger": "kill one or more creatures with a spell of level 1+",
+          "healingFormula": "2 * spell level",
+          "necromancyHealingFormula": "3 * spell level",
+          "excludedCreatureTypes": [
+            "Construct",
+            "Undead"
+          ]
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-necromancy-undead-thralls",
+      "kind": "feature",
+      "name": "Undead Thralls",
+      "summary": "Adiciona Animate Dead ao spellbook e melhora undead criados com Necromancy spells; Animate Dead cria um alvo adicional.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "118"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "levelGained": 6,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.necromancy.undead.thralls",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "addsSpellToSpellbook": "phb-2024-spell-animate-dead",
+          "animateDeadAdditionalTarget": 1,
+          "undeadCreatedByNecromancySpell": {
+            "maxHitPointsBonus": "wizard level",
+            "weaponDamageRollBonus": "PB"
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-necromancy-inured-to-undeath",
+      "kind": "feature",
+      "name": "Inured to Undeath",
+      "summary": "Resistance a Necrotic damage e seu máximo de HP não pode ser reduzido.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "levelGained": 10,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.necromancy.inured.to.undeath",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 10,
+          "damageResistance": [
+            "necrotic"
+          ],
+          "hitPointMaximumCannotBeReduced": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-necromancy-command-undead",
+      "kind": "feature",
+      "name": "Command Undead",
+      "summary": "Action para tentar controlar um Undead a 60 ft. por Charisma save; controles mais inteligentes recebem proteções adicionais.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "levelGained": 14,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.necromancy.command.undead",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 14,
+          "rangeFeet": 60,
+          "targetCreatureType": "Undead",
+          "targetMustBeVisible": true,
+          "save": {
+            "ability": "CHA",
+            "dc": "wizard spell save DC"
+          },
+          "onSaveFailure": {
+            "friendly": true,
+            "obeysCommands": true,
+            "duration": "until owner uses this feature again"
+          },
+          "onSaveSuccess": {
+            "cannotTargetAgain": true
+          },
+          "intelligenceRules": {
+            "minimumForSaveAdvantage": 8,
+            "minimumForHourlyRepeatSave": 12,
+            "repeatSaveFrequency": "1 hour until success"
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-wizard-school-of-necromancy",
+      "kind": "subclass",
+      "name": "School of Necromancy",
+      "summary": "Arcane Tradition legacy focada em recuperar vida por mortes mágicas e fortalecer/controlar undead.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "118-119"
+      },
+      "payload": {
+        "classId": "phb-2024-class-wizard",
+        "featureIds": [
+          "phb-2014-feature-wizard-school-of-necromancy-necromancy-savant",
+          "phb-2014-feature-wizard-school-of-necromancy-grim-harvest",
+          "phb-2014-feature-wizard-school-of-necromancy-undead-thralls",
+          "phb-2014-feature-wizard-school-of-necromancy-inured-to-undeath",
+          "phb-2014-feature-wizard-school-of-necromancy-command-undead"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-necromancy-necromancy-savant",
+              "phb-2014-feature-wizard-school-of-necromancy-grim-harvest"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-necromancy-undead-thralls"
+            ]
+          },
+          {
+            "level": 10,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-necromancy-inured-to-undeath"
+            ]
+          },
+          {
+            "level": 14,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-necromancy-command-undead"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.wizard.school.of.necromancy",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-wizard",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-transmutation-transmutation-savant",
+      "kind": "feature",
+      "name": "Transmutation Savant",
+      "summary": "Tempo e ouro para copiar Transmutation spells para o spellbook são reduzidos pela metade.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "levelGained": 3,
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.transmutation.transmutation.savant",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "spellbookCopySchool": "Transmutation",
+          "timeMultiplier": 0.5,
+          "goldCostMultiplier": 0.5
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-transmutation-minor-alchemy",
+      "kind": "feature",
+      "name": "Minor Alchemy",
+      "summary": "Transforma temporariamente material não mágico entre wood, stone, iron, copper e silver, levando 10 minutos por cubic foot.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "levelGained": 3,
+        "actionCost": "special",
+        "actionTiming": {
+          "actionCost": "special",
+          "subtype": "other",
+          "original": "special"
+        },
+        "requiresConcentration": true,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.transmutation.minor.alchemy",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 2,
+          "materials": [
+            "wood",
+            "stone (not gemstone)",
+            "iron",
+            "copper",
+            "silver"
+          ],
+          "target": "nonmagical object composed entirely of one listed material",
+          "conversionTimePerCubicFoot": "10 minutes",
+          "duration": "1 hour",
+          "endsOnConcentrationLoss": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted.",
+          "Legacy level 2 is projected to level 3 on the 2024 class chassis."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-transmutation-transmuters-stone",
+      "kind": "feature",
+      "name": "Transmuter's Stone",
+      "summary": "Após 8 horas cria uma pedra que concede um entre quatro benefícios ao portador; pode trocar o benefício ao conjurar Transmutation spell de 1º+.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "levelGained": 6,
+        "actionCost": "special",
+        "actionTiming": {
+          "actionCost": "special",
+          "subtype": "other",
+          "original": "special"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.transmutation.transmuters.stone",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 6,
+          "creationTime": "8 hours",
+          "maximumActiveStones": 1,
+          "benefitChoice": [
+            {
+              "id": "darkvision",
+              "darkvisionFeet": 60
+            },
+            {
+              "id": "speed",
+              "walkingSpeedBonusFeet": 10,
+              "condition": "while unencumbered"
+            },
+            {
+              "id": "constitution-save-proficiency",
+              "savingThrowProficiency": "CON"
+            },
+            {
+              "id": "damage-resistance",
+              "chooseOne": [
+                "acid",
+                "cold",
+                "fire",
+                "lightning",
+                "thunder"
+              ]
+            }
+          ],
+          "changeBenefitTrigger": "cast Transmutation spell of level 1+ while stone is on owner person",
+          "newStoneEndsOldStone": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-transmutation-shapechanger",
+      "kind": "feature",
+      "name": "Shapechanger",
+      "summary": "Adiciona Polymorph ao spellbook e permite 1/Short ou Long Rest cast gratuito em si mesmo, limitado a Beast CR 1 ou menor.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "levelGained": 10,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.transmutation.shapechanger",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 10,
+          "addsSpellToSpellbook": "phb-2024-spell-polymorph",
+          "freeCast": {
+            "spellId": "phb-2024-spell-polymorph",
+            "target": "self",
+            "expendsSpellSlot": false,
+            "restriction": {
+              "creatureType": "Beast",
+              "maximumChallengeRating": 1
+            },
+            "recharge": [
+              "shortRest",
+              "longRest"
+            ]
+          },
+          "normalSpellcastingStillAllowed": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-wizard-school-of-transmutation-master-transmuter",
+      "kind": "feature",
+      "name": "Master Transmuter",
+      "summary": "Action consome a Transmuter’s Stone para escolher Major Transformation, Panacea, Restore Life ou Restore Youth; nova stone só após Long Rest.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "sourceType": "subclassFeature",
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "levelGained": 14,
+        "actionCost": "action",
+        "actionTiming": {
+          "actionCost": "action",
+          "subtype": "other",
+          "original": "action"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.wizard.school.of.transmutation.master.transmuter",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "legacyLevelGained": 14,
+          "requiresFeatureId": "phb-2014-feature-wizard-school-of-transmutation-transmuters-stone",
+          "consumesTransmutersStone": true,
+          "cannotCreateNewStoneUntil": "longRest",
+          "options": {
+            "majorTransformation": {
+              "target": "nonmagical object",
+              "maximumSize": "5-ft cube",
+              "duration": "10 minutes handling",
+              "result": "different nonmagical object of similar size and mass, equal or lower value"
+            },
+            "panacea": {
+              "target": "creature touched with stone",
+              "removeAll": [
+                "curses",
+                "diseases",
+                "poisons"
+              ],
+              "restoreToFullHitPoints": true
+            },
+            "restoreLife": {
+              "spellId": "phb-2024-spell-raise-dead",
+              "target": "creature touched with stone",
+              "expendsSpellSlot": false,
+              "spellNeedNotBeInSpellbook": true
+            },
+            "restoreYouth": {
+              "target": "willing creature touched with stone",
+              "apparentAgeReduction": "3d10 years",
+              "minimumApparentAge": 13,
+              "doesNotExtendLifespan": true
+            }
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-subclass-wizard-school-of-transmutation",
+      "kind": "subclass",
+      "name": "School of Transmutation",
+      "summary": "Arcane Tradition legacy de alquimia, Transmuter’s Stone, self-Polymorph e grandes transformações.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "119"
+      },
+      "payload": {
+        "classId": "phb-2024-class-wizard",
+        "featureIds": [
+          "phb-2014-feature-wizard-school-of-transmutation-transmutation-savant",
+          "phb-2014-feature-wizard-school-of-transmutation-minor-alchemy",
+          "phb-2014-feature-wizard-school-of-transmutation-transmuters-stone",
+          "phb-2014-feature-wizard-school-of-transmutation-shapechanger",
+          "phb-2014-feature-wizard-school-of-transmutation-master-transmuter"
+        ],
+        "progression": [
+          {
+            "level": 3,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-transmutation-transmutation-savant",
+              "phb-2014-feature-wizard-school-of-transmutation-minor-alchemy"
+            ]
+          },
+          {
+            "level": 6,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-transmutation-transmuters-stone"
+            ]
+          },
+          {
+            "level": 10,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-transmutation-shapechanger"
+            ]
+          },
+          {
+            "level": 14,
+            "featureIds": [
+              "phb-2014-feature-wizard-school-of-transmutation-master-transmuter"
+            ]
+          }
+        ],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "legacy-adapted"
+        ],
+        "engineKey": "phb2014.subclass.wizard.school.of.transmutation",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-class-chassis",
+          "legacySource": true,
+          "originalClassId": "phb-2014-class-wizard",
+          "progressionPolicy": "Legacy level-1/2 subclass features unlock at the 2024 subclass entry level (3); later legacy subclass feature levels remain unchanged. Cleric Divine Strike/Potent Spellcasting branches are replaced by PHB 2024 Blessed Strikes."
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 subclass retained because it has no PHB 2024 replacement."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-elf-darkvision",
+      "kind": "feature",
+      "name": "Darkvision",
+      "summary": "Darkvision 60 ft.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "39"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-elf",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.elf.darkvision",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "darkvisionFeet": 60
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-elf-fey-ancestry",
+      "kind": "feature",
+      "name": "Fey Ancestry",
+      "summary": "Advantage em saves contra Charmed; magic não pode colocar o personagem para dormir.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "39"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-elf",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.elf.fey.ancestry",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "savingThrowAdvantageAgainstCondition": [
+            "Charmed"
+          ],
+          "magicCannotPutToSleep": true
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-elf-skill-versatility",
+      "kind": "feature",
+      "name": "Skill Versatility",
+      "summary": "Escolhe proficiência em duas skills.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "39"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-elf",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.elf.skill.versatility",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "skillProficiencyChoice": {
+            "count": 2,
+            "from": "skills"
+          }
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-species-half-elf",
+      "kind": "species",
+      "name": "Half-Elf",
+      "summary": "Species legacy exclusiva do PHB 2014; Medium, Speed 30 ft., Darkvision, Fey Ancestry e duas skill proficiencies.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "38-39"
+      },
+      "payload": {
+        "speed": 30,
+        "size": "Medium",
+        "featureIds": [
+          "phb-2014-feature-half-elf-darkvision",
+          "phb-2014-feature-half-elf-fey-ancestry",
+          "phb-2014-feature-half-elf-skill-versatility"
+        ],
+        "engineKey": "phb2014.species.half.elf",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "ignoreLegacySpeciesAbilityScoreIncrease": true,
+          "legacyAbilityScoreIncrease": {
+            "CHA": 2,
+            "chooseTwoOtherAbilitiesPlus1": true
+          },
+          "languageProficiencies": [
+            "Common",
+            "Elvish",
+            {
+              "choice": 1
+            }
+          ]
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 species retained because it has no PHB 2024 replacement.",
+          "The original species Ability Score Increase is preserved only as provenance and is not applied in the 2024 profile; 2024 backgrounds provide ability score increases."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-orc-darkvision",
+      "kind": "feature",
+      "name": "Darkvision",
+      "summary": "Darkvision 60 ft.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "41"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-orc",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.orc.darkvision",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "darkvisionFeet": 60
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-orc-menacing",
+      "kind": "feature",
+      "name": "Menacing",
+      "summary": "Proficiency em Intimidation.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "41"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-orc",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.orc.menacing",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "skillProficiencies": [
+            "Intimidation"
+          ]
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-orc-relentless-endurance",
+      "kind": "feature",
+      "name": "Relentless Endurance",
+      "summary": "Quando reduzido a 0 HP sem morrer instantaneamente, pode ficar com 1 HP; 1/Long Rest.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "41"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-orc",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "reduced to 0 HP but not killed outright",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "resource": {
+          "id": "phb2014-half-orc-relentless-endurance",
+          "name": "Relentless Endurance",
+          "max": 1,
+          "recharge": "longRest"
+        },
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.orc.relentless.endurance",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "trigger": "reduced to 0 HP but not killed outright",
+          "setHitPointsTo": 1
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feature-half-orc-savage-attacks",
+      "kind": "feature",
+      "name": "Savage Attacks",
+      "summary": "Critical hit com melee weapon attack rola um dos weapon damage dice uma vez adicional e soma ao dano extra do crítico.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "41"
+      },
+      "payload": {
+        "sourceType": "speciesTrait",
+        "speciesId": "phb-2014-species-half-orc",
+        "actionCost": "free",
+        "actionTiming": {
+          "actionCost": "free",
+          "subtype": "passive",
+          "trigger": "critical hit with melee weapon attack",
+          "original": "passive"
+        },
+        "requiresConcentration": false,
+        "damageFormula": "",
+        "conditionalDamage": [],
+        "grantsActions": [],
+        "effectTemplates": [],
+        "engineKey": "phb2014.half.orc.savage.attacks",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "trigger": "critical hit with melee weapon attack",
+          "additionalWeaponDamageDice": 1,
+          "application": "extra critical-hit damage"
+        },
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook; narrative prose and artwork omitted."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-species-half-orc",
+      "kind": "species",
+      "name": "Half-Orc",
+      "summary": "Species legacy exclusiva do PHB 2014; Medium, Speed 30 ft., Darkvision, Intimidation, Relentless Endurance e Savage Attacks.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "40-41"
+      },
+      "payload": {
+        "speed": 30,
+        "size": "Medium",
+        "featureIds": [
+          "phb-2014-feature-half-orc-darkvision",
+          "phb-2014-feature-half-orc-menacing",
+          "phb-2014-feature-half-orc-relentless-endurance",
+          "phb-2014-feature-half-orc-savage-attacks"
+        ],
+        "engineKey": "phb2014.species.half.orc",
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "ignoreLegacySpeciesAbilityScoreIncrease": true,
+          "legacyAbilityScoreIncrease": {
+            "STR": 2,
+            "CON": 1
+          },
+          "languageProficiencies": [
+            "Common",
+            "Orc"
+          ]
+        },
+        "extractionNotes": [
+          "Legacy-only PHB 2014 species retained because it has no PHB 2024 replacement.",
+          "The original species Ability Score Increase is preserved only as provenance and is not applied in the 2024 profile; 2024 backgrounds provide ability score increases."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feat-dungeon-delver",
+      "kind": "feat",
+      "name": "Dungeon Delver",
+      "summary": "Especialista em detectar secret doors e sobreviver a traps, incluindo resistência a dano de traps e a regra de fast travel da errata.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "166"
+      },
+      "payload": {
+        "category": "general",
+        "prerequisite": "",
+        "abilityScoreIncrease": [],
+        "repeatable": false,
+        "featureIds": [],
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "secretDoorDetection": {
+            "abilityChecks": [
+              "WIS (Perception)",
+              "INT (Investigation)"
+            ],
+            "advantage": true
+          },
+          "trapSavingThrows": {
+            "advantage": true
+          },
+          "trapDamageResistance": true,
+          "fastTravel": {
+            "ignorePassivePerceptionPenalty": -5
+          },
+          "officialErrataApplied": {
+            "fastTravelBullet": true
+          }
+        },
+        "grantsActions": [],
+        "effectTemplates": [],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "feat"
+        ],
+        "engineKey": "phb2014.feat.dungeon.delver",
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook with applicable official PHB 2014 errata reconciled."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feat-linguist",
+      "kind": "feat",
+      "name": "Linguist",
+      "summary": "INT +1, três idiomas adicionais e capacidade de criar ciphers com DC baseada em Intelligence score + PB.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "167"
+      },
+      "payload": {
+        "category": "general",
+        "prerequisite": "",
+        "abilityScoreIncrease": [
+          {
+            "ability": "INT",
+            "amount": 1,
+            "maximum": 20
+          }
+        ],
+        "repeatable": false,
+        "featureIds": [],
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "languageChoice": {
+            "count": 3
+          },
+          "cipher": {
+            "creatorCanTeachCipher": true,
+            "decipherMethods": [
+              "taught by creator",
+              "successful Intelligence check",
+              "magic"
+            ],
+            "intelligenceCheckDCFormula": "INT score + PB"
+          }
+        },
+        "grantsActions": [],
+        "effectTemplates": [],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "feat"
+        ],
+        "engineKey": "phb2014.feat.linguist",
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook with applicable official PHB 2014 errata reconciled."
+        ]
+      }
+    },
+    {
+      "id": "phb-2014-feat-martial-adept",
+      "kind": "feat",
+      "name": "Martial Adept",
+      "summary": "Aprende duas Battle Master maneuvers e ganha um superiority die d6 adicional, recuperado em Short ou Long Rest.",
+      "source": {
+        "id": "phb-2014",
+        "book": "players-handbook",
+        "version": "2014+official-errata",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "legacy",
+        "contentType": "official",
+        "page": "168"
+      },
+      "payload": {
+        "category": "general",
+        "prerequisite": "",
+        "abilityScoreIncrease": [],
+        "repeatable": false,
+        "featureIds": [],
+        "mechanics": {
+          "rulesEra": "legacy",
+          "sourcePublicationYear": 2014,
+          "compatibilityTarget": "2024-character-creation",
+          "legacySource": true,
+          "maneuverChoice": {
+            "count": 2,
+            "sourceSubclassId": "phb-2024-subclass-fighter-battle-master",
+            "catalogFeatureId": "phb-2024-feature-fighter-battle-master-combat-superiority",
+            "additionalCatalogFeatureIds": [
+              "tcoe-2020-feature-maneuver-ambush",
+              "tcoe-2020-feature-maneuver-bait-and-switch",
+              "tcoe-2020-feature-maneuver-brace",
+              "tcoe-2020-feature-maneuver-commanding-presence",
+              "tcoe-2020-feature-maneuver-grappling-strike",
+              "tcoe-2020-feature-maneuver-quick-toss",
+              "tcoe-2020-feature-maneuver-tactical-assessment"
+            ],
+            "dynamicCatalog": true,
+            "mustChooseDistinct": true
+          },
+          "maneuverSaveDC": "8 + PB + STR or DEX modifier (chosen per maneuver use where relevant)",
+          "superiorityDie": {
+            "count": 1,
+            "die": "d6",
+            "addedToOtherSuperiorityDice": true,
+            "recharge": [
+              "shortRest",
+              "longRest"
+            ]
+          },
+          "officialErrataApplied": {
+            "superiorityDieWording": true
+          }
+        },
+        "grantsActions": [],
+        "effectTemplates": [],
+        "tags": [
+          "phb-2014",
+          "official",
+          "legacy",
+          "2024-compatible",
+          "feat"
+        ],
+        "engineKey": "phb2014.feat.martial.adept",
+        "extractionNotes": [
+          "Mechanical paraphrase from the attached 2014 Player’s Handbook with applicable official PHB 2014 errata reconciled."
+        ]
+      }
+    }
+  ]
+}

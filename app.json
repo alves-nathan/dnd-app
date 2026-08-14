@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "D&D Combat",
+    "slug": "dnd-combat-math-mvp",
+    "scheme": "dndcombatmath",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nalves.dndcombatmathmvp",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#7A1F3D"
+      },
+      "package": "com.nalves.dndcombatmathmvp",
+      "versionCode": 2,
+      "permissions": []
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "headers": {
+            "Cross-Origin-Embedder-Policy": "credentialless",
+            "Cross-Origin-Opener-Policy": "same-origin"
+          }
+        }
+      ],
+      "expo-document-picker",
+      "expo-file-system"
+    ],
+    "description": "Offline-first D&D combat math and character analysis app with a bundled starter compendium and support for user-imported data.",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "releaseChannelNote": "Local/offline MVP. Configure extra.eas.projectId by running eas init before cloud builds.",
+      "release": {
+        "stage": "production",
+        "buildProfile": "production",
+        "e2eSeedEnabled": false
+      },
+      "router": {
+        "headers": {
+          "Cross-Origin-Embedder-Policy": "credentialless",
+          "Cross-Origin-Opener-Policy": "same-origin"
+        }
+      },
+      "eas": {
+        "projectId": "d2e0ddd4-a2f1-4d13-9415-a634c4ac1e94"
+      }
+    }
+  }
+}

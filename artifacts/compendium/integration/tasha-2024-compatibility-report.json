@@ -1,0 +1,4330 @@
+{
+  "schemaVersion": "dnd-combat-2024-legacy-compatibility-report.v1",
+  "sourcePackId": "tcoe-2020-full-consolidated-import-pack-v1",
+  "outputPackId": "tcoe-2020-2024-compatible-import-pack-v2",
+  "sourceItems": 475,
+  "retainedItems": 273,
+  "suppressedItems": 202,
+  "itemsByKind": {
+    "class": 3,
+    "creatureStatBlock": 5,
+    "feat": 5,
+    "feature": 182,
+    "magicItem": 47,
+    "species": 1,
+    "spell": 12,
+    "subclass": 18
+  },
+  "suppressed": [
+    {
+      "id": "tcoe-2020-class-artificer",
+      "kind": "class",
+      "name": "Artificer",
+      "reason": "Superseded by Forge of the Artificer 2025 Artificer.",
+      "replacementId": "forge-artificer-2025-class-artificer"
+    },
+    {
+      "id": "tcoe-2020-creature-aberrant-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Aberrant Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-aberrant-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-beast-of-the-land",
+      "kind": "creatureStatBlock",
+      "name": "Beast of the Land",
+      "reason": "2024 Beast Master provides the current companion stat block.",
+      "replacementId": "phb-2024-creature-beast-of-the-land"
+    },
+    {
+      "id": "tcoe-2020-creature-beast-of-the-sea",
+      "kind": "creatureStatBlock",
+      "name": "Beast of the Sea",
+      "reason": "2024 Beast Master provides the current companion stat block.",
+      "replacementId": "phb-2024-creature-beast-of-the-sea"
+    },
+    {
+      "id": "tcoe-2020-creature-beast-of-the-sky",
+      "kind": "creatureStatBlock",
+      "name": "Beast of the Sky",
+      "reason": "2024 Beast Master provides the current companion stat block.",
+      "replacementId": "phb-2024-creature-beast-of-the-sky"
+    },
+    {
+      "id": "tcoe-2020-creature-bestial-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Bestial Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-bestial-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-celestial-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Celestial Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-celestial-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-construct-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Construct Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-construct-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-elemental-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Elemental Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-elemental-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-fey-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Fey Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-fey-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-fiendish-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Fiendish Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-fiendish-spirit"
+    },
+    {
+      "id": "tcoe-2020-creature-homunculus-servant",
+      "kind": "creatureStatBlock",
+      "name": "Homunculus Servant",
+      "reason": "Superseded by Forge of the Artificer 2025 companion stat block.",
+      "replacementId": "forge-artificer-2025-creature-homunculus-servant"
+    },
+    {
+      "id": "tcoe-2020-creature-steel-defender",
+      "kind": "creatureStatBlock",
+      "name": "Steel Defender",
+      "reason": "Superseded by Forge of the Artificer 2025 companion stat block.",
+      "replacementId": "forge-artificer-2025-creature-steel-defender"
+    },
+    {
+      "id": "tcoe-2020-creature-undead-spirit",
+      "kind": "creatureStatBlock",
+      "name": "Undead Spirit",
+      "reason": "Creature/stat block has a PHB 2024 replacement used by the 2024 rules.",
+      "replacementId": "phb-2024-creature-undead-spirit"
+    },
+    {
+      "id": "tcoe-2020-feat-chef",
+      "kind": "feat",
+      "name": "Chef",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-chef"
+    },
+    {
+      "id": "tcoe-2020-feat-crusher",
+      "kind": "feat",
+      "name": "Crusher",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-crusher"
+    },
+    {
+      "id": "tcoe-2020-feat-fey-touched",
+      "kind": "feat",
+      "name": "Fey Touched",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-fey-touched"
+    },
+    {
+      "id": "tcoe-2020-feat-piercer",
+      "kind": "feat",
+      "name": "Piercer",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-piercer"
+    },
+    {
+      "id": "tcoe-2020-feat-poisoner",
+      "kind": "feat",
+      "name": "Poisoner",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-poisoner"
+    },
+    {
+      "id": "tcoe-2020-feat-shadow-touched",
+      "kind": "feat",
+      "name": "Shadow Touched",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-shadow-touched"
+    },
+    {
+      "id": "tcoe-2020-feat-skill-expert",
+      "kind": "feat",
+      "name": "Skill Expert",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-skill-expert"
+    },
+    {
+      "id": "tcoe-2020-feat-slasher",
+      "kind": "feat",
+      "name": "Slasher",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-slasher"
+    },
+    {
+      "id": "tcoe-2020-feat-telekinetic",
+      "kind": "feat",
+      "name": "Telekinetic",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-telekinetic"
+    },
+    {
+      "id": "tcoe-2020-feat-telepathic",
+      "kind": "feat",
+      "name": "Telepathic",
+      "reason": "Feat was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-feat-telepathic"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-psionic-sorcery",
+      "kind": "feature",
+      "name": "Psionic Sorcery",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-psionic-sorcery"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-psionic-spells",
+      "kind": "feature",
+      "name": "Psionic Spells",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-psionic-spells"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-psychic-defenses",
+      "kind": "feature",
+      "name": "Psychic Defenses",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-psychic-defenses"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-revelation-in-flesh",
+      "kind": "feature",
+      "name": "Revelation in Flesh",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-revelation-in-flesh"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-telepathic-speech",
+      "kind": "feature",
+      "name": "Telepathic Speech",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-telepathic-speech"
+    },
+    {
+      "id": "tcoe-2020-feature-aberrant-mind-warping-implosion",
+      "kind": "feature",
+      "name": "Warping Implosion",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-aberrant-sorcery-warping-implosion"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-alchemical-savant",
+      "kind": "feature",
+      "name": "Alchemical Savant",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-alchemist-alchemical-savant"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-alchemist-spells",
+      "kind": "feature",
+      "name": "Alchemist Spells",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-alchemist-spells"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-chemical-mastery",
+      "kind": "feature",
+      "name": "Chemical Mastery",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-alchemist-chemical-mastery"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-experimental-elixir",
+      "kind": "feature",
+      "name": "Experimental Elixir",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-alchemist-experimental-elixir"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-restorative-reagents",
+      "kind": "feature",
+      "name": "Restorative Reagents",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-alchemist-restorative-reagents"
+    },
+    {
+      "id": "tcoe-2020-feature-alchemist-tool-proficiency",
+      "kind": "feature",
+      "name": "Alchemist: Tool Proficiency",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-arcane-armor",
+      "kind": "feature",
+      "name": "Arcane Armor",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-arcane-armor"
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-armor-model",
+      "kind": "feature",
+      "name": "Armor Model",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-armor-model"
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-armor-modifications",
+      "kind": "feature",
+      "name": "Armor Modifications",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-armorer-spells",
+      "kind": "feature",
+      "name": "Armorer Spells",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-spells"
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-extra-attack",
+      "kind": "feature",
+      "name": "Armorer: Extra Attack",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-extra-attack"
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-perfected-armor",
+      "kind": "feature",
+      "name": "Perfected Armor",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-perfected-armor"
+    },
+    {
+      "id": "tcoe-2020-feature-armorer-tools-of-the-trade",
+      "kind": "feature",
+      "name": "Armorer: Tools of the Trade",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-armorer-tools-of-the-trade"
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-ability-score-improvement",
+      "kind": "feature",
+      "name": "Ability Score Improvement",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-artificer-specialist",
+      "kind": "feature",
+      "name": "Artificer Specialist",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-flash-of-genius",
+      "kind": "feature",
+      "name": "Flash of Genius",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infuse-item",
+      "kind": "feature",
+      "name": "Infuse Item",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-arcane-propulsion-armor",
+      "kind": "feature",
+      "name": "Artificer Infusion: Arcane Propulsion Armor",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-armor-of-magical-strength",
+      "kind": "feature",
+      "name": "Artificer Infusion: Armor of Magical Strength",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-boots-of-the-winding-path",
+      "kind": "feature",
+      "name": "Artificer Infusion: Boots of the Winding Path",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-enhanced-arcane-focus",
+      "kind": "feature",
+      "name": "Artificer Infusion: Enhanced Arcane Focus",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-enhanced-defense",
+      "kind": "feature",
+      "name": "Artificer Infusion: Enhanced Defense",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-enhanced-weapon",
+      "kind": "feature",
+      "name": "Artificer Infusion: Enhanced Weapon",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-helm-of-awareness",
+      "kind": "feature",
+      "name": "Artificer Infusion: Helm of Awareness",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-homunculus-servant",
+      "kind": "feature",
+      "name": "Artificer Infusion: Homunculus Servant",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-mind-sharpener",
+      "kind": "feature",
+      "name": "Artificer Infusion: Mind Sharpener",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-radiant-weapon",
+      "kind": "feature",
+      "name": "Artificer Infusion: Radiant Weapon",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-repeating-shot",
+      "kind": "feature",
+      "name": "Artificer Infusion: Repeating Shot",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-replicate-magic-item",
+      "kind": "feature",
+      "name": "Artificer Infusion: Replicate Magic Item",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-repulsion-shield",
+      "kind": "feature",
+      "name": "Artificer Infusion: Repulsion Shield",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-resistant-armor",
+      "kind": "feature",
+      "name": "Artificer Infusion: Resistant Armor",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-returning-weapon",
+      "kind": "feature",
+      "name": "Artificer Infusion: Returning Weapon",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-infusion-spell-refueling-ring",
+      "kind": "feature",
+      "name": "Artificer Infusion: Spell-Refueling Ring",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-magic-item-adept",
+      "kind": "feature",
+      "name": "Magic Item Adept",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-magic-item-master",
+      "kind": "feature",
+      "name": "Magic Item Master",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-magic-item-savant",
+      "kind": "feature",
+      "name": "Magic Item Savant",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-magical-tinkering",
+      "kind": "feature",
+      "name": "Magical Tinkering",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-soul-of-artifice",
+      "kind": "feature",
+      "name": "Soul of Artifice",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-spell-storing-item",
+      "kind": "feature",
+      "name": "Spell-Storing Item",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-spellcasting",
+      "kind": "feature",
+      "name": "Spellcasting",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-the-right-tool-for-the-job",
+      "kind": "feature",
+      "name": "The Right Tool for the Job",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artificer-tool-expertise",
+      "kind": "feature",
+      "name": "Tool Expertise",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-arcane-firearm",
+      "kind": "feature",
+      "name": "Arcane Firearm",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-artillerist-arcane-firearm"
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-artillerist-spells",
+      "kind": "feature",
+      "name": "Artillerist Spells",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-artillerist-spells"
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-eldritch-cannon",
+      "kind": "feature",
+      "name": "Eldritch Cannon",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-artillerist-eldritch-cannon"
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-explosive-cannon",
+      "kind": "feature",
+      "name": "Explosive Cannon",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-artillerist-explosive-cannon"
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-fortified-position",
+      "kind": "feature",
+      "name": "Fortified Position",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-artillerist-fortified-position"
+    },
+    {
+      "id": "tcoe-2020-feature-artillerist-tool-proficiency",
+      "kind": "feature",
+      "name": "Artillerist: Tool Proficiency",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-barbarian-instinctive-pounce",
+      "kind": "feature",
+      "name": "Instinctive Pounce",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-barbarian-instinctive-pounce"
+    },
+    {
+      "id": "tcoe-2020-feature-barbarian-primal-knowledge",
+      "kind": "feature",
+      "name": "Primal Knowledge",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-barbarian-primal-knowledge"
+    },
+    {
+      "id": "tcoe-2020-feature-bard-additional-bard-spells",
+      "kind": "feature",
+      "name": "Additional Bard Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-bard-bardic-versatility",
+      "kind": "feature",
+      "name": "Bardic Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-bard-magical-inspiration",
+      "kind": "feature",
+      "name": "Magical Inspiration",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-arcane-jolt",
+      "kind": "feature",
+      "name": "Arcane Jolt",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-arcane-jolt"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-battle-ready",
+      "kind": "feature",
+      "name": "Battle Ready",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-battle-ready"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-battle-smith-spells",
+      "kind": "feature",
+      "name": "Battle Smith Spells",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-spells"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-extra-attack",
+      "kind": "feature",
+      "name": "Battle Smith: Extra Attack",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-extra-attack"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-improved-defender",
+      "kind": "feature",
+      "name": "Improved Defender",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-improved-defender"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-steel-defender",
+      "kind": "feature",
+      "name": "Steel Defender",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-feature-battle-smith-steel-defender"
+    },
+    {
+      "id": "tcoe-2020-feature-battle-smith-tool-proficiency",
+      "kind": "feature",
+      "name": "Battle Smith: Tool Proficiency",
+      "reason": "Superseded by the 2025 Artificer rules branch."
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-stars-cosmic-omen",
+      "kind": "feature",
+      "name": "Cosmic Omen",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-druid-circle-of-the-stars-cosmic-omen"
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-stars-full-of-stars",
+      "kind": "feature",
+      "name": "Full of Stars",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-druid-circle-of-the-stars-full-of-stars"
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-stars-star-map",
+      "kind": "feature",
+      "name": "Star Map",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-druid-circle-of-the-stars-star-map"
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-stars-starry-form",
+      "kind": "feature",
+      "name": "Starry Form",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-druid-circle-of-the-stars-starry-form"
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-stars-twinkling-constellations",
+      "kind": "feature",
+      "name": "Twinkling Constellations",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-druid-circle-of-the-stars-twinkling-constellations"
+    },
+    {
+      "id": "tcoe-2020-feature-cleric-additional-cleric-spells",
+      "kind": "feature",
+      "name": "Additional Cleric Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-cleric-blessed-strikes",
+      "kind": "feature",
+      "name": "Blessed Strikes",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "id": "tcoe-2020-feature-cleric-cantrip-versatility",
+      "kind": "feature",
+      "name": "Cantrip Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-cleric-harness-divine-power",
+      "kind": "feature",
+      "name": "Harness Divine Power",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-clockwork-soul-bastion-of-law",
+      "kind": "feature",
+      "name": "Bastion of Law",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-clockwork-sorcery-bastion-of-law"
+    },
+    {
+      "id": "tcoe-2020-feature-clockwork-soul-clockwork-cavalcade",
+      "kind": "feature",
+      "name": "Clockwork Cavalcade",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-clockwork-sorcery-clockwork-cavalcade"
+    },
+    {
+      "id": "tcoe-2020-feature-clockwork-soul-clockwork-magic",
+      "kind": "feature",
+      "name": "Clockwork Magic",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version."
+    },
+    {
+      "id": "tcoe-2020-feature-clockwork-soul-restore-balance",
+      "kind": "feature",
+      "name": "Restore Balance",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-clockwork-sorcery-restore-balance"
+    },
+    {
+      "id": "tcoe-2020-feature-clockwork-soul-trance-of-order",
+      "kind": "feature",
+      "name": "Trance of Order",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-sorcerer-clockwork-sorcery-trance-of-order"
+    },
+    {
+      "id": "tcoe-2020-feature-customizing-your-origin",
+      "kind": "feature",
+      "name": "Customizing Your Origin",
+      "reason": "2024 character creation/background/species rules take precedence over the 2020 origin-customization layer."
+    },
+    {
+      "id": "tcoe-2020-feature-druid-additional-druid-spells",
+      "kind": "feature",
+      "name": "Additional Druid Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-druid-cantrip-versatility",
+      "kind": "feature",
+      "name": "Cantrip Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-druid-wild-companion",
+      "kind": "feature",
+      "name": "Wild Companion",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-druid-wild-companion"
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-beguiling-twist",
+      "kind": "feature",
+      "name": "Beguiling Twist",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-ranger-fey-wanderer-beguiling-twist"
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-dreadful-strikes",
+      "kind": "feature",
+      "name": "Dreadful Strikes",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-ranger-fey-wanderer-dreadful-strikes"
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-fey-reinforcements",
+      "kind": "feature",
+      "name": "Fey Reinforcements",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-ranger-fey-wanderer-fey-reinforcements"
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-fey-wanderer-magic",
+      "kind": "feature",
+      "name": "Fey Wanderer Magic",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version."
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-misty-wanderer",
+      "kind": "feature",
+      "name": "Misty Wanderer",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-ranger-fey-wanderer-misty-wanderer"
+    },
+    {
+      "id": "tcoe-2020-feature-fey-wanderer-otherworldly-glamour",
+      "kind": "feature",
+      "name": "Otherworldly Glamour",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-ranger-fey-wanderer-otherworldly-glamour"
+    },
+    {
+      "id": "tcoe-2020-feature-fighter-fighting-style-options",
+      "kind": "feature",
+      "name": "Fighter: Fighting Style Options",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-fighter-maneuver-options",
+      "kind": "feature",
+      "name": "Maneuver Options",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-fighter-martial-versatility",
+      "kind": "feature",
+      "name": "Fighter: Martial Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-metamagic-seeking-spell",
+      "kind": "feature",
+      "name": "Metamagic: Seeking Spell",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-metamagic-transmuted-spell",
+      "kind": "feature",
+      "name": "Metamagic: Transmuted Spell",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-monk-dedicated-weapon",
+      "kind": "feature",
+      "name": "Dedicated Weapon",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-monk-focused-aim",
+      "kind": "feature",
+      "name": "Focused Aim",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-monk-ki-fueled-attack",
+      "kind": "feature",
+      "name": "Ki-Fueled Attack",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-monk-quickened-healing",
+      "kind": "feature",
+      "name": "Quickened Healing",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-aura-of-alacrity",
+      "kind": "feature",
+      "name": "Aura of Alacrity",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-paladin-oath-of-glory-aura-of-alacrity"
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-glorious-defense",
+      "kind": "feature",
+      "name": "Glorious Defense",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-paladin-oath-of-glory-glorious-defense"
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-inspiring-smite",
+      "kind": "feature",
+      "name": "Inspiring Smite",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-paladin-oath-of-glory-inspiring-smite"
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-living-legend",
+      "kind": "feature",
+      "name": "Living Legend",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-paladin-oath-of-glory-living-legend"
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-oath-spells",
+      "kind": "feature",
+      "name": "Oath Spells",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version."
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-glory-peerless-athlete",
+      "kind": "feature",
+      "name": "Peerless Athlete",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-paladin-oath-of-glory-peerless-athlete"
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-divine-strike",
+      "kind": "feature",
+      "name": "Divine Strike",
+      "reason": "2024 Cleric Blessed Strikes replaces the older subclass Divine Strike/Potent Spellcasting branch.",
+      "replacementId": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "id": "tcoe-2020-feature-origin-ability-score-increases",
+      "kind": "feature",
+      "name": "Custom Origin: Ability Score Increases",
+      "reason": "2024 character creation/background/species rules take precedence over the 2020 origin-customization layer."
+    },
+    {
+      "id": "tcoe-2020-feature-origin-languages",
+      "kind": "feature",
+      "name": "Custom Origin: Languages",
+      "reason": "2024 character creation/background/species rules take precedence over the 2020 origin-customization layer."
+    },
+    {
+      "id": "tcoe-2020-feature-origin-proficiency-swaps",
+      "kind": "feature",
+      "name": "Custom Origin: Proficiency Swaps",
+      "reason": "2024 character creation/background/species rules take precedence over the 2020 origin-customization layer."
+    },
+    {
+      "id": "tcoe-2020-feature-paladin-additional-paladin-spells",
+      "kind": "feature",
+      "name": "Additional Paladin Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-paladin-fighting-style-options",
+      "kind": "feature",
+      "name": "Paladin: Fighting Style Options",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-paladin-harness-divine-power",
+      "kind": "feature",
+      "name": "Paladin: Harness Divine Power",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-paladin-martial-versatility",
+      "kind": "feature",
+      "name": "Paladin: Martial Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-potent-spellcasting",
+      "kind": "feature",
+      "name": "Potent Spellcasting",
+      "reason": "2024 Cleric Blessed Strikes replaces the older subclass Divine Strike/Potent Spellcasting branch.",
+      "replacementId": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "id": "tcoe-2020-feature-psi-warrior-bulwark-of-force",
+      "kind": "feature",
+      "name": "Bulwark of Force",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-fighter-psi-warrior-bulwark-of-force"
+    },
+    {
+      "id": "tcoe-2020-feature-psi-warrior-guarded-mind",
+      "kind": "feature",
+      "name": "Guarded Mind",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-fighter-psi-warrior-guarded-mind"
+    },
+    {
+      "id": "tcoe-2020-feature-psi-warrior-psionic-power",
+      "kind": "feature",
+      "name": "Psionic Power",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-fighter-psi-warrior-psionic-power"
+    },
+    {
+      "id": "tcoe-2020-feature-psi-warrior-telekinetic-adept",
+      "kind": "feature",
+      "name": "Telekinetic Adept",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-fighter-psi-warrior-telekinetic-adept"
+    },
+    {
+      "id": "tcoe-2020-feature-psi-warrior-telekinetic-master",
+      "kind": "feature",
+      "name": "Telekinetic Master",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-fighter-psi-warrior-telekinetic-master"
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-additional-ranger-spells",
+      "kind": "feature",
+      "name": "Additional Ranger Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-beast-master-primal-companion",
+      "kind": "feature",
+      "name": "Primal Companion",
+      "reason": "2014 Beast Master optional replacement is superseded by the 2024 Beast Master implementation.",
+      "replacementId": "phb-2024-feature-ranger-beast-master-primal-companion"
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-deft-explorer",
+      "kind": "feature",
+      "name": "Deft Explorer",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-ranger-deft-explorer"
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-deft-explorer-canny",
+      "kind": "feature",
+      "name": "Deft Explorer: Canny",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-deft-explorer-roving",
+      "kind": "feature",
+      "name": "Deft Explorer: Roving",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-deft-explorer-tireless",
+      "kind": "feature",
+      "name": "Deft Explorer: Tireless",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-favored-foe",
+      "kind": "feature",
+      "name": "Favored Foe",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-fighting-style-options",
+      "kind": "feature",
+      "name": "Ranger: Fighting Style Options",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-martial-versatility",
+      "kind": "feature",
+      "name": "Ranger: Martial Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-natures-veil",
+      "kind": "feature",
+      "name": "Nature's Veil",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-ranger-natures-veil"
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-primal-awareness",
+      "kind": "feature",
+      "name": "Primal Awareness",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-ranger-spellcasting-focus",
+      "kind": "feature",
+      "name": "Ranger: Spellcasting Focus",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-rogue-steady-aim",
+      "kind": "feature",
+      "name": "Steady Aim",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence.",
+      "replacementId": "phb-2024-feature-rogue-steady-aim"
+    },
+    {
+      "id": "tcoe-2020-feature-sorcerer-additional-sorcerer-spells",
+      "kind": "feature",
+      "name": "Additional Sorcerer Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-sorcerer-magical-guidance",
+      "kind": "feature",
+      "name": "Magical Guidance",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-sorcerer-metamagic-options",
+      "kind": "feature",
+      "name": "Sorcerer: Metamagic Options",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-sorcerer-sorcerous-versatility",
+      "kind": "feature",
+      "name": "Sorcerous Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-soulknife-psionic-power",
+      "kind": "feature",
+      "name": "Psionic Power",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-rogue-soulknife-psionic-power"
+    },
+    {
+      "id": "tcoe-2020-feature-soulknife-psychic-blades",
+      "kind": "feature",
+      "name": "Psychic Blades",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-rogue-soulknife-psychic-blades"
+    },
+    {
+      "id": "tcoe-2020-feature-soulknife-psychic-veil",
+      "kind": "feature",
+      "name": "Psychic Veil",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-rogue-soulknife-psychic-veil"
+    },
+    {
+      "id": "tcoe-2020-feature-soulknife-rend-mind",
+      "kind": "feature",
+      "name": "Rend Mind",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-rogue-soulknife-rend-mind"
+    },
+    {
+      "id": "tcoe-2020-feature-soulknife-soul-blades",
+      "kind": "feature",
+      "name": "Soul Blades",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-rogue-soulknife-soul-blades"
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-bonus-proficiencies",
+      "kind": "feature",
+      "name": "Bonus Proficiencies",
+      "reason": "2024 Cleric Divine Order/base proficiencies replace the legacy subclass weapon/armor proficiency package."
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-divine-strike",
+      "kind": "feature",
+      "name": "Divine Strike",
+      "reason": "2024 Cleric Blessed Strikes replaces the older subclass Divine Strike/Potent Spellcasting branch.",
+      "replacementId": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-additional-warlock-spells",
+      "kind": "feature",
+      "name": "Additional Warlock Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-eldritch-invocation-options",
+      "kind": "feature",
+      "name": "Eldritch Invocation Options",
+      "reason": "Invocation option hub is represented by the individual selectable invocation records in the 2024-first projection."
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-eldritch-versatility",
+      "kind": "feature",
+      "name": "Eldritch Versatility",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-eldritch-mind",
+      "kind": "feature",
+      "name": "Eldritch Invocation: Eldritch Mind",
+      "reason": "Eldritch Invocation was reprinted in PHB 2024; the 2024 version takes precedence.",
+      "replacementId": "phb-2024-feature-warlock-eldritch-mind"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-gift-of-the-protectors",
+      "kind": "feature",
+      "name": "Eldritch Invocation: Gift of the Protectors",
+      "reason": "Eldritch Invocation was reprinted in PHB 2024; the 2024 version takes precedence.",
+      "replacementId": "phb-2024-feature-warlock-gift-of-the-protectors"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-investment-of-the-chain-master",
+      "kind": "feature",
+      "name": "Eldritch Invocation: Investment of the Chain Master",
+      "reason": "Eldritch Invocation was reprinted in PHB 2024; the 2024 version takes precedence.",
+      "replacementId": "phb-2024-feature-warlock-investment-of-the-chain-master"
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-flurry-of-healing-and-harm",
+      "kind": "feature",
+      "name": "Flurry of Healing and Harm",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-monk-warrior-of-mercy-flurry-of-healing-and-harm"
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-hand-of-harm",
+      "kind": "feature",
+      "name": "Hand of Harm",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-monk-warrior-of-mercy-hand-of-harm"
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-hand-of-healing",
+      "kind": "feature",
+      "name": "Hand of Healing",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-monk-warrior-of-mercy-hand-of-healing"
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-hand-of-ultimate-mercy",
+      "kind": "feature",
+      "name": "Hand of Ultimate Mercy",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-monk-warrior-of-mercy-hand-of-ultimate-mercy"
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-implements-of-mercy",
+      "kind": "feature",
+      "name": "Implements of Mercy",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version."
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-mercy-physicians-touch",
+      "kind": "feature",
+      "name": "Physician's Touch",
+      "reason": "Feature belongs to a Tasha subclass replaced by its 2024 PHB version.",
+      "replacementId": "phb-2024-feature-monk-warrior-of-mercy-physician-s-touch"
+    },
+    {
+      "id": "tcoe-2020-feature-wizard-additional-wizard-spells",
+      "kind": "feature",
+      "name": "Additional Wizard Spells",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-feature-wizard-cantrip-formulas",
+      "kind": "feature",
+      "name": "Cantrip Formulas",
+      "reason": "Tasha optional class feature is scoped to the 2014 class implementation; 2024 class rules take precedence."
+    },
+    {
+      "id": "tcoe-2020-spell-mind-sliver",
+      "kind": "spell",
+      "name": "Mind Sliver",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-mind-sliver"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-aberration",
+      "kind": "spell",
+      "name": "Summon Aberration",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-aberration"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-beast",
+      "kind": "spell",
+      "name": "Summon Beast",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-beast"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-celestial",
+      "kind": "spell",
+      "name": "Summon Celestial",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-celestial"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-construct",
+      "kind": "spell",
+      "name": "Summon Construct",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-construct"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-elemental",
+      "kind": "spell",
+      "name": "Summon Elemental",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-elemental"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-fey",
+      "kind": "spell",
+      "name": "Summon Fey",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-fey"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-fiend",
+      "kind": "spell",
+      "name": "Summon Fiend",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-fiend"
+    },
+    {
+      "id": "tcoe-2020-spell-summon-undead",
+      "kind": "spell",
+      "name": "Summon Undead",
+      "reason": "Spell was reprinted in PHB 2024; 2024 version takes precedence.",
+      "replacementId": "phb-2024-spell-summon-undead"
+    },
+    {
+      "id": "tcoe-2020-subclass-aberrant-mind",
+      "kind": "subclass",
+      "name": "Aberrant Mind",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-sorcerer-aberrant-sorcery"
+    },
+    {
+      "id": "tcoe-2020-subclass-alchemist",
+      "kind": "subclass",
+      "name": "Alchemist",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-subclass-alchemist"
+    },
+    {
+      "id": "tcoe-2020-subclass-armorer",
+      "kind": "subclass",
+      "name": "Armorer",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-subclass-armorer"
+    },
+    {
+      "id": "tcoe-2020-subclass-artillerist",
+      "kind": "subclass",
+      "name": "Artillerist",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-subclass-artillerist"
+    },
+    {
+      "id": "tcoe-2020-subclass-battle-smith",
+      "kind": "subclass",
+      "name": "Battle Smith",
+      "reason": "Superseded by the 2025 Artificer rules branch.",
+      "replacementId": "forge-artificer-2025-subclass-battle-smith"
+    },
+    {
+      "id": "tcoe-2020-subclass-circle-of-stars",
+      "kind": "subclass",
+      "name": "Circle of Stars",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-druid-circle-of-the-stars"
+    },
+    {
+      "id": "tcoe-2020-subclass-clockwork-soul",
+      "kind": "subclass",
+      "name": "Clockwork Soul",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-sorcerer-clockwork-sorcery"
+    },
+    {
+      "id": "tcoe-2020-subclass-fey-wanderer",
+      "kind": "subclass",
+      "name": "Fey Wanderer",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-ranger-fey-wanderer"
+    },
+    {
+      "id": "tcoe-2020-subclass-oath-of-glory",
+      "kind": "subclass",
+      "name": "Oath of Glory",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-paladin-oath-of-glory"
+    },
+    {
+      "id": "tcoe-2020-subclass-psi-warrior",
+      "kind": "subclass",
+      "name": "Psi Warrior",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-fighter-psi-warrior"
+    },
+    {
+      "id": "tcoe-2020-subclass-soulknife",
+      "kind": "subclass",
+      "name": "Soulknife",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-rogue-soulknife"
+    },
+    {
+      "id": "tcoe-2020-subclass-way-of-mercy",
+      "kind": "subclass",
+      "name": "Way of Mercy",
+      "reason": "Subclass has a 2024 PHB version; the 2024 version replaces the legacy Tasha version.",
+      "replacementId": "phb-2024-subclass-monk-warrior-of-mercy"
+    }
+  ],
+  "adaptations": [
+    {
+      "id": "tcoe-2020-species-custom-lineage",
+      "type": "legacy-species-asi-removed"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-pact-of-the-talisman",
+      "type": "warlock-pact-talisman-as-invocation",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "level": 3
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-bond-of-the-talisman",
+      "type": "warlock-invocation-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-far-scribe",
+      "type": "warlock-invocation-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-protection-of-the-talisman",
+      "type": "warlock-invocation-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-rebuke-of-the-talisman",
+      "type": "warlock-invocation-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-feature-warlock-invocation-undying-servitude",
+      "type": "warlock-invocation-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-subclass-path-of-the-beast",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian"
+    },
+    {
+      "id": "tcoe-2020-subclass-path-of-wild-magic",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian"
+    },
+    {
+      "id": "tcoe-2020-subclass-college-of-creation",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard"
+    },
+    {
+      "id": "tcoe-2020-subclass-college-of-eloquence",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard"
+    },
+    {
+      "id": "tcoe-2020-subclass-order-domain",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric"
+    },
+    {
+      "id": "tcoe-2020-subclass-peace-domain",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric"
+    },
+    {
+      "id": "tcoe-2020-subclass-twilight-domain",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric"
+    },
+    {
+      "id": "tcoe-2020-subclass-circle-of-spores",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid"
+    },
+    {
+      "id": "tcoe-2020-subclass-circle-of-wildfire",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid"
+    },
+    {
+      "id": "tcoe-2020-subclass-rune-knight",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter"
+    },
+    {
+      "id": "tcoe-2020-subclass-way-of-the-astral-self",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-monk",
+      "toClassId": "phb-2024-class-monk"
+    },
+    {
+      "id": "tcoe-2020-subclass-oath-of-the-watchers",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin"
+    },
+    {
+      "id": "tcoe-2020-subclass-swarmkeeper",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger"
+    },
+    {
+      "id": "tcoe-2020-subclass-phantom",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue"
+    },
+    {
+      "id": "tcoe-2020-subclass-the-fathomless",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-subclass-the-genie",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock"
+    },
+    {
+      "id": "tcoe-2020-subclass-bladesinging",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard"
+    },
+    {
+      "id": "tcoe-2020-subclass-order-of-scribes",
+      "type": "subclass-owner-and-progression",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard"
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-the-beast-form-of-the-beast",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-the-beast-bestial-soul",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-the-beast-infectious-fury",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-the-beast-call-the-hunt",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-wild-magic-magic-awareness",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-wild-magic-wild-surge",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-wild-magic-bolstering-magic",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-wild-magic-unstable-backlash",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-path-of-wild-magic-controlled-surge",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-barbarian",
+      "toClassId": "phb-2024-class-barbarian",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-creation-mote-of-potential",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-creation-performance-of-creation",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-creation-animating-performance",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-creation-creative-crescendo",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-eloquence-silver-tongue",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-eloquence-unsettling-words",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-eloquence-unfailing-inspiration",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-eloquence-universal-speech",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-college-of-eloquence-infectious-inspiration",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-bard",
+      "toClassId": "phb-2024-class-bard",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-domain-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-bonus-proficiencies",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-bonus-proficiencies",
+      "type": "cleric-proficiency-trim",
+      "retained": [
+        "skillChoice"
+      ],
+      "removed": [
+        "armorProficiencies"
+      ]
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-voice-of-authority",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-channel-divinity-orders-demand",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-embodiment-of-the-law",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-order-domain-orders-wrath",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 17,
+      "toLevel": 17
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-domain-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-implement-of-peace",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-emboldening-bond",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-channel-divinity-balm-of-peace",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-protective-bond",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-peace-domain-expansive-bond",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 17,
+      "toLevel": 17
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-domain-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-eyes-of-night",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-vigilant-blessing",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-channel-divinity-twilight-sanctuary",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-steps-of-night",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-twilight-domain-twilight-shroud",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-cleric",
+      "toClassId": "phb-2024-class-cleric",
+      "fromLevel": 17,
+      "toLevel": 17
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-circle-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-halo-of-spores",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-symbiotic-entity",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-fungal-infestation",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-spreading-spores",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-spores-fungal-body",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-wildfire-circle-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-wildfire-summon-wildfire-spirit",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-wildfire-enhanced-bond",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-wildfire-cauterizing-flames",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-circle-of-wildfire-blazing-revival",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-druid",
+      "toClassId": "phb-2024-class-druid",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-bonus-proficiencies",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-cloud-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-fire-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-frost-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-stone-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-hill-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 7,
+      "toLevel": 7
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-storm-rune",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 7,
+      "toLevel": 7
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-rune-carver",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-giants-might",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-runic-shield",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 7,
+      "toLevel": 7
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-great-stature",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-master-of-runes",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 15,
+      "toLevel": 15
+    },
+    {
+      "id": "tcoe-2020-feature-rune-knight-runic-juggernaut",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-fighter",
+      "toClassId": "phb-2024-class-fighter",
+      "fromLevel": 18,
+      "toLevel": 18
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-the-astral-self-arms-of-the-astral-self",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-monk",
+      "toClassId": "phb-2024-class-monk",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-the-astral-self-visage-of-the-astral-self",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-monk",
+      "toClassId": "phb-2024-class-monk",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-the-astral-self-body-of-the-astral-self",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-monk",
+      "toClassId": "phb-2024-class-monk",
+      "fromLevel": 11,
+      "toLevel": 11
+    },
+    {
+      "id": "tcoe-2020-feature-way-of-the-astral-self-awakened-astral-self",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-monk",
+      "toClassId": "phb-2024-class-monk",
+      "fromLevel": 17,
+      "toLevel": 17
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-oath-spells",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-watchers-will",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-abjure-the-extraplanar",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-aura-of-the-sentinel",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 7,
+      "toLevel": 7
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-vigilant-rebuke",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 15,
+      "toLevel": 15
+    },
+    {
+      "id": "tcoe-2020-feature-oath-of-the-watchers-mortal-bulwark",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-paladin",
+      "toClassId": "phb-2024-class-paladin",
+      "fromLevel": 20,
+      "toLevel": 20
+    },
+    {
+      "id": "tcoe-2020-feature-swarmkeeper-gathered-swarm",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-swarmkeeper-swarmkeeper-magic",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-swarmkeeper-writhing-tide",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger",
+      "fromLevel": 7,
+      "toLevel": 7
+    },
+    {
+      "id": "tcoe-2020-feature-swarmkeeper-mighty-swarm",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger",
+      "fromLevel": 11,
+      "toLevel": 11
+    },
+    {
+      "id": "tcoe-2020-feature-swarmkeeper-swarming-dispersal",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-ranger",
+      "toClassId": "phb-2024-class-ranger",
+      "fromLevel": 15,
+      "toLevel": 15
+    },
+    {
+      "id": "tcoe-2020-feature-phantom-whispers-of-the-dead",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-phantom-wails-from-the-grave",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue",
+      "fromLevel": 3,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-phantom-tokens-of-the-departed",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue",
+      "fromLevel": 9,
+      "toLevel": 9
+    },
+    {
+      "id": "tcoe-2020-feature-phantom-ghost-walk",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue",
+      "fromLevel": 13,
+      "toLevel": 13
+    },
+    {
+      "id": "tcoe-2020-feature-phantom-deaths-friend",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-rogue",
+      "toClassId": "phb-2024-class-rogue",
+      "fromLevel": 17,
+      "toLevel": 17
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-expanded-spell-list",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-tentacle-of-the-deeps",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-gift-of-the-sea",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-oceanic-soul",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-guardian-coil",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-grasping-tentacles",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-the-fathomless-fathomless-plunge",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-the-genie-expanded-spell-list",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-the-genie-genies-vessel",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 1,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-the-genie-elemental-gift",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-the-genie-sanctuary-vessel",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-the-genie-limited-wish",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-warlock",
+      "toClassId": "phb-2024-class-warlock",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-bladesinging-training-in-war-and-song",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-bladesinging-bladesong",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-bladesinging-extra-attack",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-bladesinging-song-of-defense",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-bladesinging-song-of-victory",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 14,
+      "toLevel": 14
+    },
+    {
+      "id": "tcoe-2020-feature-order-of-scribes-wizardly-quill",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-of-scribes-awakened-spellbook",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 2,
+      "toLevel": 3
+    },
+    {
+      "id": "tcoe-2020-feature-order-of-scribes-manifest-mind",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 6,
+      "toLevel": 6
+    },
+    {
+      "id": "tcoe-2020-feature-order-of-scribes-master-scrivener",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 10,
+      "toLevel": 10
+    },
+    {
+      "id": "tcoe-2020-feature-order-of-scribes-one-with-the-word",
+      "type": "subclass-feature-owner",
+      "fromClassId": "phb-2014-class-wizard",
+      "toClassId": "phb-2024-class-wizard",
+      "fromLevel": 14,
+      "toLevel": 14
+    }
+  ],
+  "aliases": [
+    {
+      "from": "dmg-2014-magic-item-potion-of-healing",
+      "to": "phb-2024-magic-item-potion-of-healing"
+    },
+    {
+      "from": "dmg-2014-rule-exhaustion",
+      "to": "phb-2024-condition-exhaustion"
+    },
+    {
+      "from": "mm-2014-creature-cat",
+      "to": "phb-2024-creature-cat"
+    },
+    {
+      "from": "mm-2014-creature-giant-spider",
+      "to": "phb-2024-creature-giant-spider"
+    },
+    {
+      "from": "mm-2014-creature-skeleton",
+      "to": "phb-2024-creature-skeleton"
+    },
+    {
+      "from": "mm-2014-creature-zombie",
+      "to": "phb-2024-creature-zombie"
+    },
+    {
+      "from": "phb-2014-class-barbarian",
+      "to": "phb-2024-class-barbarian"
+    },
+    {
+      "from": "phb-2014-class-bard",
+      "to": "phb-2024-class-bard"
+    },
+    {
+      "from": "phb-2014-class-cleric",
+      "to": "phb-2024-class-cleric"
+    },
+    {
+      "from": "phb-2014-class-druid",
+      "to": "phb-2024-class-druid"
+    },
+    {
+      "from": "phb-2014-class-fighter",
+      "to": "phb-2024-class-fighter"
+    },
+    {
+      "from": "phb-2014-class-monk",
+      "to": "phb-2024-class-monk"
+    },
+    {
+      "from": "phb-2014-class-paladin",
+      "to": "phb-2024-class-paladin"
+    },
+    {
+      "from": "phb-2014-class-ranger",
+      "to": "phb-2024-class-ranger"
+    },
+    {
+      "from": "phb-2014-class-rogue",
+      "to": "phb-2024-class-rogue"
+    },
+    {
+      "from": "phb-2014-class-sorcerer",
+      "to": "phb-2024-class-sorcerer"
+    },
+    {
+      "from": "phb-2014-class-warlock",
+      "to": "phb-2024-class-warlock"
+    },
+    {
+      "from": "phb-2014-class-wizard",
+      "to": "phb-2024-class-wizard"
+    },
+    {
+      "from": "phb-2014-condition-frightened",
+      "to": "phb-2024-condition-frightened"
+    },
+    {
+      "from": "phb-2014-condition-grappled",
+      "to": "phb-2024-condition-grappled"
+    },
+    {
+      "from": "phb-2014-condition-incapacitated",
+      "to": "phb-2024-condition-incapacitated"
+    },
+    {
+      "from": "phb-2014-condition-poisoned",
+      "to": "phb-2024-condition-poisoned"
+    },
+    {
+      "from": "phb-2014-condition-prone",
+      "to": "phb-2024-condition-prone"
+    },
+    {
+      "from": "phb-2014-condition-restrained",
+      "to": "phb-2024-condition-restrained"
+    },
+    {
+      "from": "phb-2014-feature-barbarian-rage",
+      "to": "phb-2024-feature-barbarian-rage"
+    },
+    {
+      "from": "phb-2014-feature-bard-ability-score-improvement",
+      "to": "phb-2024-feature-bard-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-bard-bardic-inspiration",
+      "to": "phb-2024-feature-bard-bardic-inspiration"
+    },
+    {
+      "from": "phb-2014-feature-bard-expertise",
+      "to": "phb-2024-feature-bard-expertise"
+    },
+    {
+      "from": "phb-2014-feature-bard-spellcasting",
+      "to": "phb-2024-feature-bard-spellcasting"
+    },
+    {
+      "from": "phb-2014-feature-cleric-ability-score-improvement",
+      "to": "phb-2024-feature-cleric-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-cleric-channel-divinity",
+      "to": "phb-2024-feature-cleric-channel-divinity"
+    },
+    {
+      "from": "phb-2014-feature-cleric-divine-intervention",
+      "to": "phb-2024-feature-cleric-divine-intervention"
+    },
+    {
+      "from": "phb-2014-feature-cleric-spellcasting",
+      "to": "phb-2024-feature-cleric-spellcasting"
+    },
+    {
+      "from": "phb-2014-feature-druid-ability-score-improvement",
+      "to": "phb-2024-feature-druid-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-druid-spellcasting",
+      "to": "phb-2024-feature-druid-spellcasting"
+    },
+    {
+      "from": "phb-2014-feature-druid-wild-shape",
+      "to": "phb-2024-feature-druid-wild-shape"
+    },
+    {
+      "from": "phb-2014-feature-fighter-ability-score-improvement",
+      "to": "phb-2024-feature-fighter-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-fighter-fighting-style",
+      "to": "phb-2024-feature-fighter-fighting-style"
+    },
+    {
+      "from": "phb-2014-feature-monk-ki",
+      "to": "phb-2024-feature-monk-monks-focus"
+    },
+    {
+      "from": "phb-2014-feature-monk-martial-arts",
+      "to": "phb-2024-feature-monk-martial-arts"
+    },
+    {
+      "from": "phb-2014-feature-paladin-ability-score-improvement",
+      "to": "phb-2024-feature-paladin-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-paladin-channel-divinity",
+      "to": "phb-2024-feature-paladin-channel-divinity"
+    },
+    {
+      "from": "phb-2014-feature-paladin-fighting-style",
+      "to": "phb-2024-feature-paladin-fighting-style"
+    },
+    {
+      "from": "phb-2014-feature-ranger-ability-score-improvement",
+      "to": "phb-2024-feature-ranger-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-ranger-favored-enemy",
+      "to": "phb-2024-feature-ranger-favored-enemy"
+    },
+    {
+      "from": "phb-2014-feature-ranger-fighting-style",
+      "to": "phb-2024-feature-ranger-fighting-style"
+    },
+    {
+      "from": "phb-2014-feature-ranger-foe-slayer",
+      "to": "phb-2024-feature-ranger-foe-slayer"
+    },
+    {
+      "from": "phb-2014-feature-sorcerer-ability-score-improvement",
+      "to": "phb-2024-feature-sorcerer-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-sorcerer-font-of-magic",
+      "to": "phb-2024-feature-sorcerer-font-of-magic"
+    },
+    {
+      "from": "phb-2014-feature-sorcerer-metamagic",
+      "to": "phb-2024-feature-sorcerer-metamagic"
+    },
+    {
+      "from": "phb-2014-feature-sorcerer-spellcasting",
+      "to": "phb-2024-feature-sorcerer-spellcasting"
+    },
+    {
+      "from": "phb-2014-feature-warlock-ability-score-improvement",
+      "to": "phb-2024-feature-warlock-ability-score-improvement"
+    },
+    {
+      "from": "phb-2014-feature-warlock-eldritch-invocations",
+      "to": "phb-2024-feature-warlock-eldritch-invocations"
+    },
+    {
+      "from": "phb-2014-feature-warlock-mystic-arcanum",
+      "to": "phb-2024-feature-warlock-mystic-arcanum"
+    },
+    {
+      "from": "phb-2014-feature-warlock-pact-magic",
+      "to": "phb-2024-feature-warlock-pact-magic"
+    },
+    {
+      "from": "phb-2014-feature-warlock-pact-of-the-chain",
+      "to": "phb-2024-feature-warlock-pact-of-the-chain"
+    },
+    {
+      "from": "phb-2014-feature-warlock-pact-of-the-tome",
+      "to": "phb-2024-feature-warlock-pact-of-the-tome"
+    },
+    {
+      "from": "phb-2014-spell-acid-splash",
+      "to": "phb-2024-spell-acid-splash"
+    },
+    {
+      "from": "phb-2014-spell-aid",
+      "to": "phb-2024-spell-aid"
+    },
+    {
+      "from": "phb-2014-spell-alarm",
+      "to": "phb-2024-spell-alarm"
+    },
+    {
+      "from": "phb-2014-spell-alter-self",
+      "to": "phb-2024-spell-alter-self"
+    },
+    {
+      "from": "phb-2014-spell-animate-dead",
+      "to": "phb-2024-spell-animate-dead"
+    },
+    {
+      "from": "phb-2014-spell-animate-objects",
+      "to": "phb-2024-spell-animate-objects"
+    },
+    {
+      "from": "phb-2014-spell-antimagic-field",
+      "to": "phb-2024-spell-antimagic-field"
+    },
+    {
+      "from": "phb-2014-spell-antipathy-sympathy",
+      "to": "phb-2024-spell-antipathy-sympathy"
+    },
+    {
+      "from": "phb-2014-spell-arcane-eye",
+      "to": "phb-2024-spell-arcane-eye"
+    },
+    {
+      "from": "phb-2014-spell-arcane-gate",
+      "to": "phb-2024-spell-arcane-gate"
+    },
+    {
+      "from": "phb-2014-spell-arcane-lock",
+      "to": "phb-2024-spell-arcane-lock"
+    },
+    {
+      "from": "phb-2014-spell-arms-of-hadar",
+      "to": "phb-2024-spell-arms-of-hadar"
+    },
+    {
+      "from": "phb-2014-spell-augury",
+      "to": "phb-2024-spell-augury"
+    },
+    {
+      "from": "phb-2014-spell-aura-of-life",
+      "to": "phb-2024-spell-aura-of-life"
+    },
+    {
+      "from": "phb-2014-spell-aura-of-purity",
+      "to": "phb-2024-spell-aura-of-purity"
+    },
+    {
+      "from": "phb-2014-spell-aura-of-vitality",
+      "to": "phb-2024-spell-aura-of-vitality"
+    },
+    {
+      "from": "phb-2014-spell-banishing-smite",
+      "to": "phb-2024-spell-banishing-smite"
+    },
+    {
+      "from": "phb-2014-spell-banishment",
+      "to": "phb-2024-spell-banishment"
+    },
+    {
+      "from": "phb-2014-spell-beacon-of-hope",
+      "to": "phb-2024-spell-beacon-of-hope"
+    },
+    {
+      "from": "phb-2014-spell-beast-sense",
+      "to": "phb-2024-spell-beast-sense"
+    },
+    {
+      "from": "phb-2014-spell-bigbys-hand",
+      "to": "phb-2024-spell-bigbys-hand"
+    },
+    {
+      "from": "phb-2014-spell-bless",
+      "to": "phb-2024-spell-bless"
+    },
+    {
+      "from": "phb-2014-spell-blight",
+      "to": "phb-2024-spell-blight"
+    },
+    {
+      "from": "phb-2014-spell-blindness-deafness",
+      "to": "phb-2024-spell-blindness-deafness"
+    },
+    {
+      "from": "phb-2014-spell-blink",
+      "to": "phb-2024-spell-blink"
+    },
+    {
+      "from": "phb-2014-spell-blur",
+      "to": "phb-2024-spell-blur"
+    },
+    {
+      "from": "phb-2014-spell-burning-hands",
+      "to": "phb-2024-spell-burning-hands"
+    },
+    {
+      "from": "phb-2014-spell-call-lightning",
+      "to": "phb-2024-spell-call-lightning"
+    },
+    {
+      "from": "phb-2014-spell-calm-emotions",
+      "to": "phb-2024-spell-calm-emotions"
+    },
+    {
+      "from": "phb-2014-spell-charm-person",
+      "to": "phb-2024-spell-charm-person"
+    },
+    {
+      "from": "phb-2014-spell-chill-touch",
+      "to": "phb-2024-spell-chill-touch"
+    },
+    {
+      "from": "phb-2014-spell-chromatic-orb",
+      "to": "phb-2024-spell-chromatic-orb"
+    },
+    {
+      "from": "phb-2014-spell-circle-of-death",
+      "to": "phb-2024-spell-circle-of-death"
+    },
+    {
+      "from": "phb-2014-spell-circle-of-power",
+      "to": "phb-2024-spell-circle-of-power"
+    },
+    {
+      "from": "phb-2014-spell-cloudkill",
+      "to": "phb-2024-spell-cloudkill"
+    },
+    {
+      "from": "phb-2014-spell-color-spray",
+      "to": "phb-2024-spell-color-spray"
+    },
+    {
+      "from": "phb-2014-spell-command",
+      "to": "phb-2024-spell-command"
+    },
+    {
+      "from": "phb-2014-spell-commune",
+      "to": "phb-2024-spell-commune"
+    },
+    {
+      "from": "phb-2014-spell-commune-with-nature",
+      "to": "phb-2024-spell-commune-with-nature"
+    },
+    {
+      "from": "phb-2014-spell-comprehend-languages",
+      "to": "phb-2024-spell-comprehend-languages"
+    },
+    {
+      "from": "phb-2014-spell-compulsion",
+      "to": "phb-2024-spell-compulsion"
+    },
+    {
+      "from": "phb-2014-spell-cone-of-cold",
+      "to": "phb-2024-spell-cone-of-cold"
+    },
+    {
+      "from": "phb-2014-spell-confusion",
+      "to": "phb-2024-spell-confusion"
+    },
+    {
+      "from": "phb-2014-spell-conjure-barrage",
+      "to": "phb-2024-spell-conjure-barrage"
+    },
+    {
+      "from": "phb-2014-spell-conjure-volley",
+      "to": "phb-2024-spell-conjure-volley"
+    },
+    {
+      "from": "phb-2014-spell-contact-other-plane",
+      "to": "phb-2024-spell-contact-other-plane"
+    },
+    {
+      "from": "phb-2014-spell-contagion",
+      "to": "phb-2024-spell-contagion"
+    },
+    {
+      "from": "phb-2014-spell-contingency",
+      "to": "phb-2024-spell-contingency"
+    },
+    {
+      "from": "phb-2014-spell-continual-flame",
+      "to": "phb-2024-spell-continual-flame"
+    },
+    {
+      "from": "phb-2014-spell-control-water",
+      "to": "phb-2024-spell-control-water"
+    },
+    {
+      "from": "phb-2014-spell-counterspell",
+      "to": "phb-2024-spell-counterspell"
+    },
+    {
+      "from": "phb-2014-spell-create-food-and-water",
+      "to": "phb-2024-spell-create-food-and-water"
+    },
+    {
+      "from": "phb-2014-spell-create-or-destroy-water",
+      "to": "phb-2024-spell-create-or-destroy-water"
+    },
+    {
+      "from": "phb-2014-spell-create-undead",
+      "to": "phb-2024-spell-create-undead"
+    },
+    {
+      "from": "phb-2014-spell-creation",
+      "to": "phb-2024-spell-creation"
+    },
+    {
+      "from": "phb-2014-spell-cure-wounds",
+      "to": "phb-2024-spell-cure-wounds"
+    },
+    {
+      "from": "phb-2014-spell-dancing-lights",
+      "to": "phb-2024-spell-dancing-lights"
+    },
+    {
+      "from": "phb-2014-spell-darkvision",
+      "to": "phb-2024-spell-darkvision"
+    },
+    {
+      "from": "phb-2014-spell-death-ward",
+      "to": "phb-2024-spell-death-ward"
+    },
+    {
+      "from": "phb-2014-spell-demiplane",
+      "to": "phb-2024-spell-demiplane"
+    },
+    {
+      "from": "phb-2014-spell-detect-evil-and-good",
+      "to": "phb-2024-spell-detect-evil-and-good"
+    },
+    {
+      "from": "phb-2014-spell-detect-magic",
+      "to": "phb-2024-spell-detect-magic"
+    },
+    {
+      "from": "phb-2014-spell-detect-poison-and-disease",
+      "to": "phb-2024-spell-detect-poison-and-disease"
+    },
+    {
+      "from": "phb-2014-spell-detect-thoughts",
+      "to": "phb-2024-spell-detect-thoughts"
+    },
+    {
+      "from": "phb-2014-spell-dimension-door",
+      "to": "phb-2024-spell-dimension-door"
+    },
+    {
+      "from": "phb-2014-spell-disguise-self",
+      "to": "phb-2024-spell-disguise-self"
+    },
+    {
+      "from": "phb-2014-spell-dispel-magic",
+      "to": "phb-2024-spell-dispel-magic"
+    },
+    {
+      "from": "phb-2014-spell-dissonant-whispers",
+      "to": "phb-2024-spell-dissonant-whispers"
+    },
+    {
+      "from": "phb-2014-spell-divination",
+      "to": "phb-2024-spell-divination"
+    },
+    {
+      "from": "phb-2014-spell-divine-favor",
+      "to": "phb-2024-spell-divine-favor"
+    },
+    {
+      "from": "phb-2014-spell-dominate-beast",
+      "to": "phb-2024-spell-dominate-beast"
+    },
+    {
+      "from": "phb-2014-spell-dominate-monster",
+      "to": "phb-2024-spell-dominate-monster"
+    },
+    {
+      "from": "phb-2014-spell-dominate-person",
+      "to": "phb-2024-spell-dominate-person"
+    },
+    {
+      "from": "phb-2014-spell-dream",
+      "to": "phb-2024-spell-dream"
+    },
+    {
+      "from": "phb-2014-spell-earthquake",
+      "to": "phb-2024-spell-earthquake"
+    },
+    {
+      "from": "phb-2014-spell-elemental-weapon",
+      "to": "phb-2024-spell-elemental-weapon"
+    },
+    {
+      "from": "phb-2014-spell-enhance-ability",
+      "to": "phb-2024-spell-enhance-ability"
+    },
+    {
+      "from": "phb-2014-spell-enlarge-reduce",
+      "to": "phb-2024-spell-enlarge-reduce"
+    },
+    {
+      "from": "phb-2014-spell-entangle",
+      "to": "phb-2024-spell-entangle"
+    },
+    {
+      "from": "phb-2014-spell-enthrall",
+      "to": "phb-2024-spell-enthrall"
+    },
+    {
+      "from": "phb-2014-spell-evard-s-black-tentacles",
+      "to": "phb-2024-spell-evard-s-black-tentacles"
+    },
+    {
+      "from": "phb-2014-spell-evards-black-tentacles",
+      "to": "phb-2024-spell-evard-s-black-tentacles"
+    },
+    {
+      "from": "phb-2014-spell-expeditious-retreat",
+      "to": "phb-2024-spell-expeditious-retreat"
+    },
+    {
+      "from": "phb-2014-spell-eyebite",
+      "to": "phb-2024-spell-eyebite"
+    },
+    {
+      "from": "phb-2014-spell-fabricate",
+      "to": "phb-2024-spell-fabricate"
+    },
+    {
+      "from": "phb-2014-spell-faerie-fire",
+      "to": "phb-2024-spell-faerie-fire"
+    },
+    {
+      "from": "phb-2014-spell-false-life",
+      "to": "phb-2024-spell-false-life"
+    },
+    {
+      "from": "phb-2014-spell-feather-fall",
+      "to": "phb-2024-spell-feather-fall"
+    },
+    {
+      "from": "phb-2014-spell-find-familiar",
+      "to": "phb-2024-spell-find-familiar"
+    },
+    {
+      "from": "phb-2014-spell-find-the-path",
+      "to": "phb-2024-spell-find-the-path"
+    },
+    {
+      "from": "phb-2014-spell-finger-of-death",
+      "to": "phb-2024-spell-finger-of-death"
+    },
+    {
+      "from": "phb-2014-spell-fire-bolt",
+      "to": "phb-2024-spell-fire-bolt"
+    },
+    {
+      "from": "phb-2014-spell-fire-shield",
+      "to": "phb-2024-spell-fire-shield"
+    },
+    {
+      "from": "phb-2014-spell-fire-storm",
+      "to": "phb-2024-spell-fire-storm"
+    },
+    {
+      "from": "phb-2014-spell-fireball",
+      "to": "phb-2024-spell-fireball"
+    },
+    {
+      "from": "phb-2014-spell-flame-blade",
+      "to": "phb-2024-spell-flame-blade"
+    },
+    {
+      "from": "phb-2014-spell-flame-strike",
+      "to": "phb-2024-spell-flame-strike"
+    },
+    {
+      "from": "phb-2014-spell-flaming-sphere",
+      "to": "phb-2024-spell-flaming-sphere"
+    },
+    {
+      "from": "phb-2014-spell-flesh-to-stone",
+      "to": "phb-2024-spell-flesh-to-stone"
+    },
+    {
+      "from": "phb-2014-spell-fly",
+      "to": "phb-2024-spell-fly"
+    },
+    {
+      "from": "phb-2014-spell-fog-cloud",
+      "to": "phb-2024-spell-fog-cloud"
+    },
+    {
+      "from": "phb-2014-spell-foresight",
+      "to": "phb-2024-spell-foresight"
+    },
+    {
+      "from": "phb-2014-spell-freedom-of-movement",
+      "to": "phb-2024-spell-freedom-of-movement"
+    },
+    {
+      "from": "phb-2014-spell-gaseous-form",
+      "to": "phb-2024-spell-gaseous-form"
+    },
+    {
+      "from": "phb-2014-spell-gate",
+      "to": "phb-2024-spell-gate"
+    },
+    {
+      "from": "phb-2014-spell-gentle-repose",
+      "to": "phb-2024-spell-gentle-repose"
+    },
+    {
+      "from": "phb-2014-spell-globe-of-invulnerability",
+      "to": "phb-2024-spell-globe-of-invulnerability"
+    },
+    {
+      "from": "phb-2014-spell-glyph-of-warding",
+      "to": "phb-2024-spell-glyph-of-warding"
+    },
+    {
+      "from": "phb-2014-spell-grease",
+      "to": "phb-2024-spell-grease"
+    },
+    {
+      "from": "phb-2014-spell-greater-invisibility",
+      "to": "phb-2024-spell-greater-invisibility"
+    },
+    {
+      "from": "phb-2014-spell-greater-restoration",
+      "to": "phb-2024-spell-greater-restoration"
+    },
+    {
+      "from": "phb-2014-spell-guards-and-wards",
+      "to": "phb-2024-spell-guards-and-wards"
+    },
+    {
+      "from": "phb-2014-spell-guidance",
+      "to": "phb-2024-spell-guidance"
+    },
+    {
+      "from": "phb-2014-spell-guiding-bolt",
+      "to": "phb-2024-spell-guiding-bolt"
+    },
+    {
+      "from": "phb-2014-spell-gust-of-wind",
+      "to": "phb-2024-spell-gust-of-wind"
+    },
+    {
+      "from": "phb-2014-spell-hallow",
+      "to": "phb-2024-spell-hallow"
+    },
+    {
+      "from": "phb-2014-spell-hallucinatory-terrain",
+      "to": "phb-2024-spell-hallucinatory-terrain"
+    },
+    {
+      "from": "phb-2014-spell-haste",
+      "to": "phb-2024-spell-haste"
+    },
+    {
+      "from": "phb-2014-spell-heal",
+      "to": "phb-2024-spell-heal"
+    },
+    {
+      "from": "phb-2014-spell-healing-word",
+      "to": "phb-2024-spell-healing-word"
+    },
+    {
+      "from": "phb-2014-spell-heat-metal",
+      "to": "phb-2024-spell-heat-metal"
+    },
+    {
+      "from": "phb-2014-spell-heroes-feast",
+      "to": "phb-2024-spell-heroes-feast"
+    },
+    {
+      "from": "phb-2014-spell-heroism",
+      "to": "phb-2024-spell-heroism"
+    },
+    {
+      "from": "phb-2014-spell-hold-monster",
+      "to": "phb-2024-spell-hold-monster"
+    },
+    {
+      "from": "phb-2014-spell-hold-person",
+      "to": "phb-2024-spell-hold-person"
+    },
+    {
+      "from": "phb-2014-spell-hunger-of-hadar",
+      "to": "phb-2024-spell-hunger-of-hadar"
+    },
+    {
+      "from": "phb-2014-spell-hypnotic-pattern",
+      "to": "phb-2024-spell-hypnotic-pattern"
+    },
+    {
+      "from": "phb-2014-spell-ice-storm",
+      "to": "phb-2024-spell-ice-storm"
+    },
+    {
+      "from": "phb-2014-spell-identify",
+      "to": "phb-2024-spell-identify"
+    },
+    {
+      "from": "phb-2014-spell-incendiary-cloud",
+      "to": "phb-2024-spell-incendiary-cloud"
+    },
+    {
+      "from": "phb-2014-spell-insect-plague",
+      "to": "phb-2024-spell-insect-plague"
+    },
+    {
+      "from": "phb-2014-spell-invisibility",
+      "to": "phb-2024-spell-invisibility"
+    },
+    {
+      "from": "phb-2014-spell-jump",
+      "to": "phb-2024-spell-jump"
+    },
+    {
+      "from": "phb-2014-spell-knock",
+      "to": "phb-2024-spell-knock"
+    },
+    {
+      "from": "phb-2014-spell-leomund-s-tiny-hut",
+      "to": "phb-2024-spell-leomunds-tiny-hut"
+    },
+    {
+      "from": "phb-2014-spell-leomunds-secret-chest",
+      "to": "phb-2024-spell-leomunds-secret-chest"
+    },
+    {
+      "from": "phb-2014-spell-leomunds-tiny-hut",
+      "to": "phb-2024-spell-leomunds-tiny-hut"
+    },
+    {
+      "from": "phb-2014-spell-lesser-restoration",
+      "to": "phb-2024-spell-lesser-restoration"
+    },
+    {
+      "from": "phb-2014-spell-levitate",
+      "to": "phb-2024-spell-levitate"
+    },
+    {
+      "from": "phb-2014-spell-light",
+      "to": "phb-2024-spell-light"
+    },
+    {
+      "from": "phb-2014-spell-lightning-bolt",
+      "to": "phb-2024-spell-lightning-bolt"
+    },
+    {
+      "from": "phb-2014-spell-locate-creature",
+      "to": "phb-2024-spell-locate-creature"
+    },
+    {
+      "from": "phb-2014-spell-locate-object",
+      "to": "phb-2024-spell-locate-object"
+    },
+    {
+      "from": "phb-2014-spell-longstrider",
+      "to": "phb-2024-spell-longstrider"
+    },
+    {
+      "from": "phb-2014-spell-mage-hand",
+      "to": "phb-2024-spell-mage-hand"
+    },
+    {
+      "from": "phb-2014-spell-magic-circle",
+      "to": "phb-2024-spell-magic-circle"
+    },
+    {
+      "from": "phb-2014-spell-magic-jar",
+      "to": "phb-2024-spell-magic-jar"
+    },
+    {
+      "from": "phb-2014-spell-magic-missile",
+      "to": "phb-2024-spell-magic-missile"
+    },
+    {
+      "from": "phb-2014-spell-magic-mouth",
+      "to": "phb-2024-spell-magic-mouth"
+    },
+    {
+      "from": "phb-2014-spell-magic-weapon",
+      "to": "phb-2024-spell-magic-weapon"
+    },
+    {
+      "from": "phb-2014-spell-major-image",
+      "to": "phb-2024-spell-major-image"
+    },
+    {
+      "from": "phb-2014-spell-mass-cure-wounds",
+      "to": "phb-2024-spell-mass-cure-wounds"
+    },
+    {
+      "from": "phb-2014-spell-mass-healing-word",
+      "to": "phb-2024-spell-mass-healing-word"
+    },
+    {
+      "from": "phb-2014-spell-meld-into-stone",
+      "to": "phb-2024-spell-meld-into-stone"
+    },
+    {
+      "from": "phb-2014-spell-melfs-acid-arrow",
+      "to": "phb-2024-spell-melfs-acid-arrow"
+    },
+    {
+      "from": "phb-2014-spell-mending",
+      "to": "phb-2024-spell-mending"
+    },
+    {
+      "from": "phb-2014-spell-message",
+      "to": "phb-2024-spell-message"
+    },
+    {
+      "from": "phb-2014-spell-meteor-swarm",
+      "to": "phb-2024-spell-meteor-swarm"
+    },
+    {
+      "from": "phb-2014-spell-mind-blank",
+      "to": "phb-2024-spell-mind-blank"
+    },
+    {
+      "from": "phb-2014-spell-mirror-image",
+      "to": "phb-2024-spell-mirror-image"
+    },
+    {
+      "from": "phb-2014-spell-mislead",
+      "to": "phb-2024-spell-mislead"
+    },
+    {
+      "from": "phb-2014-spell-misty-step",
+      "to": "phb-2024-spell-misty-step"
+    },
+    {
+      "from": "phb-2014-spell-modify-memory",
+      "to": "phb-2024-spell-modify-memory"
+    },
+    {
+      "from": "phb-2014-spell-moonbeam",
+      "to": "phb-2024-spell-moonbeam"
+    },
+    {
+      "from": "phb-2014-spell-mordenkainen-s-private-sanctum",
+      "to": "phb-2024-spell-mordenkainens-private-sanctum"
+    },
+    {
+      "from": "phb-2014-spell-mordenkainens-faithful-hound",
+      "to": "phb-2024-spell-mordenkainens-faithful-hound"
+    },
+    {
+      "from": "phb-2014-spell-mordenkainens-private-sanctum",
+      "to": "phb-2024-spell-mordenkainens-private-sanctum"
+    },
+    {
+      "from": "phb-2014-spell-move-earth",
+      "to": "phb-2024-spell-move-earth"
+    },
+    {
+      "from": "phb-2014-spell-nondetection",
+      "to": "phb-2024-spell-nondetection"
+    },
+    {
+      "from": "phb-2014-spell-nystul-s-magic-aura",
+      "to": "phb-2024-spell-nystuls-magic-aura"
+    },
+    {
+      "from": "phb-2014-spell-otiluke-s-resilient-sphere",
+      "to": "phb-2024-spell-otiluke-s-resilient-sphere"
+    },
+    {
+      "from": "phb-2014-spell-otilukes-freezing-sphere",
+      "to": "phb-2024-spell-otilukes-freezing-sphere"
+    },
+    {
+      "from": "phb-2014-spell-otilukes-resilient-sphere",
+      "to": "phb-2024-spell-otiluke-s-resilient-sphere"
+    },
+    {
+      "from": "phb-2014-spell-otto-s-irresistible-dance",
+      "to": "phb-2024-spell-otto-s-irresistible-dance"
+    },
+    {
+      "from": "phb-2014-spell-passwall",
+      "to": "phb-2024-spell-passwall"
+    },
+    {
+      "from": "phb-2014-spell-phantasmal-force",
+      "to": "phb-2024-spell-phantasmal-force"
+    },
+    {
+      "from": "phb-2014-spell-phantasmal-killer",
+      "to": "phb-2024-spell-phantasmal-killer"
+    },
+    {
+      "from": "phb-2014-spell-planar-ally",
+      "to": "phb-2024-spell-planar-ally"
+    },
+    {
+      "from": "phb-2014-spell-planar-binding",
+      "to": "phb-2024-spell-planar-binding"
+    },
+    {
+      "from": "phb-2014-spell-plane-shift",
+      "to": "phb-2024-spell-plane-shift"
+    },
+    {
+      "from": "phb-2014-spell-plant-growth",
+      "to": "phb-2024-spell-plant-growth"
+    },
+    {
+      "from": "phb-2014-spell-poison-spray",
+      "to": "phb-2024-spell-poison-spray"
+    },
+    {
+      "from": "phb-2014-spell-polymorph",
+      "to": "phb-2024-spell-polymorph"
+    },
+    {
+      "from": "phb-2014-spell-power-word-heal",
+      "to": "phb-2024-spell-power-word-heal"
+    },
+    {
+      "from": "phb-2014-spell-prayer-of-healing",
+      "to": "phb-2024-spell-prayer-of-healing"
+    },
+    {
+      "from": "phb-2014-spell-prestidigitation",
+      "to": "phb-2024-spell-prestidigitation"
+    },
+    {
+      "from": "phb-2014-spell-prismatic-spray",
+      "to": "phb-2024-spell-prismatic-spray"
+    },
+    {
+      "from": "phb-2014-spell-prismatic-wall",
+      "to": "phb-2024-spell-prismatic-wall"
+    },
+    {
+      "from": "phb-2014-spell-produce-flame",
+      "to": "phb-2024-spell-produce-flame"
+    },
+    {
+      "from": "phb-2014-spell-protection-from-energy",
+      "to": "phb-2024-spell-protection-from-energy"
+    },
+    {
+      "from": "phb-2014-spell-protection-from-evil-and-good",
+      "to": "phb-2024-spell-protection-from-evil-and-good"
+    },
+    {
+      "from": "phb-2014-spell-protection-from-poison",
+      "to": "phb-2024-spell-protection-from-poison"
+    },
+    {
+      "from": "phb-2014-spell-purify-food-and-drink",
+      "to": "phb-2024-spell-purify-food-and-drink"
+    },
+    {
+      "from": "phb-2014-spell-raise-dead",
+      "to": "phb-2024-spell-raise-dead"
+    },
+    {
+      "from": "phb-2014-spell-rary-s-telepathic-bond",
+      "to": "phb-2024-spell-rarys-telepathic-bond"
+    },
+    {
+      "from": "phb-2014-spell-rarys-telepathic-bond",
+      "to": "phb-2024-spell-rarys-telepathic-bond"
+    },
+    {
+      "from": "phb-2014-spell-ray-of-frost",
+      "to": "phb-2024-spell-ray-of-frost"
+    },
+    {
+      "from": "phb-2014-spell-ray-of-sickness",
+      "to": "phb-2024-spell-ray-of-sickness"
+    },
+    {
+      "from": "phb-2014-spell-remove-curse",
+      "to": "phb-2024-spell-remove-curse"
+    },
+    {
+      "from": "phb-2014-spell-resistance",
+      "to": "phb-2024-spell-resistance"
+    },
+    {
+      "from": "phb-2014-spell-resurrection",
+      "to": "phb-2024-spell-resurrection"
+    },
+    {
+      "from": "phb-2014-spell-reverse-gravity",
+      "to": "phb-2024-spell-reverse-gravity"
+    },
+    {
+      "from": "phb-2014-spell-revivify",
+      "to": "phb-2024-spell-revivify"
+    },
+    {
+      "from": "phb-2014-spell-rope-trick",
+      "to": "phb-2024-spell-rope-trick"
+    },
+    {
+      "from": "phb-2014-spell-sanctuary",
+      "to": "phb-2024-spell-sanctuary"
+    },
+    {
+      "from": "phb-2014-spell-scorching-ray",
+      "to": "phb-2024-spell-scorching-ray"
+    },
+    {
+      "from": "phb-2014-spell-scrying",
+      "to": "phb-2024-spell-scrying"
+    },
+    {
+      "from": "phb-2014-spell-searing-smite",
+      "to": "phb-2024-spell-searing-smite"
+    },
+    {
+      "from": "phb-2014-spell-see-invisibility",
+      "to": "phb-2024-spell-see-invisibility"
+    },
+    {
+      "from": "phb-2014-spell-seeming",
+      "to": "phb-2024-spell-seeming"
+    },
+    {
+      "from": "phb-2014-spell-sending",
+      "to": "phb-2024-spell-sending"
+    },
+    {
+      "from": "phb-2014-spell-shatter",
+      "to": "phb-2024-spell-shatter"
+    },
+    {
+      "from": "phb-2014-spell-shield",
+      "to": "phb-2024-spell-shield"
+    },
+    {
+      "from": "phb-2014-spell-shocking-grasp",
+      "to": "phb-2024-spell-shocking-grasp"
+    },
+    {
+      "from": "phb-2014-spell-silence",
+      "to": "phb-2024-spell-silence"
+    },
+    {
+      "from": "phb-2014-spell-silent-image",
+      "to": "phb-2024-spell-silent-image"
+    },
+    {
+      "from": "phb-2014-spell-sleep",
+      "to": "phb-2024-spell-sleep"
+    },
+    {
+      "from": "phb-2014-spell-sleet-storm",
+      "to": "phb-2024-spell-sleet-storm"
+    },
+    {
+      "from": "phb-2014-spell-slow",
+      "to": "phb-2024-spell-slow"
+    },
+    {
+      "from": "phb-2014-spell-spare-the-dying",
+      "to": "phb-2024-spell-spare-the-dying"
+    },
+    {
+      "from": "phb-2014-spell-speak-with-animals",
+      "to": "phb-2024-spell-speak-with-animals"
+    },
+    {
+      "from": "phb-2014-spell-speak-with-dead",
+      "to": "phb-2024-spell-speak-with-dead"
+    },
+    {
+      "from": "phb-2014-spell-speak-with-plants",
+      "to": "phb-2024-spell-speak-with-plants"
+    },
+    {
+      "from": "phb-2014-spell-spider-climb",
+      "to": "phb-2024-spell-spider-climb"
+    },
+    {
+      "from": "phb-2014-spell-spike-growth",
+      "to": "phb-2024-spell-spike-growth"
+    },
+    {
+      "from": "phb-2014-spell-stinking-cloud",
+      "to": "phb-2024-spell-stinking-cloud"
+    },
+    {
+      "from": "phb-2014-spell-stone-shape",
+      "to": "phb-2024-spell-stone-shape"
+    },
+    {
+      "from": "phb-2014-spell-stoneskin",
+      "to": "phb-2024-spell-stoneskin"
+    },
+    {
+      "from": "phb-2014-spell-storm-of-vengeance",
+      "to": "phb-2024-spell-storm-of-vengeance"
+    },
+    {
+      "from": "phb-2014-spell-suggestion",
+      "to": "phb-2024-spell-suggestion"
+    },
+    {
+      "from": "phb-2014-spell-sunbeam",
+      "to": "phb-2024-spell-sunbeam"
+    },
+    {
+      "from": "phb-2014-spell-sunburst",
+      "to": "phb-2024-spell-sunburst"
+    },
+    {
+      "from": "phb-2014-spell-symbol",
+      "to": "phb-2024-spell-symbol"
+    },
+    {
+      "from": "phb-2014-spell-tasha-s-hideous-laughter",
+      "to": "phb-2024-spell-tashas-hideous-laughter"
+    },
+    {
+      "from": "phb-2014-spell-telekinesis",
+      "to": "phb-2024-spell-telekinesis"
+    },
+    {
+      "from": "phb-2014-spell-telepathy",
+      "to": "phb-2024-spell-telepathy"
+    },
+    {
+      "from": "phb-2014-spell-teleportation-circle",
+      "to": "phb-2024-spell-teleportation-circle"
+    },
+    {
+      "from": "phb-2014-spell-tenser-s-floating-disk",
+      "to": "phb-2024-spell-tensers-floating-disk"
+    },
+    {
+      "from": "phb-2014-spell-thorn-whip",
+      "to": "phb-2024-spell-thorn-whip"
+    },
+    {
+      "from": "phb-2014-spell-thunderwave",
+      "to": "phb-2024-spell-thunderwave"
+    },
+    {
+      "from": "phb-2014-spell-time-stop",
+      "to": "phb-2024-spell-time-stop"
+    },
+    {
+      "from": "phb-2014-spell-tsunami",
+      "to": "phb-2024-spell-tsunami"
+    },
+    {
+      "from": "phb-2014-spell-vampiric-touch",
+      "to": "phb-2024-spell-vampiric-touch"
+    },
+    {
+      "from": "phb-2014-spell-wall-of-fire",
+      "to": "phb-2024-spell-wall-of-fire"
+    },
+    {
+      "from": "phb-2014-spell-wall-of-force",
+      "to": "phb-2024-spell-wall-of-force"
+    },
+    {
+      "from": "phb-2014-spell-wall-of-stone",
+      "to": "phb-2024-spell-wall-of-stone"
+    },
+    {
+      "from": "phb-2014-spell-warding-bond",
+      "to": "phb-2024-spell-warding-bond"
+    },
+    {
+      "from": "phb-2014-spell-water-breathing",
+      "to": "phb-2024-spell-water-breathing"
+    },
+    {
+      "from": "phb-2014-spell-water-walk",
+      "to": "phb-2024-spell-water-walk"
+    },
+    {
+      "from": "phb-2014-spell-web",
+      "to": "phb-2024-spell-web"
+    },
+    {
+      "from": "phb-2014-spell-weird",
+      "to": "phb-2024-spell-weird"
+    },
+    {
+      "from": "phb-2014-spell-wind-wall",
+      "to": "phb-2024-spell-wind-wall"
+    },
+    {
+      "from": "phb-2014-spell-wish",
+      "to": "phb-2024-spell-wish"
+    },
+    {
+      "from": "phb-2014-spell-word-of-recall",
+      "to": "phb-2024-spell-word-of-recall"
+    },
+    {
+      "from": "phb-2014-spell-zone-of-truth",
+      "to": "phb-2024-spell-zone-of-truth"
+    },
+    {
+      "from": "phb-2014-subclass-fighter-battle-master",
+      "to": "phb-2024-subclass-fighter-battle-master"
+    },
+    {
+      "from": "phb-2014-subclass-ranger-beast-master",
+      "to": "phb-2024-subclass-ranger-beast-master"
+    },
+    {
+      "from": "tcoe-2020-class-artificer",
+      "to": "forge-artificer-2025-class-artificer"
+    },
+    {
+      "from": "tcoe-2020-creature-aberrant-spirit",
+      "to": "phb-2024-creature-aberrant-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-beast-of-the-land",
+      "to": "phb-2024-creature-beast-of-the-land"
+    },
+    {
+      "from": "tcoe-2020-creature-beast-of-the-sea",
+      "to": "phb-2024-creature-beast-of-the-sea"
+    },
+    {
+      "from": "tcoe-2020-creature-beast-of-the-sky",
+      "to": "phb-2024-creature-beast-of-the-sky"
+    },
+    {
+      "from": "tcoe-2020-creature-bestial-spirit",
+      "to": "phb-2024-creature-bestial-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-celestial-spirit",
+      "to": "phb-2024-creature-celestial-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-construct-spirit",
+      "to": "phb-2024-creature-construct-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-elemental-spirit",
+      "to": "phb-2024-creature-elemental-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-fey-spirit",
+      "to": "phb-2024-creature-fey-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-fiendish-spirit",
+      "to": "phb-2024-creature-fiendish-spirit"
+    },
+    {
+      "from": "tcoe-2020-creature-homunculus-servant",
+      "to": "forge-artificer-2025-creature-homunculus-servant"
+    },
+    {
+      "from": "tcoe-2020-creature-steel-defender",
+      "to": "forge-artificer-2025-creature-steel-defender"
+    },
+    {
+      "from": "tcoe-2020-creature-undead-spirit",
+      "to": "phb-2024-creature-undead-spirit"
+    },
+    {
+      "from": "tcoe-2020-feat-chef",
+      "to": "phb-2024-feat-chef"
+    },
+    {
+      "from": "tcoe-2020-feat-crusher",
+      "to": "phb-2024-feat-crusher"
+    },
+    {
+      "from": "tcoe-2020-feat-fey-touched",
+      "to": "phb-2024-feat-fey-touched"
+    },
+    {
+      "from": "tcoe-2020-feat-piercer",
+      "to": "phb-2024-feat-piercer"
+    },
+    {
+      "from": "tcoe-2020-feat-poisoner",
+      "to": "phb-2024-feat-poisoner"
+    },
+    {
+      "from": "tcoe-2020-feat-shadow-touched",
+      "to": "phb-2024-feat-shadow-touched"
+    },
+    {
+      "from": "tcoe-2020-feat-skill-expert",
+      "to": "phb-2024-feat-skill-expert"
+    },
+    {
+      "from": "tcoe-2020-feat-slasher",
+      "to": "phb-2024-feat-slasher"
+    },
+    {
+      "from": "tcoe-2020-feat-telekinetic",
+      "to": "phb-2024-feat-telekinetic"
+    },
+    {
+      "from": "tcoe-2020-feat-telepathic",
+      "to": "phb-2024-feat-telepathic"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-psionic-sorcery",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-psionic-sorcery"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-psionic-spells",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-psionic-spells"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-psychic-defenses",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-psychic-defenses"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-revelation-in-flesh",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-revelation-in-flesh"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-telepathic-speech",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-telepathic-speech"
+    },
+    {
+      "from": "tcoe-2020-feature-aberrant-mind-warping-implosion",
+      "to": "phb-2024-feature-sorcerer-aberrant-sorcery-warping-implosion"
+    },
+    {
+      "from": "tcoe-2020-feature-alchemist-alchemical-savant",
+      "to": "forge-artificer-2025-feature-alchemist-alchemical-savant"
+    },
+    {
+      "from": "tcoe-2020-feature-alchemist-alchemist-spells",
+      "to": "forge-artificer-2025-feature-alchemist-spells"
+    },
+    {
+      "from": "tcoe-2020-feature-alchemist-chemical-mastery",
+      "to": "forge-artificer-2025-feature-alchemist-chemical-mastery"
+    },
+    {
+      "from": "tcoe-2020-feature-alchemist-experimental-elixir",
+      "to": "forge-artificer-2025-feature-alchemist-experimental-elixir"
+    },
+    {
+      "from": "tcoe-2020-feature-alchemist-restorative-reagents",
+      "to": "forge-artificer-2025-feature-alchemist-restorative-reagents"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-arcane-armor",
+      "to": "forge-artificer-2025-feature-armorer-arcane-armor"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-armor-model",
+      "to": "forge-artificer-2025-feature-armorer-armor-model"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-armorer-spells",
+      "to": "forge-artificer-2025-feature-armorer-spells"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-extra-attack",
+      "to": "forge-artificer-2025-feature-armorer-extra-attack"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-perfected-armor",
+      "to": "forge-artificer-2025-feature-armorer-perfected-armor"
+    },
+    {
+      "from": "tcoe-2020-feature-armorer-tools-of-the-trade",
+      "to": "forge-artificer-2025-feature-armorer-tools-of-the-trade"
+    },
+    {
+      "from": "tcoe-2020-feature-artillerist-arcane-firearm",
+      "to": "forge-artificer-2025-feature-artillerist-arcane-firearm"
+    },
+    {
+      "from": "tcoe-2020-feature-artillerist-artillerist-spells",
+      "to": "forge-artificer-2025-feature-artillerist-spells"
+    },
+    {
+      "from": "tcoe-2020-feature-artillerist-eldritch-cannon",
+      "to": "forge-artificer-2025-feature-artillerist-eldritch-cannon"
+    },
+    {
+      "from": "tcoe-2020-feature-artillerist-explosive-cannon",
+      "to": "forge-artificer-2025-feature-artillerist-explosive-cannon"
+    },
+    {
+      "from": "tcoe-2020-feature-artillerist-fortified-position",
+      "to": "forge-artificer-2025-feature-artillerist-fortified-position"
+    },
+    {
+      "from": "tcoe-2020-feature-barbarian-instinctive-pounce",
+      "to": "phb-2024-feature-barbarian-instinctive-pounce"
+    },
+    {
+      "from": "tcoe-2020-feature-barbarian-primal-knowledge",
+      "to": "phb-2024-feature-barbarian-primal-knowledge"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-arcane-jolt",
+      "to": "forge-artificer-2025-feature-battle-smith-arcane-jolt"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-battle-ready",
+      "to": "forge-artificer-2025-feature-battle-smith-battle-ready"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-battle-smith-spells",
+      "to": "forge-artificer-2025-feature-battle-smith-spells"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-extra-attack",
+      "to": "forge-artificer-2025-feature-battle-smith-extra-attack"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-improved-defender",
+      "to": "forge-artificer-2025-feature-battle-smith-improved-defender"
+    },
+    {
+      "from": "tcoe-2020-feature-battle-smith-steel-defender",
+      "to": "forge-artificer-2025-feature-battle-smith-steel-defender"
+    },
+    {
+      "from": "tcoe-2020-feature-circle-of-stars-cosmic-omen",
+      "to": "phb-2024-feature-druid-circle-of-the-stars-cosmic-omen"
+    },
+    {
+      "from": "tcoe-2020-feature-circle-of-stars-full-of-stars",
+      "to": "phb-2024-feature-druid-circle-of-the-stars-full-of-stars"
+    },
+    {
+      "from": "tcoe-2020-feature-circle-of-stars-star-map",
+      "to": "phb-2024-feature-druid-circle-of-the-stars-star-map"
+    },
+    {
+      "from": "tcoe-2020-feature-circle-of-stars-starry-form",
+      "to": "phb-2024-feature-druid-circle-of-the-stars-starry-form"
+    },
+    {
+      "from": "tcoe-2020-feature-circle-of-stars-twinkling-constellations",
+      "to": "phb-2024-feature-druid-circle-of-the-stars-twinkling-constellations"
+    },
+    {
+      "from": "tcoe-2020-feature-cleric-blessed-strikes",
+      "to": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "from": "tcoe-2020-feature-clockwork-soul-bastion-of-law",
+      "to": "phb-2024-feature-sorcerer-clockwork-sorcery-bastion-of-law"
+    },
+    {
+      "from": "tcoe-2020-feature-clockwork-soul-clockwork-cavalcade",
+      "to": "phb-2024-feature-sorcerer-clockwork-sorcery-clockwork-cavalcade"
+    },
+    {
+      "from": "tcoe-2020-feature-clockwork-soul-restore-balance",
+      "to": "phb-2024-feature-sorcerer-clockwork-sorcery-restore-balance"
+    },
+    {
+      "from": "tcoe-2020-feature-clockwork-soul-trance-of-order",
+      "to": "phb-2024-feature-sorcerer-clockwork-sorcery-trance-of-order"
+    },
+    {
+      "from": "tcoe-2020-feature-druid-wild-companion",
+      "to": "phb-2024-feature-druid-wild-companion"
+    },
+    {
+      "from": "tcoe-2020-feature-fey-wanderer-beguiling-twist",
+      "to": "phb-2024-feature-ranger-fey-wanderer-beguiling-twist"
+    },
+    {
+      "from": "tcoe-2020-feature-fey-wanderer-dreadful-strikes",
+      "to": "phb-2024-feature-ranger-fey-wanderer-dreadful-strikes"
+    },
+    {
+      "from": "tcoe-2020-feature-fey-wanderer-fey-reinforcements",
+      "to": "phb-2024-feature-ranger-fey-wanderer-fey-reinforcements"
+    },
+    {
+      "from": "tcoe-2020-feature-fey-wanderer-misty-wanderer",
+      "to": "phb-2024-feature-ranger-fey-wanderer-misty-wanderer"
+    },
+    {
+      "from": "tcoe-2020-feature-fey-wanderer-otherworldly-glamour",
+      "to": "phb-2024-feature-ranger-fey-wanderer-otherworldly-glamour"
+    },
+    {
+      "from": "tcoe-2020-feature-oath-of-glory-aura-of-alacrity",
+      "to": "phb-2024-feature-paladin-oath-of-glory-aura-of-alacrity"
+    },
+    {
+      "from": "tcoe-2020-feature-oath-of-glory-glorious-defense",
+      "to": "phb-2024-feature-paladin-oath-of-glory-glorious-defense"
+    },
+    {
+      "from": "tcoe-2020-feature-oath-of-glory-inspiring-smite",
+      "to": "phb-2024-feature-paladin-oath-of-glory-inspiring-smite"
+    },
+    {
+      "from": "tcoe-2020-feature-oath-of-glory-living-legend",
+      "to": "phb-2024-feature-paladin-oath-of-glory-living-legend"
+    },
+    {
+      "from": "tcoe-2020-feature-oath-of-glory-peerless-athlete",
+      "to": "phb-2024-feature-paladin-oath-of-glory-peerless-athlete"
+    },
+    {
+      "from": "tcoe-2020-feature-order-domain-divine-strike",
+      "to": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "from": "tcoe-2020-feature-peace-domain-potent-spellcasting",
+      "to": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "from": "tcoe-2020-feature-psi-warrior-bulwark-of-force",
+      "to": "phb-2024-feature-fighter-psi-warrior-bulwark-of-force"
+    },
+    {
+      "from": "tcoe-2020-feature-psi-warrior-guarded-mind",
+      "to": "phb-2024-feature-fighter-psi-warrior-guarded-mind"
+    },
+    {
+      "from": "tcoe-2020-feature-psi-warrior-psionic-power",
+      "to": "phb-2024-feature-fighter-psi-warrior-psionic-power"
+    },
+    {
+      "from": "tcoe-2020-feature-psi-warrior-telekinetic-adept",
+      "to": "phb-2024-feature-fighter-psi-warrior-telekinetic-adept"
+    },
+    {
+      "from": "tcoe-2020-feature-psi-warrior-telekinetic-master",
+      "to": "phb-2024-feature-fighter-psi-warrior-telekinetic-master"
+    },
+    {
+      "from": "tcoe-2020-feature-ranger-beast-master-primal-companion",
+      "to": "phb-2024-feature-ranger-beast-master-primal-companion"
+    },
+    {
+      "from": "tcoe-2020-feature-ranger-deft-explorer",
+      "to": "phb-2024-feature-ranger-deft-explorer"
+    },
+    {
+      "from": "tcoe-2020-feature-ranger-natures-veil",
+      "to": "phb-2024-feature-ranger-natures-veil"
+    },
+    {
+      "from": "tcoe-2020-feature-rogue-steady-aim",
+      "to": "phb-2024-feature-rogue-steady-aim"
+    },
+    {
+      "from": "tcoe-2020-feature-soulknife-psionic-power",
+      "to": "phb-2024-feature-rogue-soulknife-psionic-power"
+    },
+    {
+      "from": "tcoe-2020-feature-soulknife-psychic-blades",
+      "to": "phb-2024-feature-rogue-soulknife-psychic-blades"
+    },
+    {
+      "from": "tcoe-2020-feature-soulknife-psychic-veil",
+      "to": "phb-2024-feature-rogue-soulknife-psychic-veil"
+    },
+    {
+      "from": "tcoe-2020-feature-soulknife-rend-mind",
+      "to": "phb-2024-feature-rogue-soulknife-rend-mind"
+    },
+    {
+      "from": "tcoe-2020-feature-soulknife-soul-blades",
+      "to": "phb-2024-feature-rogue-soulknife-soul-blades"
+    },
+    {
+      "from": "tcoe-2020-feature-twilight-domain-divine-strike",
+      "to": "phb-2024-feature-cleric-blessed-strikes"
+    },
+    {
+      "from": "tcoe-2020-feature-warlock-invocation-eldritch-mind",
+      "to": "phb-2024-feature-warlock-eldritch-mind"
+    },
+    {
+      "from": "tcoe-2020-feature-warlock-invocation-gift-of-the-protectors",
+      "to": "phb-2024-feature-warlock-gift-of-the-protectors"
+    },
+    {
+      "from": "tcoe-2020-feature-warlock-invocation-investment-of-the-chain-master",
+      "to": "phb-2024-feature-warlock-investment-of-the-chain-master"
+    },
+    {
+      "from": "tcoe-2020-feature-way-of-mercy-flurry-of-healing-and-harm",
+      "to": "phb-2024-feature-monk-warrior-of-mercy-flurry-of-healing-and-harm"
+    },
+    {
+      "from": "tcoe-2020-feature-way-of-mercy-hand-of-harm",
+      "to": "phb-2024-feature-monk-warrior-of-mercy-hand-of-harm"
+    },
+    {
+      "from": "tcoe-2020-feature-way-of-mercy-hand-of-healing",
+      "to": "phb-2024-feature-monk-warrior-of-mercy-hand-of-healing"
+    },
+    {
+      "from": "tcoe-2020-feature-way-of-mercy-hand-of-ultimate-mercy",
+      "to": "phb-2024-feature-monk-warrior-of-mercy-hand-of-ultimate-mercy"
+    },
+    {
+      "from": "tcoe-2020-feature-way-of-mercy-physicians-touch",
+      "to": "phb-2024-feature-monk-warrior-of-mercy-physician-s-touch"
+    },
+    {
+      "from": "tcoe-2020-spell-mind-sliver",
+      "to": "phb-2024-spell-mind-sliver"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-aberration",
+      "to": "phb-2024-spell-summon-aberration"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-beast",
+      "to": "phb-2024-spell-summon-beast"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-celestial",
+      "to": "phb-2024-spell-summon-celestial"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-construct",
+      "to": "phb-2024-spell-summon-construct"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-elemental",
+      "to": "phb-2024-spell-summon-elemental"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-fey",
+      "to": "phb-2024-spell-summon-fey"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-fiend",
+      "to": "phb-2024-spell-summon-fiend"
+    },
+    {
+      "from": "tcoe-2020-spell-summon-undead",
+      "to": "phb-2024-spell-summon-undead"
+    },
+    {
+      "from": "tcoe-2020-subclass-aberrant-mind",
+      "to": "phb-2024-subclass-sorcerer-aberrant-sorcery"
+    },
+    {
+      "from": "tcoe-2020-subclass-alchemist",
+      "to": "forge-artificer-2025-subclass-alchemist"
+    },
+    {
+      "from": "tcoe-2020-subclass-armorer",
+      "to": "forge-artificer-2025-subclass-armorer"
+    },
+    {
+      "from": "tcoe-2020-subclass-artillerist",
+      "to": "forge-artificer-2025-subclass-artillerist"
+    },
+    {
+      "from": "tcoe-2020-subclass-battle-smith",
+      "to": "forge-artificer-2025-subclass-battle-smith"
+    },
+    {
+      "from": "tcoe-2020-subclass-circle-of-stars",
+      "to": "phb-2024-subclass-druid-circle-of-the-stars"
+    },
+    {
+      "from": "tcoe-2020-subclass-clockwork-soul",
+      "to": "phb-2024-subclass-sorcerer-clockwork-sorcery"
+    },
+    {
+      "from": "tcoe-2020-subclass-fey-wanderer",
+      "to": "phb-2024-subclass-ranger-fey-wanderer"
+    },
+    {
+      "from": "tcoe-2020-subclass-oath-of-glory",
+      "to": "phb-2024-subclass-paladin-oath-of-glory"
+    },
+    {
+      "from": "tcoe-2020-subclass-psi-warrior",
+      "to": "phb-2024-subclass-fighter-psi-warrior"
+    },
+    {
+      "from": "tcoe-2020-subclass-soulknife",
+      "to": "phb-2024-subclass-rogue-soulknife"
+    },
+    {
+      "from": "tcoe-2020-subclass-way-of-mercy",
+      "to": "phb-2024-subclass-monk-warrior-of-mercy"
+    }
+  ],
+  "unresolvedInternalReferences": [],
+  "externalDependencies": {
+    "dmg2014": [
+      "dmg-2014-disease-sight-rot",
+      "dmg-2014-magic-item-deck-of-many-things",
+      "dmg-2014-magic-item-mace-of-disruption",
+      "dmg-2014-magic-item-sword-of-wounding",
+      "dmg-2014-rule-extreme-cold",
+      "dmg-2014-rule-firearms",
+      "dmg-2014-rule-lycanthropy",
+      "dmg-2014-rule-quicksand",
+      "dmg-2014-rule-random-treasure",
+      "dmg-2014-rule-sentient-magic-items",
+      "dmg-2014-rule-social-interaction"
+    ],
+    "forge2025": [
+      "forge-artificer-2025-class-artificer"
+    ],
+    "mm2014": [
+      "mm-2014-creature-blink-dog",
+      "mm-2014-creature-death-slaad",
+      "mm-2014-creature-flying-sword",
+      "mm-2014-creature-galeb-duhr",
+      "mm-2014-creature-ghost",
+      "mm-2014-creature-gibbering-mouther",
+      "mm-2014-creature-shadow",
+      "mm-2014-creature-swarm-of-rats",
+      "mm-2014-creature-swarm-of-ravens",
+      "mm-2014-creature-treant"
+    ],
+    "phb2024": [
+      "phb-2024-class-barbarian",
+      "phb-2024-class-bard",
+      "phb-2024-class-cleric",
+      "phb-2024-class-druid",
+      "phb-2024-class-fighter",
+      "phb-2024-class-monk",
+      "phb-2024-class-paladin",
+      "phb-2024-class-ranger",
+      "phb-2024-class-rogue",
+      "phb-2024-class-sorcerer",
+      "phb-2024-class-warlock",
+      "phb-2024-class-wizard",
+      "phb-2024-condition-exhaustion",
+      "phb-2024-condition-frightened",
+      "phb-2024-condition-grappled",
+      "phb-2024-condition-incapacitated",
+      "phb-2024-condition-prone",
+      "phb-2024-condition-restrained",
+      "phb-2024-creature-cat",
+      "phb-2024-creature-giant-spider",
+      "phb-2024-creature-skeleton",
+      "phb-2024-creature-zombie",
+      "phb-2024-feature-cleric-blessed-strikes",
+      "phb-2024-feature-cleric-divine-intervention",
+      "phb-2024-feature-fighter-fighting-style",
+      "phb-2024-feature-sorcerer-metamagic",
+      "phb-2024-feature-warlock-eldritch-invocations",
+      "phb-2024-feature-warlock-pact-of-the-tome",
+      "phb-2024-magic-item-potion-of-healing",
+      "phb-2024-spell-acid-splash",
+      "phb-2024-spell-aid",
+      "phb-2024-spell-alarm",
+      "phb-2024-spell-animate-dead",
+      "phb-2024-spell-antimagic-field",
+      "phb-2024-spell-antipathy-sympathy",
+      "phb-2024-spell-arcane-eye",
+      "phb-2024-spell-arcane-gate",
+      "phb-2024-spell-arcane-lock",
+      "phb-2024-spell-augury",
+      "phb-2024-spell-aura-of-life",
+      "phb-2024-spell-aura-of-purity",
+      "phb-2024-spell-aura-of-vitality",
+      "phb-2024-spell-banishment",
+      "phb-2024-spell-beacon-of-hope",
+      "phb-2024-spell-bigbys-hand",
+      "phb-2024-spell-bless",
+      "phb-2024-spell-blight",
+      "phb-2024-spell-blindness-deafness",
+      "phb-2024-spell-blink",
+      "phb-2024-spell-blur",
+      "phb-2024-spell-burning-hands",
+      "phb-2024-spell-call-lightning",
+      "phb-2024-spell-charm-person",
+      "phb-2024-spell-chill-touch",
+      "phb-2024-spell-chromatic-orb",
+      "phb-2024-spell-circle-of-death",
+      "phb-2024-spell-circle-of-power",
+      "phb-2024-spell-cloudkill",
+      "phb-2024-spell-command",
+      "phb-2024-spell-commune",
+      "phb-2024-spell-comprehend-languages",
+      "phb-2024-spell-compulsion",
+      "phb-2024-spell-cone-of-cold",
+      "phb-2024-spell-confusion",
+      "phb-2024-spell-conjure-barrage",
+      "phb-2024-spell-conjure-volley",
+      "phb-2024-spell-contact-other-plane",
+      "phb-2024-spell-contagion",
+      "phb-2024-spell-contingency",
+      "phb-2024-spell-control-water",
+      "phb-2024-spell-counterspell",
+      "phb-2024-spell-create-food-and-water",
+      "phb-2024-spell-create-or-destroy-water",
+      "phb-2024-spell-create-undead",
+      "phb-2024-spell-creation",
+      "phb-2024-spell-cure-wounds",
+      "phb-2024-spell-dancing-lights",
+      "phb-2024-spell-death-ward",
+      "phb-2024-spell-detect-evil-and-good",
+      "phb-2024-spell-detect-magic",
+      "phb-2024-spell-detect-poison-and-disease",
+      "phb-2024-spell-detect-thoughts",
+      "phb-2024-spell-dimension-door",
+      "phb-2024-spell-disguise-self",
+      "phb-2024-spell-dispel-magic",
+      "phb-2024-spell-divination",
+      "phb-2024-spell-divine-favor",
+      "phb-2024-spell-dominate-monster",
+      "phb-2024-spell-dominate-person",
+      "phb-2024-spell-dream",
+      "phb-2024-spell-earthquake",
+      "phb-2024-spell-enlarge-reduce",
+      "phb-2024-spell-enthrall",
+      "phb-2024-spell-evard-s-black-tentacles",
+      "phb-2024-spell-eyebite",
+      "phb-2024-spell-fabricate",
+      "phb-2024-spell-faerie-fire",
+      "phb-2024-spell-false-life",
+      "phb-2024-spell-feather-fall",
+      "phb-2024-spell-find-familiar",
+      "phb-2024-spell-find-the-path",
+      "phb-2024-spell-finger-of-death",
+      "phb-2024-spell-fire-shield",
+      "phb-2024-spell-fire-storm",
+      "phb-2024-spell-fireball",
+      "phb-2024-spell-flame-strike",
+      "phb-2024-spell-flaming-sphere",
+      "phb-2024-spell-flesh-to-stone",
+      "phb-2024-spell-fog-cloud",
+      "phb-2024-spell-foresight",
+      "phb-2024-spell-gaseous-form",
+      "phb-2024-spell-gate",
+      "phb-2024-spell-gentle-repose",
+      "phb-2024-spell-globe-of-invulnerability",
+      "phb-2024-spell-glyph-of-warding",
+      "phb-2024-spell-grease",
+      "phb-2024-spell-greater-invisibility",
+      "phb-2024-spell-greater-restoration",
+      "phb-2024-spell-guards-and-wards",
+      "phb-2024-spell-gust-of-wind",
+      "phb-2024-spell-hallow",
+      "phb-2024-spell-hallucinatory-terrain",
+      "phb-2024-spell-heroism",
+      "phb-2024-spell-hold-monster",
+      "phb-2024-spell-hold-person",
+      "phb-2024-spell-hypnotic-pattern",
+      "phb-2024-spell-ice-storm",
+      "phb-2024-spell-identify",
+      "phb-2024-spell-incendiary-cloud",
+      "phb-2024-spell-insect-plague",
+      "phb-2024-spell-knock",
+      "phb-2024-spell-leomunds-tiny-hut",
+      "phb-2024-spell-lesser-restoration",
+      "phb-2024-spell-levitate",
+      "phb-2024-spell-lightning-bolt",
+      "phb-2024-spell-locate-creature",
+      "phb-2024-spell-locate-object",
+      "phb-2024-spell-mage-hand",
+      "phb-2024-spell-magic-circle",
+      "phb-2024-spell-magic-jar",
+      "phb-2024-spell-magic-missile",
+      "phb-2024-spell-magic-weapon",
+      "phb-2024-spell-major-image",
+      "phb-2024-spell-mass-cure-wounds",
+      "phb-2024-spell-mass-healing-word",
+      "phb-2024-spell-meld-into-stone",
+      "phb-2024-spell-mending",
+      "phb-2024-spell-message",
+      "phb-2024-spell-meteor-swarm",
+      "phb-2024-spell-mind-blank",
+      "phb-2024-spell-mind-sliver",
+      "phb-2024-spell-mirror-image",
+      "phb-2024-spell-mislead",
+      "phb-2024-spell-misty-step",
+      "phb-2024-spell-modify-memory",
+      "phb-2024-spell-moonbeam",
+      "phb-2024-spell-mordenkainens-private-sanctum",
+      "phb-2024-spell-move-earth",
+      "phb-2024-spell-nondetection",
+      "phb-2024-spell-nystuls-magic-aura",
+      "phb-2024-spell-otiluke-s-resilient-sphere",
+      "phb-2024-spell-otto-s-irresistible-dance",
+      "phb-2024-spell-passwall",
+      "phb-2024-spell-phantasmal-force",
+      "phb-2024-spell-phantasmal-killer",
+      "phb-2024-spell-planar-ally",
+      "phb-2024-spell-planar-binding",
+      "phb-2024-spell-plane-shift",
+      "phb-2024-spell-plant-growth",
+      "phb-2024-spell-polymorph",
+      "phb-2024-spell-produce-flame",
+      "phb-2024-spell-protection-from-evil-and-good",
+      "phb-2024-spell-raise-dead",
+      "phb-2024-spell-rarys-telepathic-bond",
+      "phb-2024-spell-remove-curse",
+      "phb-2024-spell-resurrection",
+      "phb-2024-spell-reverse-gravity",
+      "phb-2024-spell-revivify",
+      "phb-2024-spell-sanctuary",
+      "phb-2024-spell-scorching-ray",
+      "phb-2024-spell-scrying",
+      "phb-2024-spell-see-invisibility",
+      "phb-2024-spell-seeming",
+      "phb-2024-spell-sending",
+      "phb-2024-spell-silence",
+      "phb-2024-spell-silent-image",
+      "phb-2024-spell-sleep",
+      "phb-2024-spell-sleet-storm",
+      "phb-2024-spell-slow",
+      "phb-2024-spell-speak-with-dead",
+      "phb-2024-spell-speak-with-plants",
+      "phb-2024-spell-spider-climb",
+      "phb-2024-spell-spike-growth",
+      "phb-2024-spell-stinking-cloud",
+      "phb-2024-spell-stone-shape",
+      "phb-2024-spell-storm-of-vengeance",
+      "phb-2024-spell-suggestion",
+      "phb-2024-spell-summon-construct",
+      "phb-2024-spell-summon-elemental",
+      "phb-2024-spell-summon-fiend",
+      "phb-2024-spell-summon-undead",
+      "phb-2024-spell-symbol",
+      "phb-2024-spell-tashas-hideous-laughter",
+      "phb-2024-spell-telekinesis",
+      "phb-2024-spell-telepathy",
+      "phb-2024-spell-teleportation-circle",
+      "phb-2024-spell-tensers-floating-disk",
+      "phb-2024-spell-thunderwave",
+      "phb-2024-spell-time-stop",
+      "phb-2024-spell-tsunami",
+      "phb-2024-spell-vampiric-touch",
+      "phb-2024-spell-wall-of-fire",
+      "phb-2024-spell-wall-of-force",
+      "phb-2024-spell-wall-of-stone",
+      "phb-2024-spell-warding-bond",
+      "phb-2024-spell-web",
+      "phb-2024-spell-wind-wall",
+      "phb-2024-spell-wish",
+      "phb-2024-spell-word-of-recall",
+      "phb-2024-spell-zone-of-truth",
+      "phb-2024-subclass-fighter-battle-master"
+    ]
+  },
+  "omittedOptionalLegacyReferences": [
+    "phb-2014-feat-martial-adept"
+  ],
+  "sha256": "9ac6bdf0353efb9130cbd3535578656f8e89148ce5629c908ca7243acef43ddf"
+}

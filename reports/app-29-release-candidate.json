@@ -1,0 +1,225 @@
+{
+  "schemaVersion": "dnd-combat-app29-release-candidate.v1",
+  "status": "BLOCKED",
+  "generatedAt": "2026-08-04T22:17:59.598Z",
+  "source": {
+    "fingerprint": "b7434b0948d66a52a27b76ef2aaaa8c753def2450fbcedf21821f3f340c1c48b",
+    "files": 612,
+    "gitSha": null,
+    "packageLockSha256": "9d5155ab052fdb9e3191f8d1a7819324161e29b91be90401ad09661b0c9ffd41"
+  },
+  "steps": [
+    {
+      "id": "source-shape",
+      "status": "PASS",
+      "durationMs": 19,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/source-shape.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "accessibility-contracts",
+      "status": "PASS",
+      "durationMs": 17,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/accessibility-contracts.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "security-hardening",
+      "status": "PASS",
+      "durationMs": 37,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/security-hardening.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "migration-contracts",
+      "status": "PASS",
+      "durationMs": 21,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/migration-contracts.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "install-upgrade-rehearsal",
+      "status": "PASS",
+      "durationMs": 402,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/install-upgrade-rehearsal.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "performance-budget",
+      "status": "PASS",
+      "durationMs": 340,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/performance-budget.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "release-readiness",
+      "status": "PASS",
+      "durationMs": 19,
+      "exitCode": 0,
+      "logFile": "artifacts/app29-release-candidate/release-readiness.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "app28-integral-gate",
+      "status": "BLOCKED",
+      "durationMs": 0,
+      "exitCode": null,
+      "logFile": "artifacts/app28-integral-gate.json",
+      "detail": "Gate APP-28 não está aprovado (BLOCKED). | Fingerprint da codebase diverge da evidência APP-28. | Etapa obrigatória não aprovada: dependency-install. | Etapa obrigatória não aprovada: full-typecheck. | Etapa obrigatória não aprovada: full-jest. | Etapa obrigatória não aprovada: native-gate. | Quantidade de fluxos Maestro insuficiente; esperado pelo menos 79. | Gate nativo não possui status PASS. | Versão Android instalada não foi validada contra app.json. | Descritor de artefato inválido: junit. | Descritor de artefato inválido: logcat. | Descritor de artefato inválido: screenshot. | Descritor de artefato inválido: maestroLog."
+    }
+  ],
+  "app28Evidence": {
+    "schemaVersion": "dnd-combat-app28-integral-gate.v1",
+    "status": "BLOCKED",
+    "generatedAt": "2026-08-04T21:55:47.599Z",
+    "executeNativeRequested": true,
+    "source": {
+      "fingerprint": "055e676a6fecca059c5d242742b9b5178551a565b6817128b4dfbb36a8066fa3",
+      "files": 592,
+      "gitSha": null,
+      "packageLockSha256": "9d5155ab052fdb9e3191f8d1a7819324161e29b91be90401ad09661b0c9ffd41"
+    },
+    "environment": {
+      "node": "v22.16.0",
+      "npm": "10.9.2",
+      "platform": "linux",
+      "arch": "x64",
+      "dependenciesReady": false
+    },
+    "steps": [
+      {
+        "id": "dependency-install",
+        "status": "BLOCKED",
+        "durationMs": 0,
+        "exitCode": null,
+        "logFile": "artifacts/app28-dependency-install.json",
+        "detail": "NPM_CLIENT_FAILURE: Execute este comando em um ambiente com acesso a um registry npm completo ou forneça APP28_NPM_CACHE com um cache previamente aquecido para este package-lock.json."
+      },
+      {
+        "id": "dependency-lock",
+        "status": "PASS",
+        "durationMs": 30,
+        "exitCode": 0,
+        "signal": null,
+        "logFile": "artifacts/app28-integral-gate/dependency-lock.log",
+        "detail": "Etapa aprovada."
+      },
+      {
+        "id": "app27-regression",
+        "status": "PASS",
+        "durationMs": 17393,
+        "exitCode": 0,
+        "signal": null,
+        "logFile": "artifacts/app28-integral-gate/app27-regression.log",
+        "detail": "Etapa aprovada."
+      },
+      {
+        "id": "full-typecheck",
+        "status": "BLOCKED",
+        "durationMs": 0,
+        "exitCode": null,
+        "logFile": null,
+        "detail": "Dependências integrais ausentes; o typecheck completo não pode carregar Expo, React e tipos do projeto."
+      },
+      {
+        "id": "full-jest",
+        "status": "BLOCKED",
+        "durationMs": 0,
+        "exitCode": null,
+        "logFile": null,
+        "detail": "Jest e a árvore completa de dependências não estão instalados."
+      },
+      {
+        "id": "native-gate",
+        "status": "BLOCKED",
+        "durationMs": 32,
+        "exitCode": 0,
+        "signal": null,
+        "logFile": "artifacts/app28-integral-gate/native-gate.log",
+        "detail": "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente. | adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT. | Maestro CLI não encontrado. Configure MAESTRO_PATH."
+      }
+    ],
+    "nativeEvidence": {
+      "status": "BLOCKED",
+      "flowCount": 75,
+      "expectedAndroid": {
+        "packageName": "com.nalves.dndcombatmathmvp",
+        "versionName": "0.1.0",
+        "versionCode": "2"
+      },
+      "installedVersion": null,
+      "appVersionMatches": false,
+      "device": null,
+      "report": {
+        "path": "artifacts/app06-native-gate.json",
+        "bytes": 16542,
+        "sha256": "6d927b68ad1596a36a6d75cb726b3480dd6edb934a077160040fc1f24762176b"
+      },
+      "artifacts": {
+        "junit": null,
+        "logcat": null,
+        "screenshot": null,
+        "maestroLog": null
+      }
+    },
+    "remediation": [
+      {
+        "id": "dependency-install",
+        "detail": "NPM_CLIENT_FAILURE: Execute este comando em um ambiente com acesso a um registry npm completo ou forneça APP28_NPM_CACHE com um cache previamente aquecido para este package-lock.json."
+      },
+      {
+        "id": "full-typecheck",
+        "detail": "Dependências integrais ausentes; o typecheck completo não pode carregar Expo, React e tipos do projeto."
+      },
+      {
+        "id": "full-jest",
+        "detail": "Jest e a árvore completa de dependências não estão instalados."
+      },
+      {
+        "id": "native-gate",
+        "detail": "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente. | adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT. | Maestro CLI não encontrado. Configure MAESTRO_PATH."
+      }
+    ],
+    "evidenceSha256": "42247b49bc697cbccc4c9c6de26707fe15cb407f577b5b7eac3331c7529c6ec0"
+  },
+  "artifacts": {
+    "security": {
+      "path": "reports/app-29-security-hardening.json",
+      "bytes": 1180,
+      "sha256": "63bdff58eab0ffadaa2386eaf8901dada35fd41bda08a615fd40b6ff1718b98b"
+    },
+    "migrations": {
+      "path": "reports/app-29-migration-contracts.json",
+      "bytes": 2154,
+      "sha256": "29d75b01fd84cb1f8d74b4a419c20c3caec6c57c973ad18826afb51b1a643661"
+    },
+    "rehearsal": {
+      "path": "reports/app-29-install-upgrade-rehearsal.json",
+      "bytes": 291,
+      "sha256": "6b9d2a697ac50f2fa45462978a238a16afcfc7f423ed8c11265859606407ae9d"
+    },
+    "performance": {
+      "path": "reports/app-29-performance-benchmark.json",
+      "bytes": 1594,
+      "sha256": "5716e920b7f70a84e11a32dd075e720dfe4fc32e8cf288c6921eed84218fc54b"
+    },
+    "app28": {
+      "path": "artifacts/app28-integral-gate.json",
+      "bytes": 3877,
+      "sha256": "6756a162b0e8496122811d8e3639847ed38b87cad8f56205acbfceb1dc918b66"
+    }
+  },
+  "remediation": [
+    {
+      "id": "app28-integral-gate",
+      "detail": "Gate APP-28 não está aprovado (BLOCKED). | Fingerprint da codebase diverge da evidência APP-28. | Etapa obrigatória não aprovada: dependency-install. | Etapa obrigatória não aprovada: full-typecheck. | Etapa obrigatória não aprovada: full-jest. | Etapa obrigatória não aprovada: native-gate. | Quantidade de fluxos Maestro insuficiente; esperado pelo menos 79. | Gate nativo não possui status PASS. | Versão Android instalada não foi validada contra app.json. | Descritor de artefato inválido: junit. | Descritor de artefato inválido: logcat. | Descritor de artefato inválido: screenshot. | Descritor de artefato inválido: maestroLog."
+    }
+  ],
+  "evidenceSha256": "32f320dae69170342b2887b26efd9f7b7f9a3869673da1edf7497e68892c5c83"
+}

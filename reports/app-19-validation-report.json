@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "dnd-combat-app19-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T17:35:00.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-app18-catalog-trust-chain.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385
+  },
+  "checks": {
+    "app02ToApp19LinearRegression": {
+      "status": "PASS",
+      "checks": 40
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 339
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "isolatedUpdateCoordinatorTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 32
+    },
+    "merkleInclusionProof": "PASS",
+    "merkleConsistencyProof": "PASS",
+    "remoteRollbackProtection": "PASS",
+    "serverOmissionDetection": "PASS",
+    "portableTrustTampering": "PASS",
+    "quorumRecovery": "PASS",
+    "remoteManifestSigningCli": "PASS",
+    "maestroDefinitions": {
+      "status": "PASS",
+      "flows": 43
+    },
+    "fullTypecheck": "BLOCKED_NOT_RUN_TO_COMPLETION",
+    "fullJest": "BLOCKED_NOT_RUN",
+    "nativeGate": "BLOCKED"
+  },
+  "blockers": {
+    "dependencyRegistry": "zustand@5.0.14 absent from configured internal registry",
+    "fullTypecheck": [
+      "expo/tsconfig.base missing",
+      "@types/jest missing",
+      "@types/node missing",
+      "@types/react missing"
+    ],
+    "jest": "jest executable unavailable without node_modules",
+    "native": [
+      "ADB unavailable",
+      "Maestro unavailable",
+      "no Android device/emulator accessible"
+    ]
+  }
+}

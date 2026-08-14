@@ -1,0 +1,26 @@
+src/compendium/bundledCompendium.ts(20,17): error TS2591: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/compendium/importer.ts(1,10): error TS2305: Module '"zod"' has no exported member 'ZodError'.
+src/compendium/importer.ts(104,17): error TS18046: 'error' is of type 'unknown'.
+src/compendium/importer.ts(104,35): error TS7006: Parameter 'issue' implicitly has an 'any' type.
+src/compendium/importer.ts(153,16): error TS7006: Parameter 'token' implicitly has an 'any' type.
+src/compendium/importer.ts(155,17): error TS7006: Parameter 'token' implicitly has an 'any' type.
+src/compendium/importer.ts(169,57): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumMigrations.ts(1,15): error TS2305: Module '"expo-sqlite"' has no exported member 'SQLiteDatabase'.
+src/storage/sqliteCompendiumRepository.ts(161,38): error TS2694: Namespace '"expo-sqlite"' has no exported member 'SQLiteDatabase'.
+src/storage/sqliteCompendiumRepository.ts(165,38): error TS2694: Namespace '"expo-sqlite"' has no exported member 'SQLiteDatabase'.
+src/storage/sqliteCompendiumRepository.ts(183,37): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(183,97): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(184,33): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(184,103): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(185,33): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(185,103): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(186,49): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(186,81): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(320,22): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(320,92): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(551,29): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(551,99): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(557,16): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(558,16): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/storage/sqliteCompendiumRepository.ts(559,16): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/store/catalogStore.ts(1,23): error TS2305: Module '"zustand"' has no exported member 'StoreApi'.

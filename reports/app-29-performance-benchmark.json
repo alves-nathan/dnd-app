@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "dnd-combat-app29-performance-benchmark.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:22.769Z",
+  "node": "v22.16.0",
+  "catalog": {
+    "file": "assets/catalog-v4.8.0/runtime-bundle-v4.8.0.json",
+    "bytes": 10548880,
+    "entityCount": 5841,
+    "dependencyCount": 15385,
+    "parse": {
+      "minMs": 27.988755999999995,
+      "medianMs": 33.194715,
+      "p95Ms": 39.482186,
+      "maxMs": 39.482186,
+      "iterations": 5
+    },
+    "hash": {
+      "minMs": 11.653095999999977,
+      "medianMs": 11.675009000000017,
+      "p95Ms": 14.972611999999998,
+      "maxMs": 14.972611999999998,
+      "iterations": 5
+    }
+  },
+  "runtimeSourceBytes": 3259468,
+  "budgets": {
+    "maximumCatalogBytes": 12582912,
+    "maximumParseP95Ms": 1500,
+    "maximumHashP95Ms": 1500,
+    "maximumRuntimeSourceBytes": 4194304,
+    "minimumEntities": 5000,
+    "minimumDependencies": 15000
+  },
+  "checks": [
+    {
+      "id": "catalog-size",
+      "pass": true,
+      "actual": 10548880,
+      "budget": 12582912
+    },
+    {
+      "id": "catalog-parse-p95",
+      "pass": true,
+      "actual": 39.482186,
+      "budget": 1500
+    },
+    {
+      "id": "catalog-hash-p95",
+      "pass": true,
+      "actual": 14.972611999999998,
+      "budget": 1500
+    },
+    {
+      "id": "runtime-source-size",
+      "pass": true,
+      "actual": 3259468,
+      "budget": 4194304
+    },
+    {
+      "id": "entity-count",
+      "pass": true,
+      "actual": 5841,
+      "budget": 5000
+    },
+    {
+      "id": "dependency-count",
+      "pass": true,
+      "actual": 15385,
+      "budget": 15000
+    }
+  ]
+}

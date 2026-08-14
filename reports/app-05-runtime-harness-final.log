@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "assertions": 24,
+  "storeVersion": 20,
+  "scenarios": {
+    "atomicCommit": {
+      "beforeLevel": 1,
+      "afterLevel": 2,
+      "operations": 2
+    },
+    "mandatoryPending": {
+      "blocked": 1,
+      "resolvedOperations": 2
+    },
+    "conflictDetection": {
+      "blocked": true,
+      "issueCodes": [
+        "PROGRESSION_TRANSACTION_CONFLICT"
+      ]
+    },
+    "snapshotMigration": {
+      "approvalRequired": true
+    },
+    "rollback": {
+      "restoredLevel": 1,
+      "historyEntries": 2
+    }
+  }
+}

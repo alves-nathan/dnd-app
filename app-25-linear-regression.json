@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "dnd-combat-app25-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T20:58:02.744Z",
+  "inheritedBaselineChecks": 190,
+  "currentPassChecks": 4,
+  "currentPlannedChecks": 4,
+  "results": [
+    {
+      "command": "run-app24-linear-regression.js",
+      "status": "PASS",
+      "durationMs": 5864,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"inheritedBaselineChecks\": 156,\n  \"currentPassChecks\": 34,\n  \"currentPlannedChecks\": 34\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-operational-journal.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app25-contracts.v1\",\n  \"status\": \"PASS\",\n  \"checkedAt\": \"2026-08-04T20:57:59.399Z\",\n  \"issues\": [],\n  \"expectedMaestroFlows\": 4\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app25-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 447,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 40,\n  \"schemas\": [\n    \"dnd-catalog-operational-journal-entry.v1\",\n    \"dnd-catalog-operational-reconciliation.v1\",\n    \"dnd-catalog-operational-evidence.v1\",\n    \"dnd-catalog-operational-recovery-authorization.v1\",\n    \"dnd-catalog-operational-recovery-confirmation.v1\"\n  ],\n  \"journalEntries\": 5,\n  \"archiveEntries\": 2,\n  \"driftDetected\": true,\n  \"recoveryAuthorized\": true,\n  \"replayRejected\": true,\n  \"evidenceValid\": true\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2892,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=365",
+      "stderr": ""
+    }
+  ]
+}

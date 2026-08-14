@@ -1,0 +1,56 @@
+name: Mobile E2E — Maestro Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: HTTPS URL of an Android x86 APK or zipped iOS .app
+        required: true
+        type: string
+      platform:
+        description: Platform represented by the binary
+        required: true
+        type: choice
+        options: [android, ios]
+
+jobs:
+  cloud-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download app binary
+        env:
+          APP_URL: ${{ inputs.app_url }}
+          PLATFORM: ${{ inputs.platform }}
+        run: |
+          mkdir -p artifacts/app
+          if [ "$PLATFORM" = "android" ]; then FILE=artifacts/app/app.apk; else FILE=artifacts/app/app.zip; fi
+          curl --fail --location --retry 3 "$APP_URL" --output "$FILE"
+          echo "APP_FILE=$FILE" >> "$GITHUB_ENV"
+      - id: maestro
+        uses: mobile-dev-inc/action-maestro-cloud@v3.0.1
+        with:
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+          app-file: ${{ env.APP_FILE }}
+          workspace: .maestro
+          device-model: ${{ inputs.platform == 'android' && 'pixel_7' || 'iPhone-16' }}
+          device-os: ${{ inputs.platform == 'android' && 'android-34' || 'iOS-18-2' }}
+          device-locale: pt_BR
+          timeout: 40
+      - name: Publish Maestro summary
+        if: always()
+        run: |
+          echo "### Maestro Cloud" >> "$GITHUB_STEP_SUMMARY"
+          echo "Status: ${{ steps.maestro.outputs.MAESTRO_CLOUD_UPLOAD_STATUS }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Console: ${{ steps.maestro.outputs.MAESTRO_CLOUD_CONSOLE_URL }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '${{ steps.maestro.outputs.MAESTRO_CLOUD_FLOW_RESULTS }}' > artifacts/maestro-cloud-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-cloud-${{ inputs.platform }}-${{ github.run_id }}
+          path: |
+            artifacts/maestro-cloud-results.json
+          if-no-files-found: ignore
+          retention-days: 30

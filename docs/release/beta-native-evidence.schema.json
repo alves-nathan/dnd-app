@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dnd-combat-beta-native-evidence.v3",
+  "title": "D&D Combat beta native evidence v3",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "platform",
+    "generatedAt",
+    "device",
+    "appVersion",
+    "buildProfile",
+    "buildId",
+    "gitSha",
+    "binarySha256",
+    "platformBuildNumber",
+    "testRunId",
+    "e2ePassed",
+    "nativeBenchmarkPassed",
+    "accessibilityAuditPassed",
+    "backupRestorePassed",
+    "dataSafetyRehearsalPassed",
+    "artifacts"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "dnd-combat-beta-native-evidence.v3" },
+    "platform": { "enum": ["android", "ios"] },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "device": { "type": "string", "minLength": 1 },
+    "appVersion": { "type": "string", "minLength": 1 },
+    "buildProfile": { "const": "beta-candidate" },
+    "buildId": { "type": "string", "minLength": 1 },
+    "gitSha": { "type": "string", "minLength": 7 },
+    "binarySha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+    "platformBuildNumber": { "type": "string", "minLength": 1 },
+    "testRunId": { "type": "string", "minLength": 1 },
+    "e2ePassed": { "const": true },
+    "nativeBenchmarkPassed": { "const": true },
+    "accessibilityAuditPassed": { "const": true },
+    "backupRestorePassed": { "const": true },
+    "dataSafetyRehearsalPassed": { "const": true },
+    "artifacts": {
+      "type": "object",
+      "required": ["maestro", "performance", "accessibility", "backupRestore", "dataSafety"],
+      "properties": {
+        "maestro": { "$ref": "#/$defs/artifact" },
+        "performance": { "$ref": "#/$defs/artifact" },
+        "accessibility": { "$ref": "#/$defs/artifact" },
+        "backupRestore": { "$ref": "#/$defs/artifact" },
+        "dataSafety": { "$ref": "#/$defs/artifact" }
+      },
+      "additionalProperties": false
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "coldStartMs": { "type": "number", "minimum": 0 },
+        "phbImportMs": { "type": "number", "minimum": 0 },
+        "sqliteHydrationMs": { "type": "number", "minimum": 0 },
+        "peakMemoryMb": { "type": "number", "minimum": 0 },
+        "droppedFramesPercent": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["location", "sha256", "capturedAt"],
+      "properties": {
+        "location": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "capturedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

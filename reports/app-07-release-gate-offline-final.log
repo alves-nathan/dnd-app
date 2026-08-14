@@ -1,0 +1,11 @@
+
+> dnd-combat-math-mvp@0.1.0 app07:release:gate:offline
+> node scripts/run-app07-release-gate.js --execute-native --allow-blocked
+
+PASS dependency-lock (31 ms)
+PASS app06-smoke (4715 ms)
+BLOCKED typecheck: Dependências integrais ausentes ou incompletas; execute npm run app07:dependencies:install em um registry completo.
+BLOCKED jest: Jest e dependências da aplicação não estão instalados integralmente.
+PASS native-gate (31 ms)
+Relatório: artifacts/app07-release-gate.json
+Status: BLOCKED

@@ -1,0 +1,131 @@
+diff --git a/app/characters/new.tsx b/app/characters/new.tsx
+index 4164062..455d555 100644
+--- a/app/characters/new.tsx
++++ b/app/characters/new.tsx
+@@ -385,7 +385,7 @@ export default function NewCharacterScreen() {
+   );
+   const selectableFeatCandidates = useMemo(
+     () => getSelectableFeatCandidates(items, enabledSourceIds),
+-    [enabledSourceIds, items, warlockLevel]
++    [enabledSourceIds, items]
+   );
+   const allSpells = useMemo(
+     () => getSelectableSpellCandidates(items, enabledSourceIds),
+diff --git a/scripts/check-character-choice-bridge.js b/scripts/check-character-choice-bridge.js
+index 57676b2..4091255 100755
+--- a/scripts/check-character-choice-bridge.js
++++ b/scripts/check-character-choice-bridge.js
+@@ -49,7 +49,7 @@ const contracts = [
+     'CATALOG_EDITORIAL_REVIEW_REQUIRED'
+   ]],
+   ['src/storage/characterMigrations.ts', [
+-    'CHARACTER_STORE_VERSION = 23',
++    'CHARACTER_STORE_VERSION = 24',
+     'normalizeCharacterChoiceReference'
+   ]],
+   ['src/characters/creationDraft.ts', [
+@@ -145,6 +145,6 @@ console.log(`carrierItems=${coverage.carrierItems}`);
+ console.log(`carrierByKind=${JSON.stringify(coverage.carrierByKind)}`);
+ console.log(`directIdCarriers=${coverage.directIdCarriers}`);
+ console.log(`directByKind=${JSON.stringify(coverage.directByKind)}`);
+-console.log('characterStoreVersion=23');
++console.log('characterStoreVersion=24');
+ const creationDraftVersion = read('src/characters/creationDraft.ts').match(/CHARACTER_CREATION_DRAFT_VERSION = (\d+)/)?.[1] ?? 'unknown';
+ console.log(`creationDraftVersion=${creationDraftVersion}`);
+diff --git a/scripts/check-character-compatibility.js b/scripts/check-character-compatibility.js
+index 6b59b4d..32fab18 100755
+--- a/scripts/check-character-compatibility.js
++++ b/scripts/check-character-compatibility.js
+@@ -16,7 +16,7 @@ const contracts = [
+   ['app/characters/[id]/index.tsx', ['useCharacterCompatibility', 'compatibilityReviewed', 'Verificando ficha', 'Abrir manifesto da ficha']],
+   ['app/_layout.tsx', ['characters/[id]/compatibility', 'character-compatibility']],
+   ['src/tests/characterCompatibility.test.ts', ['APP-08 character rules compatibility', 'read-only manifest']],
+-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 23']]
++  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24']]
+ ];
+ for (const [file, snippets] of contracts) {
+   const content = read(file);
+@@ -33,4 +33,4 @@ if (errors.length) {
+ }
+ console.log('[catalog:character-compatibility:check] PASS');
+ console.log('manifestSchema=dnd-character-rules-manifest.v1');
+-console.log('characterStoreVersion=23');
++console.log('characterStoreVersion=24');
+diff --git a/scripts/check-compatibility-remediation-recovery.js b/scripts/check-compatibility-remediation-recovery.js
+index 274f4b8..4004922 100755
+--- a/scripts/check-compatibility-remediation-recovery.js
++++ b/scripts/check-compatibility-remediation-recovery.js
+@@ -12,7 +12,7 @@ const contracts = [
+   ['src/characters/compatibilityRemediationRecovery.ts', ['COMPATIBILITY_PLAN_RECOVERED', 'COMPATIBILITY_PLAN_CONFLICT', 'COMPATIBILITY_PLAN_CATALOG_STALE', 'reconcileCompatibilityRemediationRecovery', 'acknowledgeCompatibilityRemediationRecovery']],
+   ['src/characters/compatibilityRemediationBatch.ts', ['buildCompatibilityRemediationBatchOverview', 'activePlans', 'readyPlans', 'activePlanCount']],
+   ['src/store/characterStore.ts', ['compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine', 'acknowledgeCompatibilityRemediationPlan', 'dismissCompatibilityRemediationQuarantine']],
+-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 23', 'compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine']],
++  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine']],
+   ['app/character-compatibility.tsx', ['Resumo agregado', 'Recuperação de planos', 'Ocorrências compartilhadas', 'Confirmar somente este personagem', 'Planos em quarentena']],
+   ['app/characters/[id]/compatibility.tsx', ['Plano recuperado', 'Retomar com segurança', 'planEditable']],
+   ['app/e2e-seed.tsx', ['prepareCompatibilityScenario', 'e2e-seed-remediation-create', 'e2e-seed-remediation-rollback']],
+@@ -37,5 +37,5 @@ if (errors.length) {
+   process.exit(1);
+ }
+ console.log('[catalog:compatibility-remediation-recovery:check] PASS');
+-console.log('storeVersion=23');
++console.log('storeVersion=24');
+ console.log('maestroFlows=4');
+diff --git a/scripts/check-compatibility-remediation.js b/scripts/check-compatibility-remediation.js
+index 7cecc2d..0a54640 100755
+--- a/scripts/check-compatibility-remediation.js
++++ b/scripts/check-compatibility-remediation.js
+@@ -13,7 +13,7 @@ const contracts = [
+   ['src/characters/characterCompatibility.ts', ['linkId?: string', 'appliedAs?: CharacterCompendiumLink', 'appliedEntityId?: string']],
+   ['src/store/characterStore.ts', ['compatibilityRemediationPlans', 'commitCompatibilityRemediationPlan', "kind: 'compatibilityRemediation'"]],
+   ['src/types/index.ts', ["'compatibilityRemediation'"]],
+-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 23', 'compatibilityRemediationPlans']],
++  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'compatibilityRemediationPlans']],
+   ['app/characters/[id]/compatibility.tsx', ['Criar plano de remediação', 'Confirmar em uma única transação', 'Descartar plano', 'Substituir por']],
+   ['src/tests/characterCompatibilityRemediation.test.ts', ['APP-09 compatibility remediation', 'commits atomically with rollback']],
+   ['scripts/run-app09-runtime-harness.js', ['compatibilityRemediation', 'rollbackProgressionAudit', 'afterReport.blockingIssueCount']]
+@@ -33,4 +33,4 @@ if (errors.length) {
+ }
+ console.log('[catalog:compatibility-remediation:check] PASS');
+ console.log('remediationSchema=dnd-character-compatibility-remediation.v1');
+-console.log('characterStoreVersion=23');
++console.log('characterStoreVersion=24');
+diff --git a/scripts/check-progression-recovery.js b/scripts/check-progression-recovery.js
+index ce5f79b..5648dcb 100755
+--- a/scripts/check-progression-recovery.js
++++ b/scripts/check-progression-recovery.js
+@@ -33,7 +33,7 @@ const contracts = [
+     'acknowledgeProgressionRecovery',
+     'onRehydrateStorage'
+   ]],
+-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 23', 'progressionRecovery']],
++  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'progressionRecovery']],
+   ['app/progression-recovery.tsx', ['Recuperação de progressão', 'Retomar com segurança', 'Conflito de recuperação']],
+   ['app/characters/[id]/progression.tsx', ['Rascunho recuperado após reinício', 'progression-recovery-resume']],
+   ['app/e2e-seed.tsx', ['Preparar recuperação transacional', 'Preparar conflito transacional', 'Preparar rollback transacional']],
+@@ -63,5 +63,5 @@ if (errors.length) {
+ }
+ 
+ console.log('[catalog:progression-recovery:check] PASS');
+-console.log('storeVersion=23');
++console.log('storeVersion=24');
+ console.log('maestroFlows=4');
+diff --git a/scripts/check-progression-transaction.js b/scripts/check-progression-transaction.js
+index 564ce70..d17add7 100755
+--- a/scripts/check-progression-transaction.js
++++ b/scripts/check-progression-transaction.js
+@@ -36,7 +36,7 @@ const contracts = [
+     'progressionDrafts'
+   ]],
+   ['src/storage/characterMigrations.ts', [
+-    'CHARACTER_STORE_VERSION = 23',
++    'CHARACTER_STORE_VERSION = 24',
+     'progressionTransactions',
+     'progressionDrafts'
+   ]],
+@@ -107,4 +107,4 @@ if (errors.length) {
+ 
+ console.log('[catalog:progression-transaction:check] PASS');
+ console.log(`transactionEditors=${transactionEditors.length}`);
+-console.log('storeVersion=23');
++console.log('storeVersion=24');

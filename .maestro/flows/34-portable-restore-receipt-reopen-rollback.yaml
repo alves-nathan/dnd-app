@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Reabrir recibo e executar rollback seguro
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-verification-closed
+- assertVisible: "Cenário E2E de verificação pós-restauração closed preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Recibos anteriores"
+- tapOn: "Reabrir rollback seguro"
+- assertVisible: "Restauração confirmada"
+- tapOn:
+    id: restore-session-rollback
+- assertVisible: "Rollback concluído"

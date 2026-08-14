@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "dnd-combat-import-v2-phase03-semantic-audit.v1",
+  "sourcePack": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+  "canonicalTemplateVersion": "dnd-combat-import.v2",
+  "items": 1284,
+  "uniqueIds": 1284,
+  "byKind": {
+    "condition": 24,
+    "feature": 546,
+    "weapon": 38,
+    "armor": 13,
+    "equipment": 42,
+    "magicItem": 3,
+    "creatureStatBlock": 66,
+    "spell": 391,
+    "class": 12,
+    "subclass": 48,
+    "feat": 75,
+    "background": 16,
+    "species": 10
+  },
+  "normalizationIssueCounts": {
+    "info": 1995,
+    "warning": 54
+  },
+  "semantic": {
+    "itemCount": 1284,
+    "uniqueItemIds": 1284,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 1,
+    "byCode": {
+      "IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 1
+    }
+  },
+  "semanticIssues": [
+    {
+      "severity": "info",
+      "code": "IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME",
+      "message": "phb-2024-feature-warlock-eldritch-smite consumes resource pactMagicSlot, which is not declared as an import resource in this pack. It may be runtime-defined.",
+      "itemId": "phb-2024-feature-warlock-eldritch-smite",
+      "itemKind": "feature",
+      "path": "payload.consumes[0].resourceId",
+      "relatedId": "pactMagicSlot"
+    }
+  ]
+}

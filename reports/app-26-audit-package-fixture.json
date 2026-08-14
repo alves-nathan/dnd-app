@@ -1,0 +1,599 @@
+{
+  "schemaVersion": "dnd-catalog-operational-audit-package.v1",
+  "packageId": "catalog-operational-audit-186d21ab48dc763b",
+  "generatedAt": "2026-08-04T12:07:00.000Z",
+  "source": {
+    "deviceIdHash": "6b082323216df215b2516562c780801bf72875a5dd286ecb73bc67c9991007be",
+    "appVersion": "0.1.0",
+    "platform": "test",
+    "label": "APP-26 device"
+  },
+  "archives": [
+    {
+      "schemaVersion": "dnd-catalog-operational-journal-archive.v1",
+      "archiveId": "catalog-operation-archive-1-3",
+      "createdAt": "2026-08-04T12:10:00.000Z",
+      "firstSequence": 1,
+      "lastSequence": 3,
+      "basePreviousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "headHash": "52197fd2f837697acc08efd71dbdf5fab258ac70f9ee00c1c18ee58622929305",
+      "entries": [
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-1-889aca404ece",
+          "sequence": 1,
+          "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "at": "2026-08-04T12:00:00.000Z",
+          "type": "authorizationAccepted",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "hash": "f329d5326b8d8a24976f09472b222df3883c38e8ece182a1d6a5bd48c58f04a2"
+        },
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-2-2a4d068f2f18",
+          "sequence": 2,
+          "previousHash": "f329d5326b8d8a24976f09472b222df3883c38e8ece182a1d6a5bd48c58f04a2",
+          "at": "2026-08-04T12:01:00.000Z",
+          "type": "executorConfirmed",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "hash": "b957465b1180745027004ce77cae9fb828c9ce20186e1b446ede7d92eb549bf5"
+        },
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-3-516d1179a37f",
+          "sequence": 3,
+          "previousHash": "b957465b1180745027004ce77cae9fb828c9ce20186e1b446ede7d92eb549bf5",
+          "at": "2026-08-04T12:02:00.000Z",
+          "type": "executionPrepared",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "hash": "52197fd2f837697acc08efd71dbdf5fab258ac70f9ee00c1c18ee58622929305"
+        }
+      ],
+      "checksum": "9678b2e3b488a59557f59972b35a99dc810871170bdcd9b565f0a0da884c3e2e"
+    }
+  ],
+  "activeJournal": [
+    {
+      "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+      "entryId": "catalog-operation-journal-4-e80c8b9af272",
+      "sequence": 4,
+      "previousHash": "52197fd2f837697acc08efd71dbdf5fab258ac70f9ee00c1c18ee58622929305",
+      "at": "2026-08-04T12:03:00.000Z",
+      "type": "executionStarted",
+      "authorizationId": "authorization-app26",
+      "sessionId": "session-app26",
+      "hash": "0c2173b958707ff5171f1e6e65ed92801bc46ac9b53476acb3581b2d74a793f4"
+    },
+    {
+      "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+      "entryId": "catalog-operation-journal-5-04ef119a8705",
+      "sequence": 5,
+      "previousHash": "0c2173b958707ff5171f1e6e65ed92801bc46ac9b53476acb3581b2d74a793f4",
+      "at": "2026-08-04T12:04:00.000Z",
+      "type": "executionSucceeded",
+      "authorizationId": "authorization-app26",
+      "sessionId": "session-app26",
+      "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+      "hash": "3e588efda5834aa752ce8a0c068b79c142ad7bccbcbc584c37fb019ce6a26d14"
+    },
+    {
+      "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+      "entryId": "catalog-operation-journal-6-e8b7590d8dfe",
+      "sequence": 6,
+      "previousHash": "3e588efda5834aa752ce8a0c068b79c142ad7bccbcbc584c37fb019ce6a26d14",
+      "at": "2026-08-04T12:05:00.000Z",
+      "type": "reconciliationCompleted",
+      "authorizationId": "authorization-app26",
+      "sessionId": "session-app26",
+      "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+      "hash": "a710586f438c6c82d000a090899216275504b1c2444d72ef2471a70247dd808c"
+    },
+    {
+      "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+      "entryId": "catalog-operation-journal-7-2771552f94c4",
+      "sequence": 7,
+      "previousHash": "a710586f438c6c82d000a090899216275504b1c2444d72ef2471a70247dd808c",
+      "at": "2026-08-04T12:06:00.000Z",
+      "type": "operationClosed",
+      "authorizationId": "authorization-app26",
+      "sessionId": "session-app26",
+      "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+      "hash": "5528172f181f117c5b3d257edd0aea69ef8bf208bbdb4093aeb03c6945d74cf0"
+    }
+  ],
+  "receipts": [
+    {
+      "schemaVersion": "dnd-catalog-operational-execution-receipt.v1",
+      "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+      "authorizationId": "authorization-app26",
+      "authorizationChecksum": "84c6490d7ae1a2d4754aba724f64ea5830d8ec55f90ad793f7eb283bf2948ae1",
+      "executorConfirmationChecksum": "855afcb09eded440e221e3b4fbd6858d4b0e7adc063c4f1e1d1dc93b9b508bd3",
+      "quorumDecisionChecksum": "90264a716ae6028b314581f312a74ec167aeee70929c5cc7f2c74bf12905f0de",
+      "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+      "publicationId": "publication-app26",
+      "action": "expand",
+      "targetRolloutPercent": 50,
+      "executor": {
+        "executorId": "executor-app26",
+        "publisherId": "app26-official",
+        "keyId": "executor"
+      },
+      "nonce": "nonce_app26_operation_0001",
+      "useIndex": 1,
+      "humanConfirmedAt": "2026-08-04T12:00:00.000Z",
+      "startedAt": "2026-08-04T12:00:01.000Z",
+      "completedAt": "2026-08-04T12:00:02.000Z",
+      "status": "succeeded",
+      "result": {
+        "kind": "rolloutOverride",
+        "summary": "Rollout expandido.",
+        "before": {
+          "rolloutPercent": 25
+        },
+        "after": {
+          "rolloutPercent": 50
+        }
+      },
+      "automaticExecution": false,
+      "checksum": "37f8303e2777c5f9c78bd4df3b4e0f89c9deecee214415ba47130624ccce9c0b"
+    }
+  ],
+  "evidence": [
+    {
+      "schemaVersion": "dnd-catalog-operational-evidence.v1",
+      "evidenceId": "catalog-operation-evidence-catalog-operation-authorization-app26-0ea23d4cdda0",
+      "generatedAt": "2026-08-04T12:06:01.000Z",
+      "closedAt": "2026-08-04T12:06:00.000Z",
+      "receipt": {
+        "schemaVersion": "dnd-catalog-operational-execution-receipt.v1",
+        "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+        "authorizationId": "authorization-app26",
+        "authorizationChecksum": "84c6490d7ae1a2d4754aba724f64ea5830d8ec55f90ad793f7eb283bf2948ae1",
+        "executorConfirmationChecksum": "855afcb09eded440e221e3b4fbd6858d4b0e7adc063c4f1e1d1dc93b9b508bd3",
+        "quorumDecisionChecksum": "90264a716ae6028b314581f312a74ec167aeee70929c5cc7f2c74bf12905f0de",
+        "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+        "publicationId": "publication-app26",
+        "action": "expand",
+        "targetRolloutPercent": 50,
+        "executor": {
+          "executorId": "executor-app26",
+          "publisherId": "app26-official",
+          "keyId": "executor"
+        },
+        "nonce": "nonce_app26_operation_0001",
+        "useIndex": 1,
+        "humanConfirmedAt": "2026-08-04T12:00:00.000Z",
+        "startedAt": "2026-08-04T12:00:01.000Z",
+        "completedAt": "2026-08-04T12:00:02.000Z",
+        "status": "succeeded",
+        "result": {
+          "kind": "rolloutOverride",
+          "summary": "Rollout expandido.",
+          "before": {
+            "rolloutPercent": 25
+          },
+          "after": {
+            "rolloutPercent": 50
+          }
+        },
+        "automaticExecution": false,
+        "checksum": "37f8303e2777c5f9c78bd4df3b4e0f89c9deecee214415ba47130624ccce9c0b"
+      },
+      "reconciliation": {
+        "schemaVersion": "dnd-catalog-operational-reconciliation.v1",
+        "reconciliationId": "catalog-operation-reconciliation-catalog-operation-authorization-app26-0ea23d4cdda0-a5b7b3c9bd",
+        "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+        "receiptChecksum": "37f8303e2777c5f9c78bd4df3b4e0f89c9deecee214415ba47130624ccce9c0b",
+        "createdAt": "2026-08-04T12:01:00.000Z",
+        "expected": {
+          "publicationId": "publication-app26",
+          "effectiveRolloutPercent": 50
+        },
+        "actual": {
+          "selectedChannel": "preview",
+          "operationalOverridesChecksum": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "publicationId": "publication-app26",
+          "effectiveRolloutPercent": 50,
+          "checksum": "ba5f252a076364ec27503aa6719ba377ba06d3ace17e1a91594f80834ed3278f"
+        },
+        "issues": [],
+        "status": "passed",
+        "acknowledgedWarningCodes": [],
+        "checksum": "fa72f1dccdd2a3d5b629c1fe1d8d0909fb76d9fc82bb788406601b6d6f94c45b"
+      },
+      "journalEntries": [
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-4-e80c8b9af272",
+          "sequence": 4,
+          "previousHash": "52197fd2f837697acc08efd71dbdf5fab258ac70f9ee00c1c18ee58622929305",
+          "at": "2026-08-04T12:03:00.000Z",
+          "type": "executionStarted",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "hash": "0c2173b958707ff5171f1e6e65ed92801bc46ac9b53476acb3581b2d74a793f4"
+        },
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-5-04ef119a8705",
+          "sequence": 5,
+          "previousHash": "0c2173b958707ff5171f1e6e65ed92801bc46ac9b53476acb3581b2d74a793f4",
+          "at": "2026-08-04T12:04:00.000Z",
+          "type": "executionSucceeded",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+          "hash": "3e588efda5834aa752ce8a0c068b79c142ad7bccbcbc584c37fb019ce6a26d14"
+        },
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-6-e8b7590d8dfe",
+          "sequence": 6,
+          "previousHash": "3e588efda5834aa752ce8a0c068b79c142ad7bccbcbc584c37fb019ce6a26d14",
+          "at": "2026-08-04T12:05:00.000Z",
+          "type": "reconciliationCompleted",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+          "hash": "a710586f438c6c82d000a090899216275504b1c2444d72ef2471a70247dd808c"
+        },
+        {
+          "schemaVersion": "dnd-catalog-operational-journal-entry.v1",
+          "entryId": "catalog-operation-journal-7-2771552f94c4",
+          "sequence": 7,
+          "previousHash": "a710586f438c6c82d000a090899216275504b1c2444d72ef2471a70247dd808c",
+          "at": "2026-08-04T12:06:00.000Z",
+          "type": "operationClosed",
+          "authorizationId": "authorization-app26",
+          "sessionId": "session-app26",
+          "receiptId": "catalog-operation-authorization-app26-0ea23d4cdda0",
+          "hash": "5528172f181f117c5b3d257edd0aea69ef8bf208bbdb4093aeb03c6945d74cf0"
+        }
+      ],
+      "archiveHeads": [
+        {
+          "archiveId": "catalog-operation-archive-1-3",
+          "headHash": "52197fd2f837697acc08efd71dbdf5fab258ac70f9ee00c1c18ee58622929305",
+          "checksum": "9678b2e3b488a59557f59972b35a99dc810871170bdcd9b565f0a0da884c3e2e"
+        }
+      ],
+      "journalHeadHash": "5528172f181f117c5b3d257edd0aea69ef8bf208bbdb4093aeb03c6945d74cf0",
+      "checksum": "74348b09dba42c8a1787488e5da24c8a8a43f597f39d0a000d68a66f0686eded"
+    }
+  ],
+  "authorizations": [
+    {
+      "schemaVersion": "dnd-catalog-operational-authorization.v1",
+      "authorizationId": "authorization-app26",
+      "issuedAt": "2026-08-04T11:15:00.000Z",
+      "expiresAt": "2026-08-04T15:00:00.000Z",
+      "publisherId": "app26-official",
+      "keyId": "authorizer",
+      "publicationId": "publication-app26",
+      "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+      "quorumDecisionChecksum": "90264a716ae6028b314581f312a74ec167aeee70929c5cc7f2c74bf12905f0de",
+      "action": "expand",
+      "targetRolloutPercent": 50,
+      "executor": {
+        "executorId": "executor-app26",
+        "publisherId": "app26-official",
+        "keyId": "executor"
+      },
+      "nonce": "nonce_app26_operation_0001",
+      "maximumUses": 1,
+      "humanConfirmationRequired": true,
+      "automaticExecution": false,
+      "signature": "Nm9BI05kg25I0gzVIw6FUj01qIaPfoHhmu4lXsluXjTt5tSY43ilUU_0uvYDZwgTE6j0aR48RwGb1anyOcHNUQ"
+    }
+  ],
+  "executorConfirmations": [
+    {
+      "schemaVersion": "dnd-catalog-executor-confirmation.v1",
+      "confirmationId": "confirmation-app26",
+      "issuedAt": "2026-08-04T11:20:00.000Z",
+      "expiresAt": "2026-08-04T14:30:00.000Z",
+      "executorId": "executor-app26",
+      "publisherId": "app26-official",
+      "keyId": "executor",
+      "authorizationChecksum": "84c6490d7ae1a2d4754aba724f64ea5830d8ec55f90ad793f7eb283bf2948ae1",
+      "quorumDecisionChecksum": "90264a716ae6028b314581f312a74ec167aeee70929c5cc7f2c74bf12905f0de",
+      "publicationId": "publication-app26",
+      "action": "expand",
+      "nonce": "nonce_app26_operation_0001",
+      "signature": "X634gyldFcfuTchkGO7OeWpOInTP_5AByDoDyXBS9MDLiw5vfToAGBzOIDRPK1U_K4eDjtYcc-eCIWUSsyq0eA"
+    }
+  ],
+  "aggregationPolicies": [
+    {
+      "schemaVersion": "dnd-catalog-rollout-aggregation-policy.v1",
+      "aggregationPolicyId": "policy-app26",
+      "publisherId": "app26-official",
+      "keyId": "root",
+      "publicationId": "publication-app26",
+      "channel": "preview",
+      "issuedAt": "2026-08-04T10:05:00.000Z",
+      "revision": 1,
+      "minimumUniqueContributors": 3,
+      "minimumCohortContributors": 3,
+      "maximumEvidenceAgeHours": 48,
+      "healthPolicyId": "health-app26",
+      "healthPolicyRevision": 1,
+      "healthThresholds": {
+        "minimumSampleSize": 3,
+        "minimumSuccessRate": 0.9,
+        "maximumFailureRate": 0.1,
+        "maximumRollbackRate": 0.05,
+        "maximumIntegrityFailureRate": 0,
+        "maximumP95DurationMs": 5000
+      },
+      "quorum": {
+        "minimumApprovals": 2,
+        "approvers": [
+          {
+            "approverId": "release-a",
+            "publisherId": "app26-official",
+            "keyId": "approver-a"
+          },
+          {
+            "approverId": "release-b",
+            "publisherId": "app26-official",
+            "keyId": "approver-b"
+          }
+        ]
+      },
+      "signature": "hMsqaawJxhSasHBga2MWgfwRZFkEK1JE7RWUWk_NQZvN_m7k-SPe7upTp-1s4FKGs5LKnIFT2ByyUe0C1mkgwg"
+    }
+  ],
+  "aggregateReports": [
+    {
+      "schemaVersion": "dnd-catalog-rollout-aggregate-report.v1",
+      "reportId": "report-app26",
+      "generatedAt": "2026-08-04T11:00:00.000Z",
+      "publisherId": "app26-official",
+      "keyId": "root",
+      "publicationId": "publication-app26",
+      "channel": "preview",
+      "catalogVersion": "6.1.0",
+      "snapshotId": "snapshot-app26",
+      "aggregationPolicyId": "policy-app26",
+      "aggregationPolicyRevision": 1,
+      "uniqueContributors": 3,
+      "acceptedSubmissions": 3,
+      "duplicateSubmissions": 0,
+      "rejectedSubmissions": 0,
+      "windowStartedAt": "2026-08-04T10:10:00.000Z",
+      "windowEndedAt": "2026-08-04T10:59:00.000Z",
+      "metrics": {
+        "eligibleObservations": 3,
+        "downloadAttempts": 3,
+        "downloadSuccesses": 3,
+        "downloadFailures": 0,
+        "integrityFailures": 0,
+        "previews": 3,
+        "commitAttempts": 3,
+        "commitSuccesses": 3,
+        "commitFailures": 0,
+        "rollbacks": 0,
+        "adoptionRate": 1,
+        "successRate": 1,
+        "failureRate": 0,
+        "rollbackRate": 0,
+        "integrityFailureRate": 0,
+        "p95DurationMs": 1000
+      },
+      "cohorts": [
+        {
+          "band": "0-24",
+          "contributorCount": 3,
+          "samples": 3,
+          "suppressed": false,
+          "successRate": 1,
+          "failureRate": 0,
+          "rollbackRate": 0
+        }
+      ],
+      "status": "healthy",
+      "recommendation": "expand",
+      "findings": [
+        "Saudável"
+      ],
+      "sourceEvidenceChecksums": [
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "2222222222222222222222222222222222222222222222222222222222222222",
+        "3333333333333333333333333333333333333333333333333333333333333333"
+      ],
+      "signature": "nuIabdxjQMcZbvyRJy5Wn9SUVjLjpjMiuCJb3Ju8jgk3zcHcMPSGw3lwItcWFcnizdnaUk6htDlztedSxRcAjg"
+    }
+  ],
+  "releaseApprovals": [
+    {
+      "schemaVersion": "dnd-catalog-release-approval.v1",
+      "approvalId": "approval-release-a",
+      "issuedAt": "2026-08-04T11:05:00.000Z",
+      "approverId": "release-a",
+      "publisherId": "app26-official",
+      "keyId": "approver-a",
+      "publicationId": "publication-app26",
+      "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+      "action": "expand",
+      "targetRolloutPercent": 50,
+      "vote": "approve",
+      "reason": "Aprovado.",
+      "signature": "PWyPFYZywDtaa1Wg_NZwz_bcfquxWXBXMENNPhsTlZfTj7YBv_qp9QpVWz6-yOkfytmWhvhaeCxIxDKsMg4yDQ"
+    },
+    {
+      "schemaVersion": "dnd-catalog-release-approval.v1",
+      "approvalId": "approval-release-b",
+      "issuedAt": "2026-08-04T11:05:00.000Z",
+      "approverId": "release-b",
+      "publisherId": "app26-official",
+      "keyId": "approver-b",
+      "publicationId": "publication-app26",
+      "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+      "action": "expand",
+      "targetRolloutPercent": 50,
+      "vote": "approve",
+      "reason": "Aprovado.",
+      "signature": "Wzn5iVEn9i5o5yuEDhXRVxgykTe2zR6QViSQIwohg9J0yQGptBDCPIw3Yie7FkkbcOasTvMG8q-6VuQJuncwcQ"
+    }
+  ],
+  "quorumDecisions": [
+    {
+      "schemaVersion": "dnd-catalog-release-quorum-decision.v1",
+      "decisionId": "release-decision-report-app26-e6024d55b11b",
+      "evaluatedAt": "2026-08-04T11:10:00.000Z",
+      "publicationId": "publication-app26",
+      "aggregateReportChecksum": "fce6752093ed3a3c1435a25e26a8d26552ab67f530d399a953e0795927a99687",
+      "action": "expand",
+      "targetRolloutPercent": 50,
+      "requiredApprovals": 2,
+      "approvalCount": 2,
+      "rejectionCount": 0,
+      "status": "approved",
+      "approvalIds": [
+        "approval-release-a",
+        "approval-release-b"
+      ],
+      "rejectionIds": [],
+      "automaticExecution": false,
+      "checksum": "90264a716ae6028b314581f312a74ec167aeee70929c5cc7f2c74bf12905f0de"
+    }
+  ],
+  "publications": [
+    {
+      "schemaVersion": "dnd-catalog-publication.v1",
+      "publicationId": "publication-app26",
+      "publisherId": "app26-official",
+      "keyId": "root",
+      "issuedAt": "2026-08-04T10:00:00.000Z",
+      "channel": "preview",
+      "sequence": 1,
+      "distributionManifestChecksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "catalogChecksum": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "bundleChecksum": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "catalogVersion": "6.1.0",
+      "snapshotId": "snapshot-app26",
+      "minAppVersion": "0.1.0",
+      "rolloutPercent": 25,
+      "cohortSalt": "app26-cohort-salt",
+      "releaseNotes": {
+        "locale": "pt-BR",
+        "title": "APP-26",
+        "summary": "Auditoria operacional independente.",
+        "items": [
+          "Diário verificável",
+          "Relatório assinado"
+        ],
+        "checksum": "248a407a5e84d606ee1a142535516963534dd726984d257697a9f8b4d45123e4"
+      },
+      "signature": "nI8bn7ERIgzLcCP3HGjZT_QIOtrUXxfIz2XAjz07NN7l-D33hz3JJmIBJ3Lf-IuXQaNlpFFalm_prIRIsAsxLg"
+    }
+  ],
+  "trustRegistry": {
+    "schemaVersion": "dnd-catalog-trust-registry.v1",
+    "revision": 1,
+    "publishers": [
+      {
+        "publisherId": "app26-official",
+        "displayName": "APP-26 Auditoria",
+        "kind": "official",
+        "trustLevel": "pinned",
+        "status": "trusted",
+        "keys": [
+          {
+            "keyId": "root",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "3XjS13nLipPfMzJql_lt48uTgI5JrpFieb0zgz-GFdw",
+              "y": "2u9snmPRd5z8DVJw-jtcd3joQpZXc4BKf5WfMp-bbZM",
+              "crv": "P-256"
+            },
+            "fingerprint": "a2bed1353577eccff1055ab904928c7044585712f185a0ceca480d178ee237dd",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          },
+          {
+            "keyId": "approver-a",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "eOuobcsiosnTci1M2reUkRYwcTdb37u8VU2FER3OMLo",
+              "y": "TK-w0s4c1S7R5AmhkG_cuuwYNbkOS8yggzk7R9rKEVs",
+              "crv": "P-256"
+            },
+            "fingerprint": "98465ea53d161fbcdc181f2b6e6f7fc61f19022482799c0faa9fcaab86d14cd1",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          },
+          {
+            "keyId": "approver-b",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "bTMLEvMOqzK5-itjeFacdd4aQLnxBtKRHOj6ZbjJd8E",
+              "y": "VHT1l4XAXblZL2ZL3GM6dl-8sHndjhScDSU07DwsEfE",
+              "crv": "P-256"
+            },
+            "fingerprint": "76e9fba7c8cc721daf0676e28c6503d4cb5bee7550adee356ccb23905d7e1f7d",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          },
+          {
+            "keyId": "authorizer",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "62WkGblyClyoQTfx-Ya1V9b4r23Qoa-mp1AjvdU-f6s",
+              "y": "d5azx5nxB3bLkJez55z2jd5n5xCgA0VbB1a7mI9xwcQ",
+              "crv": "P-256"
+            },
+            "fingerprint": "c3261bfb1ab605efc9e43ea30cd16d0a437592e202ca752e71d9ab6c8b67ca06",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          },
+          {
+            "keyId": "executor",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "_mZF2TNP_3Qm4VX5r6kZh2vVgb03BsPNgrAuc_6rRNY",
+              "y": "8osB3g0HrRa3hABDHygiPB6E7x2GvW_OPzdzLj8l0rw",
+              "crv": "P-256"
+            },
+            "fingerprint": "8ea456583ded5ede17898915cafa060267461355b84d710a6a09af90350505dd",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          },
+          {
+            "keyId": "auditor",
+            "algorithm": "ECDSA_P256_SHA256",
+            "publicJwk": {
+              "kty": "EC",
+              "x": "-Qm9ll2XvMkm3Sx7cm6KR6YYULVAhWIokTXuTTb28P4",
+              "y": "mF3n1bt1z683A5T99bZ-X7b666CNXO7fi2ezbFKK030",
+              "crv": "P-256"
+            },
+            "fingerprint": "75eb212b3bfd819c26b7f03a61a307f065af0b1735350e494d3fb731a60bc9e6",
+            "status": "active",
+            "validFrom": "2026-08-04T00:00:00.000Z",
+            "addedAt": "2026-08-04T00:00:00.000Z"
+          }
+        ],
+        "createdAt": "2026-08-04T00:00:00.000Z",
+        "updatedAt": "2026-08-04T00:00:00.000Z"
+      }
+    ],
+    "events": [],
+    "updatedAt": "2026-08-04T00:00:00.000Z"
+  },
+  "checksum": "2d95883f75e4c419ba7f7f3216628a3145054012393c0077c61fd33be03ab9b7"
+}

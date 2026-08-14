@@ -1,0 +1,170 @@
+{
+  "project": "D&D Combat Math content extraction + app integration",
+  "contract": "dnd-combat-import.v1",
+  "runtimeSchema": "dnd-combat-import.v2",
+  "compatibilityProfile": "2024-first+legacy",
+  "sources": [
+    {
+      "sourceId": "phb-2024",
+      "book": "Player's Handbook 2024",
+      "edition": "2024",
+      "status": "bundled",
+      "runtimePack": "phb-2024-full-consolidated-import-pack-v2-canonical.json",
+      "itemRecords": 1284
+    },
+    {
+      "sourceId": "mm-2024-runtime-delta",
+      "book": "Monster Manual 2024",
+      "edition": "2024",
+      "status": "complete-and-bundled-minimal-runtime-delta",
+      "runtimePack": "mm-2024-runtime-dependency-delta-v2-canonical.json",
+      "logicalPackId": "mm-2024-runtime-dependency-delta-v1",
+      "itemRecords": 2,
+      "scope": [
+        "Mage",
+        "Flumph"
+      ],
+      "fullBookImported": false
+    },
+    {
+      "sourceId": "forge-artificer-2025",
+      "book": "Eberron: Forge of the Artificer",
+      "edition": "2024",
+      "status": "complete-and-bundled",
+      "runtimePack": "forge-artificer-2025-full-consolidated-import-pack-v2-canonical.json",
+      "itemRecords": 200
+    },
+    {
+      "sourceId": "spelljammer-2022",
+      "book": "Spelljammer: Adventures in Space",
+      "edition": "legacy",
+      "status": "complete-and-bundled-2024-compatible",
+      "runtimePack": "spelljammer-2022-2024-compatible-import-pack-v2-canonical.json",
+      "logicalPackId": "spelljammer-2022-full-consolidated-import-pack-v1",
+      "itemRecords": 182,
+      "phb2014ReferencesReconciled": 55,
+      "referenceOccurrencesReconciled": 171,
+      "deferredRuntimeDependencies": [],
+      "mm2014RuntimeReferencesReconciled": 2
+    },
+    {
+      "sourceId": "tcoe-2020",
+      "book": "Tasha's Cauldron of Everything",
+      "edition": "legacy",
+      "status": "complete-and-bundled-2024-compatible",
+      "sourceItemRecords": 475,
+      "runtimePack": "tcoe-2020-2024-compatible-import-pack-v2-canonical.json",
+      "runtimeItemRecords": 267,
+      "suppressedAsSupersededOrOldChassis": 208
+    },
+    {
+      "sourceId": "phb-2014-delta",
+      "book": "Player's Handbook 2014",
+      "edition": "legacy",
+      "status": "complete-and-bundled-minimal-delta",
+      "runtimePack": "phb-2014-2024-compatible-delta-v2-canonical.json",
+      "officialRetainedOptions": 12,
+      "itemRecords": 56
+    }
+  ],
+  "runtimeCatalog": {
+    "packCount": 6,
+    "itemRecords": 1991,
+    "packs": {
+      "phb2024": 1284,
+      "mm2024RuntimeDelta": 2,
+      "forge2025": 200,
+      "spelljammer2022": 182,
+      "tasha2020Compatible": 267,
+      "phb2014Delta": 56
+    }
+  },
+  "integration": [
+    {
+      "id": "APP-INTEGRATION-01",
+      "status": "complete",
+      "scope": "three-pack preflight"
+    },
+    {
+      "id": "APP-INTEGRATION-02",
+      "status": "complete",
+      "scope": "real Import V2 runtime integration"
+    },
+    {
+      "id": "APP-INTEGRATION-03",
+      "status": "complete",
+      "scope": "codebase consolidation + 2024-first Tasha projection"
+    },
+    {
+      "id": "APP-INTEGRATION-04",
+      "status": "complete",
+      "scope": "2024+legacy character/custom-rule smoke"
+    },
+    {
+      "id": "LEGACY-PHB2014-DELTA-01",
+      "status": "complete",
+      "scope": "12 legacy-only PHB 2014 options"
+    },
+    {
+      "id": "APP-INTEGRATION-05",
+      "status": "complete",
+      "scope": "legacy dependency reconciliation",
+      "results": {
+        "runtimeRequiredUnique": 2,
+        "displayOnlyUnique": 22,
+        "provenanceOnlyUnique": 2,
+        "xgteResidual": 0,
+        "phb2014OutsideProvenance": 0,
+        "malformedLegacyIds": 0,
+        "spelljammerUpgradeUpdates": 27,
+        "spelljammerUpgradeCreates": 0,
+        "spelljammerUpgradeConflicts": 0,
+        "releaseGate": "PASS",
+        "legacyCharacterSmoke": "24/24 PASS",
+        "customFeatFeatureSmoke": "5/5 PASS"
+      }
+    },
+    {
+      "id": "APP-INTEGRATION-06",
+      "status": "complete",
+      "scope": "close Mage + Flumph with current-rules minimal MM delta",
+      "results": {
+        "mm2024DeltaItems": 2,
+        "runtimeRequiredUnique": 0,
+        "displayOnlyUnique": 22,
+        "provenanceOnlyUnique": 2,
+        "spelljammerUpgradeUpdates": 28,
+        "spelljammerUpgradeCreates": 0,
+        "spelljammerUpgradeConflicts": 0,
+        "spelljammerUpgradeReplay": "182/182 unchanged",
+        "runtimeCatalog": "1991 items / 6 packs",
+        "monsterClosureCheck": "11/11 PASS",
+        "releaseGate": "PASS",
+        "legacyCharacterSmoke": "24/24 PASS",
+        "customFeatFeatureSmoke": "5/5 PASS",
+        "functionalParity": "13/13 PASS",
+        "typescriptSyntax": "442 files PASS",
+        "projectShape": "PASS",
+        "accessibility": "PASS"
+      }
+    },
+    {
+      "id": "APP-INTEGRATION-07",
+      "status": "next",
+      "scope": "end-to-end 2024+legacy release smoke and restore/idempotency closure"
+    }
+  ],
+  "normalization": {
+    "allowedActionCosts": [
+      "action",
+      "bonusAction",
+      "reaction",
+      "movement",
+      "free",
+      "special"
+    ],
+    "versionPolicy": "2024 source wins when a current replacement exists; legacy-only content remains under distinct stable IDs",
+    "fullLegacyCoreImportPolicy": "avoid; prefer minimal deltas for content not replaced by current rules"
+  },
+  "nextBatch": "APP-INTEGRATION-07"
+}

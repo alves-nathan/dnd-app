@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Federação de auditoria"
+- assertVisible: "Testemunhas independentes"
+- assertVisible: "Ferramentas independentes"

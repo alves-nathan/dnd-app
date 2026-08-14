@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Saúde e promoção do rollout"
+- assertVisible: "Evidências opt-in"
+- assertVisible:
+    id: "rollout-health-evidence-share"

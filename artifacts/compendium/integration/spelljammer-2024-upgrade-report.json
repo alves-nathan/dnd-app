@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "dnd-combat-spelljammer-2024-upgrade.v1",
+  "logicalPackIdPreserved": true,
+  "oldPackId": "spelljammer-2022-full-consolidated-import-pack-v1",
+  "compatiblePackId": "spelljammer-2022-full-consolidated-import-pack-v1",
+  "mm2024DependencyPackInstalled": true,
+  "beforeItemCount": 1468,
+  "upgrade": {
+    "valid": true,
+    "creates": 0,
+    "updates": 28,
+    "unchanged": 154,
+    "conflicts": 0,
+    "errors": 0,
+    "executable": true
+  },
+  "afterItemCount": 1468,
+  "replay": {
+    "valid": true,
+    "creates": 0,
+    "updates": 0,
+    "unchanged": 182,
+    "conflicts": 0,
+    "errors": 0
+  },
+  "pass": true
+}

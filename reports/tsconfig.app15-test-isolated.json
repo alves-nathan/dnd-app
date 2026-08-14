@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [],
+    "noEmit": true
+  },
+  "files": [
+    "app-15-test-stubs.d.ts",
+    "app-09-isolated-stubs.d.ts",
+    "../src/catalog/catalogConfigurationHistory.ts",
+    "../src/storage/catalogFilterPreferences.ts",
+    "../src/backup/portableCatalogBackup.ts",
+    "../src/backup/characterBackup.ts",
+    "../src/characters/catalogChangeImpact.ts",
+    "../src/backup/portableRestoreSession.ts",
+    "../src/backup/portableRestoreVerification.ts",
+    "../src/tests/portableRestoreVerification.test.ts"
+  ]
+}

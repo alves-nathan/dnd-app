@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "dnd-combat-tactical-mobile-closure-status.v1",
+  "generatedAt": "2026-08-11T17:55:01.370Z",
+  "localAudit": "available",
+  "easProject": {
+    "configured": true,
+    "projectId": "d2e0ddd4-a2f1-4d13-9415-a634c4ac1e94"
+  },
+  "android": {
+    "status": "blocked",
+    "maestro": null,
+    "adb": null,
+    "devices": [],
+    "blockers": [
+      "Maestro CLI não encontrado.",
+      "adb não encontrado."
+    ],
+    "automatedClosure": {
+      "status": "not-run"
+    },
+    "evidence": {
+      "status": "missing",
+      "path": "artifacts/beta-evidence/android.json"
+    }
+  },
+  "ios": {
+    "status": "blocked",
+    "hostPlatform": "linux",
+    "maestro": null,
+    "xcrun": null,
+    "blockers": [
+      "Maestro CLI não encontrado.",
+      "Execução iOS local exige macOS.",
+      "xcrun não encontrado."
+    ],
+    "evidence": {
+      "status": "missing",
+      "path": "artifacts/beta-evidence/ios.json"
+    }
+  },
+  "betaPromotion": {
+    "status": "pending-native-evidence",
+    "requiredEvidenceSchema": "dnd-combat-beta-native-evidence.v3"
+  }
+}

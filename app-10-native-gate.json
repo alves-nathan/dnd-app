@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "dnd-combat-app06-native-gate.v2",
+  "status": "BLOCKED",
+  "generatedAt": "2026-08-04T10:55:41.927Z",
+  "executeRequested": true,
+  "expectedAndroid": {
+    "packageName": "com.nalves.dndcombatmathmvp",
+    "versionName": "0.1.0",
+    "versionCode": "2"
+  },
+  "installedVersion": null,
+  "checks": [
+    {
+      "id": "flow:.maestro/flows/08-progression-recovery-commit.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/09-progression-recovery-discard.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/10-progression-recovery-conflict.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/11-progression-rollback.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/12-remediation-plan-create.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/13-remediation-plan-discard.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/14-remediation-plan-commit.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "flow:.maestro/flows/15-remediation-plan-rollback.yaml",
+      "status": "PASS",
+      "detail": "Arquivo encontrado."
+    },
+    {
+      "id": "dependencies",
+      "status": "BLOCKED",
+      "detail": "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente."
+    },
+    {
+      "id": "adb",
+      "status": "BLOCKED",
+      "detail": "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT."
+    },
+    {
+      "id": "maestro",
+      "status": "BLOCKED",
+      "detail": "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    }
+  ],
+  "flows": [
+    ".maestro/flows/08-progression-recovery-commit.yaml",
+    ".maestro/flows/09-progression-recovery-discard.yaml",
+    ".maestro/flows/10-progression-recovery-conflict.yaml",
+    ".maestro/flows/11-progression-rollback.yaml",
+    ".maestro/flows/12-remediation-plan-create.yaml",
+    ".maestro/flows/13-remediation-plan-discard.yaml",
+    ".maestro/flows/14-remediation-plan-commit.yaml",
+    ".maestro/flows/15-remediation-plan-rollback.yaml"
+  ],
+  "execution": {
+    "status": "BLOCKED",
+    "reason": "Pré-requisitos nativos indisponíveis."
+  },
+  "remediation": [
+    "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+    "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+    "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+  ]
+}

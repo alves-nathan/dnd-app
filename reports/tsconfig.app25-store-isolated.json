@@ -1,0 +1,4 @@
+{
+  "compilerOptions": {"target":"ES2022","module":"CommonJS","moduleResolution":"Node","strict":true,"noEmit":true,"skipLibCheck":true,"lib":["ES2022","DOM"],"esModuleInterop":true},
+  "files": ["app-25-store-stubs.d.ts","../src/store/catalogOperationalAuthorizationStore.ts"]
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "dnd-combat-custom-feat-feature-smoke.v1",
+  "checks": [
+    {
+      "name": "Friendly Fire damage multiplier and trigger surface",
+      "pass": true,
+      "result": {
+        "average": 11,
+        "warnings": [
+          "CUSTOM_DAMAGE_MULTIPLIER_APPLIED",
+          "CUSTOM_TRIGGERED_DAMAGE_RULE"
+        ]
+      }
+    },
+    {
+      "name": "damage multiplier is scoped by damage type",
+      "pass": true,
+      "result": {
+        "average": 5.5
+      }
+    },
+    {
+      "name": "custom spell-list addition is class scoped",
+      "pass": true,
+      "result": {
+        "bardRules": 1
+      }
+    },
+    {
+      "name": "custom spell replacement spends and restores long-rest resource",
+      "pass": true,
+      "result": {
+        "afterRest": 1
+      }
+    },
+    {
+      "name": "custom feat/feature UI wiring remains present",
+      "pass": true,
+      "result": {
+        "contracts": 5
+      }
+    }
+  ],
+  "passed": 5,
+  "failed": 0,
+  "pass": true
+}

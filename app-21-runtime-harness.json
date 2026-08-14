@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "assertions": 34,
+  "channels": [
+    "stable",
+    "beta",
+    "preview"
+  ],
+  "rollout": "DETERMINISTIC",
+  "validPublication": "app21-stable-1",
+  "pause": "PASS",
+  "withdrawal": "TERMINAL",
+  "appCompatibility": "PASS",
+  "releaseNotesTampering": "REJECTED",
+  "automaticApplication": "NOT_IMPLEMENTED"
+}

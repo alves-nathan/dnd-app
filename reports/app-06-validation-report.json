@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "dnd-combat-app06-validation.v1",
+  "status": "PASS_WITH_NATIVE_EXECUTION_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T01:14:36Z",
+  "sourceArchive": "dnd-combat-math-mvp-app05-atomic-progression-transaction.zip",
+  "storeVersion": 21,
+  "checks": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "runtimeCatalog": "PASS",
+    "app02ThroughApp05Contracts": "PASS",
+    "app06RecoveryContracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 296
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "app05Harness": {
+      "status": "PASS",
+      "assertions": 24
+    },
+    "app06Harness": {
+      "status": "PASS",
+      "assertions": 21
+    },
+    "fullNpmTypecheck": "BLOCKED_MISSING_DEPENDENCIES",
+    "fullJestSuite": "BLOCKED_JEST_NOT_INSTALLED",
+    "npmCi": "BLOCKED_REGISTRY_404_ZUSTAND_5_0_14",
+    "nativeGate": "BLOCKED"
+  },
+  "nativeGate": {
+    "schemaVersion": "dnd-combat-app06-native-gate.v1",
+    "status": "BLOCKED",
+    "generatedAt": "2026-08-04T01:11:58.285Z",
+    "executeRequested": false,
+    "checks": [
+      {
+        "id": "flow:.maestro/flows/08-progression-recovery-commit.yaml",
+        "status": "PASS",
+        "detail": "Arquivo encontrado."
+      },
+      {
+        "id": "flow:.maestro/flows/09-progression-recovery-discard.yaml",
+        "status": "PASS",
+        "detail": "Arquivo encontrado."
+      },
+      {
+        "id": "flow:.maestro/flows/10-progression-recovery-conflict.yaml",
+        "status": "PASS",
+        "detail": "Arquivo encontrado."
+      },
+      {
+        "id": "flow:.maestro/flows/11-progression-rollback.yaml",
+        "status": "PASS",
+        "detail": "Arquivo encontrado."
+      },
+      {
+        "id": "dependencies",
+        "status": "BLOCKED",
+        "detail": "node_modules ausente; a build/dev client não pode ser iniciada neste ambiente."
+      },
+      {
+        "id": "adb",
+        "status": "BLOCKED",
+        "detail": "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT."
+      },
+      {
+        "id": "maestro",
+        "status": "BLOCKED",
+        "detail": "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+      }
+    ],
+    "flows": [
+      ".maestro/flows/08-progression-recovery-commit.yaml",
+      ".maestro/flows/09-progression-recovery-discard.yaml",
+      ".maestro/flows/10-progression-recovery-conflict.yaml",
+      ".maestro/flows/11-progression-rollback.yaml"
+    ],
+    "execution": {
+      "status": "NOT_RUN",
+      "reason": "Use --execute para executar os quatro fluxos no dispositivo conectado."
+    },
+    "remediation": [
+      "node_modules ausente; a build/dev client não pode ser iniciada neste ambiente.",
+      "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+      "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    ]
+  },
+  "recoveryScenarios": {
+    "restartRecovery": {
+      "status": "recoverable",
+      "checkpoint": 1
+    },
+    "acknowledgedCommit": {
+      "ok": true,
+      "level": 2
+    },
+    "checkpoint": {
+      "before": 1,
+      "after": 2
+    },
+    "conflict": {
+      "status": "conflicted"
+    },
+    "quarantine": {
+      "orphaned": 1,
+      "invalid": 1
+    }
+  },
+  "blockers": [
+    "Internal registry returned 404 for zustand@5.0.14.",
+    "expo/tsconfig.base and React/Node/Jest type packages are unavailable without node_modules.",
+    "Jest executable is unavailable.",
+    "ADB is unavailable in this environment.",
+    "Maestro CLI is unavailable in this environment."
+  ]
+}

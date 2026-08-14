@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Diário operacional"
+- assertVisible: "Diário operacional"
+- assertVisible: "Reconciliação, encerramento verificado"

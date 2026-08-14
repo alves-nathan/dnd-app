@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Restaurar configuração por nova transação
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-history
+- assertVisible: "Cenário E2E de histórico transacional do catálogo preparado."
+- openLink: dndcombatmath://catalog-history
+- tapOn: "Restaurar configuração anterior"
+- assertVisible:
+    id: catalog-history-restoration-preview
+- tapOn:
+    id: catalog-impact-apply
+- openLink: dndcombatmath://catalog-history
+- assertVisible: "Restauração"

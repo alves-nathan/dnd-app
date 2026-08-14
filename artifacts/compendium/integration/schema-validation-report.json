@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "dnd-combat-extracted-book-json-schema-validation.v1",
+  "schema": "docs/dnd-combat-import-v2.schema.json",
+  "validator": "Python jsonschema Draft202012Validator",
+  "packs": [
+    {
+      "key": "forge",
+      "label": "Forge of the Artificer 2025",
+      "file": "artifacts/compendium/integration/v2/forge-artificer-2025-full-consolidated-import-pack-v2-canonical.json",
+      "templateVersion": "dnd-combat-import.v2",
+      "itemCount": 200,
+      "uniqueIds": 200,
+      "sha256": "120dd395a7ca73dda7b08839d0b05449ccd1aec05805e93a1e5f7d9d4f90d504",
+      "schemaErrorCount": 0,
+      "schemaErrors": []
+    },
+    {
+      "key": "spelljammer",
+      "label": "Spelljammer: Adventures in Space 2022",
+      "file": "artifacts/compendium/integration/v2/spelljammer-2022-full-consolidated-import-pack-v2-canonical.json",
+      "templateVersion": "dnd-combat-import.v2",
+      "itemCount": 182,
+      "uniqueIds": 182,
+      "sha256": "02e4b40489636ab7b1009e55abf2a8c090c7e1de920870553271836026221021",
+      "schemaErrorCount": 0,
+      "schemaErrors": []
+    },
+    {
+      "key": "tasha",
+      "label": "Tasha's Cauldron of Everything 2020",
+      "file": "artifacts/compendium/integration/v2/tcoe-2020-full-consolidated-import-pack-v2-canonical.json",
+      "templateVersion": "dnd-combat-import.v2",
+      "itemCount": 475,
+      "uniqueIds": 475,
+      "sha256": "0064bc8ebf6a0fbc471c32e6fe8654670f49674325f9a8adf6abd9098b073f3e",
+      "schemaErrorCount": 0,
+      "schemaErrors": []
+    }
+  ],
+  "pass": true
+}

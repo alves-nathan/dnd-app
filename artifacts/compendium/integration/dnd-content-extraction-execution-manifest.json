@@ -1,0 +1,117 @@
+{
+  "project": "D&D Combat Math content extraction and app integration",
+  "sourceContract": "dnd-combat-import.v1",
+  "runtimeContract": "dnd-combat-import.v2",
+  "schemaTarget": "dnd-combat-math-current",
+  "status": "integrationInProgress",
+  "sources": [
+    {
+      "sourceId": "forge-artificer-2025",
+      "book": "Eberron: Forge of the Artificer",
+      "edition": "2024",
+      "pdfPages": 162,
+      "status": "complete",
+      "consolidatedFile": "forge-artificer-2025-full-consolidated-import-pack-v1.json",
+      "consolidatedItems": 200,
+      "batches": [
+        {"id":"forge-artificer-2025-part-01-artificer-core","status":"complete","itemRecords":14},
+        {"id":"forge-artificer-2025-part-02-artificer-spells","status":"complete","itemRecords":3},
+        {"id":"forge-artificer-2025-part-03-artificer-subclasses","status":"complete","itemRecords":39},
+        {"id":"forge-artificer-2025-part-04-character-options","status":"complete","itemRecords":70},
+        {"id":"forge-artificer-2025-part-05-bastions","status":"complete","itemRecords":11},
+        {"id":"forge-artificer-2025-part-06-campaign-mechanics","status":"complete","itemRecords":42},
+        {"id":"forge-artificer-2025-part-07-airships","status":"complete","itemRecords":12},
+        {"id":"forge-artificer-2025-part-08-magic-items","status":"complete","itemRecords":9},
+        {"id":"forge-artificer-2025-part-09-audit","status":"complete"}
+      ]
+    },
+    {
+      "sourceId": "spelljammer-2022",
+      "book": "Spelljammer: Adventures in Space",
+      "edition": "legacy",
+      "pdfPages": 204,
+      "status": "complete",
+      "consolidatedFile": "spelljammer-2022-full-consolidated-import-pack-v1.json",
+      "consolidatedItems": 182,
+      "batches": [
+        {"id":"spelljammer-2022-part-01-character-options","status":"complete","itemRecords":39},
+        {"id":"spelljammer-2022-part-02-spelljamming-core","status":"complete","itemRecords":17},
+        {"id":"spelljammer-2022-part-03-spells-equipment-magic-items","status":"complete","itemRecords":5},
+        {"id":"spelljammer-2022-part-04-ships","status":"complete","itemRecords":25},
+        {"id":"spelljammer-2022-part-05-boos-astral-menagerie","status":"complete","itemRecords":77},
+        {"id":"spelljammer-2022-part-06-light-of-xaryxis","status":"complete","itemRecords":18},
+        {"id":"spelljammer-2022-part-07-audit","status":"complete"}
+      ]
+    },
+    {
+      "sourceId": "tcoe-2020",
+      "book": "Tasha's Cauldron of Everything",
+      "edition": "legacy",
+      "pdfPages": 194,
+      "status": "complete",
+      "consolidatedFile": "tcoe-2020-full-consolidated-import-pack-v1.json",
+      "consolidatedItems": 475,
+      "batches": [
+        {"id":"tcoe-2020-part-01-origin-rules","status":"complete","itemRecords":7},
+        {"id":"tcoe-2020-part-02-artificer","status":"complete","itemRecords":62},
+        {"id":"tcoe-2020-part-03-optional-class-features","status":"complete","itemRecords":73},
+        {"id":"tcoe-2020-part-04-subclasses","status":"complete","itemRecords":178},
+        {"id":"tcoe-2020-part-05-feats","status":"complete","itemRecords":15},
+        {"id":"tcoe-2020-part-06-spells-summons","status":"complete","itemRecords":30},
+        {"id":"tcoe-2020-part-07-magic-items","status":"complete","itemRecords":49},
+        {"id":"tcoe-2020-part-08-sidekicks","status":"complete","itemRecords":29},
+        {"id":"tcoe-2020-part-09-group-patrons","status":"complete","itemRecords":11},
+        {"id":"tcoe-2020-part-10-dm-tools","status":"complete","itemRecords":21},
+        {"id":"tcoe-2020-part-11-audit","status":"complete"}
+      ]
+    }
+  ],
+  "integration": {
+    "currentPhase": "APP-INTEGRATION-02",
+    "status": "completeWithExpectedLegacyDependencyBlocker",
+    "inputCodebase": "dnd-combat-math-mvp-final-jest-remediation(1).zip",
+    "stagedV2Items": 857,
+    "schemaValidation": {
+      "forgeErrors": 0,
+      "spelljammerErrors": 0,
+      "tashaErrors": 0
+    },
+    "freshBundledCatalog": {
+      "packs": [
+        "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+        "forge-artificer-2025-full-consolidated-import-pack-v1",
+        "spelljammer-2022-full-consolidated-import-pack-v1"
+      ],
+      "items": 1666
+    },
+    "idempotency": {
+      "forgeUnchangedOnReplay": 200,
+      "spelljammerUnchangedOnReplay": 182
+    },
+    "tasha": {
+      "bundled": false,
+      "atomicBlock": true,
+      "ownerErrors": 233,
+      "missingOwnerCount": 13,
+      "requiredOwnerIds": [
+        "phb-2014-class-barbarian",
+        "phb-2014-class-bard",
+        "phb-2014-class-cleric",
+        "phb-2014-class-druid",
+        "phb-2014-class-fighter",
+        "phb-2014-class-monk",
+        "phb-2014-class-paladin",
+        "phb-2014-class-ranger",
+        "phb-2014-class-rogue",
+        "phb-2014-class-sorcerer",
+        "phb-2014-class-warlock",
+        "phb-2014-class-wizard",
+        "phb-2014-subclass-ranger-beast-master"
+      ]
+    },
+    "releaseGate": "PASS",
+    "fullJestRerun": "notRunMissingNodeModulesAndOfflineCache",
+    "report": "APP_INTEGRATION_02_BOOK_PACK_RUNTIME_REPORT.md"
+  },
+  "nextBatch": "APP-INTEGRATION-03-phb-2014-legacy-core"
+}

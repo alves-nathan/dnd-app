@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Cancelar restauração do histórico do catálogo
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-history
+- assertVisible: "Cenário E2E de histórico transacional do catálogo preparado."
+- openLink: dndcombatmath://catalog-history
+- tapOn: "Restaurar configuração anterior"
+- assertVisible:
+    id: catalog-history-restoration-preview
+- tapOn:
+    id: catalog-impact-discard
+- assertNotVisible:
+    id: catalog-history-restoration-preview

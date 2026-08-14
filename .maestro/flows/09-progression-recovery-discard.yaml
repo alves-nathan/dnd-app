@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Descartar progressão recuperada sem alterar ficha
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-progression-recovery
+- stopApp
+- launchApp
+- openLink: dndcombatmath://progression-recovery
+- assertVisible: "Rascunho recuperável"
+- tapOn: "Descartar"
+- assertVisible: "Descartar rascunho?"
+- tapOn: "Descartar"
+- assertVisible: "Nenhuma recuperação pendente"

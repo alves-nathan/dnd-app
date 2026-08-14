@@ -1,0 +1,5 @@
+
+> dnd-combat-math-mvp@0.1.0 test:progression-transaction
+> jest src/tests/characterProgressionTransaction.test.ts --runInBand
+
+sh: 1: jest: not found

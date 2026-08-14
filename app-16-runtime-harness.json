@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "assertions": 27,
+  "catalogVersion": "4.8.0",
+  "entities": 5841,
+  "dependencies": 15385,
+  "evidence": {
+    "localRecords": 1,
+    "importedRecords": 1,
+    "archiveChecksum": "e70b4f7c",
+    "changedStatus": "changed"
+  },
+  "cleanup": {
+    "checkpoints": 8,
+    "recommendedRemoval": 3,
+    "retained": 5
+  }
+}

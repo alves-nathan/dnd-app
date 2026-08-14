@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "dnd-combat-app18-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T16:57:48.629Z",
+  "commands": 38,
+  "completed": 38,
+  "results": [
+    {
+      "command": "check-project-shape.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "Project shape OK",
+      "stderr": ""
+    },
+    {
+      "command": "check-accessibility-contracts.js",
+      "status": "PASS",
+      "durationMs": 19,
+      "stdout": "Contratos mínimos de acessibilidade: OK",
+      "stderr": ""
+    },
+    {
+      "command": "check-bundled-compendium.js",
+      "status": "PASS",
+      "durationMs": 49,
+      "stdout": "Bundled compendium OK: phb-2024-full-consolidated-import-pack-v5-complete-invocations.json\n- pack: phb-2024-full-consolidated-import-pack-v5-complete-invocations\n- items: 1284 (1284 IDs únicos)\n- kinds: {\"armor\":13,\"background\":16,\"class\":12,\"condition\":24,\"creatureStatBlock\":66,\"equipment\":42,\"feat\":75,\"feature\":546,\"magicItem\":3,\"species\":10,\"spell\":391,\"subclass\":48,\"weapon\":38}",
+      "stderr": ""
+    },
+    {
+      "command": "check-runtime-catalog.js",
+      "status": "PASS",
+      "durationMs": 107,
+      "stdout": "[catalog:runtime:check] PASS\nversion=4.8.0\nentities=5841\ndependencies=15385\ncategories=57\naliases=127\nsha256=8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-content-management.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:ui:check] PASS\nroute=app/content-management.tsx\nstore=src/store/catalogStore.ts\npersistence=src/storage/catalogFilterPreferences.ts",
+      "stderr": ""
+    },
+    {
+      "command": "check-character-choice-bridge.js",
+      "status": "PASS",
+      "durationMs": 125,
+      "stdout": "[catalog:character-bridge:check] PASS\ncatalogEntries=5841\ncarrierItems=1284\ncarrierByKind={\"condition\":24,\"feature\":546,\"weapon\":38,\"armor\":13,\"equipment\":42,\"magicItem\":3,\"creatureStatBlock\":66,\"spell\":391,\"class\":12,\"subclass\":48,\"feat\":75,\"background\":16,\"species\":10}\ndirectIdCarriers=598\ndirectByKind={\"condition\":15,\"weapon\":38,\"armor\":13,\"equipment\":37,\"creatureStatBlock\":66,\"spell\":371,\"class\":12,\"subclass\":20,\"background\":16,\"species\":10}\ncharacterStoreVersion=23\ncreationDraftVersion=8",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-dependency-progression.js",
+      "status": "PASS",
+      "durationMs": 102,
+      "stdout": "[catalog:dependency-progression:check] PASS\nsecondaryEditors=9\ngraphMetrics={\"edges\":15385,\"offersChoice\":79,\"allowsCandidate\":26,\"availableToClass\":949,\"belongsToClass\":612}",
+      "stderr": ""
+    },
+    {
+      "command": "check-progression-transaction.js",
+      "status": "PASS",
+      "durationMs": 36,
+      "stdout": "[catalog:progression-transaction:check] PASS\ntransactionEditors=10\nstoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-progression-recovery.js",
+      "status": "PASS",
+      "durationMs": 22,
+      "stdout": "[catalog:progression-recovery:check] PASS\nstoreVersion=23\nmaestroFlows=4",
+      "stderr": ""
+    },
+    {
+      "command": "check-dependency-lock.js",
+      "status": "PASS",
+      "durationMs": 28,
+      "stdout": "[dependencies:lock:check] PASS\ndirectDependencies=35\nregistryEntries=1199\nintegrityEntries=1199",
+      "stderr": ""
+    },
+    {
+      "command": "check-app07-release-gate.js",
+      "status": "PASS",
+      "durationMs": 23,
+      "stdout": "[app07:release:gate:check] PASS\ndependencyMode=exact\nbuildCandidateGate=mandatory",
+      "stderr": ""
+    },
+    {
+      "command": "check-character-compatibility.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "[catalog:character-compatibility:check] PASS\nmanifestSchema=dnd-character-rules-manifest.v1\ncharacterStoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-compatibility-remediation.js",
+      "status": "PASS",
+      "durationMs": 33,
+      "stdout": "[catalog:compatibility-remediation:check] PASS\nremediationSchema=dnd-character-compatibility-remediation.v1\ncharacterStoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-compatibility-remediation-recovery.js",
+      "status": "PASS",
+      "durationMs": 49,
+      "stdout": "[catalog:compatibility-remediation-recovery:check] PASS\nstoreVersion=23\nmaestroFlows=4",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-character-impact.js",
+      "status": "PASS",
+      "durationMs": 34,
+      "stdout": "[catalog:character-impact:check] PASS\npreventiveFlows=3\nnativeGateFlows=11",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-configuration-history.js",
+      "status": "PASS",
+      "durationMs": 21,
+      "stdout": "[catalog:configuration-history:check] PASS\nhistorySchema=dnd-catalog-configuration-commit.v1\nnativeGateFlows=15",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-catalog-backup.js",
+      "status": "PASS",
+      "durationMs": 31,
+      "stdout": "[backup:portable-catalog:check] PASS\nbackupSchema=dnd-combat-character-backup.v3\nportableAuditSchema=dnd-portable-catalog-audit.v1\nnativeGateFlows=19",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-session.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "[backup:portable-restore-session:check] PASS\nsessionSchema=dnd-portable-restore-session.v1\nauditSchema=dnd-portable-restore-session-audit.v1\nnativeGateFlows=39",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-verification.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[backup:portable-restore-verification:check] PASS\nverificationSchema=dnd-portable-restore-verification.v1\nreceiptSchema=dnd-portable-restore-integrity-receipt.v1\nevidenceSchema=dnd-portable-restore-evidence.v1\nnativeGateFlows=39",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-evidence-center.js",
+      "status": "PASS",
+      "durationMs": 31,
+      "stdout": "[backup:portable-restore-evidence:check] PASS\nrecordSchema=dnd-portable-restore-evidence-record.v1\narchiveSchema=dnd-portable-restore-evidence-archive.v1\nnativeGateFlows=39",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2866,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=335",
+      "stderr": ""
+    },
+    {
+      "command": "run-app04-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 377,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 18,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"dependencyEdges\": 15385,\n  \"directMechanicalChoices\": 598,\n  \"scenarios\": {\n    \"wizardSpellSelection\": {\n      \"mode\": \"dependency\",\n      \"total\": 227,\n      \"available\": 226,\n      \"blocked\": 1,\n      \"relations\": [\n        \"availableToClass\",\n        \"belongsToClass\",\n        \"references\",\n        \"referencesSpell\"\n      ]\n    },\n    \"wizardSubclass\": {\n      \"mode\": \"dependency\",\n      \"total\": 4,\n      \"relations\": [\n        \"belongsToClass\"\n      ]\n    },\n    \"weaponMasterOptions\": {\n      \"mode\": \"dependency\",\n      \"total\": 38,\n      \"relations\": [\n        \"offersChoice\",\n        \"references\"\n      ]\n    },\n    \"legacyFallback\": {\n      \"mode\": \"kindFallback\",\n      \"available\": 4,\n      \"issues\": [\n        \"CATALOG_PENDING_CHOICE_SOURCE_UNRESOLVED\",\n        \"CATALOG_PENDING_CHOICE_KIND_FALLBACK\",\n        \"CATALOG_PENDING_CHOICE_BLOCKED_CANDIDATES\"\n      ]\n    }\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app05-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 255,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 24,\n  \"storeVersion\": 23,\n  \"scenarios\": {\n    \"atomicCommit\": {\n      \"beforeLevel\": 1,\n      \"afterLevel\": 2,\n      \"operations\": 2\n    },\n    \"mandatoryPending\": {\n      \"blocked\": 1,\n      \"resolvedOperations\": 2\n    },\n    \"conflictDetection\": {\n      \"blocked\": true,\n      \"issueCodes\": [\n        \"PROGRESSION_TRANSACTION_CONFLICT\"\n      ]\n    },\n    \"snapshotMigration\": {\n      \"approvalRequired\": true\n    },\n    \"rollback\": {\n      \"restoredLevel\": 1,\n      \"historyEntries\": 2\n    }\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app06-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 262,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 21,\n  \"storeVersion\": 23,\n  \"scenarios\": {\n    \"restartRecovery\": {\n      \"status\": \"recoverable\",\n      \"checkpoint\": 1\n    },\n    \"acknowledgedCommit\": {\n      \"ok\": true,\n      \"level\": 2\n    },\n    \"checkpoint\": {\n      \"before\": 1,\n      \"after\": 2\n    },\n    \"conflict\": {\n      \"status\": \"conflicted\"\n    },\n    \"quarantine\": {\n      \"orphaned\": 1,\n      \"invalid\": 1\n    }\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app07-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 43,
+      "stdout": "APP-07 release evidence harness\nassertions=18\nstatus=PASS",
+      "stderr": ""
+    },
+    {
+      "command": "run-app08-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 367,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 18,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"manifest\": {\n    \"total\": 4,\n    \"available\": 1,\n    \"review\": 0,\n    \"disabled\": 2,\n    \"missing\": 1,\n    \"catalog\": 3,\n    \"compendium\": 1\n  },\n  \"issues\": [\n    \"CHARACTER_SNAPSHOT_MISMATCH\",\n    \"CHARACTER_CATALOG_ENTITY_DISABLED\",\n    \"CHARACTER_CATALOG_ENTITY_MISSING\",\n    \"CHARACTER_LOCAL_ITEM_DISABLED\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app09-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1461,
+      "stdout": "\n  \"impact\": {\n    \"replacements\": 2,\n    \"removals\": 1,\n    \"snapshotMigrations\": 1,\n    \"referencesBefore\": 4,\n    \"referencesAfter\": 3,\n    \"blockingIssuesBefore\": 3,\n    \"blockingIssuesAfter\": 0,\n    \"changedPaths\": [\n      \"feats\",\n      \"spells\",\n      \"spellbookEntries\",\n      \"compendiumLinks\",\n      \"catalogSnapshotId\"\n    ],\n    \"summary\": {\n      \"levelBefore\": 1,\n      \"levelAfter\": 1,\n      \"catalogSnapshotBefore\": \"catalog-4.7.0-old\",\n      \"catalogSnapshotAfter\": \"catalog-4.8.0-app09-harness\",\n      \"classChanges\": [],\n      \"added\": {\n        \"compendiumLinks\": 2\n      },\n      \"removed\": {\n        \"feats\": 1\n      },\n      \"pendingBefore\": 0,\n      \"pendingAfter\": 0,\n      \"changedPaths\": [\n        \"feats\",\n        \"spells\",\n        \"spellbookEntries\",\n        \"compendiumLinks\",\n        \"catalogSnapshotId\"\n      ]\n    }\n  },\n  \"audit\": {\n    \"kind\": \"compatibilityRemediation\",\n    \"historyEntriesAfterCommit\": 1,\n    \"rollbackRestoredSnapshot\": \"catalog-4.7.0-old\"\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app10-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1471,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 22,\n  \"storeVersion\": 23,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"recovery\": {\n    \"pendingAcknowledgement\": 1,\n    \"staleCatalog\": 1,\n    \"conflicted\": 1,\n    \"quarantined\": 2\n  },\n  \"aggregate\": {\n    \"characters\": 3,\n    \"charactersWithIssues\": 3,\n    \"activePlans\": 3,\n    \"recoveredPlans\": 0,\n    \"conflictedPlans\": 1,\n    \"staleCatalogPlans\": 1,\n    \"readyPlans\": 1,\n    \"decisions\": 6,\n    \"replacements\": 0,\n    \"removals\": 3,\n    \"snapshotMigrations\": 3,\n    \"blockingIssuesBefore\": 3,\n    \"blockingIssuesAfter\": 0\n  },\n  \"sharedEntityCharacters\": 3,\n  \"independentCommit\": {\n    \"committedCharacterId\": \"app10-a\",\n    \"untouchedCharacterId\": \"app10-b\"\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app11-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1506,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 23,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"impact\": {\n    \"charactersScanned\": 3,\n    \"affectedCharacters\": 2,\n    \"newlyBlockedCharacters\": 2,\n    \"affectedReferences\": 2,\n    \"affectedEntities\": 1,\n    \"affectedBooks\": 1,\n    \"affectedCategories\": 1,\n    \"newBlockingIssues\": 2,\n    \"newWarnings\": 0\n  },\n  \"groups\": [\n    {\n      \"kind\": \"entity\",\n      \"key\": \"phb-2024-spell-acid-splash\",\n      \"characters\": 2\n    },\n    {\n      \"kind\": \"book\",\n      \"key\": \"phb-2024\",\n      \"characters\": 2\n    },\n    {\n      \"kind\": \"category\",\n      \"key\": \"phb-2024-spells\",\n      \"characters\": 2\n    }\n  ],\n  \"plans\": {\n    \"created\": 1,\n    \"skipped\": 1,\n    \"automaticDecisions\": 0\n  },\n  \"reverseActivationAffectedCharacters\": 0\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app12-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1572,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 21,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"history\": {\n    \"revisions\": 2,\n    \"commits\": 2,\n    \"restorationSource\": \"catalog-config-1-20260804120000000\",\n    \"maxRetention\": 50\n  },\n  \"acknowledgement\": {\n    \"affectedCharacters\": 1,\n    \"preventivePlansRequested\": true\n  },\n  \"reconciliation\": {\n    \"obsoleteEmpty\": 1,\n    \"preservedWithDecisions\": 1\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app13-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1606,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 27,\n  \"catalogVersion\": \"4.8.0\",\n  \"catalogEntries\": 5841,\n  \"backup\": {\n    \"schemaVersion\": \"dnd-combat-character-backup.v3\",\n    \"integrity\": \"baf11e1f\",\n    \"characters\": 1\n  },\n  \"audit\": {\n    \"revision\": 2,\n    \"commits\": 2,\n    \"checksum\": \"57a106ac\",\n    \"plans\": 1\n  },\n  \"comparison\": {\n    \"incomingAhead\": \"incomingAhead\",\n    \"divergent\": \"diverged\",\n    \"conflictingCommits\": 1,\n    \"planConflicts\": 1\n  },\n  \"import\": {\n    \"acceptedPlans\": 1,\n    \"preservedLocalPlanConflicts\": 1,\n    \"localHistoryCommitsAfterImport\": 1,\n    \"sourceHistoryEmbedded\": 2\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app14-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1527,
+      "stdout": "   },\n    \"after\": {\n      \"characters\": 1,\n      \"scenarios\": 0,\n      \"presets\": 0,\n      \"snapshots\": 0,\n      \"remediationPlans\": 1,\n      \"catalogRevision\": 1\n    },\n    \"imported\": {\n      \"characterCount\": 1,\n      \"scenarioCount\": 0,\n      \"buildPresetCount\": 0,\n      \"buildHistorySnapshotCount\": 0\n    },\n    \"remappedCharacterIds\": 0,\n    \"acceptedPlans\": 0,\n    \"preventivePlans\": 1,\n    \"preservedLocalPlanConflicts\": 0,\n    \"skippedPlans\": 0,\n    \"catalogRelation\": \"incomingAhead\",\n    \"affectedCharacters\": 1,\n    \"newBlockingIssues\": 1,\n    \"newWarnings\": 0,\n    \"conflictCount\": 2\n  },\n  \"recovery\": {\n    \"checkpointFingerprint\": \"55a1e4f0\",\n    \"projectedFingerprint\": \"7fb31be4\",\n    \"exactCatalogRollback\": true,\n    \"coordinatorCommit\": true,\n    \"idempotentResume\": true,\n    \"coordinatorRollback\": true\n  },\n  \"audit\": {\n    \"schemaVersion\": \"dnd-portable-restore-session-audit.v1\",\n    \"conflictCount\": 2,\n    \"catalogSessionLink\": \"portable-restore-20260804131000000\"\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app15-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1591,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 21,\n  \"catalogVersion\": \"4.8.0\",\n  \"entities\": 5841,\n  \"dependencies\": 15385,\n  \"verification\": {\n    \"passed\": \"passed\",\n    \"failed\": \"failed\",\n    \"warning\": \"warning\"\n  },\n  \"receiptChecksum\": \"5a181b0d\",\n  \"evidenceChecksum\": \"3bd6bfbe\"\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app16-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 1536,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 27,\n  \"catalogVersion\": \"4.8.0\",\n  \"entities\": 5841,\n  \"dependencies\": 15385,\n  \"evidence\": {\n    \"localRecords\": 1,\n    \"importedRecords\": 1,\n    \"archiveChecksum\": \"ad019877\",\n    \"changedStatus\": \"changed\"\n  },\n  \"cleanup\": {\n    \"checkpoints\": 8,\n    \"recommendedRemoval\": 3,\n    \"retained\": 5\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-update-transaction.js",
+      "status": "PASS",
+      "durationMs": 0,
+      "stdout": "[catalog:update:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "run-app17-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 0,
+      "stdout": "status=PASS assertions=43",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-trust-chain.js",
+      "status": "PASS",
+      "durationMs": 0,
+      "stdout": "[catalog:trust:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "run-app18-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 0,
+      "stdout": "status=PASS assertions=38",
+      "stderr": ""
+    }
+  ]
+}

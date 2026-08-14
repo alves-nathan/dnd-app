@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "dnd-combat-app03-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_MISSING_DEPENDENCIES",
+  "generatedAt": "2026-08-03T23:22:53.937658Z",
+  "sourceArchive": "dnd-combat-math-mvp-app02-content-management(1).zip",
+  "sourceArchiveSha256": "ce7c4ca535bd432e2945bd6698b2dc436f3de57d301ae623d6c58a69ee210fe4",
+  "catalog": {
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "version": "4.8.0",
+    "snapshotId": "catalog-4.8.0-b1983121",
+    "bundleSha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "bridge": {
+    "visibleChoices": 1066,
+    "totalChoicesIncludingUnavailable": 3988,
+    "hiddenDuplicateCount": 1066,
+    "unavailableCount": 2922,
+    "ambiguousCollisionCount": 58,
+    "officialWizardCarrier": "phb-2024-full-consolidated-import-pack-v5-complete-invocations:phb-2024-class-wizard"
+  },
+  "migrations": {
+    "characterStoreVersion": 19,
+    "creationDraftVersion": 8
+  },
+  "checks": {
+    "sourceArchiveIntegrity": "PASS",
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "runtimeCatalog": "PASS",
+    "app02ContentManagement": "PASS",
+    "app03StaticContracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 287
+    },
+    "isolatedStrictTypecheck": "PASS",
+    "isolatedCompiledTests": {
+      "status": "PASS",
+      "tests": 32
+    },
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 35
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN",
+    "fullJestSuite": "BLOCKED_NOT_RUN"
+  },
+  "blocker": {
+    "reason": "The supplied source archive does not include node_modules.",
+    "fullTypecheck": [
+      "Cannot find type definition file for 'jest'",
+      "Cannot find type definition file for 'node'",
+      "Cannot find type definition file for 'react'",
+      "File 'expo/tsconfig.base' not found"
+    ],
+    "jest": "jest: not found"
+  }
+}

@@ -1,0 +1,9 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Transparência e distribuição"
+- assertVisible: "Ele nunca baixa ou aplica o catálogo automaticamente."
+- tapOn:
+    id: "catalog-remote-manifest-verify"
+    optional: true

@@ -1,0 +1,9 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Agregação e decisão em quórum"
+- assertVisible: "Política de agregação assinada"
+- assertVisible:
+    id: "rollout-aggregation-policy-import"
+- assertVisible: "Relatório consolidado assinado"

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "dnd-combat-beta-candidate-manifest.v2",
+  "generatedAt": "2026-07-14T22:21:50.442Z",
+  "status": "needsReview",
+  "app": {
+    "name": "D&D Combat",
+    "slug": "dnd-combat-math-mvp",
+    "version": "0.1.0",
+    "androidPackage": "com.nalves.dndcombatmathmvp",
+    "androidVersionCode": 1,
+    "iosBundleIdentifier": "com.nalves.dndcombatmathmvp",
+    "iosBuildNumber": "1",
+    "easProjectId": null
+  },
+  "buildProfile": "beta-candidate",
+  "source": {
+    "gitSha": null,
+    "gitRef": null
+  },
+  "checks": [
+    {
+      "id": "localGate",
+      "passed": true,
+      "blocking": true,
+      "details": "status=passed"
+    },
+    {
+      "id": "betaProfile",
+      "passed": true,
+      "blocking": true,
+      "details": "Perfil beta-candidate em eas.json"
+    },
+    {
+      "id": "projectId",
+      "passed": false,
+      "blocking": false,
+      "details": "extra.eas.projectId ausente"
+    },
+    {
+      "id": "androidEvidence",
+      "passed": false,
+      "blocking": false,
+      "details": "android.json ausente"
+    },
+    {
+      "id": "iosEvidence",
+      "passed": false,
+      "blocking": false,
+      "details": "ios.json ausente"
+    }
+  ],
+  "evidenceValidation": {
+    "android": null,
+    "ios": null
+  },
+  "artifacts": {
+    "localGate": "artifacts/beta-candidate/local-gate.json",
+    "androidEvidence": null,
+    "iosEvidence": null
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "dnd-combat-app05-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_MISSING_NODE_MODULES",
+  "generatedAt": "2026-08-03T22:03:15-03:00",
+  "sourceArchive": "dnd-combat-math-mvp-app04-dependency-aware-progression.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "sha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "checks": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": {
+      "status": "PASS",
+      "items": 1284
+    },
+    "runtimeCatalog": "PASS",
+    "app02Contracts": "PASS",
+    "app03Contracts": "PASS",
+    "app04Contracts": "PASS",
+    "app05Contracts": {
+      "status": "PASS",
+      "transactionAwareEditors": 10
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 293
+    },
+    "isolatedStrictTypecheckCore": "PASS",
+    "isolatedStrictTypecheckStoreAndSession": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 24
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN",
+    "fullJestSuite": "BLOCKED_NOT_RUN",
+    "zipIntegrity": "PASS"
+  },
+  "transaction": {
+    "storeVersion": 20,
+    "auditLimit": 20,
+    "scenarios": {
+      "atomicCommit": {
+        "beforeLevel": 1,
+        "afterLevel": 2,
+        "operations": 2
+      },
+      "mandatoryPendingChoice": "BLOCKED_THEN_RESOLVED",
+      "optionalSpellReplacement": "WARNING_ONLY",
+      "concurrentEdit": {
+        "blocked": true,
+        "issueCode": "PROGRESSION_TRANSACTION_CONFLICT"
+      },
+      "snapshotMigration": "APPROVAL_REQUIRED",
+      "rollback": {
+        "restoredLevel": 1,
+        "historyEntries": 2
+      }
+    }
+  },
+  "blocker": {
+    "reason": "Uploaded source archive does not contain node_modules",
+    "missing": [
+      "expo/tsconfig.base",
+      "React types",
+      "Node types",
+      "Jest types",
+      "jest executable"
+    ]
+  }
+}

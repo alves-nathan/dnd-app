@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "dnd-catalog-operational-federation-consensus.v1",
+  "consensusId": "catalog-operational-consensus-f9cec7d333706eb9",
+  "generatedAt": "2026-08-04T21:34:02.790Z",
+  "status": "approved",
+  "policyId": "cli-policy",
+  "policyChecksum": "d534e591ea311a9362976e434774ade5cadf64a6391a2b0f2ef0a23a0bf35e31",
+  "federationChecksum": "f1cffe7ae442ddb423d39659b30098b3c503b43fbc90603bb1e37139dc22836d",
+  "deviceCount": 2,
+  "uniqueWitnessCount": 2,
+  "commonPrefixEntries": 2,
+  "canonicalPackageId": "catalog-operational-audit-2ac12985bdf1c5eb",
+  "canonicalPackageChecksum": "1d0834c26d8bfd6c18c7638579158c23267f1a8c384605b38c9819be4f4aed2b",
+  "canonicalHeadHash": "7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee",
+  "packageResults": [
+    {
+      "packageId": "catalog-operational-audit-d8e297d008a5c104",
+      "packageChecksum": "a549eb5631d758032cb224df27527f68bb230ab3f8746132f8a11e36dfeb6373",
+      "deviceIdHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "verificationStatus": "approved",
+      "totalEntries": 2,
+      "headHash": "7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee",
+      "validWitnesses": [
+        "witness-a",
+        "witness-b"
+      ],
+      "witnessQuorumMet": true
+    },
+    {
+      "packageId": "catalog-operational-audit-2ac12985bdf1c5eb",
+      "packageChecksum": "1d0834c26d8bfd6c18c7638579158c23267f1a8c384605b38c9819be4f4aed2b",
+      "deviceIdHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "verificationStatus": "approved",
+      "totalEntries": 2,
+      "headHash": "7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee",
+      "validWitnesses": [
+        "witness-a",
+        "witness-b"
+      ],
+      "witnessQuorumMet": true
+    }
+  ],
+  "comparisons": [
+    {
+      "leftPackageId": "catalog-operational-audit-d8e297d008a5c104",
+      "rightPackageId": "catalog-operational-audit-2ac12985bdf1c5eb",
+      "status": "identical",
+      "commonEntries": 2
+    }
+  ],
+  "findings": [],
+  "checksum": "d98164da4408c88c862f5b795aaed11dd52e6cf79ab0db3415cea82b10ccb97e"
+}

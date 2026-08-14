@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Release de produção"
+- assertVisible: "Release de produção"
+- assertVisible: "Versão 1.0.0"
+- assertVisible: "BLOCKED"

@@ -1,0 +1,21 @@
+appId: com.nalves.dndcombatmathmvp
+name: Recuperar e confirmar progressão após reinício
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-progression-recovery
+- assertVisible: "Cenário E2E de recuperação transacional preparado."
+- stopApp
+- launchApp
+- openLink: dndcombatmath://progression-recovery
+- assertVisible: "Rascunho recuperável"
+- tapOn: "Retomar com segurança"
+- assertVisible: "Central de progressão"
+- assertVisible: "Transação ativa"
+- tapOn:
+    id: progression-transaction-commit
+- assertVisible: "Progressão confirmada"
+- tapOn: "Ver personagem"
+- assertVisible: "Nível 2"

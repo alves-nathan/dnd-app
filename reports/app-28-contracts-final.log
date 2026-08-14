@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "dnd-combat-app28-contracts.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T21:57:12.011Z",
+  "requiredFiles": 6,
+  "maestroFlows": 82,
+  "issues": []
+}

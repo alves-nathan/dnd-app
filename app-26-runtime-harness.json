@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "assertions": 48,
+  "auditStatus": "approved",
+  "entries": 7,
+  "receipts": 1,
+  "cryptographicallyVerifiedReceipts": 1,
+  "missingSegmentRejected": true,
+  "overlapRejected": true,
+  "forkDetected": true,
+  "signedReportVerified": true,
+  "automaticDeletion": false
+}

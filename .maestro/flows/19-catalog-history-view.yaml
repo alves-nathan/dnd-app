@@ -1,0 +1,12 @@
+appId: com.nalves.dndcombatmathmvp
+name: Visualizar histórico transacional do catálogo
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-history
+- assertVisible: "Cenário E2E de histórico transacional do catálogo preparado."
+- openLink: dndcombatmath://catalog-history
+- assertVisible: "Histórico do catálogo"
+- assertVisible: "Usuário local"
+- assertVisible: "Restaurar configuração anterior"

@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Agregação e decisão em quórum"
+- assertVisible: "execução automática permanentemente desativada"
+- assertNotVisible: "Aplicar automaticamente"

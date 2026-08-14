@@ -1,0 +1,116 @@
+
+> dnd-combat-math-mvp@0.1.0 app04:smoke
+> npm run check:shape && npm run check:a11y && npm run compendium:bundled:check && npm run catalog:runtime:check && npm run catalog:ui:check && npm run catalog:character-bridge:check && npm run catalog:dependency-progression:check && npm run typescript:syntax:check && npm run catalog:dependency-progression:harness
+
+
+> dnd-combat-math-mvp@0.1.0 check:shape
+> node scripts/check-project-shape.js
+
+Project shape OK
+
+> dnd-combat-math-mvp@0.1.0 check:a11y
+> node scripts/check-accessibility-contracts.js
+
+Contratos mínimos de acessibilidade: OK
+
+> dnd-combat-math-mvp@0.1.0 compendium:bundled:check
+> node scripts/check-bundled-compendium.js
+
+Bundled compendium OK: phb-2024-full-consolidated-import-pack-v5-complete-invocations.json
+- pack: phb-2024-full-consolidated-import-pack-v5-complete-invocations
+- items: 1284 (1284 IDs únicos)
+- kinds: {"armor":13,"background":16,"class":12,"condition":24,"creatureStatBlock":66,"equipment":42,"feat":75,"feature":546,"magicItem":3,"species":10,"spell":391,"subclass":48,"weapon":38}
+
+> dnd-combat-math-mvp@0.1.0 catalog:runtime:check
+> node scripts/check-runtime-catalog.js
+
+[catalog:runtime:check] PASS
+version=4.8.0
+entities=5841
+dependencies=15385
+categories=57
+aliases=127
+sha256=8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08
+
+> dnd-combat-math-mvp@0.1.0 catalog:ui:check
+> node scripts/check-catalog-content-management.js
+
+[catalog:ui:check] PASS
+route=app/content-management.tsx
+store=src/store/catalogStore.ts
+persistence=src/storage/catalogFilterPreferences.ts
+
+> dnd-combat-math-mvp@0.1.0 catalog:character-bridge:check
+> node scripts/check-character-choice-bridge.js
+
+[catalog:character-bridge:check] PASS
+catalogEntries=5841
+carrierItems=1284
+carrierByKind={"condition":24,"feature":546,"weapon":38,"armor":13,"equipment":42,"magicItem":3,"creatureStatBlock":66,"spell":391,"class":12,"subclass":48,"feat":75,"background":16,"species":10}
+directIdCarriers=598
+directByKind={"condition":15,"weapon":38,"armor":13,"equipment":37,"creatureStatBlock":66,"spell":371,"class":12,"subclass":20,"background":16,"species":10}
+characterStoreVersion=19
+creationDraftVersion=8
+
+> dnd-combat-math-mvp@0.1.0 catalog:dependency-progression:check
+> node scripts/check-catalog-dependency-progression.js
+
+[catalog:dependency-progression:check] PASS
+secondaryEditors=9
+graphMetrics={"edges":15385,"offersChoice":79,"allowsCandidate":26,"availableToClass":949,"belongsToClass":612}
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=290
+
+> dnd-combat-math-mvp@0.1.0 catalog:dependency-progression:harness
+> node scripts/run-app04-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 18,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "dependencyEdges": 15385,
+  "directMechanicalChoices": 598,
+  "scenarios": {
+    "wizardSpellSelection": {
+      "mode": "dependency",
+      "total": 227,
+      "available": 226,
+      "blocked": 1,
+      "relations": [
+        "availableToClass",
+        "belongsToClass",
+        "references",
+        "referencesSpell"
+      ]
+    },
+    "wizardSubclass": {
+      "mode": "dependency",
+      "total": 4,
+      "relations": [
+        "belongsToClass"
+      ]
+    },
+    "weaponMasterOptions": {
+      "mode": "dependency",
+      "total": 38,
+      "relations": [
+        "offersChoice",
+        "references"
+      ]
+    },
+    "legacyFallback": {
+      "mode": "kindFallback",
+      "available": 4,
+      "issues": [
+        "CATALOG_PENDING_CHOICE_SOURCE_UNRESOLVED",
+        "CATALOG_PENDING_CHOICE_KIND_FALLBACK",
+        "CATALOG_PENDING_CHOICE_BLOCKED_CANDIDATES"
+      ]
+    }
+  }
+}

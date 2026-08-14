@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'dnd-app29-migrations-'));
+const source = path.join(root, 'src/releaseCandidate/persistenceMigrations.ts');
+const isolatedSource = path.join(temp, 'persistenceMigrations.ts');
+fs.copyFileSync(source, isolatedSource);
+fs.mkdirSync(path.join(temp, 'empty-types'), { recursive: true });
+fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({ compilerOptions: { target: 'ES2022', module: 'commonjs', moduleResolution: 'node', strict: true, skipLibCheck: true, types: [], typeRoots: [path.join(temp, 'empty-types')], outDir: path.join(temp, 'dist') }, include: [isolatedSource] }, null, 2));
+const compile = spawnSync('tsc', ['-p', path.join(temp, 'tsconfig.json')], { cwd: temp, encoding: 'utf8' });
+if (compile.status !== 0) {
+  console.error(compile.stdout || compile.stderr);
+  process.exit(1);
+}
+const compiledPath = path.join(temp, 'dist/persistenceMigrations.js');
+const migrations = require(compiledPath);
+let assertions = 0;
+const assert = (value, message) => { assertions += 1; if (!value) throw new Error(message); };
+const cleanPresets = migrations.migrateBuildPresetPersistenceState(undefined);
+assert(Array.isArray(cleanPresets.presets) && cleanPresets.presets.length === 0, 'Instalação limpa de presets inválida.');
+const legacyPresets = [{ id: 'preset-1', name: 'Kael' }];
+const upgradedPresets = migrations.migrateBuildPresetPersistenceState({ presets: legacyPresets, ignored: 'x' });
+assert(upgradedPresets.presets.length === 1, 'Preset legado não foi preservado.');
+assert(upgradedPresets.presets !== legacyPresets, 'Migração reutilizou a referência do array legado.');
+const cleanDistribution = migrations.migrateCatalogDistributionPersistenceState(undefined);
+assert(Object.keys(cleanDistribution.manifests).length === 0, 'Instalação limpa da distribuição inválida.');
+assert(Array.isArray(cleanDistribution.events), 'Eventos da distribuição não foram inicializados.');
+const legacyDistribution = { policy: { mode: 'manual' }, manifests: { official: { sequence: 1 } }, observations: { official: [{ status: 'available' }] }, sessions: { a: { status: 'paused' } }, cachedBundles: { c: { id: 'c' } }, evidence: [{ id: 'e' }], events: [{ id: 'event' }] };
+const upgradedDistribution = migrations.migrateCatalogDistributionPersistenceState(legacyDistribution);
+assert(upgradedDistribution.manifests.official !== undefined, 'Manifesto legado não foi preservado.');
+assert(upgradedDistribution.sessions.a !== undefined, 'Sessão de download legada não foi preservada.');
+assert(upgradedDistribution.observations.official.length === 1, 'Observações legadas não foram preservadas.');
+const legacyUpdate = { activeSession: { id: 'unsafe-v1', status: 'prepared' }, history: [{ receiptId: 'receipt-1' }] };
+const upgradedUpdate = migrations.migrateCatalogUpdateSessionPersistenceState(legacyUpdate, 1);
+assert(upgradedUpdate.activeSession === undefined, 'Sessão v1 insegura foi retomada.');
+assert(upgradedUpdate.history.length === 1, 'Histórico v1 não foi preservado.');
+const currentUpdate = migrations.migrateCatalogUpdateSessionPersistenceState({ activeSession: { id: 'safe-v2' }, history: [] }, 2);
+assert(currentUpdate.activeSession.id === 'safe-v2', 'Sessão v2 íntegra não foi preservada.');
+assert(JSON.stringify(legacyDistribution).includes('official'), 'Fixture de origem foi alterada.');
+const report = { schemaVersion: 'dnd-combat-app29-install-upgrade-rehearsal.v1', status: 'PASS', generatedAt: new Date().toISOString(), assertions, scenarios: { cleanInstall: 2, upgrades: 3, unsafeSessionDiscarded: true, immutableSourceFixture: true } };
+fs.mkdirSync(path.join(root, 'reports'), { recursive: true });
+fs.writeFileSync(path.join(root, 'reports/app-29-install-upgrade-rehearsal.json'), `${JSON.stringify(report, null, 2)}\n`);
+console.log(JSON.stringify(report, null, 2));
+fs.rmSync(temp, { recursive: true, force: true });

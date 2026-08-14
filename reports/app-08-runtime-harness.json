@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "assertions": 18,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "manifest": {
+    "total": 4,
+    "available": 1,
+    "review": 0,
+    "disabled": 2,
+    "missing": 1,
+    "catalog": 3,
+    "compendium": 1
+  },
+  "issues": [
+    "CHARACTER_SNAPSHOT_MISMATCH",
+    "CHARACTER_CATALOG_ENTITY_DISABLED",
+    "CHARACTER_CATALOG_ENTITY_MISSING",
+    "CHARACTER_LOCAL_ITEM_DISABLED"
+  ]
+}

@@ -1,0 +1,12 @@
+[app28:gate:verify] FAIL
+- Gate APP-28 não está aprovado (BLOCKED).
+- Etapa obrigatória não aprovada: dependency-install.
+- Etapa obrigatória não aprovada: full-typecheck.
+- Etapa obrigatória não aprovada: full-jest.
+- Etapa obrigatória não aprovada: native-gate.
+- Gate nativo não possui status PASS.
+- Versão Android instalada não foi validada contra app.json.
+- Descritor de artefato inválido: junit.
+- Descritor de artefato inválido: logcat.
+- Descritor de artefato inválido: screenshot.
+- Descritor de artefato inválido: maestroLog.

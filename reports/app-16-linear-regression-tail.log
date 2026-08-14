@@ -1,0 +1,66 @@
+
+> dnd-combat-math-mvp@0.1.0 backup:portable-restore-verification:check
+> node scripts/check-portable-restore-verification.js
+
+[backup:portable-restore-verification:check] FAIL
+- src/store/portableRestoreSessionStore.ts: contrato ausente PORTABLE_RESTORE_SESSION_STORE_VERSION = 2
+
+> dnd-combat-math-mvp@0.1.0 backup:portable-restore-verification:harness
+> node scripts/run-app15-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 21,
+  "catalogVersion": "4.8.0",
+  "entities": 5841,
+  "dependencies": 15385,
+  "verification": {
+    "passed": "passed",
+    "failed": "failed",
+    "warning": "warning"
+  },
+  "receiptChecksum": "220d90af",
+  "evidenceChecksum": "a7fd0628"
+}
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=324
+
+> dnd-combat-math-mvp@0.1.0 backup:portable-restore-evidence:check
+> node scripts/check-portable-restore-evidence-center.js
+
+[backup:portable-restore-evidence:check] PASS
+recordSchema=dnd-portable-restore-evidence-record.v1
+archiveSchema=dnd-portable-restore-evidence-archive.v1
+nativeGateFlows=31
+
+> dnd-combat-math-mvp@0.1.0 backup:portable-restore-evidence:harness
+> node scripts/run-app16-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 27,
+  "catalogVersion": "4.8.0",
+  "entities": 5841,
+  "dependencies": 15385,
+  "evidence": {
+    "localRecords": 1,
+    "importedRecords": 1,
+    "archiveChecksum": "e757e389",
+    "changedStatus": "changed"
+  },
+  "cleanup": {
+    "checkpoints": 8,
+    "recommendedRemoval": 3,
+    "retained": 5
+  }
+}
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=324

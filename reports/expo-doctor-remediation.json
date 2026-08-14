@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "dnd-combat-expo-doctor-remediation.v1",
+  "baseline": "app30-production-release",
+  "status": "READY_FOR_LOCAL_REGISTRY_RECONCILIATION",
+  "fixedChecks": [
+    "expo-config-static-dynamic-inheritance",
+    "eas-cli-local-dependency",
+    "duplicate-native-module-root-versions",
+    "expo-sdk-57-package-versions"
+  ],
+  "staticValidation": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "resolvedExpoConfig": "PASS",
+    "releaseReadiness": "PASS",
+    "typescriptSyntaxFiles": 380
+  },
+  "localCommands": [
+    "rm -rf node_modules",
+    "npm install",
+    "npm dedupe",
+    "npm run expo:install:check",
+    "npm run doctor",
+    "npm run dependencies:lock:check"
+  ],
+  "environmentLimitation": "The public npm registry was unreachable, so updated tarball integrity hashes must be regenerated locally."
+}

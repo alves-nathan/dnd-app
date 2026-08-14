@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "dnd-combat-app20-cli-signing.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T18:10:58.194Z",
+  "catalogVersion": "4.8.0",
+  "sequence": 1,
+  "mirrors": 2,
+  "chunks": 81,
+  "bundleByteLength": 10549386,
+  "bundleCharacterLength": 10549067,
+  "bundleChecksum": "915f579509e8988f579bb566bee7f4dfae342083fe55dedfb570770842eeb89e",
+  "rawChecksum": "915f579509e8988f579bb566bee7f4dfae342083fe55dedfb570770842eeb89e",
+  "chunkLayoutValid": true,
+  "privateKeyIncludedInProject": false
+}

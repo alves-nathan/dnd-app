@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2020", "DOM"],
+    "types": [],
+    "noEmit": true
+  },
+  "files": [
+    "app-06-isolated-stubs.d.ts",
+    "../src/store/characterStore.ts",
+    "../src/characters/useCharacterProgressionSession.ts"
+  ]
+}

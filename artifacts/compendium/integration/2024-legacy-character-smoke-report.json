@@ -1,0 +1,406 @@
+{
+  "schemaVersion": "dnd-combat-2024-legacy-character-smoke.v1",
+  "compatibilityProfile": "2024-first+legacy",
+  "packs": [
+    {
+      "id": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+      "items": 1284
+    },
+    {
+      "id": "forge-artificer-2025-full-consolidated-import-pack-v1",
+      "items": 200
+    },
+    {
+      "id": "spelljammer-2022-full-consolidated-import-pack-v1",
+      "items": 182
+    },
+    {
+      "id": "tcoe-2020-2024-compatible-import-pack-v2",
+      "items": 273
+    },
+    {
+      "id": "phb-2014-2024-compatible-delta-v1",
+      "items": 56
+    }
+  ],
+  "checks": [
+    {
+      "name": "all retained legacy subclasses target PHB 2024 and unlock at level 3",
+      "pass": true,
+      "result": {
+        "subclassCount": 18
+      }
+    },
+    {
+      "name": "reprinted Tasha content is absent from compatibility profile",
+      "pass": true,
+      "result": {
+        "checked": 10
+      }
+    },
+    {
+      "name": "Barbarian 2024 + Path of the Beast legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-barbarian",
+        "subclassId": "tcoe-2020-subclass-path-of-the-beast",
+        "level": 3,
+        "expectedFeatures": [
+          "Rage",
+          "Form of the Beast"
+        ],
+        "matchedFeatures": [
+          "Rage",
+          "Form of the Beast"
+        ],
+        "featureCount": 7,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Cleric 2024 + Order Domain legacy at level 3",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "tcoe-2020-subclass-order-domain",
+        "level": 3,
+        "expectedFeatures": [
+          "Voice of Authority",
+          "Channel Divinity: Order's Demand"
+        ],
+        "matchedFeatures": [
+          "Voice of Authority",
+          "Channel Divinity: Order's Demand"
+        ],
+        "featureCount": 8,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Cleric 2024 + Order Domain uses Blessed Strikes at level 8",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "tcoe-2020-subclass-order-domain",
+        "level": 8,
+        "expectedFeatures": [
+          "Voice of Authority",
+          "Blessed Strikes"
+        ],
+        "matchedFeatures": [
+          "Voice of Authority",
+          "Blessed Strikes"
+        ],
+        "featureCount": 11,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Druid 2024 + Circle of Wildfire legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-druid",
+        "subclassId": "tcoe-2020-subclass-circle-of-wildfire",
+        "level": 3,
+        "expectedFeatures": [
+          "Summon Wildfire Spirit"
+        ],
+        "matchedFeatures": [
+          "Summon Wildfire Spirit"
+        ],
+        "featureCount": 8,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Fighter 2024 + Rune Knight legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-fighter",
+        "subclassId": "tcoe-2020-subclass-rune-knight",
+        "level": 3,
+        "expectedFeatures": [
+          "Rune Carver",
+          "Giant's Might"
+        ],
+        "matchedFeatures": [
+          "Rune Carver",
+          "Giant's Might"
+        ],
+        "featureCount": 8,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Warlock 2024 + The Genie legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-warlock",
+        "subclassId": "tcoe-2020-subclass-the-genie",
+        "level": 3,
+        "expectedFeatures": [
+          "Genie's Vessel"
+        ],
+        "matchedFeatures": [
+          "Genie's Vessel"
+        ],
+        "featureCount": 6,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Wizard 2024 + Bladesinging legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "tcoe-2020-subclass-bladesinging",
+        "level": 3,
+        "expectedFeatures": [
+          "Bladesong"
+        ],
+        "matchedFeatures": [
+          "Bladesong"
+        ],
+        "featureCount": 7,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "PHB 2014 delta has exactly the 12 official retained options projected for 2024",
+      "pass": true,
+      "result": {
+        "itemCount": 56,
+        "subclasses": 7,
+        "species": 2,
+        "feats": 3
+      }
+    },
+    {
+      "name": "Cleric 2024 + Knowledge Domain legacy at level 3",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "level": 3,
+        "expectedFeatures": [
+          "Blessings of Knowledge",
+          "Channel Divinity: Knowledge of the Ages"
+        ],
+        "matchedFeatures": [
+          "Blessings of Knowledge",
+          "Channel Divinity: Knowledge of the Ages"
+        ],
+        "featureCount": 7,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Cleric 2024 + Knowledge Domain uses Blessed Strikes at level 8",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-knowledge-domain",
+        "level": 8,
+        "expectedFeatures": [
+          "Blessings of Knowledge",
+          "Blessed Strikes"
+        ],
+        "matchedFeatures": [
+          "Blessings of Knowledge",
+          "Blessed Strikes"
+        ],
+        "featureCount": 10,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Cleric 2024 + Nature Domain legacy at level 6",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "level": 6,
+        "expectedFeatures": [
+          "Acolyte of Nature",
+          "Channel Divinity: Charm Animals and Plants",
+          "Dampen Elements"
+        ],
+        "matchedFeatures": [
+          "Acolyte of Nature",
+          "Channel Divinity: Charm Animals and Plants",
+          "Dampen Elements"
+        ],
+        "featureCount": 10,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Cleric 2024 + Nature Domain uses Blessed Strikes at level 8",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-nature-domain",
+        "level": 8,
+        "expectedFeatures": [
+          "Acolyte of Nature",
+          "Blessed Strikes"
+        ],
+        "matchedFeatures": [
+          "Acolyte of Nature",
+          "Blessed Strikes"
+        ],
+        "featureCount": 11,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Cleric 2024 + Tempest Domain legacy at level 3",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "level": 3,
+        "expectedFeatures": [
+          "Wrath of the Storm",
+          "Channel Divinity: Destructive Wrath"
+        ],
+        "matchedFeatures": [
+          "Wrath of the Storm",
+          "Channel Divinity: Destructive Wrath"
+        ],
+        "featureCount": 8,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Cleric 2024 + Tempest Domain reaches Stormborn and uses Blessed Strikes",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-cleric",
+        "subclassId": "phb-2014-subclass-cleric-tempest-domain",
+        "level": 17,
+        "expectedFeatures": [
+          "Wrath of the Storm",
+          "Blessed Strikes",
+          "Stormborn"
+        ],
+        "matchedFeatures": [
+          "Wrath of the Storm",
+          "Blessed Strikes",
+          "Stormborn"
+        ],
+        "featureCount": 14,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Wizard 2024 + School of Conjuration legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "level": 6,
+        "expectedFeatures": [
+          "Minor Conjuration",
+          "Benign Transposition"
+        ],
+        "matchedFeatures": [
+          "Minor Conjuration",
+          "Benign Transposition"
+        ],
+        "featureCount": 9,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Wizard 2024 + School of Enchantment legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "level": 3,
+        "expectedFeatures": [
+          "Hypnotic Gaze"
+        ],
+        "matchedFeatures": [
+          "Hypnotic Gaze"
+        ],
+        "featureCount": 7,
+        "choiceCount": 0
+      }
+    },
+    {
+      "name": "Wizard 2024 + School of Necromancy legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "level": 6,
+        "expectedFeatures": [
+          "Grim Harvest",
+          "Undead Thralls"
+        ],
+        "matchedFeatures": [
+          "Grim Harvest",
+          "Undead Thralls"
+        ],
+        "featureCount": 9,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "Wizard 2024 + School of Transmutation legacy",
+      "pass": true,
+      "result": {
+        "classId": "phb-2024-class-wizard",
+        "subclassId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "level": 6,
+        "expectedFeatures": [
+          "Minor Alchemy",
+          "Transmuter's Stone"
+        ],
+        "matchedFeatures": [
+          "Minor Alchemy",
+          "Transmuter's Stone"
+        ],
+        "featureCount": 9,
+        "choiceCount": 1
+      }
+    },
+    {
+      "name": "PHB 2014 delta keeps 2014 class ids only as provenance, never as runtime owners",
+      "pass": true,
+      "result": {
+        "runtimePhb2014Owners": 0,
+        "provenanceClassIds": [
+          "phb-2014-class-cleric",
+          "phb-2014-class-wizard"
+        ]
+      }
+    },
+    {
+      "name": "Martial Adept resolves its additional Tasha maneuvers in the installed catalog",
+      "pass": true,
+      "result": {
+        "additionalManeuvers": 7
+      }
+    },
+    {
+      "name": "Tasha profile contains no PHB 2014 reference",
+      "pass": true,
+      "result": {
+        "unresolvedPhb2014": 0
+      }
+    },
+    {
+      "name": "Custom Lineage is retained without a species ASI in the 2024 profile",
+      "pass": true,
+      "result": {
+        "speciesId": "tcoe-2020-species-custom-lineage"
+      }
+    }
+  ],
+  "passed": 24,
+  "failed": 0,
+  "pass": true
+}

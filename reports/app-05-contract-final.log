@@ -1,0 +1,3 @@
+[catalog:progression-transaction:check] PASS
+transactionEditors=10
+storeVersion=20

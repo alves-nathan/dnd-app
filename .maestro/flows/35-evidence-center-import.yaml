@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+name: Importar e validar evidência histórica
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-evidence-imported
+- assertVisible: "Cenário E2E da central de evidências imported preparado."
+- tapOn:
+    id: e2e-open-evidence-center
+- assertVisible: "Central de evidências"
+- assertVisible: "Importada"
+- assertVisible: "Evidências externas nunca habilitam rollback local."

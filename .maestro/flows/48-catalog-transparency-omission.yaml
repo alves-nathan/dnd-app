@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Transparência e distribuição"
+- assertVisible: "Manifesto remoto assinado"
+- assertVisible:
+    id: "catalog-remote-manifest-verify"

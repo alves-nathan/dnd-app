@@ -1,0 +1,12 @@
+appId: com.nalves.dndcombatmathmvp
+name: Comparar recibo com alterações posteriores
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-evidence-changed
+- assertVisible: "Cenário E2E da central de evidências changed preparado."
+- tapOn:
+    id: e2e-open-evidence-center
+- assertVisible: "Há alterações posteriores ao recibo"
+- assertVisible: "O estado local foi alterado depois da emissão deste recibo."

@@ -1,0 +1,7 @@
+[app07:release:gate:verify] FAIL
+- Gate não está aprovado (BLOCKED).
+- Etapa obrigatória não aprovada: typecheck.
+- Etapa obrigatória não aprovada: jest.
+- Etapa obrigatória não aprovada: native-gate.
+- JUnit nativo ausente.
+ERRO: Gate APP-07 obrigatório não foi aprovado para esta codebase. Execute npm run app07:release:gate.

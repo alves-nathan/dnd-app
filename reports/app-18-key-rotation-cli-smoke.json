@@ -1,0 +1,5 @@
+{
+  "status": "SIGNED",
+  "command": "rotate",
+  "output": "/tmp/app18-rotation.json"
+}

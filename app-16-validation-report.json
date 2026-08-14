@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "dnd-combat-app16-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T15:45:00.000-03:00",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385
+  },
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "commands": 34,
+      "completed": 34
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 324
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "isolatedTestTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 27
+    },
+    "maestroDefinitions": {
+      "status": "PASS",
+      "flows": 31
+    },
+    "fullTypecheck": "BLOCKED",
+    "fullJest": "BLOCKED",
+    "nativeGate": "BLOCKED"
+  },
+  "evidence": {
+    "localRecords": 1,
+    "importedRecords": 1,
+    "archiveChecksum": "a866c11e",
+    "changedStatus": "changed"
+  },
+  "cleanup": {
+    "checkpoints": 8,
+    "recommendedRemoval": 3,
+    "retained": 5
+  },
+  "blockers": {
+    "typecheck": [
+      "expo/tsconfig.base ausente",
+      "tipos de React, Node e Jest ausentes"
+    ],
+    "jest": [
+      "executável jest ausente"
+    ],
+    "native": [
+      "node_modules ausente ou incompleto",
+      "ADB indisponível",
+      "Maestro indisponível",
+      "nenhum dispositivo Android acessível"
+    ]
+  }
+}

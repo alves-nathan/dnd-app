@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "dnd-combat-app27-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T21:38:00.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-app26-independent-operational-audit.zip",
+  "implementation": {
+    "module": "APP-27 — Federação de auditoria e testemunhas independentes",
+    "schemas": [
+      "dnd-catalog-operational-witness-policy.v1",
+      "dnd-catalog-operational-witness-statement.v1",
+      "dnd-catalog-operational-federation-package.v1",
+      "dnd-catalog-operational-federation-consensus.v1"
+    ],
+    "storeVersion": 1,
+    "readOnlyImports": true,
+    "automaticExecution": false
+  },
+  "checks": {
+    "contracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 373
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "isolatedTestTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 28
+    },
+    "cliSigningAndVerification": "PASS",
+    "linearRegression": {
+      "status": "PASS",
+      "inherited": 198,
+      "current": 4,
+      "total": 202
+    },
+    "maestroDefinitions": {
+      "status": "PASS",
+      "found": 75
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJestSuite": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "androidNativeGate": "BLOCKED",
+    "privateMaterialScan": "PASS"
+  },
+  "approvedConsensus": {
+    "devices": 2,
+    "witnesses": 2,
+    "headHash": "7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee",
+    "commonPrefixEntries": 2
+  },
+  "rejectedScenarios": [
+    "tamperedStatement",
+    "missingQuorum",
+    "nonIndependentWitness",
+    "selfWitness",
+    "fork",
+    "staleStatement",
+    "duplicateDevice",
+    "tamperedFederation"
+  ],
+  "blockers": {
+    "registry": "404 zustand@5.0.14",
+    "nodeModules": "absent",
+    "adb": "not found",
+    "maestro": "not found",
+    "androidDevice": "not available"
+  },
+  "remainingPlannedSteps": 3
+}

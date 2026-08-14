@@ -1,0 +1,50 @@
+appId: com.nalves.dndcombatmathmvp
+name: Combate tático - oportunidade e War Caster
+tags:
+  - tactical-mobile-closure
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-tactical-mobile
+- tapOn:
+    id: e2e-open-tactical-mobile
+- scrollUntilVisible:
+    element:
+      id: tactical-start-turn-target-e2e-tactical-mobile-target
+    direction: DOWN
+- tapOn:
+    id: tactical-start-turn-target-e2e-tactical-mobile-target
+- scrollUntilVisible:
+    element:
+      id: tactical-target-move-distance
+    direction: DOWN
+- tapOn:
+    id: tactical-target-move-distance
+- eraseText
+- inputText: "10"
+- tapOn:
+    id: tactical-target-move-away
+- tapOn:
+    id: tactical-target-move-apply
+- assertVisible: "O alvo saiu do alcance e provocou um ataque de oportunidade."
+- tapOn: "OK"
+- scrollUntilVisible:
+    element:
+      id: tactical-reaction-select-spell_e2e-tactical-war-caster-spell
+    direction: DOWN
+- assertVisible: "Reação pendente"
+- assertVisible: "E2E Fire Bolt"
+- tapOn:
+    id: tactical-reaction-select-spell_e2e-tactical-war-caster-spell
+- tapOn:
+    id: tactical-reaction-damage
+- eraseText
+- inputText: "7"
+- tapOn:
+    id: tactical-reaction-resolve
+- scrollUntilVisible:
+    element:
+      text: ".*usou a reação E2E Fire Bolt.*7 de dano.*"
+    direction: DOWN

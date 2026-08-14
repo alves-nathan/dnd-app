@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "assertions": 23,
+  "catalogVersion": "4.8.0",
+  "entries": 5841,
+  "dependencies": 15385,
+  "categories": 57,
+  "aliases": 127,
+  "mmDisableImpact": {
+    "disabled": 2077,
+    "hardBreaks": 75
+  }
+}

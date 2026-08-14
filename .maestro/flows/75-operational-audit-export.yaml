@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Auditoria operacional externa"
+- assertVisible: "Auditoria operacional externa"
+- assertVisible: "Compartilhar pacote completo"

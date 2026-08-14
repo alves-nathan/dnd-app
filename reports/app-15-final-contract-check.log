@@ -1,0 +1,5 @@
+[backup:portable-restore-verification:check] PASS
+verificationSchema=dnd-portable-restore-verification.v1
+receiptSchema=dnd-portable-restore-integrity-receipt.v1
+evidenceSchema=dnd-portable-restore-evidence.v1
+nativeGateFlows=27

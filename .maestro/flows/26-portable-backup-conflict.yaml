@@ -1,0 +1,15 @@
+appId: com.nalves.dndcombatmathmvp
+name: Preservar conflito de auditoria no backup portátil
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-history
+- assertVisible: "Cenário E2E de histórico transacional do catálogo preparado."
+- tapOn:
+    id: e2e-seed-portable-backup-conflict
+- assertVisible: "Cenário E2E de conflito de backup portátil preparado."
+- openLink: dndcombatmath://content-management
+- assertVisible:
+    id: portable-catalog-import-preview
+- assertVisible: "histórico local não será sobrescrito"

@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "name": "Wolf projection",
+      "pass": true
+    },
+    {
+      "name": "Attack vs character AC",
+      "pass": true
+    },
+    {
+      "name": "Save action",
+      "pass": true
+    },
+    {
+      "name": "Recharge resource",
+      "pass": true
+    },
+    {
+      "name": "Target reaction",
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  }
+}

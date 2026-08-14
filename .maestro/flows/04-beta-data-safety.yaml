@@ -1,0 +1,11 @@
+appId: com.nalves.dndcombatmathmvp
+name: Validar migração e restauração local
+---
+- runFlow: 01-create-unnamed-character.yaml
+- openLink: dndcombatmath://beta-validation
+- assertVisible: "Validação de dados"
+- tapOn:
+    id: beta-run-data-safety
+- assertVisible:
+    id: beta-data-safety-status
+    text: "PASSED"

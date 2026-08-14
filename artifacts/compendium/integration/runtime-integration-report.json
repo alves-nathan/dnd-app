@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "dnd-combat-extracted-book-runtime-integration-report.v2",
+  "compatibilityProfile": "2024-first+legacy",
+  "imports": [
+    {
+      "label": "PHB 2024 bundled baseline",
+      "packId": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+      "itemCount": 1284,
+      "valid": true,
+      "creates": 1284,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "issueSummary": {
+        "info:IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 1
+      },
+      "planExecutable": true,
+      "persisted": {
+        "packId": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+        "created": 1284,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    },
+    {
+      "label": "Monster Manual 2024 — runtime dependency delta",
+      "packId": "mm-2024-runtime-dependency-delta-v1",
+      "itemCount": 2,
+      "valid": true,
+      "creates": 2,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "issueSummary": {},
+      "planExecutable": true,
+      "persisted": {
+        "packId": "mm-2024-runtime-dependency-delta-v1",
+        "created": 2,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    },
+    {
+      "label": "Forge of the Artificer 2025",
+      "packId": "forge-artificer-2025-full-consolidated-import-pack-v1",
+      "itemCount": 200,
+      "valid": true,
+      "creates": 200,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 9,
+      "issueSummary": {
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 9,
+        "info:IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 4
+      },
+      "planExecutable": true,
+      "persisted": {
+        "packId": "forge-artificer-2025-full-consolidated-import-pack-v1",
+        "created": 200,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    },
+    {
+      "label": "Spelljammer: Adventures in Space 2022",
+      "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+      "itemCount": 182,
+      "valid": true,
+      "creates": 182,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 5,
+      "issueSummary": {
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 4,
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      },
+      "planExecutable": true,
+      "persisted": {
+        "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+        "created": 182,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    },
+    {
+      "label": "Tasha's Cauldron of Everything 2020 — 2024-first compatibility profile",
+      "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+      "itemCount": 273,
+      "valid": true,
+      "creates": 273,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 62,
+      "issueSummary": {
+        "warning:IMPORT_V2_CLASS_FEATURE_OWNER_MISSING": 14,
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 47,
+        "info:IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 6,
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      },
+      "planExecutable": true,
+      "persisted": {
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "created": 273,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    },
+    {
+      "label": "Player’s Handbook 2014 — 2024-compatible legacy delta",
+      "packId": "phb-2014-2024-compatible-delta-v1",
+      "itemCount": 56,
+      "valid": true,
+      "creates": 56,
+      "updates": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "issueSummary": {
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      },
+      "planExecutable": true,
+      "persisted": {
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "created": 56,
+        "updated": 0,
+        "unchanged": 0,
+        "contentHashesBackfilled": 0,
+        "preservedStorageIds": []
+      }
+    }
+  ],
+  "expectedCounts": {
+    "phb": 1284,
+    "mm2024Delta": 2,
+    "forge": 200,
+    "spelljammer": 182,
+    "tasha": 273,
+    "phb2014Delta": 56
+  },
+  "finalCommittedSnapshot": {
+    "itemCount": 1997,
+    "expectedItemCount": 1997,
+    "packCount": 6,
+    "packIds": [
+      "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+      "mm-2024-runtime-dependency-delta-v1",
+      "forge-artificer-2025-full-consolidated-import-pack-v1",
+      "spelljammer-2022-full-consolidated-import-pack-v1",
+      "tcoe-2020-2024-compatible-import-pack-v2",
+      "phb-2014-2024-compatible-delta-v1"
+    ],
+    "sourceCount": 8
+  },
+  "idempotency": {
+    "mm2024Delta": {
+      "valid": true,
+      "creates": 0,
+      "updates": 0,
+      "unchanged": 2,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "issueSummary": {
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      }
+    },
+    "forge": {
+      "valid": true,
+      "creates": 0,
+      "updates": 0,
+      "unchanged": 200,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 12,
+      "issueSummary": {
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 9,
+        "info:IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 4,
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1,
+        "warning:IMPORT_PREVIEW_STORED_HASH_MISMATCH": 2
+      }
+    },
+    "spelljammer": {
+      "valid": true,
+      "creates": 0,
+      "updates": 0,
+      "unchanged": 182,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 5,
+      "issueSummary": {
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 4,
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      }
+    },
+    "tasha": {
+      "valid": true,
+      "creates": 0,
+      "updates": 0,
+      "unchanged": 273,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 62,
+      "issueSummary": {
+        "warning:IMPORT_V2_CLASS_FEATURE_OWNER_MISSING": 14,
+        "warning:IMPORT_V2_EQUIPMENT_COST_MISSING": 47,
+        "info:IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 6,
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      }
+    },
+    "phb2014Delta": {
+      "valid": true,
+      "creates": 0,
+      "updates": 0,
+      "unchanged": 56,
+      "conflicts": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "issueSummary": {
+        "warning:IMPORT_PREVIEW_EXISTING_IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      }
+    }
+  },
+  "tashaCompatibility": {
+    "sourceItemCountBeforeProjection": 475,
+    "compatibleItemCount": 273,
+    "suppressedOrSupersededItems": 202,
+    "unresolvedPhb2014Dependencies": 0,
+    "validationStatus": "READY_FOR_RUNTIME_PREVIEW"
+  },
+  "mm2024DependencyClosure": {
+    "itemCount": 2,
+    "validationStatus": "READY_FOR_RUNTIME_PREVIEW",
+    "hasMage": true,
+    "hasFlumph": true,
+    "spelljammerRuntimeBaseRefs": [
+      "mm-2024-creature-mage",
+      "mm-2024-creature-flumph"
+    ]
+  },
+  "phb2014DeltaCompatibility": {
+    "retainedOfficialOptions": 12,
+    "itemCount": 56,
+    "validationStatus": "READY_FOR_RUNTIME_PREVIEW",
+    "usesPhb2024ClassChassis": true,
+    "ignoresLegacySpeciesAbilityScores": true,
+    "unresolvedRuntimePhb2014Owners": 0
+  },
+  "resourceMigration": {
+    "featureResourcesWithStableIds": 48,
+    "uniqueFeatureResourceIds": 48,
+    "allFeatureResourcesHaveStableIds": true
+  },
+  "pass": true
+}

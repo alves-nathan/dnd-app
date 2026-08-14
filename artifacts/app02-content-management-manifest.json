@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "dnd-combat-app02-manifest.v1",
+  "lotId": "app-02",
+  "title": "Catalog initialization, persisted filter store and content-management UI",
+  "catalogVersion": "4.8.0",
+  "implemented": [
+    "APP-01 CatalogLoader merged into the application",
+    "catalog initialized from app/_layout.tsx",
+    "Zustand catalog store",
+    "version-aware AsyncStorage preferences",
+    "book/category/entity impact previews",
+    "content-management screen",
+    "settings and compendium navigation",
+    "runtime catalog validation script",
+    "content-management shape validation script",
+    "three Jest test files"
+  ],
+  "dataSafety": {
+    "mutatesExistingCharacters": false,
+    "mutatesExistingCombats": false,
+    "mutatesLocalCompendium": false,
+    "preferencesStorageKey": "@dnd-combat-math/catalog-filter-preferences/v1"
+  },
+  "nextLot": "APP-03"
+}

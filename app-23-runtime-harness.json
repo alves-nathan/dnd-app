@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "assertions": 46,
+  "schemas": [
+    "dnd-catalog-rollout-health-submission.v1",
+    "dnd-catalog-rollout-aggregation-policy.v1",
+    "dnd-catalog-rollout-aggregate-report.v1",
+    "dnd-catalog-release-approval.v1",
+    "dnd-catalog-release-quorum-decision.v1"
+  ],
+  "uniqueContributors": 4,
+  "duplicateSubmissions": 1,
+  "rejectedSubmissions": 1,
+  "cohortSuppression": true,
+  "quorum": "2/2",
+  "automaticExecution": false
+}

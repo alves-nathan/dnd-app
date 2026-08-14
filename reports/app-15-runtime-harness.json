@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "assertions": 21,
+  "catalogVersion": "4.8.0",
+  "entities": 5841,
+  "dependencies": 15385,
+  "verification": {
+    "passed": "passed",
+    "failed": "failed",
+    "warning": "warning"
+  },
+  "receiptChecksum": "e0fb96e0",
+  "evidenceChecksum": "453626dd"
+}

@@ -1,0 +1,8 @@
+{
+  "status": "GENERATED",
+  "output": "/tmp/app19-cli/key.json",
+  "publisherId": "app19-cli",
+  "keyId": "cli-root",
+  "algorithm": "ECDSA_P256_SHA256",
+  "publicKeyFingerprint": "6a6ba12bbccb8987f84a61e1d9b1e04d1f81cfaf79355aaac9dfdef0e9f4118b"
+}

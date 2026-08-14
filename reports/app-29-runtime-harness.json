@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "dnd-combat-app29-runtime-harness.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:24.018Z",
+  "assertions": 20,
+  "requiredMaestroFlows": 83
+}

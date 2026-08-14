@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "dnd-combat-app26-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T21:16:02.167Z",
+  "inheritedBaselineChecks": 194,
+  "currentPassChecks": 4,
+  "currentPlannedChecks": 4,
+  "results": [
+    {
+      "command": "run-app25-linear-regression.js",
+      "status": "PASS",
+      "durationMs": 9413,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"inheritedBaselineChecks\": 190,\n  \"currentPassChecks\": 4,\n  \"currentPlannedChecks\": 4\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-operational-audit.js",
+      "status": "PASS",
+      "durationMs": 19,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app26-contracts.v1\",\n  \"status\": \"PASS\",\n  \"checkedAt\": \"2026-08-04T21:15:58.433Z\",\n  \"issues\": [],\n  \"expectedMaestroFlows\": 4,\n  \"readOnlyImport\": true,\n  \"automaticExecution\": false\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app26-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 875,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 48,\n  \"auditStatus\": \"approved\",\n  \"entries\": 7,\n  \"receipts\": 1,\n  \"cryptographicallyVerifiedReceipts\": 1,\n  \"missingSegmentRejected\": true,\n  \"overlapRejected\": true,\n  \"forkDetected\": true,\n  \"signedReportVerified\": true,\n  \"automaticDeletion\": false\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2854,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=369",
+      "stderr": ""
+    }
+  ]
+}

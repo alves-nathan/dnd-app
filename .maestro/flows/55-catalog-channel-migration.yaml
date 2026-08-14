@@ -1,0 +1,10 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Canais e rollout do catálogo"
+- assertVisible: "Canal atual: Stable"
+- assertVisible:
+    id: "catalog-channel-beta"
+- assertVisible:
+    id: "catalog-channel-preview"

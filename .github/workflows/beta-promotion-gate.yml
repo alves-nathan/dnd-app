@@ -1,0 +1,42 @@
+name: Beta promotion gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_git_sha:
+        description: Commit testado nas evidências Android e iOS
+        required: true
+        type: string
+      feedback_export_path:
+        description: Caminho da exportação sanitizada de feedback dentro do repositório
+        required: false
+        default: artifacts/beta-feedback/latest.json
+        type: string
+
+jobs:
+  promotion-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BETA_EXPECTED_GIT_SHA: ${{ inputs.expected_git_sha }}
+      BETA_FEEDBACK_EXPORT_PATH: ${{ inputs.feedback_export_path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - name: Validate native evidence hashes and identity
+        run: npm run beta:evidence:validate
+      - name: Generate promotion report
+        run: npm run beta:promotion:report
+      - name: Generate dry-run promotion plan
+        run: npm run beta:promotion:plan
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beta-promotion-${{ github.run_id }}
+          path: artifacts/beta-promotion
+          if-no-files-found: warn
+          retention-days: 90

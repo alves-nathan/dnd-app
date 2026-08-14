@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "assertions": 43,
+  "currentVersion": "4.8.0",
+  "candidateVersion": "4.8.1",
+  "currentEntities": 5841,
+  "candidateEntities": 5842,
+  "dependencies": 15385,
+  "diff": {
+    "added": 1,
+    "removed": 0,
+    "changed": 1
+  },
+  "impact": {
+    "charactersExamined": 1,
+    "charactersAffected": 1,
+    "snapshotMigrations": 1,
+    "blockingCharacters": 0,
+    "evidenceRecordsAffected": 1
+  },
+  "storage": {
+    "chunks": 81,
+    "rollbackRef": "bundled",
+    "storeSwitch": "PASS",
+    "coordinatedCommitRollback": "PASS"
+  },
+  "receipt": "e9b24fe4d013ac6fddd9dcc318a2a8965e2e845440b0903d5209c5dae7b365a3"
+}

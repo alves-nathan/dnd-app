@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "dnd-combat-app27-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T21:37:17.277Z",
+  "inheritedBaselineChecks": 198,
+  "currentPassChecks": 4,
+  "currentPlannedChecks": 4,
+  "results": [
+    {
+      "command": "run-app26-linear-regression.js",
+      "status": "PASS",
+      "durationMs": 13097,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"inheritedBaselineChecks\": 194,\n  \"currentPassChecks\": 4,\n  \"currentPlannedChecks\": 4\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-operational-federation.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app27-contracts.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T21:37:13.846Z\",\n  \"requiredFiles\": 9,\n  \"maestroFlows\": 82,\n  \"issues\": []\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app27-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 638,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app27-runtime-harness.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T21:37:14.474Z\",\n  \"assertions\": 28,\n  \"approvedConsensus\": {\n    \"devices\": 2,\n    \"witnesses\": 2,\n    \"headHash\": \"7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee\",\n    \"commonPrefixEntries\": 2\n  },\n  \"rejectedScenarios\": [\n    \"tamperedStatement\",\n    \"missingQuorum\",\n    \"nonIndependentWitness\",\n    \"selfWitness\",\n    \"fork\",\n    \"staleStatement\",\n    \"duplicateDevice\",\n    \"tamperedFederation\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2789,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=373",
+      "stderr": ""
+    }
+  ]
+}

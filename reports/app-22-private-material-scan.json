@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "dnd-combat-app22-private-material-scan.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T20:00:09.862011Z",
+  "patterns": [
+    "PEM private key",
+    "JWK private scalar d"
+  ],
+  "matches": []
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "dnd-combat-app29-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:26.900Z",
+  "inheritedBaselineChecks": 198,
+  "currentPassChecks": 10,
+  "currentPlannedChecks": 10,
+  "accumulatedChecks": 208,
+  "results": [
+    {
+      "command": "run-app28-linear-regression.js",
+      "status": "PASS",
+      "durationMs": 20061,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"inheritedBaselineChecks\": 194,\n  \"currentPassChecks\": 4,\n  \"currentPlannedChecks\": 4,\n  \"failed\": null\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-app29-release-candidate.js",
+      "status": "PASS",
+      "durationMs": 19,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-contract-check.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:22.005Z\",\n  \"requiredFiles\": 10,\n  \"issues\": []\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-app29-security-hardening.js",
+      "status": "PASS",
+      "durationMs": 37,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-security-hardening.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:22.042Z\",\n  \"filesScanned\": 263,\n  \"checks\": [\n    {\n      \"id\": \"android-permissions\",\n      \"status\": \"PASS\",\n      \"detail\": \"Permissões Android declaradas: [].\"\n    },\n    {\n      \"id\": \"no-private-key-material\",\n      \"status\": \"PASS\",\n      \"detail\": \"Nenhum material de chave privada pode existir no runtime.\"\n    },\n    {\n      \"id\": \"no-runtime-http\",\n      \"status\": \"PASS\",\n      \"detail\": \"URLs HTTP sem TLS não são aceitas no runtime.\"\n    },\n    {\n      \"id\": \"no-dynamic-code\",\n      \"status\": \"PASS\",\n      \"detail\": \"Execução dinâmica de código não é aceita.\"\n    },\n    {\n      \"id\": \"no-automatic-release-execution\",\n      \"status\": \"PASS\",\n      \"detail\": \"Operações de release não podem habilitar execução automática.\"\n    },\n    {\n      \"id\": \"runtime-version-pinned\",\n      \"status\": \"PASS\",\n      \"detail\": \"runtimeVersion deve seguir appVersion.\"\n    },\n    {\n      \"id\": \"e2e-seed-disabled-default\",\n      \"status\": \"PASS\",\n      \"detail\": \"Seed E2E deve permanecer desabilitado por padrão.\"\n    }\n  ],\n  \"issues\": []\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-app29-migration-contracts.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-migration-contracts.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:22.062Z\",\n  \"results\": [\n    {\n      \"file\": \"src/store/buildPresetStore.ts\",\n      \"version\": \"BUILD_PRESET_STORE_VERSION = 1\",\n      \"migrate\": \"migrateBuildPresetPersistenceState\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/catalogDistributionStore.ts\",\n      \"version\": \"CATALOG_DISTRIBUTION_STORE_VERSION = 2\",\n      \"migrate\": \"migrateCatalogDistributionPersistenceState\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/catalogUpdateSessionStore.ts\",\n      \"version\": \"CATALOG_UPDATE_SESSION_STORE_VERSION = 2\",\n      \"migrate\": \"migrateCatalogUpdateSessionPersistenceState\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/catalogOperationalAuthorizationStore.ts\",\n      \"version\": \"CATALOG_OPERATIONAL_AUTHORIZATION_STORE_VERSION = 2\",\n      \"migrate\": \"migrate:\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/portableRestoreSessionStore.ts\",\n      \"version\": \"PORTABLE_RESTORE_SESSION_STORE_VERSION = 3\",\n      \"migrate\": \"migrate:\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/characterStore.ts\",\n      \"version\": \"CHARACTER_STORE_VERSION\",\n      \"migrate\": \"migrateCharacterStoreState\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/store/combatScenarioStore.ts\",\n      \"version\": \"version: 3\",\n      \"migrate\": \"migrate:\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    },\n    {\n      \"file\": \"src/storage/sqliteCompendiumMigrations.ts\",\n      \"version\": \"COMPENDIUM_SQLITE_SCHEMA_VERSION = 3\",\n      \"migrate\": \"currentVersion < 3\",\n      \"status\": \"PASS\",\n      \"errors\": []\n    }\n  ],\n  \"safetyChecks\": [\n    {\n      \"id\": \"v1-update-session-is-not-resumed\",\n      \"pass\": true\n    },\n    {\n      \"id\": \"history-is-preserved\",\n      \"pass\": true\n    },\n    {\n      \"id\": \"preset-array-is-sanitized\",\n      \"pass\": true\n    },\n    {\n      \"id\": \"distribution-records-are-sanitized\",\n      \"pass\": true\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app29-install-upgrade-rehearsal.js",
+      "status": "PASS",
+      "durationMs": 409,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-install-upgrade-rehearsal.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:22.471Z\",\n  \"assertions\": 12,\n  \"scenarios\": {\n    \"cleanInstall\": 2,\n    \"upgrades\": 3,\n    \"unsafeSessionDiscarded\": true,\n    \"immutableSourceFixture\": true\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app29-performance-benchmark.js",
+      "status": "PASS",
+      "durationMs": 309,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-performance-benchmark.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:22.769Z\",\n  \"node\": \"v22.16.0\",\n  \"catalog\": {\n    \"file\": \"assets/catalog-v4.8.0/runtime-bundle-v4.8.0.json\",\n    \"bytes\": 10548880,\n    \"entityCount\": 5841,\n    \"dependencyCount\": 15385,\n    \"parse\": {\n      \"minMs\": 27.988755999999995,\n      \"medianMs\": 33.194715,\n      \"p95Ms\": 39.482186,\n      \"maxMs\": 39.482186,\n      \"iterations\": 5\n    },\n    \"hash\": {\n      \"minMs\": 11.653095999999977,\n      \"medianMs\": 11.675009000000017,\n      \"p95Ms\": 14.972611999999998,\n      \"maxMs\": 14.972611999999998,\n      \"iterations\": 5\n    }\n  },\n  \"runtimeSourceBytes\": 3259468,\n  \"budgets\": {\n    \"maximumCatalogBytes\": 12582912,\n    \"maximumParseP95Ms\": 1500,\n    \"maximumHashP95Ms\": 1500,\n    \"maximumRuntimeSourceBytes\": 4194304,\n    \"minimumEntities\": 5000,\n    \"minimumDependencies\": 15000\n  },\n  \"checks\": [\n    {\n      \"id\": \"catalog-size\",\n      \"pass\": true,\n      \"actual\": 10548880,\n      \"budget\": 12582912\n    },\n    {\n      \"id\": \"catalog-parse-p95\",\n      \"pass\": true,\n      \"actual\": 39.482186,\n      \"budget\": 1500\n    },\n    {\n      \"id\": \"catalog-hash-p95\",\n      \"pass\": true,\n      \"actual\": 14.972611999999998,\n      \"budget\": 1500\n    },\n    {\n      \"id\": \"runtime-source-size\",\n      \"pass\": true,\n      \"actual\": 3259468,\n      \"budget\": 4194304\n    },\n    {\n      \"id\": \"entity-count\",\n      \"pass\": true,\n      \"actual\": 5841,\n      \"budget\": 5000\n    },\n    {\n      \"id\": \"dependency-count\",\n      \"pass\": true,\n      \"actual\": 15385,\n      \"budget\": 15000\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app29-isolated-typecheck.js",
+      "status": "PASS",
+      "durationMs": 854,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-isolated-typecheck.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:23.635Z\",\n  \"stdout\": \"\",\n  \"stderr\": \"\"\n}",
+      "stderr": ""
+    },
+    {
+      "command": "scan-app29-private-material.js",
+      "status": "PASS",
+      "durationMs": 108,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-private-material-scan.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:23.740Z\",\n  \"filesScanned\": 1366,\n  \"findings\": []\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app29-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 275,
+      "stdout": "{\n  \"schemaVersion\": \"dnd-combat-app29-runtime-harness.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:27:24.018Z\",\n  \"assertions\": 20,\n  \"requiredMaestroFlows\": 83\n}",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2878,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=380",
+      "stderr": ""
+    }
+  ]
+}

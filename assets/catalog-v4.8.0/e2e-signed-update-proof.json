@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "dnd-signed-catalog-bundle.v1",
+  "provenance": {
+    "publisherId": "dnd-combat-official",
+    "publisherName": "D&D Combat Official Catalog",
+    "publisherKind": "official",
+    "keyId": "root-2026-01",
+    "algorithm": "ECDSA_P256_SHA256",
+    "issuedAt": "2026-08-04T16:00:00.000Z",
+    "sequence": 1,
+    "previousBundleChecksum": "0728e21b17ce768039d9873da7ee32d80b36480ab871297143944ad7fce50c43",
+    "catalogChecksum": "b1759b1699455b7559313b65e325f6a5f8de894b4f2eb98219860f03b32a1cb1",
+    "catalogVersion": "4.8.1-e2e",
+    "snapshotId": "catalog-4.8.1-e2e-f03d19d2"
+  },
+  "signature": "pTIegqKQxmTax_Ch2UarTOMiPM7ni8Iunt7SqCv4kCzvh-X4w17CkzVuZRFAURTUgxOYhqf8nFjT6J-d9mt-Yg"
+}

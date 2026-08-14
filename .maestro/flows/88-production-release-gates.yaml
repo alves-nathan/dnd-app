@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Release de produção"
+- assertVisible: "Gate integral APP-28"
+- assertVisible: "Release candidate APP-29"
+- assertVisible: "Controle bloqueante"

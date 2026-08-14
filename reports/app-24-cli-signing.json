@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "authorization": {
+    "status": "PASS",
+    "output": "/tmp/tmp.AP6UWguILH/authorization-signed.json",
+    "authorizationId": "cli-auth-app24",
+    "action": "expand",
+    "executorId": "cli-executor",
+    "maximumUses": 1
+  },
+  "confirmation": {
+    "status": "PASS",
+    "output": "/tmp/tmp.AP6UWguILH/confirmation-signed.json",
+    "confirmationId": "cli-confirm-app24",
+    "executorId": "cli-executor",
+    "authorizationChecksum": "ce1310bda531d8ba2cc3fd7bd5eddccbd0b40575bccbf4df545071b6d8e405f8"
+  },
+  "privateKeysPersistedInProject": false
+}

@@ -1,0 +1,38 @@
+appId: com.nalves.dndcombatmathmvp
+name: Combate tático - ataque do alvo, Sap e concentração
+tags:
+  - tactical-mobile-closure
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-tactical-mobile
+- tapOn:
+    id: e2e-open-tactical-mobile
+- scrollUntilVisible:
+    element:
+      id: tactical-start-turn-target-e2e-tactical-mobile-target
+    direction: DOWN
+- tapOn:
+    id: tactical-start-turn-target-e2e-tactical-mobile-target
+- scrollUntilVisible:
+    element:
+      id: tactical-target-attack-damage
+    direction: DOWN
+- tapOn:
+    id: tactical-target-attack-damage
+- eraseText
+- inputText: "12"
+- tapOn:
+    id: tactical-concentration-failure
+- tapOn:
+    id: tactical-target-attack-resolve
+- assertVisible: "Sap aplicou desvantagem e foi consumido."
+- tapOn: "OK"
+- scrollUntilVisible:
+    element:
+      id: tactical-character-concentration
+    direction: UP
+- assertVisible: "Concentração: Nenhuma"
+- assertVisible: "PV: 20/32"

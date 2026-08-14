@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "dnd-combat-mm2024-runtime-delta-report.v1",
+  "packId": "mm-2024-runtime-dependency-delta-v1",
+  "itemCount": 2,
+  "itemIds": [
+    "mm-2024-creature-mage",
+    "mm-2024-creature-flumph"
+  ],
+  "legacyMappings": {
+    "mm-2014-creature-mage": "mm-2024-creature-mage",
+    "mm-2014-creature-flumph": "mm-2024-creature-flumph"
+  },
+  "externalDependencies": {
+    "phb2024": [
+      "phb-2024-spell-detect-magic",
+      "phb-2024-spell-light",
+      "phb-2024-spell-mage-armor",
+      "phb-2024-spell-mage-hand",
+      "phb-2024-spell-prestidigitation",
+      "phb-2024-spell-fireball",
+      "phb-2024-spell-invisibility",
+      "phb-2024-spell-cone-of-cold",
+      "phb-2024-spell-fly",
+      "phb-2024-spell-misty-step",
+      "phb-2024-spell-counterspell",
+      "phb-2024-spell-shield"
+    ]
+  },
+  "validationStatus": "READY_FOR_RUNTIME_PREVIEW",
+  "sha256": "ab6f55a1bc5632ca13fe994bf3ded4ccc3999009df137680b40eaabf679113c9"
+}

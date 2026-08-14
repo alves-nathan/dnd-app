@@ -1,0 +1,12 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- openLink: "dndcombatmath://e2e-seed"
+- tapOn:
+    id: "e2e-seed-catalog-update"
+- assertVisible: "Atualização assinada e confiável preparada para E2E."
+- tapOn:
+    id: "e2e-open-catalog-update"
+- assertVisible:
+    id: "catalog-update-trust-status"
+- assertVisible: "Assinatura válida"

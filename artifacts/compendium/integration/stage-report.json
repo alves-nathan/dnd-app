@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "dnd-combat-extracted-book-v2-stage-report.v1",
+  "generatedAt": "2026-08-12T15:12:41.403Z",
+  "packs": [
+    {
+      "label": "Forge of the Artificer 2025",
+      "source": "artifacts/compendium/integration/source-v1/forge-artificer-2025-full-consolidated-import-pack-v1.json",
+      "target": "artifacts/compendium/integration/v2/forge-artificer-2025-full-consolidated-import-pack-v2-canonical.json",
+      "sourceTemplateVersion": "dnd-combat-import.v1",
+      "targetTemplateVersion": "dnd-combat-import.v2",
+      "itemCount": 200,
+      "sourceSha256": "bee25f998cf750190ed9d79683fd25e5cd620a1c33c5e6b01bddecb4bb94e6ae",
+      "targetSha256": "8989ddd3446d42c3da2f56dd04e5d8941919d48846133b0d1099270b114d23bd",
+      "canonicalContentHash": "cmpv2_bfcb53838f6832c9",
+      "migrationIssues": {
+        "info:IMPORT_V1_MIGRATED_TO_V2": 1,
+        "info:IMPORT_NORMALIZED_CURRENCY": 36,
+        "info:IMPORT_NORMALIZED_RESOURCE_MAX_STRING": 2,
+        "warning:IMPORT_GENERATED_RESOURCE_ID": 9,
+        "info:IMPORT_DERIVED_ACTION_TYPE": 22,
+        "info:IMPORT_NORMALIZED_RESOURCE_USES_FORMULA": 2,
+        "info:IMPORT_NORMALIZED_RESOURCE_NAMED_USES": 3,
+        "warning:IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1,
+        "info:IMPORT_NORMALIZED_CREATURE_LANGUAGES": 1,
+        "info:IMPORT_NORMALIZED_RESOURCE_NAMED_USES_FORMULA": 1,
+        "warning:IMPORT_PRESERVED_NONCANONICAL_ACTION_CONSUMES": 1,
+        "info:IMPORT_DERIVED_ACTION_NAME": 1,
+        "info:IMPORT_NORMALIZED_CREATURE_ACTION_RANGE": 19
+      },
+      "renormalizationIssues": {
+        "warning:IMPORT_RESOURCE_MULTI_POOL_EXTENSION_PRESERVED": 1
+      },
+      "invalidResourcesDropped": 0,
+      "generatedResourceIds": 9,
+      "extractionCorrections": [
+        {
+          "code": "FORGE_HUNTERS_MARK_CANONICAL_ID",
+          "count": 3,
+          "evidence": "PHB 2024 bundled spell entity uses phb-2024-spell-hunter-s-mark."
+        }
+      ]
+    },
+    {
+      "label": "Spelljammer: Adventures in Space 2022",
+      "source": "artifacts/compendium/integration/source-v1/spelljammer-2022-full-consolidated-import-pack-v1.json",
+      "target": "artifacts/compendium/integration/v2/spelljammer-2022-full-consolidated-import-pack-v2-canonical.json",
+      "sourceTemplateVersion": "dnd-combat-import.v1",
+      "targetTemplateVersion": "dnd-combat-import.v2",
+      "itemCount": 182,
+      "sourceSha256": "44690ca0f2da801eecf0e0f2fb85b348368375dfaab879b2e5962a8c84d0eb4f",
+      "targetSha256": "d7d5c39bec9d53c537f4355d1c0fad8cf3ec2884abb316fcb1f813270c0ec176",
+      "canonicalContentHash": "cmpv2_b5a0967f4856cdd7",
+      "migrationIssues": {
+        "info:IMPORT_V1_MIGRATED_TO_V2": 1,
+        "info:IMPORT_INFERRED_RULES_ERA": 182,
+        "info:IMPORT_NORMALIZED_CURRENCY": 2,
+        "info:IMPORT_NORMALIZED_RESOURCE_MAX_STRING": 4,
+        "warning:IMPORT_SPELL_CLASS_REFERENCE_UNRESOLVED": 7
+      },
+      "renormalizationIssues": {
+        "warning:IMPORT_SPELL_CLASS_REFERENCE_UNRESOLVED": 7
+      },
+      "invalidResourcesDropped": 0,
+      "generatedResourceIds": 0,
+      "extractionCorrections": [
+        {
+          "code": "SPELLJAMMER_PSURLON_SPELLREF_OCR_REPAIR",
+          "count": 1,
+          "evidence": "Boo’s Astral Menagerie p.44: Psurlon casts disguise self and mage armor 2/day each, suggestion 1/day."
+        },
+        {
+          "code": "SPELLJAMMER_ASTRAL_ELF_COMMANDER_TELEPORT_OCR_REPAIR",
+          "count": 1,
+          "evidence": "Boo’s Astral Menagerie p.12: Astral Elf Commander Spellcasting is 2/day: teleport."
+        }
+      ]
+    },
+    {
+      "label": "Tasha's Cauldron of Everything 2020",
+      "source": "artifacts/compendium/integration/source-v1/tcoe-2020-full-consolidated-import-pack-v1.json",
+      "target": "artifacts/compendium/integration/v2/tcoe-2020-full-consolidated-import-pack-v2-canonical.json",
+      "sourceTemplateVersion": "dnd-combat-import.v1",
+      "targetTemplateVersion": "dnd-combat-import.v2",
+      "itemCount": 475,
+      "sourceSha256": "9f25d4bd90142d6fc2bc219fe3efc90e5bcbf2178c10e33e699708d9a7dbf426",
+      "targetSha256": "af28678f34f8475fd37468c55f3ef0ce16a6acf610f9c480e1b30b48a63cd2bd",
+      "canonicalContentHash": "cmpv2_b21f3c1b4475c613",
+      "migrationIssues": {
+        "info:IMPORT_V1_MIGRATED_TO_V2": 1,
+        "info:IMPORT_PRESERVED_STRUCTURED_RITUAL_CASTING": 1,
+        "warning:IMPORT_UNSUPPORTED_EQUIPMENT_OPTION_ENTRY": 4,
+        "info:IMPORT_PRESERVED_EQUIPMENT_CURRENCY_UNIT_EXTENSION": 1,
+        "info:IMPORT_NORMALIZED_RESOURCE_MAX_STRING": 2,
+        "warning:IMPORT_PRESERVED_NONCANONICAL_ACTION_CONSUMES": 5,
+        "info:IMPORT_NORMALIZED_CREATURE_LANGUAGES": 4,
+        "info:IMPORT_REMOVED_EMPTY_OPTIONAL_OWNER_ID": 46,
+        "info:IMPORT_REMOVED_INVALID_OPTIONAL_LEVEL_GAINED": 19,
+        "info:IMPORT_NORMALIZED_RESOURCE_MAX_USES": 1,
+        "warning:IMPORT_NORMALIZED_RESOURCE_RECOVERY": 3,
+        "warning:IMPORT_GENERATED_RESOURCE_ID": 44,
+        "info:IMPORT_NORMALIZED_RESOURCE_USES": 44,
+        "info:IMPORT_NORMALIZED_CREATURE_ARMOR_CLASS_FORMULA": 11,
+        "info:IMPORT_NORMALIZED_CREATURE_HIT_POINTS_FORMULA": 3,
+        "info:IMPORT_NORMALIZED_CREATURE_SENSES_ARRAY": 4,
+        "info:IMPORT_REMOVED_EMPTY_FEAT_ABILITY_SCORE_INCREASE": 5,
+        "info:IMPORT_WRAPPED_FEAT_ABILITY_SCORE_INCREASE": 10,
+        "info:IMPORT_DERIVED_ACTION_TYPE": 5,
+        "warning:IMPORT_NORMALIZED_ACTION_COST_TRIGGER": 20,
+        "info:IMPORT_NORMALIZED_VARIABLE_DAMAGE_TYPE": 1,
+        "info:IMPORT_NORMALIZED_TARGET_DESCRIPTION": 1,
+        "info:IMPORT_PRESERVED_CONDITIONAL_RESISTANCES": 1,
+        "info:IMPORT_PRESERVED_VARIABLE_CLASS_SPELLCASTING_ABILITY": 1,
+        "warning:IMPORT_SPELL_CLASS_REFERENCE_UNRESOLVED": 57
+      },
+      "renormalizationIssues": {
+        "warning:IMPORT_SPELL_CLASS_REFERENCE_UNRESOLVED": 57
+      },
+      "invalidResourcesDropped": 0,
+      "generatedResourceIds": 44,
+      "extractionCorrections": []
+    }
+  ]
+}

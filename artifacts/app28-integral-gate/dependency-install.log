@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "dnd-combat-app28-dependency-install.v1",
+  "status": "FAIL",
+  "classification": "COMMAND_FAILED",
+  "generatedAt": "2026-08-04T21:53:01.768Z",
+  "node": "v22.16.0",
+  "npm": "10.9.2",
+  "packageLockSha256": "9d5155ab052fdb9e3191f8d1a7819324161e29b91be90401ad09661b0c9ffd41",
+  "dependenciesReady": false,
+  "requiredFiles": [
+    "node_modules/expo/package.json",
+    "node_modules/react/package.json",
+    "node_modules/react-native/package.json",
+    "node_modules/zustand/package.json",
+    "node_modules/zod/package.json",
+    "node_modules/.bin/tsc",
+    "node_modules/.bin/jest"
+  ],
+  "attempts": [
+    {
+      "id": "registry-1",
+      "mode": "registry",
+      "registry": "https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public",
+      "cache": null,
+      "status": "BLOCKED",
+      "classification": "REGISTRY_PACKAGE_MISSING",
+      "durationMs": 2563,
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "logFile": "artifacts/app28-dependency-install/registry-1.log",
+      "remediation": "O registry consultado não disponibiliza uma ou mais versões fixadas no lockfile."
+    },
+    {
+      "id": "registry-2",
+      "mode": "registry",
+      "registry": "https://registry.npmjs.org",
+      "cache": null,
+      "status": "FAIL",
+      "classification": "COMMAND_FAILED",
+      "durationMs": 31137,
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "logFile": "artifacts/app28-dependency-install/registry-2.log",
+      "remediation": "A instalação falhou por motivo não classificado; consulte o log sem alterar o lockfile."
+    }
+  ],
+  "lockVerification": null,
+  "remediation": "Execute este comando em um ambiente com acesso a um registry npm completo ou forneça APP28_NPM_CACHE com um cache previamente aquecido para este package-lock.json."
+}

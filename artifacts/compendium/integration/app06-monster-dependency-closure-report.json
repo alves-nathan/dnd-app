@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "dnd-combat-app06-monster-dependency-closure.v1",
+  "compatibilityProfile": "2024-first+legacy",
+  "pack": {
+    "id": "mm-2024-runtime-dependency-delta-v1",
+    "itemCount": 2,
+    "itemIds": [
+      "mm-2024-creature-flumph",
+      "mm-2024-creature-mage"
+    ],
+    "validationStatus": "READY_FOR_RUNTIME_PREVIEW"
+  },
+  "spelljammerBaseCreatureRefs": [
+    {
+      "itemId": "spelljammer-2022-feature-lox-aarakocra-spelljammer-variant",
+      "name": "Aarakocra Spelljammer Variant",
+      "externalId": "mm-2024-creature-mage"
+    },
+    {
+      "itemId": "spelljammer-2022-feature-lox-flapjack-variant",
+      "name": "Flapjack Variant",
+      "externalId": "mm-2024-creature-flumph"
+    }
+  ],
+  "currentBaseRefCount": 2,
+  "legacyBaseRefCount": 0,
+  "mageSpellRefs": {
+    "total": 12,
+    "unresolvedAgainstBundledPhb2024": []
+  },
+  "residualRuntimeRequiredDependencies": [],
+  "checks": {
+    "packContainsExactlyMageAndFlumph": true,
+    "packUsesCurrentRulesEra": true,
+    "engineKeysUnique": true,
+    "magePresent": true,
+    "flumphPresent": true,
+    "mageSpellsResolveToBundledPhb2024": true,
+    "spelljammerUsesMage2024Base": true,
+    "spelljammerUsesFlumph2024Base": true,
+    "noSpelljammerMm2014RuntimeBases": true,
+    "residualRuntimeRequiredDependenciesClosed": true,
+    "mmDeltaReadyForRuntimePreview": true
+  },
+  "passedChecks": 11,
+  "totalChecks": 11,
+  "pass": true
+}

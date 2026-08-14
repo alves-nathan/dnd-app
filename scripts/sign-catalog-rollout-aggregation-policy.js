@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const args = process.argv.slice(2);
+const value = (name) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : undefined; };
+const required = (name) => { const result = value(name); if (!result) throw new Error(`Argumento obrigatório ausente: ${name}`); return result; };
+const stable = (input) => Array.isArray(input) ? input.map(stable) : input && typeof input === 'object' ? Object.keys(input).sort().reduce((out, key) => { if (input[key] !== undefined) out[key] = stable(input[key]); return out; }, {}) : input;
+const stableStringify = (input) => JSON.stringify(stable(input));
+const inputPath = path.resolve(required('--input'));
+const privatePath = path.resolve(required('--private-key'));
+const outputPath = path.resolve(required('--output'));
+const policy = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
+if (policy.schemaVersion !== 'dnd-catalog-rollout-aggregation-policy.v1') throw new Error('A política de agregação é incompatível.');
+const privateDocument = JSON.parse(fs.readFileSync(privatePath, 'utf8'));
+const privateJwk = privateDocument.privateJwk || privateDocument;
+const payload = { ...policy };
+delete payload.signature;
+const signature = crypto.sign('sha256', Buffer.from(stableStringify(payload)), { key: crypto.createPrivateKey({ key: privateJwk, format: 'jwk' }), dsaEncoding: 'ieee-p1363' }).toString('base64url');
+const signed = { ...payload, signature };
+fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+fs.writeFileSync(outputPath, `${JSON.stringify(signed, null, 2)}\n`);
+console.log(JSON.stringify({ status: 'PASS', output: outputPath, schemaVersion: signed.schemaVersion, policyId: signed.aggregationPolicyId, minimumUniqueContributors: signed.minimumUniqueContributors, minimumApprovals: signed.quorum?.minimumApprovals }, null, 2));

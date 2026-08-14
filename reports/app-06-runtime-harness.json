@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "assertions": 21,
+  "storeVersion": 23,
+  "scenarios": {
+    "restartRecovery": {
+      "status": "recoverable",
+      "checkpoint": 1
+    },
+    "acknowledgedCommit": {
+      "ok": true,
+      "level": 2
+    },
+    "checkpoint": {
+      "before": 1,
+      "after": 2
+    },
+    "conflict": {
+      "status": "conflicted"
+    },
+    "quarantine": {
+      "orphaned": 1,
+      "invalid": 1
+    }
+  }
+}

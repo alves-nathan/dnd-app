@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "dnd-combat-app28-runtime-harness.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T21:57:29.653Z",
+  "assertions": 19,
+  "minimumMaestroFlows": 75,
+  "temporaryDirectory": "/tmp"
+}

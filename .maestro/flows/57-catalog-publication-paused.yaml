@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Canais e rollout do catálogo"
+- assertVisible: "Pausa ou retirada assinada"
+- assertVisible:
+    id: "catalog-publication-control-import"

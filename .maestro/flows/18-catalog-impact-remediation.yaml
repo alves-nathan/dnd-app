@@ -1,0 +1,21 @@
+appId: com.nalves.dndcombatmathmvp
+name: Aplicar desativação e iniciar plano preventivo
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-impact
+- assertVisible: "Cenário E2E de impacto preventivo do catálogo preparado."
+- openLink: dndcombatmath://content-management
+- tapOn: "Entidades"
+- tapOn: "Nome, ID ou tipo"
+- inputText: "Acid Splash"
+- tapOn: "Desativar"
+- tapOn:
+    id: catalog-impact-acknowledgement
+- tapOn:
+    id: catalog-impact-apply-and-plan
+- assertVisible: "Alteração aplicada"
+- tapOn: "Abrir planos"
+- assertVisible: "Planos e manifestos"
+- assertVisible: "E2E Preventive Wizard"

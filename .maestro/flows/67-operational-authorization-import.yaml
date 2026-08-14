@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Autorização operacional"
+- assertVisible: "Três barreiras independentes"
+- assertVisible:
+    id: "operational-authorization-import"

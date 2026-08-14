@@ -1,0 +1,31 @@
+appId: com.nalves.dndcombatmathmvp
+name: Criar personagem sem nome
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-button
+- assertVisible: "Ambiente E2E preparado"
+- tapOn:
+    id: e2e-open-creation
+- assertVisible: "Níveis e classes"
+- tapOn: "E2E Adventurer"
+- tapOn: "Continuar"
+- assertVisible: "Origem"
+- tapOn: "E2E Human"
+- tapOn: "E2E Wanderer"
+- tapOn: "Continuar"
+- assertVisible: "Subclasses e feats"
+- tapOn: "Continuar"
+- assertVisible: "Atributos"
+- tapOn: "Continuar"
+- assertVisible: "Proficiências"
+- tapOn: "Continuar"
+- assertVisible: "Equipamento"
+- tapOn: "Continuar"
+- assertVisible: "Magias"
+- tapOn: "Continuar"
+- assertVisible: "Nome e revisão"
+- tapOn: "Criar personagem"
+- assertVisible: "E2E Adventurer sem nome"

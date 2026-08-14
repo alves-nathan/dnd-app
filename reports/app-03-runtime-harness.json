@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "dnd-combat-app03-runtime-harness.v1",
+  "status": "PASS",
+  "assertions": 35,
+  "catalogVersion": "4.8.0",
+  "catalogSnapshotId": "catalog-4.8.0-b1983121",
+  "catalog": {
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127
+  },
+  "bridge": {
+    "visibleChoices": 1066,
+    "totalChoicesIncludingUnavailable": 3988,
+    "hiddenDuplicateCount": 1066,
+    "unavailableCount": 2922,
+    "ambiguousCollisionCount": 58,
+    "officialWizardCarrier": "phb-2024-full-consolidated-import-pack-v5-complete-invocations:phb-2024-class-wizard"
+  },
+  "migrations": {
+    "characterStoreVersion": 19
+  },
+  "generatedAt": "2026-08-03T23:21:49.734Z"
+}

@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Isolar conflito de progressão após reinício
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-progression-conflict
+- assertVisible: "Cenário E2E de conflito transacional preparado."
+- stopApp
+- launchApp
+- openLink: dndcombatmath://progression-recovery
+- assertVisible: "Conflito de recuperação"
+- assertVisible: "não pode ser retomado automaticamente"

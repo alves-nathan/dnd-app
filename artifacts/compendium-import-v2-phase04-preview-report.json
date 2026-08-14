@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "dnd-combat-import-v2-phase04-preview-audit.v1",
+  "sourcePack": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+  "itemCount": 1284,
+  "emptyCatalog": {
+    "valid": true,
+    "creates": 1284,
+    "updates": 0,
+    "unchanged": 0,
+    "conflicts": 0
+  },
+  "replayAgainstSameV1Catalog": {
+    "valid": true,
+    "creates": 0,
+    "updates": 0,
+    "unchanged": 1284,
+    "conflicts": 0,
+    "executable": true
+  },
+  "oneItemChanged": {
+    "valid": true,
+    "creates": 0,
+    "updates": 1,
+    "unchanged": 1283,
+    "conflicts": 0,
+    "executable": true,
+    "updateItemId": "phb-2024-condition-blinded",
+    "changedPaths": [
+      "summary"
+    ]
+  },
+  "byKind": {
+    "class": 12,
+    "subclass": 48,
+    "species": 10,
+    "background": 16,
+    "feat": 75,
+    "weapon": 38,
+    "armor": 13,
+    "equipment": 42,
+    "magicItem": 3,
+    "spell": 391,
+    "feature": 546,
+    "condition": 24,
+    "creatureStatBlock": 66
+  },
+  "semantic": {
+    "itemCount": 1284,
+    "uniqueItemIds": 1284,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 1,
+    "byCode": {
+      "IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 1
+    }
+  }
+}

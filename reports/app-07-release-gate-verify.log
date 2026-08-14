@@ -1,0 +1,9 @@
+[app07:release:gate:verify] FAIL
+- Gate não está aprovado (BLOCKED).
+- Etapa obrigatória não aprovada: typecheck.
+- Etapa obrigatória não aprovada: jest.
+- Etapa obrigatória não aprovada: native-gate.
+- JUnit nativo ausente.
+- Logcat nativo ausente.
+- Screenshot nativo ausente.
+- Versão Android instalada não foi validada contra app.json.

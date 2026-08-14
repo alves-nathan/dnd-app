@@ -1,0 +1,69 @@
+name: Mobile E2E — self-hosted devices
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Device platform
+        required: true
+        type: choice
+        options: [android, ios]
+
+jobs:
+  android:
+    if: ${{ inputs.platform == 'android' }}
+    runs-on: [self-hosted, android-e2e]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and install Android development build
+        run: npx expo run:android --no-bundler
+      - name: Start Metro
+        run: |
+          mkdir -p artifacts/maestro/android
+          nohup env CI=1 npx expo start --dev-client --localhost > artifacts/maestro/android/metro.log 2>&1 &
+          sleep 15
+      - name: Validate connected environment
+        run: npm run e2e:doctor:android
+      - name: Run Maestro and collect local artifacts
+        run: npm run e2e:android:artifacts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-android-${{ github.run_id }}
+          path: artifacts/maestro/android
+          retention-days: 30
+
+  ios:
+    if: ${{ inputs.platform == 'ios' }}
+    runs-on: [self-hosted, macos, ios-e2e]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and install iOS development build
+        run: npx expo run:ios --no-bundler
+      - name: Start Metro
+        run: |
+          mkdir -p artifacts/maestro/ios
+          nohup env CI=1 npx expo start --dev-client --localhost > artifacts/maestro/ios/metro.log 2>&1 &
+          sleep 15
+      - name: Validate connected environment
+        run: npm run e2e:doctor:ios
+      - name: Run Maestro and collect local artifacts
+        run: npm run e2e:ios:artifacts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-ios-${{ github.run_id }}
+          path: artifacts/maestro/ios
+          retention-days: 30

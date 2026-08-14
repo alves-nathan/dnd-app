@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "dnd-combat-app04-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_MISSING_NODE_MODULES",
+  "generatedAt": "2026-08-04T00:41:18.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-app03-catalog-character-bridge.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "sha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "checks": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "runtimeCatalog": "PASS",
+    "catalogContentManagement": "PASS",
+    "characterChoiceBridge": "PASS",
+    "dependencyProgressionContracts": {
+      "status": "PASS",
+      "secondaryEditors": 9,
+      "relationCounts": {
+        "offersChoice": 79,
+        "allowsCandidate": 26,
+        "availableToClass": 949,
+        "belongsToClass": 612
+      }
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 290
+    },
+    "isolatedStrictTypecheck": {
+      "status": "PASS",
+      "files": 4
+    },
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 18,
+      "wizardSpellCandidates": 227,
+      "wizardSubclasses": 4,
+      "weaponMasterCandidates": 38
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN",
+    "fullJestSuite": "BLOCKED_NOT_RUN",
+    "zipIntegrity": "PASS"
+  },
+  "blocker": {
+    "reason": "source archive does not include node_modules",
+    "missing": [
+      "expo/tsconfig.base",
+      "@types/jest",
+      "@types/node",
+      "@types/react",
+      "jest executable"
+    ]
+  }
+}

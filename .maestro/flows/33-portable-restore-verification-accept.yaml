@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Reconhecer avisos e emitir recibo
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-verification-warning
+- assertVisible: "Cenário E2E de verificação pós-restauração warning preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Verificado com avisos"
+- tapOn:
+    id: restore-verification-accept
+- assertVisible: "Recibo:"

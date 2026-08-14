@@ -1,0 +1,11 @@
+{
+  "status": "SIGNED",
+  "output": "/tmp/app18-signed-current.json",
+  "publisherId": "dnd-combat-official",
+  "keyId": "root-2026-01",
+  "sequence": 1,
+  "catalogVersion": "4.8.0",
+  "snapshotId": "catalog-4.8.0-d9629516",
+  "catalogChecksum": "0728e21b17ce768039d9873da7ee32d80b36480ab871297143944ad7fce50c43",
+  "envelopeChecksum": "81420d09cb3dbf5b7c200f38fdd28c062abdebf3961588abcaf70ac111f82e0f"
+}

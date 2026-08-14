@@ -1,0 +1,246 @@
+{
+  "schemaVersion": "dnd-combat-spelljammer-2024-compatibility-report.v1",
+  "sourcePackId": "spelljammer-2022-full-consolidated-import-pack-v1",
+  "outputPackId": "spelljammer-2022-full-consolidated-import-pack-v1",
+  "itemCount": 182,
+  "legacyPhbUniqueReferences": 55,
+  "legacyMmRuntimeUniqueReferences": 2,
+  "rewrittenOccurrences": 171,
+  "aliases": [
+    {
+      "from": "mm-2014-creature-flumph",
+      "to": "mm-2024-creature-flumph"
+    },
+    {
+      "from": "mm-2014-creature-mage",
+      "to": "mm-2024-creature-mage"
+    },
+    {
+      "from": "phb-2014-feat-magic-initiate",
+      "to": "phb-2024-feat-magic-initiate"
+    },
+    {
+      "from": "phb-2014-feat-skilled",
+      "to": "phb-2024-feat-skilled"
+    },
+    {
+      "from": "phb-2014-feat-tough",
+      "to": "phb-2024-feat-tough"
+    },
+    {
+      "from": "phb-2014-spell-arms-of-hadar",
+      "to": "phb-2024-spell-arms-of-hadar"
+    },
+    {
+      "from": "phb-2014-spell-compulsion",
+      "to": "phb-2024-spell-compulsion"
+    },
+    {
+      "from": "phb-2014-spell-contact-other-plane",
+      "to": "phb-2024-spell-contact-other-plane"
+    },
+    {
+      "from": "phb-2014-spell-cure-wounds",
+      "to": "phb-2024-spell-cure-wounds"
+    },
+    {
+      "from": "phb-2014-spell-dancing-lights",
+      "to": "phb-2024-spell-dancing-lights"
+    },
+    {
+      "from": "phb-2014-spell-darkness",
+      "to": "phb-2024-spell-darkness"
+    },
+    {
+      "from": "phb-2014-spell-detect-magic",
+      "to": "phb-2024-spell-detect-magic"
+    },
+    {
+      "from": "phb-2014-spell-dimension-door",
+      "to": "phb-2024-spell-dimension-door"
+    },
+    {
+      "from": "phb-2014-spell-disguise-self",
+      "to": "phb-2024-spell-disguise-self"
+    },
+    {
+      "from": "phb-2014-spell-divination",
+      "to": "phb-2024-spell-divination"
+    },
+    {
+      "from": "phb-2014-spell-dominate-monster",
+      "to": "phb-2024-spell-dominate-monster"
+    },
+    {
+      "from": "phb-2014-spell-druidcraft",
+      "to": "phb-2024-spell-druidcraft"
+    },
+    {
+      "from": "phb-2014-spell-fear",
+      "to": "phb-2024-spell-fear"
+    },
+    {
+      "from": "phb-2014-spell-fly",
+      "to": "phb-2024-spell-fly"
+    },
+    {
+      "from": "phb-2014-spell-forcecage",
+      "to": "phb-2024-spell-forcecage"
+    },
+    {
+      "from": "phb-2014-spell-friends",
+      "to": "phb-2024-spell-friends"
+    },
+    {
+      "from": "phb-2014-spell-greater-restoration",
+      "to": "phb-2024-spell-greater-restoration"
+    },
+    {
+      "from": "phb-2014-spell-healing-word",
+      "to": "phb-2024-spell-healing-word"
+    },
+    {
+      "from": "phb-2014-spell-hold-person",
+      "to": "phb-2024-spell-hold-person"
+    },
+    {
+      "from": "phb-2014-spell-hypnotic-pattern",
+      "to": "phb-2024-spell-hypnotic-pattern"
+    },
+    {
+      "from": "phb-2014-spell-invisibility",
+      "to": "phb-2024-spell-invisibility"
+    },
+    {
+      "from": "phb-2014-spell-light",
+      "to": "phb-2024-spell-light"
+    },
+    {
+      "from": "phb-2014-spell-mage-armor",
+      "to": "phb-2024-spell-mage-armor"
+    },
+    {
+      "from": "phb-2014-spell-mage-hand",
+      "to": "phb-2024-spell-mage-hand"
+    },
+    {
+      "from": "phb-2014-spell-magic-missile",
+      "to": "phb-2024-spell-magic-missile"
+    },
+    {
+      "from": "phb-2014-spell-major-image",
+      "to": "phb-2024-spell-major-image"
+    },
+    {
+      "from": "phb-2014-spell-mass-cure-wounds",
+      "to": "phb-2024-spell-mass-cure-wounds"
+    },
+    {
+      "from": "phb-2014-spell-mass-healing-word",
+      "to": "phb-2024-spell-mass-healing-word"
+    },
+    {
+      "from": "phb-2014-spell-mass-suggestion",
+      "to": "phb-2024-spell-mass-suggestion"
+    },
+    {
+      "from": "phb-2014-spell-mending",
+      "to": "phb-2024-spell-mending"
+    },
+    {
+      "from": "phb-2014-spell-message",
+      "to": "phb-2024-spell-message"
+    },
+    {
+      "from": "phb-2014-spell-minor-illusion",
+      "to": "phb-2024-spell-minor-illusion"
+    },
+    {
+      "from": "phb-2014-spell-mirror-image",
+      "to": "phb-2024-spell-mirror-image"
+    },
+    {
+      "from": "phb-2014-spell-mislead",
+      "to": "phb-2024-spell-mislead"
+    },
+    {
+      "from": "phb-2014-spell-pass-without-trace",
+      "to": "phb-2024-spell-pass-without-trace"
+    },
+    {
+      "from": "phb-2014-spell-phantasmal-force",
+      "to": "phb-2024-spell-phantasmal-force"
+    },
+    {
+      "from": "phb-2014-spell-plane-shift",
+      "to": "phb-2024-spell-plane-shift"
+    },
+    {
+      "from": "phb-2014-spell-prestidigitation",
+      "to": "phb-2024-spell-prestidigitation"
+    },
+    {
+      "from": "phb-2014-spell-revivify",
+      "to": "phb-2024-spell-revivify"
+    },
+    {
+      "from": "phb-2014-spell-sacred-flame",
+      "to": "phb-2024-spell-sacred-flame"
+    },
+    {
+      "from": "phb-2014-spell-sending",
+      "to": "phb-2024-spell-sending"
+    },
+    {
+      "from": "phb-2014-spell-spare-the-dying",
+      "to": "phb-2024-spell-spare-the-dying"
+    },
+    {
+      "from": "phb-2014-spell-speak-with-plants",
+      "to": "phb-2024-spell-speak-with-plants"
+    },
+    {
+      "from": "phb-2014-spell-spider-climb",
+      "to": "phb-2024-spell-spider-climb"
+    },
+    {
+      "from": "phb-2014-spell-stinking-cloud",
+      "to": "phb-2024-spell-stinking-cloud"
+    },
+    {
+      "from": "phb-2014-spell-suggestion",
+      "to": "phb-2024-spell-suggestion"
+    },
+    {
+      "from": "phb-2014-spell-telekinesis",
+      "to": "phb-2024-spell-telekinesis"
+    },
+    {
+      "from": "phb-2014-spell-teleport",
+      "to": "phb-2024-spell-teleport"
+    },
+    {
+      "from": "phb-2014-spell-tenser-s-floating-disk",
+      "to": "phb-2024-spell-tensers-floating-disk"
+    },
+    {
+      "from": "phb-2014-spell-tongues",
+      "to": "phb-2024-spell-tongues"
+    },
+    {
+      "from": "phb-2014-spell-unseen-servant",
+      "to": "phb-2024-spell-unseen-servant"
+    },
+    {
+      "from": "phb-2014-spell-word-of-recall",
+      "to": "phb-2024-spell-word-of-recall"
+    }
+  ],
+  "residualExternalDependencies": {
+    "mm2014": [
+      "mm-2014-creature-beholder",
+      "mm-2014-creature-treant"
+    ]
+  },
+  "sha256": "ec6d441f28c5b19c3fd5f6e91091b1fe9a4232552319eda0f1dc5a05faa02334"
+}

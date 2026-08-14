@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "dnd-combat-app17-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T16:34:38.398358Z",
+  "catalog": {
+    "currentVersion": "4.8.0",
+    "candidateTestVersion": "4.8.1",
+    "currentEntities": 5841,
+    "candidateTestEntities": 5842,
+    "dependencies": 15385
+  },
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "commands": 36,
+      "completed": 36
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 330
+    },
+    "isolatedCoreAndStoreTypecheck": "PASS",
+    "isolatedTestTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 43
+    },
+    "nativeDefinitions": {
+      "status": "PASS",
+      "flows": 35
+    },
+    "fullTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJest": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "nativeExecution": "BLOCKED"
+  },
+  "runtime": {
+    "status": "PASS",
+    "assertions": 43,
+    "currentVersion": "4.8.0",
+    "candidateVersion": "4.8.1",
+    "currentEntities": 5841,
+    "candidateEntities": 5842,
+    "dependencies": 15385,
+    "diff": {
+      "added": 1,
+      "removed": 0,
+      "changed": 1
+    },
+    "impact": {
+      "charactersExamined": 1,
+      "charactersAffected": 1,
+      "snapshotMigrations": 1,
+      "blockingCharacters": 0,
+      "evidenceRecordsAffected": 1
+    },
+    "storage": {
+      "chunks": 81,
+      "rollbackRef": "bundled",
+      "storeSwitch": "PASS",
+      "coordinatedCommitRollback": "PASS"
+    },
+    "receipt": "e9b24fe4d013ac6fddd9dcc318a2a8965e2e845440b0903d5209c5dae7b365a3"
+  },
+  "dependencyInstall": {
+    "status": "BLOCKED",
+    "classification": "REGISTRY_PACKAGE_MISSING",
+    "missingPackages": [
+      "zustand"
+    ]
+  },
+  "nativeGate": {
+    "status": "BLOCKED",
+    "flowsFound": 35,
+    "execution": {
+      "status": "NOT_RUN",
+      "reason": "Use --execute para executar os trinta e cinco fluxos transacionais no dispositivo conectado."
+    },
+    "remediation": [
+      "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+      "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+      "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    ]
+  }
+}

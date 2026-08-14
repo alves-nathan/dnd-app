@@ -1,0 +1,24 @@
+{
+  "phase": "11-post-cutover-stabilization",
+  "status": "PASS",
+  "bundledFormat": "dnd-combat-import.v2",
+  "canonicalAsset": "phb-2024-full-consolidated-import-pack-v2-canonical.json",
+  "canonicalItems": 1284,
+  "uniqueIds": 1284,
+  "runtimeConsumersUsingV2": 4,
+  "legacyCompatibilityArtifactPreserved": true,
+  "gates": {
+    "postCutover": true,
+    "bundled": true,
+    "characterBridge": true,
+    "app04Runtime": true,
+    "phase08": true,
+    "phase09": true,
+    "phase10": true,
+    "typescriptSyntax": true,
+    "projectShape": true,
+    "accessibility": true,
+    "releaseReadiness": true,
+    "releaseGate": true
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "dnd-combat-app24-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T20:34:11.862070+00:00",
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "inherited": 156,
+      "current": 34,
+      "planned": 34
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 362
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 38
+    },
+    "contracts": "PASS",
+    "maestroDefinitions": {
+      "status": "PASS",
+      "found": 63,
+      "app24": 4
+    },
+    "privateMaterialScan": "PASS",
+    "cliSigning": "PASS",
+    "fullTypecheck": "BLOCKED_NOT_RUN",
+    "fullJest": "BLOCKED_NOT_RUN",
+    "nativeGate": "BLOCKED"
+  },
+  "security": {
+    "schemas": [
+      "dnd-catalog-operational-authorization.v1",
+      "dnd-catalog-executor-confirmation.v1",
+      "dnd-catalog-operational-execution-receipt.v1"
+    ],
+    "quorum": "2/2",
+    "maximumUses": 1,
+    "humanConfirmationRequired": true,
+    "automaticExecution": false,
+    "replayRejected": true,
+    "privateMaterialFiles": 0
+  },
+  "blockers": {
+    "dependencyInstall": {
+      "status": "BLOCKED",
+      "classification": "REGISTRY_PACKAGE_MISSING",
+      "missingPackages": [
+        "zustand"
+      ]
+    },
+    "native": [
+      "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+      "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+      "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Ensaio do release candidate"
+- assertVisible: "BLOCKED · Gate integral APP-28"
+- assertVisible: "O APP-28 continua bloqueado"

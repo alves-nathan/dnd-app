@@ -1,0 +1,10 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Canais e rollout do catálogo"
+- tapOn:
+    id: "open-rollout-health"
+- assertVisible: "Importar diretriz operacional assinada"
+- assertVisible:
+    id: "rollout-health-directive-import"

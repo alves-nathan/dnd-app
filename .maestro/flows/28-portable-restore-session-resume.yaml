@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Retomar sessão portátil interrompida
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-session-interrupted
+- assertVisible: "Cenário E2E de sessão portátil interrupted preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Sessão interrompida"
+- tapOn:
+    id: restore-session-commit
+- assertVisible: "Restauração concluída"

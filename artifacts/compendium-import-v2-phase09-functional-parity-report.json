@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "dnd-combat-import-v2-phase09-functional-parity.v1",
+  "source": {
+    "v1": "phb-2024-full-consolidated-import-pack-v5-complete-invocations.json",
+    "v2": "phb-2024-full-consolidated-import-pack-v2-canonical.json"
+  },
+  "itemCount": {
+    "v1": 1284,
+    "v2": 1284
+  },
+  "checks": [
+    {
+      "name": "creation candidates",
+      "pass": true
+    },
+    {
+      "name": "representative full character assembly",
+      "pass": true
+    },
+    {
+      "name": "background and proficiencies",
+      "pass": true
+    },
+    {
+      "name": "starting equipment",
+      "pass": true
+    },
+    {
+      "name": "custom background equipment budget candidates",
+      "pass": true
+    },
+    {
+      "name": "custom background 50 GP budget",
+      "pass": true
+    },
+    {
+      "name": "origin feat choices",
+      "pass": true
+    },
+    {
+      "name": "spellcasting profiles and deferred choices",
+      "pass": true
+    },
+    {
+      "name": "spell action economy",
+      "pass": true
+    },
+    {
+      "name": "flexible weapon ability",
+      "pass": true
+    },
+    {
+      "name": "warlock progression and invocations",
+      "pass": true
+    },
+    {
+      "name": "companion stat blocks and structured speed",
+      "pass": true
+    },
+    {
+      "name": "resources actions effects creature tags",
+      "pass": true
+    }
+  ],
+  "passed": 13,
+  "failed": 0,
+  "functionalParity": true
+}

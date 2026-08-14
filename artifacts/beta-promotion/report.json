@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "dnd-combat-beta-promotion-report.v1",
+  "generatedAt": "2026-07-14T21:27:11.919Z",
+  "status": "blocked",
+  "app": {
+    "version": "0.1.0",
+    "easProjectId": null,
+    "expectedGitSha": null
+  },
+  "localGateStatus": "passed",
+  "platforms": {
+    "android": {
+      "status": "blocked",
+      "promotionReady": false,
+      "buildId": null,
+      "platformBuildNumber": null,
+      "gitSha": null
+    },
+    "ios": {
+      "status": "blocked",
+      "promotionReady": false,
+      "buildId": null,
+      "platformBuildNumber": null,
+      "gitSha": null
+    }
+  },
+  "feedback": {
+    "path": null,
+    "total": 0,
+    "unresolvedBlocking": 0,
+    "unresolvedHigh": 0,
+    "unresolvedMedium": 0,
+    "unresolvedLow": 0,
+    "resolved": 0
+  },
+  "issues": [
+    {
+      "severity": "error",
+      "code": "EAS_PROJECT_ID_MISSING",
+      "message": "extra.eas.projectId é obrigatório para promoção."
+    },
+    {
+      "severity": "error",
+      "code": "ANDROID_EVIDENCE_NOT_READY",
+      "message": "A evidência Android não está pronta."
+    },
+    {
+      "severity": "error",
+      "code": "IOS_EVIDENCE_NOT_READY",
+      "message": "A evidência iOS não está pronta."
+    },
+    {
+      "severity": "error",
+      "code": "FEEDBACK_EXPORT_MISSING",
+      "message": "Exportação de feedback ausente: artifacts/beta-feedback/latest.json."
+    }
+  ]
+}

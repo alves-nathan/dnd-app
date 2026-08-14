@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "dnd-combat-app27-cli-signing.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T21:34:03.000Z",
+  "steps": [
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/policy-signed.json",
+      "policyId": "cli-policy",
+      "witnesses": 2
+    },
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/a-wa.json",
+      "statementId": "catalog-operational-witness-witness-a-catalog-operational-audit-d8e297d008a5c104",
+      "packageId": "catalog-operational-audit-d8e297d008a5c104",
+      "verificationStatus": "approved"
+    },
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/a-wb.json",
+      "statementId": "catalog-operational-witness-witness-b-catalog-operational-audit-d8e297d008a5c104",
+      "packageId": "catalog-operational-audit-d8e297d008a5c104",
+      "verificationStatus": "approved"
+    },
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/b-wa.json",
+      "statementId": "catalog-operational-witness-witness-a-catalog-operational-audit-2ac12985bdf1c5eb",
+      "packageId": "catalog-operational-audit-2ac12985bdf1c5eb",
+      "verificationStatus": "approved"
+    },
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/b-wb.json",
+      "statementId": "catalog-operational-witness-witness-b-catalog-operational-audit-2ac12985bdf1c5eb",
+      "packageId": "catalog-operational-audit-2ac12985bdf1c5eb",
+      "verificationStatus": "approved"
+    },
+    {
+      "status": "PASS",
+      "output": "/tmp/app27-cli/federation.json",
+      "federationId": "catalog-operational-federation-9966ce12471185e2",
+      "packages": 2,
+      "statements": 4
+    }
+  ],
+  "verification": {
+    "status": "approved",
+    "devices": 2,
+    "witnesses": 2,
+    "headHash": "7db0e635787de52e72ccd14694bb7e2d4bb3d9e1003d6aa3a795ce836287bfee",
+    "commonPrefixEntries": 2
+  },
+  "privateKeysIncludedInCodebase": false
+}

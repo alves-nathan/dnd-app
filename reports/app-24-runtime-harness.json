@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "assertions": 38,
+  "schemas": [
+    "dnd-catalog-operational-authorization.v1",
+    "dnd-catalog-executor-confirmation.v1",
+    "dnd-catalog-operational-execution-receipt.v1"
+  ],
+  "quorum": "2/2",
+  "action": "expand",
+  "maximumUses": 1,
+  "humanConfirmationRequired": true,
+  "automaticExecution": false,
+  "replayRejected": true,
+  "receiptStatus": "succeeded"
+}

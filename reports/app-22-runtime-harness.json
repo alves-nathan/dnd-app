@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "assertions": 42,
+  "schemas": [
+    "dnd-catalog-rollout-health-policy.v1",
+    "dnd-catalog-rollout-health-evidence.v1",
+    "dnd-catalog-rollout-directive.v1"
+  ],
+  "privacy": "OPT_IN_AGGREGATED_NO_PERSONAL_DATA",
+  "healthyRecommendation": "expand",
+  "unhealthyRecommendation": "rollback",
+  "promotion": "preview->beta",
+  "automaticExecution": "NOT_IMPLEMENTED"
+}

@@ -1,0 +1,21 @@
+appId: com.nalves.dndcombatmathmvp
+name: Retomar rascunho da criação
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-button
+- tapOn:
+    id: e2e-open-creation
+- tapOn: "E2E Adventurer"
+- tapOn: "Continuar"
+- tapOn: "E2E Human"
+- tapOn: "E2E Wanderer"
+- tapOn: "Continuar"
+- assertVisible: "Subclasses e feats"
+- stopApp
+- launchApp
+- tapOn: "Novo personagem"
+- assertVisible: "Rascunho retomado e salvo automaticamente"
+- assertVisible: "Subclasses e feats"

@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+name: Reverter commit de remediação
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-remediation-rollback
+- assertVisible: "Cenário E2E de rollback da remediação preparado."
+- openLink: dndcombatmath://characters/e2e-compatibility-remediation/progression
+- assertVisible: "Auditoria de progressão"
+- tapOn: "Reverter última progressão"
+- tapOn: "Reverter"
+- assertVisible: "Progressão revertida"

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "dnd-combat-import-v2-phase06-export-roundtrip-audit.v1",
+  "sourcePack": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+  "templateVersion": "dnd-combat-import.v2",
+  "itemCount": 1284,
+  "exportedItemCount": 1284,
+  "kindCount": 13,
+  "expectedByKind": {
+    "condition": 24,
+    "feature": 546,
+    "weapon": 38,
+    "armor": 13,
+    "equipment": 42,
+    "magicItem": 3,
+    "creatureStatBlock": 66,
+    "spell": 391,
+    "class": 12,
+    "subclass": 48,
+    "feat": 75,
+    "background": 16,
+    "species": 10
+  },
+  "exportedByKind": {
+    "armor": 13,
+    "background": 16,
+    "class": 12,
+    "condition": 24,
+    "creatureStatBlock": 66,
+    "equipment": 42,
+    "feat": 75,
+    "feature": 546,
+    "magicItem": 3,
+    "species": 10,
+    "spell": 391,
+    "subclass": 48,
+    "weapon": 38
+  },
+  "roundTrip": {
+    "valid": true,
+    "reparsedItemCount": 1284,
+    "matchingItemHashes": 1284,
+    "mismatchedItemIds": [],
+    "missingItemIds": [],
+    "unexpectedItemIds": []
+  },
+  "persistedToExportSemanticEquivalence": {
+    "matchingItemHashes": 1284,
+    "mismatchedItemIds": [],
+    "sourceMismatches": [],
+    "payloadMetadataLeaks": []
+  },
+  "metadata": {
+    "storageOriginEntries": 1284,
+    "reviewEntries": 1284
+  },
+  "issues": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 2,
+    "byCode": {
+      "COMPENDIUM_EXPORT_V2_MULTIPLE_SOURCES": 1,
+      "IMPORT_V2_RESOURCE_REFERENCE_EXTERNAL_OR_RUNTIME": 1
+    }
+  },
+  "jsonBytes": 4007227
+}

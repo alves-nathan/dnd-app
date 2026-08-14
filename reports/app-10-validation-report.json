@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "dnd-combat-app10-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T10:56:30.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-app09-compatibility-remediation-transaction.zip",
+  "storeVersion": 23,
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "bundledCompendiumItems": 1284
+  },
+  "checks": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "runtimeCatalog": "PASS",
+    "previousAppContracts": "PASS",
+    "app10StaticContracts": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 306
+    },
+    "isolatedCoreTypecheck": "PASS",
+    "isolatedStoreTypecheck": "PASS",
+    "isolatedTestTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 22
+    },
+    "maestroDefinitions": {
+      "status": "PASS",
+      "app10Flows": 4,
+      "nativeGateFlows": 8
+    },
+    "fullNpmTypecheck": {
+      "status": "BLOCKED",
+      "exitCode": 2
+    },
+    "fullJestSuite": {
+      "status": "BLOCKED",
+      "exitCode": 127
+    },
+    "nativeGate": {
+      "status": "BLOCKED",
+      "executeRequested": true
+    },
+    "zipIntegrity": "PASS"
+  },
+  "runtime": {
+    "status": "PASS",
+    "assertions": 22,
+    "storeVersion": 23,
+    "catalogVersion": "4.8.0",
+    "catalogEntries": 5841,
+    "recovery": {
+      "pendingAcknowledgement": 1,
+      "staleCatalog": 1,
+      "conflicted": 1,
+      "quarantined": 2
+    },
+    "aggregate": {
+      "characters": 3,
+      "charactersWithIssues": 3,
+      "activePlans": 3,
+      "recoveredPlans": 0,
+      "conflictedPlans": 1,
+      "staleCatalogPlans": 1,
+      "readyPlans": 1,
+      "decisions": 6,
+      "replacements": 0,
+      "removals": 3,
+      "snapshotMigrations": 3,
+      "blockingIssuesBefore": 3,
+      "blockingIssuesAfter": 0
+    },
+    "sharedEntityCharacters": 3,
+    "independentCommit": {
+      "committedCharacterId": "app10-a",
+      "untouchedCharacterId": "app10-b"
+    }
+  },
+  "nativeGateBlockers": [
+    "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+    "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+    "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+  ]
+}

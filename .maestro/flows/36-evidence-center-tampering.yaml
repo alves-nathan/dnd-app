@@ -1,0 +1,12 @@
+appId: com.nalves.dndcombatmathmvp
+name: Detectar evidência histórica adulterada
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-evidence-tampered
+- assertVisible: "Cenário E2E da central de evidências tampered preparado."
+- tapOn:
+    id: e2e-open-evidence-center
+- assertVisible: "Checksum inválido"
+- assertVisible: "1 registro(s) inválido(s)"

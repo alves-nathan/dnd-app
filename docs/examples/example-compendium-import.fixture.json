@@ -1,0 +1,154 @@
+{
+  "id": "example-library-compendium-pack",
+  "source": {
+    "id": "example-library-source",
+    "book": "Example Library",
+    "page": "-",
+    "version": "dnd-combat-examples.v1",
+    "status": "active",
+    "confidence": "manual",
+    "notes": "Conteúdo fictício de demonstração. Não representa regra oficial embutida."
+  },
+  "items": [
+    {
+      "id": "example_weapon_balanced_blade",
+      "kind": "weapon",
+      "name": "Lâmina Balanceada de Exemplo",
+      "summary": "Arma fictícia validada para demonstrar importação, mapeamento e ação de ataque.",
+      "source": {
+        "id": "example-library-source",
+        "book": "Example Library",
+        "page": "-",
+        "version": "dnd-combat-examples.v1",
+        "status": "active",
+        "confidence": "manual",
+        "notes": "Conteúdo fictício de demonstração. Não representa regra oficial embutida."
+      },
+      "payload": {
+        "type": "weapon",
+        "weaponType": "melee",
+        "damageFormula": "1d8 + STR + 1",
+        "attackAbility": "STR",
+        "damageAbility": "STR",
+        "magicBonus": 1,
+        "actionCost": "action",
+        "attacksCount": 2,
+        "mastery": "example-mastery",
+        "properties": ["example", "fixture"]
+      }
+    },
+    {
+      "id": "example_spell_scaling_spark",
+      "kind": "spell",
+      "name": "Centelha Escalável de Exemplo",
+      "summary": "Cantrip fictício com scaling por nível do personagem.",
+      "source": {
+        "id": "example-library-source",
+        "book": "Example Library",
+        "page": "-",
+        "version": "dnd-combat-examples.v1",
+        "status": "active",
+        "confidence": "manual",
+        "notes": "Conteúdo fictício de demonstração. Não representa regra oficial embutida."
+      },
+      "payload": {
+        "type": "spell",
+        "level": 0,
+        "castingTime": "action",
+        "requiresAttackRoll": true,
+        "damageFormula": "1d10",
+        "targets": 1,
+        "scaling": {
+          "kind": "characterLevel",
+          "steps": [
+            { "minCharacterLevel": 1, "formula": "1d10" },
+            { "minCharacterLevel": 5, "formula": "2d10" },
+            { "minCharacterLevel": 11, "formula": "3d10" },
+            { "minCharacterLevel": 17, "formula": "4d10" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example_spell_upcast_burst",
+      "kind": "spell",
+      "name": "Rajada Escalonável de Exemplo",
+      "summary": "Magia fictícia com upcasting por slot.",
+      "source": {
+        "id": "example-library-source",
+        "book": "Example Library",
+        "page": "-",
+        "version": "dnd-combat-examples.v1",
+        "status": "active",
+        "confidence": "manual",
+        "notes": "Conteúdo fictício de demonstração. Não representa regra oficial embutida."
+      },
+      "payload": {
+        "type": "spell",
+        "level": 1,
+        "castingTime": "action",
+        "saveAbility": "DEX",
+        "damageFormula": "2d6",
+        "targets": 2,
+        "consumesSpellSlot": true,
+        "scaling": {
+          "kind": "slotLevel",
+          "baseLevel": 1,
+          "steps": [
+            { "slotLevel": 1, "formula": "2d6" },
+            { "slotLevel": 2, "formula": "3d6" },
+            { "slotLevel": 3, "formula": "4d6" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example_feature_marker",
+      "kind": "feature",
+      "name": "Marcador Condicional de Exemplo",
+      "summary": "Feature fictícia que cria recurso, efeito ativo e ação concedida com dano condicional.",
+      "source": {
+        "id": "example-library-source",
+        "book": "Example Library",
+        "page": "-",
+        "version": "dnd-combat-examples.v1",
+        "status": "active",
+        "confidence": "manual",
+        "notes": "Conteúdo fictício de demonstração. Não representa regra oficial embutida."
+      },
+      "payload": {
+        "type": "feature",
+        "sourceType": "classFeature",
+        "summary": "Exemplo de feature com ação concedida, recurso e efeito derivado.",
+        "oncePerTurnKey": "example_marker_once",
+        "resource": { "id": "example_marker_resource", "name": "Carga de Exemplo", "max": 3, "current": 3, "recharge": "longRest" },
+        "effectTemplates": [
+          {
+            "id": "example_marker_effect",
+            "name": "Marcado por Exemplo",
+            "kind": "feature",
+            "sourceType": "classFeature",
+            "concentration": false,
+            "conditionIds": ["example_marked_condition"],
+            "duration": { "unit": "round", "remaining": 10, "expiresOn": "turnStart" },
+            "notes": "Efeito fictício para ativar dano condicional."
+          }
+        ],
+        "grantsActions": [
+          {
+            "id": "example_marker_strike",
+            "type": "attack",
+            "name": "Golpe Marcado de Exemplo",
+            "actionCost": "special",
+            "sourceType": "classFeature",
+            "attackAbility": "STR",
+            "damageFormula": "1d8 + STR",
+            "extraDamage": [{ "formula": "1d6", "conditionId": "example_marked_condition", "label": "Alvo marcado" }],
+            "attacksCount": 1,
+            "consumes": [{ "resourceId": "example_marker_resource", "amount": 1, "label": "Carga de Exemplo", "oncePerTurnKey": "example_marker_once" }]
+          }
+        ]
+      }
+    }
+  ]
+}

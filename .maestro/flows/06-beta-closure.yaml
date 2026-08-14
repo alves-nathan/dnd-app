@@ -1,0 +1,9 @@
+appId: com.nalves.dndcombatmathmvp
+name: Revisar fechamento do ciclo beta
+---
+- launchApp
+- openLink: dndcombatmath://beta-closure
+- assertVisible: "Fechamento do ciclo"
+- assertVisible:
+    id: beta-closure-gate
+- assertVisible: "Evidências nativas"

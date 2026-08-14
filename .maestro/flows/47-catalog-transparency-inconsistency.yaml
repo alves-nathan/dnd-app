@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Transparência e distribuição"
+- assertVisible: "Comparar registro público"
+- assertVisible:
+    id: "catalog-remote-log-compare"

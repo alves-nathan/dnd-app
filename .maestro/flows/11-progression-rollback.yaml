@@ -1,0 +1,15 @@
+appId: com.nalves.dndcombatmathmvp
+name: Reverter último commit de progressão
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-progression-rollback
+- assertVisible: "Cenário E2E de rollback preparado."
+- openLink: dndcombatmath://characters/e2e-progression-recovery/progression
+- assertVisible: "Auditoria de progressão"
+- tapOn: "Reverter última progressão"
+- assertVisible: "Reverter última progressão?"
+- tapOn: "Reverter"
+- assertVisible: "Progressão revertida"

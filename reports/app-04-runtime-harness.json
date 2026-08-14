@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "assertions": 18,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "dependencyEdges": 15385,
+  "directMechanicalChoices": 598,
+  "scenarios": {
+    "wizardSpellSelection": {
+      "mode": "dependency",
+      "total": 227,
+      "available": 226,
+      "blocked": 1,
+      "relations": [
+        "availableToClass",
+        "belongsToClass",
+        "references",
+        "referencesSpell"
+      ]
+    },
+    "wizardSubclass": {
+      "mode": "dependency",
+      "total": 4,
+      "relations": [
+        "belongsToClass"
+      ]
+    },
+    "weaponMasterOptions": {
+      "mode": "dependency",
+      "total": 38,
+      "relations": [
+        "offersChoice",
+        "references"
+      ]
+    },
+    "legacyFallback": {
+      "mode": "kindFallback",
+      "available": 4,
+      "issues": [
+        "CATALOG_PENDING_CHOICE_SOURCE_UNRESOLVED",
+        "CATALOG_PENDING_CHOICE_KIND_FALLBACK",
+        "CATALOG_PENDING_CHOICE_BLOCKED_CANDIDATES"
+      ]
+    }
+  }
+}

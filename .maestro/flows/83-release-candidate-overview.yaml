@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Ensaio do release candidate"
+- assertVisible: "Ensaio do release candidate"
+- assertVisible: "Status BLOCKED"

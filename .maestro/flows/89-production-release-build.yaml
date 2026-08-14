@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Release de produção"
+- assertVisible: "Artefato de produção"
+- assertVisible: "AAB/IPA final"

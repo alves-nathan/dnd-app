@@ -1,0 +1,275 @@
+{
+  "templateVersion": "dnd-combat-import.v2",
+  "id": "player-owned-book-pack",
+  "source": {
+    "id": "player-owned-book",
+    "book": "Nome do livro/fonte legalmente obtida",
+    "page": "página ou intervalo",
+    "version": "2024",
+    "status": "needsReview",
+    "confidence": "importedNeedsReview",
+    "rulesEra": "2024",
+    "contentType": "official",
+    "notes": "Extração inicial. Revise manualmente contra a fonte antes de validar para uso automático."
+  },
+  "metadata": {
+    "purpose": "Template estático de referência. O app gera templates V2 a partir do domínio compartilhado."
+  },
+  "items": [
+    {
+      "id": "source-2024-class-example-class",
+      "kind": "class",
+      "name": "Example Class",
+      "summary": "Exemplo de classe com progressão, proficiências, recurso e spellcasting.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "hitDie": 8,
+        "primaryAbilities": ["INT"],
+        "savingThrowProficiencies": ["INT", "WIS"],
+        "skillChoiceCount": 2,
+        "skillProficienciesChoice": {
+          "count": 2,
+          "from": "skills",
+          "options": ["Arcana", "History", "Investigation"]
+        },
+        "weaponProficiencies": ["Simple weapons"],
+        "armorTraining": [],
+        "toolProficiencies": [],
+        "featureIds": ["source-2024-feature-example-feature"],
+        "progression": [
+          {
+            "level": 1,
+            "featureIds": ["source-2024-feature-example-feature"]
+          }
+        ],
+        "spellcasting": {
+          "ability": "INT",
+          "progression": "full",
+          "preparationSource": "prepared",
+          "cantripsKnownByLevel": [3],
+          "preparedSpellsByLevel": [4],
+          "slotsByLevel": {
+            "1": {
+              "1": 2
+            }
+          },
+          "ritualCasting": true,
+          "spellcastingFocus": ["Arcane Focus"]
+        },
+        "resources": [
+          {
+            "id": "example-resource",
+            "name": "Example Resource",
+            "max": 1,
+            "recharge": "longRest"
+          }
+        ],
+        "equipmentOptions": {
+          "A": {
+            "label": "Pacote A",
+            "itemIds": ["source-2024-equipment-example-kit"],
+            "currency": [
+              {
+                "amount": 10,
+                "unit": "GP"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "source-2024-feature-example-feature",
+      "kind": "feature",
+      "name": "Example Feature",
+      "summary": "Exemplo de feature com ownership, ação e recurso.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "sourceType": "classFeature",
+        "classId": "source-2024-class-example-class",
+        "levelGained": 1,
+        "actionCost": "bonusAction",
+        "resource": {
+          "id": "feature-use",
+          "name": "Feature Use",
+          "max": 1,
+          "recharge": "longRest"
+        },
+        "grantsActions": [
+          {
+            "type": "utility",
+            "name": "Use Example Feature",
+            "actionCost": "bonusAction",
+            "consumes": [
+              {
+                "resourceId": "feature-use",
+                "amount": 1
+              }
+            ]
+          }
+        ],
+        "mechanics": {
+          "note": "Extensão somente para mecânicas ainda não promovidas a campos tipados."
+        }
+      }
+    },
+    {
+      "id": "source-2024-spell-example-bolt",
+      "kind": "spell",
+      "name": "Example Bolt",
+      "summary": "Exemplo de cantrip ofensivo com scaling por nível.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "level": 0,
+        "school": "Evocation",
+        "classes": ["Example Class"],
+        "classIds": ["source-2024-class-example-class"],
+        "castingTime": {
+          "kind": "action",
+          "actionCost": "action",
+          "original": "1 Action"
+        },
+        "range": "120 ft",
+        "duration": "Instantaneous",
+        "components": "V, S",
+        "ritual": false,
+        "concentration": false,
+        "requiresAttackRoll": true,
+        "damageFormula": "1d10",
+        "damageType": "fire",
+        "targets": 1,
+        "consumesSpellSlot": false,
+        "minimumSlotLevel": 0,
+        "scaling": {
+          "kind": "characterLevel",
+          "steps": [
+            { "level": 1, "damageFormula": "1d10" },
+            { "level": 5, "damageFormula": "2d10" },
+            { "level": 11, "damageFormula": "3d10" },
+            { "level": 17, "damageFormula": "4d10" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "source-2024-background-example-background",
+      "kind": "background",
+      "name": "Example Background",
+      "summary": "Exemplo de background 2024 com proficiências, Origin Feat e equipamento.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "abilityScoreOptions": ["DEX", "INT", "WIS"],
+        "abilityScoreIncreaseRule": {
+          "chooseOnePlus2AndDifferentOnePlus1": true,
+          "orIncreaseAllBy1": true,
+          "maximumScoreAfterIncrease": 20
+        },
+        "featIds": ["source-2024-feat-example-origin-feat"],
+        "skillProficiencies": ["Investigation", "Perception"],
+        "toolProficiencies": ["Thieves' Tools"],
+        "equipmentOptions": {
+          "A": {
+            "label": "Equipamento sugerido",
+            "itemIds": ["source-2024-equipment-example-kit"],
+            "currency": [
+              {
+                "amount": 15,
+                "unit": "GP"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "source-2024-feat-example-origin-feat",
+      "kind": "feat",
+      "name": "Example Origin Feat",
+      "summary": "Exemplo de Origin Feat com choices estruturadas em mechanics.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "category": "Origin",
+        "prerequisite": "",
+        "repeatable": false,
+        "featureIds": [],
+        "mechanics": {
+          "proficiencyChoice": {
+            "count": 1,
+            "from": "tools"
+          }
+        }
+      }
+    },
+    {
+      "id": "source-2024-equipment-example-kit",
+      "kind": "equipment",
+      "name": "Example Kit",
+      "summary": "Exemplo de equipamento geral com custo estruturado.",
+      "source": {
+        "id": "player-owned-book",
+        "book": "Nome do livro/fonte legalmente obtida",
+        "page": "página ou intervalo",
+        "version": "2024",
+        "status": "needsReview",
+        "confidence": "importedNeedsReview",
+        "rulesEra": "2024",
+        "contentType": "official"
+      },
+      "payload": {
+        "quantity": 1,
+        "weight": 2,
+        "cost": {
+          "amount": 5,
+          "unit": "GP"
+        },
+        "equipmentCategory": "Adventuring Gear",
+        "tags": ["background-eligible"]
+      }
+    }
+  ]
+}

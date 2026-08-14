@@ -1,0 +1,41 @@
+appId: com.nalves.dndcombatmathmvp
+name: Combate tático - iniciativa e avanço de round
+tags:
+  - tactical-mobile-closure
+---
+- launchApp:
+    clearState: true
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-tactical-mobile
+- assertVisible: "Cenário E2E de fechamento móvel tático preparado."
+- tapOn:
+    id: e2e-open-tactical-mobile
+- assertVisible: "Combate tático"
+- scrollUntilVisible:
+    element:
+      id: tactical-start-turn-character
+    direction: DOWN
+- tapOn:
+    id: tactical-start-turn-character
+- assertVisible: "Turno ativo: E2E Tactical Hero"
+- tapOn:
+    id: tactical-end-turn
+- scrollUntilVisible:
+    element:
+      id: tactical-start-turn-target-e2e-tactical-mobile-target
+    direction: DOWN
+- tapOn:
+    id: tactical-start-turn-target-e2e-tactical-mobile-target
+- assertVisible: "Turno de E2E Training Orc"
+- scrollUntilVisible:
+    element:
+      id: tactical-end-turn
+    direction: UP
+- tapOn:
+    id: tactical-end-turn
+- scrollUntilVisible:
+    element:
+      id: tactical-round-status
+    direction: UP
+- assertVisible: "Round: 2"

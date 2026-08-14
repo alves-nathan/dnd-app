@@ -1,0 +1,18 @@
+appId: com.nalves.dndcombatmathmvp
+name: Editar ficha e abrir level-up
+---
+- runFlow: 01-create-unnamed-character.yaml
+- tapOn: "Identidade"
+- assertVisible: "Identidade e origem"
+- tapOn: "Nome do personagem"
+- inputText: "Maestro Hero"
+- tapOn: "Salvar alterações"
+- assertVisible: "Maestro Hero"
+- scrollUntilVisible:
+    element:
+      text: "Classes e multiclasse"
+    direction: DOWN
+- tapOn: "Classes e multiclasse"
+- assertVisible: "Classes e níveis"
+- tapOn: "Subir de nível"
+- assertVisible: "Escolher classe"

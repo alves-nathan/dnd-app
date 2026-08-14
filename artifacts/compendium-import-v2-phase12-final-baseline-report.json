@@ -1,0 +1,27 @@
+{
+  "phase": 12,
+  "name": "final-baseline-hardening",
+  "date": "2026-08-11",
+  "status": "pass",
+  "canonicalFormat": "dnd-combat-import.v2",
+  "legacyInputFormat": "dnd-combat-import.v1",
+  "changes": {
+    "userFacingExport": "v2",
+    "staticTemplate": "v2",
+    "legacyVersionConstant": "LEGACY_IMPORT_TEMPLATE_VERSION_V1",
+    "legacyAliasRetained": true,
+    "releaseGateHardened": true
+  },
+  "checks": {
+    "typescriptSyntax": "pass",
+    "typescriptFileCount": 429,
+    "projectShape": "pass",
+    "accessibility": "pass",
+    "releaseReadiness": "pass",
+    "finalBaselineGate": "pass",
+    "importV2ReleaseGate": "pass",
+    "bundledItems": 1284,
+    "bundledUniqueIds": 1284,
+    "functionalParityGroups": "13/13"
+  }
+}

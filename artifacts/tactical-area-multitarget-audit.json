@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "dnd-combat-tactical-area-multitarget-audit.v1",
+  "generatedAt": "2026-08-11T14:43:55.840Z",
+  "phb": {
+    "spells": 391,
+    "areaSpells": 124,
+    "areaShapes": {
+      "sphere": 31,
+      "emanation": 20,
+      "cone": 7,
+      "cube": 21,
+      "cylinder": 9,
+      "line": 3,
+      "square": 5,
+      "unknown": 12,
+      "panels": 1,
+      "cubes": 1,
+      "circle": 2,
+      "wall": 2,
+      "cloud/cylinder?": 1,
+      "sphereOrObjectEmanation": 2,
+      "sphere-object": 1,
+      "cloud-cylinder": 1,
+      "emanation-from-pack": 1,
+      "portal-pair": 1,
+      "floor-area": 2,
+      "hemisphere": 1
+    },
+    "requiredShapes": [
+      "line",
+      "cone",
+      "cube",
+      "sphere",
+      "cylinder"
+    ],
+    "missingRequiredShapes": []
+  },
+  "contracts": {
+    "TacticalAreaTemplate type": true,
+    "Per-target resolution": true,
+    "Save-adjusted damage": true,
+    "Cleave adjacency gate": true,
+    "Manual area membership notice": true,
+    "Per-target save UI": true,
+    "Per-target damage UI": true,
+    "Target selection helper": true
+  },
+  "status": "PASS"
+}

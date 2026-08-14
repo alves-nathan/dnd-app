@@ -1,0 +1,1899 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dnd-combat-math.local/schemas/dnd-combat-import-v2.schema.json",
+  "title": "D&D Combat Math Import V2",
+  "description": "Canonical serializable representation of the D&D Combat Math compendium domain. Generated runtime schema source: src/compendium/importV2Schemas.ts.",
+  "type": "object",
+  "required": [
+    "templateVersion",
+    "id",
+    "source",
+    "items"
+  ],
+  "properties": {
+    "templateVersion": {
+      "const": "dnd-combat-import.v2"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/classItem"
+          },
+          {
+            "$ref": "#/$defs/subclassItem"
+          },
+          {
+            "$ref": "#/$defs/speciesItem"
+          },
+          {
+            "$ref": "#/$defs/backgroundItem"
+          },
+          {
+            "$ref": "#/$defs/featItem"
+          },
+          {
+            "$ref": "#/$defs/weaponItem"
+          },
+          {
+            "$ref": "#/$defs/armorItem"
+          },
+          {
+            "$ref": "#/$defs/equipmentItem"
+          },
+          {
+            "$ref": "#/$defs/magicItemItem"
+          },
+          {
+            "$ref": "#/$defs/spellItem"
+          },
+          {
+            "$ref": "#/$defs/featureItem"
+          },
+          {
+            "$ref": "#/$defs/conditionItem"
+          },
+          {
+            "$ref": "#/$defs/creatureStatBlockItem"
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "Source": {
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "confidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "book": {
+          "type": "string"
+        },
+        "page": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "disabled",
+            "needsReview"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "exact",
+            "ambiguous",
+            "manual",
+            "importedNeedsReview"
+          ]
+        },
+        "importId": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "rulesEra": {
+          "enum": [
+            "2024",
+            "legacy"
+          ]
+        },
+        "contentType": {
+          "enum": [
+            "official",
+            "third-party",
+            "homebrew"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "CurrencyValue": {
+      "type": "object",
+      "required": [
+        "amount",
+        "unit"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "CP",
+            "SP",
+            "EP",
+            "GP",
+            "PP"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProficiencyChoice": {
+      "type": "object",
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "from": {
+          "enum": [
+            "skills",
+            "tools",
+            "languages",
+            "weapons",
+            "armor",
+            "custom"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "ResourceDefinition": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "max": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "characterLevel",
+                    "classLevel",
+                    "proficiencyBonus",
+                    "abilityModifier",
+                    "custom"
+                  ]
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "level": {
+                        "type": "integer"
+                      },
+                      "value": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "formula": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          ]
+        },
+        "recharge": {
+          "enum": [
+            "turn",
+            "shortRest",
+            "longRest",
+            "day",
+            "manual"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "CastingTime": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "actionCost"
+          ],
+          "properties": {
+            "kind": {
+              "const": "action"
+            },
+            "actionCost": {
+              "enum": [
+                "action",
+                "bonusAction",
+                "reaction",
+                "movement",
+                "free",
+                "special"
+              ]
+            },
+            "ritualAlternative": {
+              "type": "boolean"
+            },
+            "trigger": {
+              "type": "string"
+            },
+            "original": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "amount",
+            "unit"
+          ],
+          "properties": {
+            "kind": {
+              "const": "duration"
+            },
+            "amount": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "enum": [
+                "minute",
+                "hour",
+                "day"
+              ]
+            },
+            "ritualAlternative": {
+              "type": "boolean"
+            },
+            "original": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "special"
+            },
+            "actionCost": {
+              "enum": [
+                "action",
+                "bonusAction",
+                "reaction",
+                "movement",
+                "free",
+                "special"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ritualAlternative": {
+              "type": "boolean"
+            },
+            "original": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "Progression": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "level",
+          "featureIds"
+        ],
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "featureIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "EquipmentOption": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "itemIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "currency": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CurrencyValue"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "EquipmentOptions": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/$defs/EquipmentOption"
+          }
+        ]
+      }
+    },
+    "classPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "hitDie": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "primaryAbilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "STR",
+              "DEX",
+              "CON",
+              "INT",
+              "WIS",
+              "CHA"
+            ]
+          }
+        },
+        "savingThrowProficiencies": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "STR",
+              "DEX",
+              "CON",
+              "INT",
+              "WIS",
+              "CHA"
+            ]
+          }
+        },
+        "skillChoiceCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skillProficienciesChoice": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/$defs/ProficiencyChoice"
+            }
+          ]
+        },
+        "weaponProficiencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "armorTraining": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "toolProficiencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "featureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progression": {
+          "$ref": "#/$defs/Progression"
+        },
+        "spellcasting": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceDefinition"
+          }
+        },
+        "equipmentOptions": {
+          "$ref": "#/$defs/EquipmentOptions"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "classItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "class"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/classPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "subclassPayload": {
+      "type": "object",
+      "required": [
+        "classId"
+      ],
+      "properties": {
+        "classId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "featureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progression": {
+          "$ref": "#/$defs/Progression"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "subclassItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "subclass"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/subclassPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "speciesPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "creatureType": {
+          "type": "string"
+        },
+        "speed": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          ]
+        },
+        "size": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "heightRange": {
+          "type": "string"
+        },
+        "featureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "engineKey": {
+          "type": "string"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "speciesItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "species"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/speciesPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "backgroundPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "abilityScoreOptions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "STR",
+              "DEX",
+              "CON",
+              "INT",
+              "WIS",
+              "CHA"
+            ]
+          }
+        },
+        "abilityScoreIncreaseRule": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "featIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "featChoice": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "skillProficiencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skillProficiencyChoice": {
+          "$ref": "#/$defs/ProficiencyChoice"
+        },
+        "toolProficiencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "toolProficiencyChoice": {
+          "$ref": "#/$defs/ProficiencyChoice"
+        },
+        "languageProficiencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "languageProficiencyChoice": {
+          "$ref": "#/$defs/ProficiencyChoice"
+        },
+        "equipmentOptions": {
+          "$ref": "#/$defs/EquipmentOptions"
+        },
+        "grantsFeatureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "engineKey": {
+          "type": "string"
+        },
+        "customBackground": {
+          "type": "boolean"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "backgroundItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "background"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/backgroundPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "featPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "prerequisite": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "additionalProperties": true
+            }
+          ]
+        },
+        "abilityScoreIncrease": {
+          "type": "array"
+        },
+        "repeatable": {
+          "type": "boolean"
+        },
+        "featureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "grantsActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "effectTemplates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "featItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "feat"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/featPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "weaponPayload": {
+      "type": "object",
+      "required": [
+        "weaponType",
+        "damageFormula"
+      ],
+      "properties": {
+        "weaponCategory": {
+          "enum": [
+            "simple",
+            "martial"
+          ]
+        },
+        "weaponType": {
+          "enum": [
+            "melee",
+            "ranged",
+            "thrown",
+            "finesse",
+            "manual"
+          ]
+        },
+        "actionCost": {
+          "enum": [
+            "action",
+            "bonusAction",
+            "reaction",
+            "movement",
+            "free",
+            "special"
+          ]
+        },
+        "attackAbility": {},
+        "damageAbility": {},
+        "damageFormula": {
+          "type": "string",
+          "minLength": 1
+        },
+        "damageDie": {
+          "type": "string"
+        },
+        "damageType": {},
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mastery": {
+          "type": "string"
+        },
+        "range": {
+          "type": "object",
+          "required": [
+            "normal",
+            "unit"
+          ],
+          "properties": {
+            "normal": {
+              "type": "number",
+              "minimum": 0
+            },
+            "long": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "ft"
+            }
+          },
+          "additionalProperties": false
+        },
+        "versatileDamageFormula": {
+          "type": "string"
+        },
+        "magicBonus": {
+          "type": "number"
+        },
+        "attacksCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cost": {
+          "$ref": "#/$defs/CurrencyValue"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "weaponItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "weapon"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/weaponPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "armorPayload": {
+      "type": "object",
+      "required": [
+        "baseAC"
+      ],
+      "properties": {
+        "armorCategory": {
+          "type": "string"
+        },
+        "baseAC": {
+          "type": "number"
+        },
+        "dexCap": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "acBonus": {
+          "type": "number"
+        },
+        "strengthRequirement": {
+          "type": "number"
+        },
+        "stealthDisadvantage": {
+          "type": "boolean"
+        },
+        "stacksWithArmor": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cost": {
+          "$ref": "#/$defs/CurrencyValue"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "armorItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "armor"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/armorPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "equipmentPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cost": {
+          "$ref": "#/$defs/CurrencyValue"
+        },
+        "equipmentCategory": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grantsActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "effectTemplates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "equipmentItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "equipment"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/equipmentPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "magicItemPayload": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cost": {
+          "$ref": "#/$defs/CurrencyValue"
+        },
+        "equipmentCategory": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grantsActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "effectTemplates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rarity": {
+          "type": "string"
+        },
+        "attunement": {
+          "type": "boolean"
+        },
+        "magicBonus": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true
+    },
+    "magicItemItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "magicItem"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/magicItemPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "spellPayload": {
+      "type": "object",
+      "required": [
+        "level",
+        "classes",
+        "castingTime"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "school": {
+          "type": "string"
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "classIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "castingTime": {
+          "$ref": "#/$defs/CastingTime"
+        },
+        "range": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "string"
+        },
+        "components": {},
+        "specificMaterial": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "ritual": {
+          "type": "boolean"
+        },
+        "concentration": {
+          "type": "boolean"
+        },
+        "requiresAttackRoll": {
+          "type": "boolean"
+        },
+        "saveAbility": {},
+        "damageFormula": {
+          "type": "string"
+        },
+        "damageType": {},
+        "healingFormula": {
+          "type": "string"
+        },
+        "targets": {},
+        "area": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "consumesSpellSlot": {
+          "type": "boolean"
+        },
+        "minimumSlotLevel": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "scaling": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "damageOnSaveSuccess": {
+          "type": "string"
+        },
+        "grantsActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "effectTemplates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "engineKey": {
+          "type": "string"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "spellItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "spell"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/spellPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "featurePayload": {
+      "type": "object",
+      "required": [
+        "sourceType"
+      ],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classId": {
+          "type": "string"
+        },
+        "subclassId": {
+          "type": "string"
+        },
+        "speciesId": {
+          "type": "string"
+        },
+        "levelGained": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actionCost": {
+          "enum": [
+            "action",
+            "bonusAction",
+            "reaction",
+            "movement",
+            "free",
+            "special"
+          ]
+        },
+        "actionTiming": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "prerequisite": {},
+        "requiresConcentration": {
+          "type": "boolean"
+        },
+        "damageFormula": {
+          "type": "string"
+        },
+        "damageType": {},
+        "conditionalDamage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceDefinition"
+        },
+        "consumes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "grantsActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "effectTemplates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "oncePerTurnKey": {
+          "type": "string"
+        },
+        "engineKey": {
+          "type": "string"
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "featureItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "feature"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/featurePayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "conditionPayload": {
+      "type": "object",
+      "required": [
+        "conditionId"
+      ],
+      "properties": {
+        "conditionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "officialCondition": {
+          "type": "boolean"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "endConditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "engineNotes": {
+          "type": "string"
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "conditionItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "condition"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/conditionPayload"
+        }
+      },
+      "additionalProperties": false
+    },
+    "creatureStatBlockPayload": {
+      "type": "object",
+      "required": [
+        "size",
+        "creatureType",
+        "armorClass",
+        "hitPoints",
+        "speed"
+      ],
+      "properties": {
+        "size": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "creatureType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alignment": {
+          "type": "string"
+        },
+        "armorClass": {},
+        "hitPoints": {},
+        "speed": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "challenge": {},
+        "proficiencyBonus": {},
+        "abilities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "abilityScores": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "abilityModifiers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "savingThrows": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "resistances": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vulnerabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "immunities": {},
+        "senses": {},
+        "languages": {},
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "bonusActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "reactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "engineKey": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extractionNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "creatureStatBlockItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "source",
+        "payload"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "creatureStatBlock"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "payload": {
+          "$ref": "#/$defs/creatureStatBlockPayload"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

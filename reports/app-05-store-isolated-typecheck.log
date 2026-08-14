@@ -1,0 +1,2 @@
+$ tsc -p reports/tsconfig.app05-store-isolated.json
+PASS: character store and progression session strict isolated typecheck

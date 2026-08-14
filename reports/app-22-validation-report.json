@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "dnd-combat-app22-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T20:00:09.862011Z",
+  "sourceArchive": "dnd-combat-math-mvp-app21-publication-channels-rollout.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "sha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "implementation": {
+    "schemas": [
+      "dnd-catalog-rollout-health-policy.v1",
+      "dnd-catalog-rollout-health-evidence.v1",
+      "dnd-catalog-rollout-directive.v1"
+    ],
+    "storeVersion": 1,
+    "signals": [
+      "eligibilityObserved",
+      "downloadStarted",
+      "downloadSucceeded",
+      "downloadFailed",
+      "integrityFailed",
+      "previewOpened",
+      "commitSucceeded",
+      "commitFailed",
+      "rollbackCompleted"
+    ],
+    "directiveActions": [
+      "expand",
+      "reduce",
+      "promote",
+      "pause",
+      "rollback"
+    ],
+    "promotionPath": [
+      "preview",
+      "beta",
+      "stable"
+    ],
+    "automaticExecution": false,
+    "privacy": "OPT_IN_AGGREGATED_NO_PERSONAL_DATA"
+  },
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "inheritedBaselineChecks": 94,
+      "current": "30/30"
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 354
+    },
+    "isolatedTypecheck": {
+      "core": "PASS",
+      "healthStore": "PASS",
+      "publicationStore": "PASS",
+      "distributionStore": "PASS",
+      "updateStore": "PASS",
+      "test": "PASS"
+    },
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 42
+    },
+    "cliSigning": "PASS",
+    "privateMaterialScan": "PASS",
+    "maestroDefinitions": {
+      "status": "PASS",
+      "flows": 55
+    },
+    "fullTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJest": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "nativeGate": "BLOCKED"
+  },
+  "blockers": {
+    "dependencyInstall": {
+      "classification": "REGISTRY_PACKAGE_MISSING",
+      "missingPackages": [
+        "zustand"
+      ]
+    },
+    "typecheck": [
+      "expo/tsconfig.base",
+      "@types/react",
+      "@types/node",
+      "@types/jest"
+    ],
+    "jest": [
+      "jest executable"
+    ],
+    "native": [
+      "node_modules",
+      "adb",
+      "maestro",
+      "Android device or emulator"
+    ]
+  }
+}

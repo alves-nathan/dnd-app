@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "policy": {
+    "schemaVersion": "dnd-catalog-rollout-health-policy.v1",
+    "policyId": "cli-preview-1-health-1",
+    "revision": 1,
+    "signatureBytes": 64
+  },
+  "directive": {
+    "schemaVersion": "dnd-catalog-rollout-directive.v1",
+    "directiveId": "cli-preview-1-expand-1",
+    "action": "expand",
+    "fromRolloutPercent": 25,
+    "toRolloutPercent": 50,
+    "signatureBytes": 64
+  },
+  "privateKeyLocation": "TEMPORARY_OUTSIDE_CODEBASE"
+}

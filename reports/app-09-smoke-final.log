@@ -1,0 +1,286 @@
+
+> dnd-combat-math-mvp@0.1.0 app09:smoke
+> npm run app08:smoke && npm run catalog:compatibility-remediation:check && npm run catalog:compatibility-remediation:harness && npm run typescript:syntax:check
+
+
+> dnd-combat-math-mvp@0.1.0 app08:smoke
+> npm run app07:smoke && npm run catalog:character-compatibility:check && npm run catalog:character-compatibility:harness && npm run typescript:syntax:check
+
+
+> dnd-combat-math-mvp@0.1.0 app07:smoke
+> npm run app06:smoke && npm run dependencies:lock:check && npm run app07:release:gate:check && npm run app07:release:gate:harness
+
+
+> dnd-combat-math-mvp@0.1.0 app06:smoke
+> npm run app05:smoke && npm run catalog:progression-recovery:check && npm run catalog:progression-recovery:harness
+
+
+> dnd-combat-math-mvp@0.1.0 app05:smoke
+> npm run check:shape && npm run check:a11y && npm run compendium:bundled:check && npm run catalog:runtime:check && npm run catalog:ui:check && npm run catalog:character-bridge:check && npm run catalog:dependency-progression:check && npm run catalog:progression-transaction:check && npm run typescript:syntax:check && npm run catalog:progression-transaction:harness
+
+
+> dnd-combat-math-mvp@0.1.0 check:shape
+> node scripts/check-project-shape.js
+
+Project shape OK
+
+> dnd-combat-math-mvp@0.1.0 check:a11y
+> node scripts/check-accessibility-contracts.js
+
+Contratos mínimos de acessibilidade: OK
+
+> dnd-combat-math-mvp@0.1.0 compendium:bundled:check
+> node scripts/check-bundled-compendium.js
+
+Bundled compendium OK: phb-2024-full-consolidated-import-pack-v5-complete-invocations.json
+- pack: phb-2024-full-consolidated-import-pack-v5-complete-invocations
+- items: 1284 (1284 IDs únicos)
+- kinds: {"armor":13,"background":16,"class":12,"condition":24,"creatureStatBlock":66,"equipment":42,"feat":75,"feature":546,"magicItem":3,"species":10,"spell":391,"subclass":48,"weapon":38}
+
+> dnd-combat-math-mvp@0.1.0 catalog:runtime:check
+> node scripts/check-runtime-catalog.js
+
+[catalog:runtime:check] PASS
+version=4.8.0
+entities=5841
+dependencies=15385
+categories=57
+aliases=127
+sha256=8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08
+
+> dnd-combat-math-mvp@0.1.0 catalog:ui:check
+> node scripts/check-catalog-content-management.js
+
+[catalog:ui:check] PASS
+route=app/content-management.tsx
+store=src/store/catalogStore.ts
+persistence=src/storage/catalogFilterPreferences.ts
+
+> dnd-combat-math-mvp@0.1.0 catalog:character-bridge:check
+> node scripts/check-character-choice-bridge.js
+
+[catalog:character-bridge:check] PASS
+catalogEntries=5841
+carrierItems=1284
+carrierByKind={"condition":24,"feature":546,"weapon":38,"armor":13,"equipment":42,"magicItem":3,"creatureStatBlock":66,"spell":391,"class":12,"subclass":48,"feat":75,"background":16,"species":10}
+directIdCarriers=598
+directByKind={"condition":15,"weapon":38,"armor":13,"equipment":37,"creatureStatBlock":66,"spell":371,"class":12,"subclass":20,"background":16,"species":10}
+characterStoreVersion=22
+creationDraftVersion=8
+
+> dnd-combat-math-mvp@0.1.0 catalog:dependency-progression:check
+> node scripts/check-catalog-dependency-progression.js
+
+[catalog:dependency-progression:check] PASS
+secondaryEditors=9
+graphMetrics={"edges":15385,"offersChoice":79,"allowsCandidate":26,"availableToClass":949,"belongsToClass":612}
+
+> dnd-combat-math-mvp@0.1.0 catalog:progression-transaction:check
+> node scripts/check-progression-transaction.js
+
+[catalog:progression-transaction:check] PASS
+transactionEditors=10
+storeVersion=22
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=303
+
+> dnd-combat-math-mvp@0.1.0 catalog:progression-transaction:harness
+> node scripts/run-app05-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 24,
+  "storeVersion": 22,
+  "scenarios": {
+    "atomicCommit": {
+      "beforeLevel": 1,
+      "afterLevel": 2,
+      "operations": 2
+    },
+    "mandatoryPending": {
+      "blocked": 1,
+      "resolvedOperations": 2
+    },
+    "conflictDetection": {
+      "blocked": true,
+      "issueCodes": [
+        "PROGRESSION_TRANSACTION_CONFLICT"
+      ]
+    },
+    "snapshotMigration": {
+      "approvalRequired": true
+    },
+    "rollback": {
+      "restoredLevel": 1,
+      "historyEntries": 2
+    }
+  }
+}
+
+> dnd-combat-math-mvp@0.1.0 catalog:progression-recovery:check
+> node scripts/check-progression-recovery.js
+
+[catalog:progression-recovery:check] PASS
+storeVersion=22
+maestroFlows=4
+
+> dnd-combat-math-mvp@0.1.0 catalog:progression-recovery:harness
+> node scripts/run-app06-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 21,
+  "storeVersion": 22,
+  "scenarios": {
+    "restartRecovery": {
+      "status": "recoverable",
+      "checkpoint": 1
+    },
+    "acknowledgedCommit": {
+      "ok": true,
+      "level": 2
+    },
+    "checkpoint": {
+      "before": 1,
+      "after": 2
+    },
+    "conflict": {
+      "status": "conflicted"
+    },
+    "quarantine": {
+      "orphaned": 1,
+      "invalid": 1
+    }
+  }
+}
+
+> dnd-combat-math-mvp@0.1.0 dependencies:lock:check
+> node scripts/check-dependency-lock.js
+
+[dependencies:lock:check] PASS
+directDependencies=35
+registryEntries=1199
+integrityEntries=1199
+
+> dnd-combat-math-mvp@0.1.0 app07:release:gate:check
+> node scripts/check-app07-release-gate.js
+
+[app07:release:gate:check] PASS
+dependencyMode=exact
+buildCandidateGate=mandatory
+
+> dnd-combat-math-mvp@0.1.0 app07:release:gate:harness
+> node scripts/run-app07-runtime-harness.js
+
+APP-07 release evidence harness
+assertions=18
+status=PASS
+
+> dnd-combat-math-mvp@0.1.0 catalog:character-compatibility:check
+> node scripts/check-character-compatibility.js
+
+[catalog:character-compatibility:check] PASS
+manifestSchema=dnd-character-rules-manifest.v1
+characterStoreVersion=22
+
+> dnd-combat-math-mvp@0.1.0 catalog:character-compatibility:harness
+> node scripts/run-app08-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 18,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "manifest": {
+    "total": 4,
+    "available": 1,
+    "review": 0,
+    "disabled": 2,
+    "missing": 1,
+    "catalog": 3,
+    "compendium": 1
+  },
+  "issues": [
+    "CHARACTER_SNAPSHOT_MISMATCH",
+    "CHARACTER_CATALOG_ENTITY_DISABLED",
+    "CHARACTER_CATALOG_ENTITY_MISSING",
+    "CHARACTER_LOCAL_ITEM_DISABLED"
+  ]
+}
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=303
+
+> dnd-combat-math-mvp@0.1.0 catalog:compatibility-remediation:check
+> node scripts/check-compatibility-remediation.js
+
+[catalog:compatibility-remediation:check] PASS
+remediationSchema=dnd-character-compatibility-remediation.v1
+characterStoreVersion=22
+
+> dnd-combat-math-mvp@0.1.0 catalog:compatibility-remediation:harness
+> node scripts/run-app09-runtime-harness.js
+
+{
+  "status": "PASS",
+  "assertions": 21,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "decisions": 4,
+  "impact": {
+    "replacements": 2,
+    "removals": 1,
+    "snapshotMigrations": 1,
+    "referencesBefore": 4,
+    "referencesAfter": 3,
+    "blockingIssuesBefore": 3,
+    "blockingIssuesAfter": 0,
+    "changedPaths": [
+      "feats",
+      "spells",
+      "spellbookEntries",
+      "compendiumLinks",
+      "catalogSnapshotId"
+    ],
+    "summary": {
+      "levelBefore": 1,
+      "levelAfter": 1,
+      "catalogSnapshotBefore": "catalog-4.7.0-old",
+      "catalogSnapshotAfter": "catalog-4.8.0-app09-harness",
+      "classChanges": [],
+      "added": {
+        "compendiumLinks": 2
+      },
+      "removed": {
+        "feats": 1
+      },
+      "pendingBefore": 0,
+      "pendingAfter": 0,
+      "changedPaths": [
+        "feats",
+        "spells",
+        "spellbookEntries",
+        "compendiumLinks",
+        "catalogSnapshotId"
+      ]
+    }
+  },
+  "audit": {
+    "kind": "compatibilityRemediation",
+    "historyEntriesAfterCommit": 1,
+    "rollbackRestoredSnapshot": "catalog-4.7.0-old"
+  }
+}
+
+> dnd-combat-math-mvp@0.1.0 typescript:syntax:check
+> node scripts/check-typescript-syntax.js
+
+[typescript:syntax:check] PASS
+files=303

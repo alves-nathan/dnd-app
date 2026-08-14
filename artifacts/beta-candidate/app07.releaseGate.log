@@ -1,0 +1,17 @@
+> dnd-combat-math-mvp@0.1.0 app07:release:gate:verify
+> node scripts/verify-app07-release-gate.js
+
+
+[app07:release:gate:verify] FAIL
+- Gate não está aprovado (BLOCKED).
+- Fingerprint da codebase diverge da evidência.
+- Etapa obrigatória não aprovada: typecheck.
+- Etapa obrigatória não aprovada: jest.
+- Etapa obrigatória não aprovada: native-gate.
+- JUnit nativo ausente.
+- Logcat nativo ausente.
+- Screenshot nativo ausente.
+- Hash do artefato nativo ausente: junit.
+- Hash do artefato nativo ausente: logcat.
+- Hash do artefato nativo ausente: screenshot.
+- Versão Android instalada não foi validada contra app.json.

@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Saúde e promoção do rollout"
+- assertVisible: "Métricas permanecem somente neste dispositivo"
+- assertVisible:
+    id: "rollout-health-opt-in"

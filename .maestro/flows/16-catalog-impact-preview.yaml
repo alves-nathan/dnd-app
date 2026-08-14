@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Visualizar impacto preventivo antes de desativar entidade
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-impact
+- assertVisible: "Cenário E2E de impacto preventivo do catálogo preparado."
+- openLink: dndcombatmath://content-management
+- tapOn: "Entidades"
+- tapOn: "Nome, ID ou tipo"
+- inputText: "Acid Splash"
+- tapOn: "Desativar"
+- assertVisible: "Preview preventivo"
+- assertVisible: "E2E Preventive Wizard"
+- assertVisible: "Reconheço o impacto nas fichas"

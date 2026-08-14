@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Auditoria operacional externa"
+- assertVisible: "Importar para auditoria"
+- assertVisible: "Validar e importar"

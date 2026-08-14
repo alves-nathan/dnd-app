@@ -1,0 +1,15 @@
+appId: com.nalves.dndcombatmathmvp
+name: Limpar checkpoints preservando evidências
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-evidence-cleanup
+- assertVisible: "Cenário E2E da central de evidências cleanup preparado."
+- tapOn:
+    id: e2e-open-evidence-center
+- assertVisible: "1 evidência(s) · 7 checkpoint(s) completo(s)"
+- tapOn:
+    id: evidence-center-clean-checkpoints
+- tapOn: "Remover checkpoints"
+- assertVisible: "1 evidência(s) · 5 checkpoint(s) completo(s)"

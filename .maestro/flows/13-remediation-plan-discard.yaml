@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Descartar plano de remediação sem alterar ficha
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-remediation-discard
+- assertVisible: "Cenário E2E de descarte do plano de remediação preparado."
+- openLink: dndcombatmath://characters/e2e-compatibility-remediation/compatibility
+- tapOn:
+    id: compatibility-discard-remediation
+- tapOn: "Descartar"
+- assertNotVisible: "Plano de remediação"
+- assertVisible: "Criar plano de remediação"

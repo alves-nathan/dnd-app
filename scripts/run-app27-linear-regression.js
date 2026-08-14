@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+const commands = ['run-app26-linear-regression.js','check-catalog-operational-federation.js','run-app27-runtime-harness.js','check-typescript-syntax.js'];
+const results=[];
+for (const command of commands) {
+  const started=Date.now();
+  const result=spawnSync(process.execPath,[path.join(root,'scripts',command)],{cwd:root,encoding:'utf8',maxBuffer:128*1024*1024});
+  results.push({command,status:result.status===0?'PASS':'FAIL',durationMs:Date.now()-started,stdout:String(result.stdout||'').trim().slice(-4000),stderr:String(result.stderr||'').trim().slice(-4000)});
+  if(result.status!==0)break;
+}
+const status=results.length===commands.length&&results.every((entry)=>entry.status==='PASS')?'PASS':'FAIL';
+const inherited=(()=>{try{const report=JSON.parse(fs.readFileSync(path.join(root,'reports/app-26-linear-regression.json'),'utf8'));return Number(report.inheritedBaselineChecks||0)+Number(report.currentPassChecks||0);}catch{return 198;}})();
+const report={schemaVersion:'dnd-combat-app27-linear-regression.v1',status,generatedAt:new Date().toISOString(),inheritedBaselineChecks:inherited,currentPassChecks:results.filter((entry)=>entry.status==='PASS').length,currentPlannedChecks:commands.length,results};
+fs.mkdirSync(path.join(root,'reports'),{recursive:true});fs.writeFileSync(path.join(root,'reports/app-27-linear-regression.json'),`${JSON.stringify(report,null,2)}\n`);
+console.log(JSON.stringify({status,inheritedBaselineChecks:inherited,currentPassChecks:report.currentPassChecks,currentPlannedChecks:commands.length,failed:results.find((entry)=>entry.status==='FAIL')?.command},null,2));
+if(status!=='PASS')process.exit(1);

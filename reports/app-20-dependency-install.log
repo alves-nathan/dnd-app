@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "dnd-combat-app07-dependency-install.v1",
+  "status": "BLOCKED",
+  "classification": "REGISTRY_PACKAGE_MISSING",
+  "generatedAt": "2026-08-04T18:09:17.793Z",
+  "durationMs": 2842,
+  "registry": "https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public",
+  "command": "npm ci --no-audit --fund=false --registry=https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "logFile": "artifacts/app07-dependency-install.log",
+  "lockVerification": null,
+  "missingPackages": [
+    "zustand"
+  ],
+  "remediation": "O registry configurado não espelha uma ou mais versões fixadas. Use um registry npm completo sem alterar o lockfile."
+}

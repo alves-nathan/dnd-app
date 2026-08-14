@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "dnd-combat-app23-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_AND_NATIVE_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T20:16:00.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-app22-rollout-health-signed-promotion.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "sha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "implementation": {
+    "schemas": [
+      "dnd-catalog-rollout-health-submission.v1",
+      "dnd-catalog-rollout-aggregation-policy.v1",
+      "dnd-catalog-rollout-aggregate-report.v1",
+      "dnd-catalog-release-approval.v1",
+      "dnd-catalog-release-quorum-decision.v1"
+    ],
+    "storeVersion": 1,
+    "minimumAnonymityFloor": 3,
+    "minimumQuorumFloor": 2,
+    "deduplication": "OPAQUE_CONTEXTUAL_SHA256_TOKEN",
+    "cohortSuppression": true,
+    "automaticExecution": false
+  },
+  "checks": {
+    "linearRegression": {
+      "status": "PASS",
+      "inheritedBaselineChecks": 124,
+      "current": "32/32"
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 358
+    },
+    "isolatedTypecheck": {
+      "core": "PASS",
+      "store": "PASS",
+      "test": "PASS"
+    },
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 46,
+      "uniqueContributors": 4,
+      "duplicates": 1,
+      "rejected": 1,
+      "quorum": "2/2"
+    },
+    "cliSigning": "PASS",
+    "privateMaterialScan": "PASS",
+    "maestroDefinitions": {
+      "status": "PASS",
+      "flows": 59
+    },
+    "fullTypecheck": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "fullJest": "BLOCKED_NOT_RUN_SUCCESSFULLY",
+    "nativeGate": "BLOCKED"
+  },
+  "blockers": {
+    "dependencyInstall": {
+      "classification": "REGISTRY_PACKAGE_MISSING",
+      "missingPackages": ["zustand"]
+    },
+    "typecheck": ["expo/tsconfig.base", "@types/react", "@types/node", "@types/jest"],
+    "jest": ["jest executable"],
+    "native": ["node_modules", "adb", "maestro", "Android device or emulator"]
+  }
+}

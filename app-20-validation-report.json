@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "dnd-combat-app20-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_REGISTRY_AND_NATIVE_ENVIRONMENT",
+  "generatedAt": "2026-08-04T18:13:47.301Z",
+  "sourceArchive": "dnd-combat-math-mvp-app19-transparency-secure-distribution.zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "runtimeSha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "distribution": {
+    "manifestSchema": "dnd-catalog-distribution-manifest.v1",
+    "mirrorStatusSchema": "dnd-catalog-mirror-status.v1",
+    "sessionSchema": "dnd-catalog-download-session.v1",
+    "evidenceSchema": "dnd-catalog-download-evidence.v1",
+    "minimumMirrors": 2,
+    "realBundleChunks": 81,
+    "realBundleBytes": 10549386,
+    "realBundleChecksum": "915f579509e8988f579bb566bee7f4dfae342083fe55dedfb570770842eeb89e"
+  },
+  "checks": {
+    "inheritedBaseline": {
+      "status": "PASS",
+      "assertions": 40
+    },
+    "linearRegression": {
+      "status": "PASS",
+      "assertions": 26,
+      "planned": 26
+    },
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 345
+    },
+    "isolatedTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 41,
+      "mirrors": 2,
+      "chunks": 3,
+      "bundleBytes": 634,
+      "interruptionResume": "PASS",
+      "mirrorFallback": "PASS",
+      "staleMirror": "REJECTED",
+      "conflictingMirror": "REJECTED",
+      "offlineVerification": "PASS",
+      "evidenceTampering": "REJECTED"
+    },
+    "cliSigning": {
+      "schemaVersion": "dnd-combat-app20-cli-signing.v1",
+      "status": "PASS",
+      "generatedAt": "2026-08-04T18:10:58.194Z",
+      "catalogVersion": "4.8.0",
+      "sequence": 1,
+      "mirrors": 2,
+      "chunks": 81,
+      "bundleByteLength": 10549386,
+      "bundleCharacterLength": 10549067,
+      "bundleChecksum": "915f579509e8988f579bb566bee7f4dfae342083fe55dedfb570770842eeb89e",
+      "rawChecksum": "915f579509e8988f579bb566bee7f4dfae342083fe55dedfb570770842eeb89e",
+      "chunkLayoutValid": true,
+      "privateKeyIncludedInProject": false
+    },
+    "maestroDefinitions": {
+      "status": "PASS",
+      "found": 47,
+      "expected": 47
+    },
+    "zipIntegrity": "PASS"
+  },
+  "blocked": {
+    "dependencyInstall": {
+      "status": "BLOCKED",
+      "classification": "REGISTRY_PACKAGE_MISSING",
+      "missingPackages": [
+        "zustand"
+      ],
+      "registry": "https://packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/npm/npm-public"
+    },
+    "fullTypecheck": "BLOCKED_NODE_MODULES_MISSING",
+    "fullJest": "BLOCKED_JEST_NOT_INSTALLED",
+    "nativeExecution": {
+      "status": "BLOCKED",
+      "remediation": [
+        "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente.",
+        "adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT.",
+        "Maestro CLI não encontrado. Configure MAESTRO_PATH."
+      ]
+    }
+  }
+}

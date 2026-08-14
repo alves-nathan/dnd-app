@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "dnd-combat-app19-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T17:35:00.000Z",
+  "checks": 40,
+  "executionMode": "batched-linear-no-recursive-duplication",
+  "results": [
+    {
+      "index": 1,
+      "command": "check-project-shape.js",
+      "status": "PASS"
+    },
+    {
+      "index": 2,
+      "command": "check-accessibility-contracts.js",
+      "status": "PASS"
+    },
+    {
+      "index": 3,
+      "command": "check-bundled-compendium.js",
+      "status": "PASS"
+    },
+    {
+      "index": 4,
+      "command": "check-runtime-catalog.js",
+      "status": "PASS"
+    },
+    {
+      "index": 5,
+      "command": "check-catalog-content-management.js",
+      "status": "PASS"
+    },
+    {
+      "index": 6,
+      "command": "check-character-choice-bridge.js",
+      "status": "PASS"
+    },
+    {
+      "index": 7,
+      "command": "check-catalog-dependency-progression.js",
+      "status": "PASS"
+    },
+    {
+      "index": 8,
+      "command": "check-progression-transaction.js",
+      "status": "PASS"
+    },
+    {
+      "index": 9,
+      "command": "check-progression-recovery.js",
+      "status": "PASS"
+    },
+    {
+      "index": 10,
+      "command": "check-dependency-lock.js",
+      "status": "PASS"
+    },
+    {
+      "index": 11,
+      "command": "check-app07-release-gate.js",
+      "status": "PASS"
+    },
+    {
+      "index": 12,
+      "command": "check-character-compatibility.js",
+      "status": "PASS"
+    },
+    {
+      "index": 13,
+      "command": "check-compatibility-remediation.js",
+      "status": "PASS"
+    },
+    {
+      "index": 14,
+      "command": "check-compatibility-remediation-recovery.js",
+      "status": "PASS"
+    },
+    {
+      "index": 15,
+      "command": "check-catalog-character-impact.js",
+      "status": "PASS"
+    },
+    {
+      "index": 16,
+      "command": "check-catalog-configuration-history.js",
+      "status": "PASS"
+    },
+    {
+      "index": 17,
+      "command": "check-portable-catalog-backup.js",
+      "status": "PASS"
+    },
+    {
+      "index": 18,
+      "command": "check-portable-restore-session.js",
+      "status": "PASS"
+    },
+    {
+      "index": 19,
+      "command": "check-portable-restore-verification.js",
+      "status": "PASS"
+    },
+    {
+      "index": 20,
+      "command": "check-portable-restore-evidence-center.js",
+      "status": "PASS"
+    },
+    {
+      "index": 21,
+      "command": "check-typescript-syntax.js",
+      "status": "PASS"
+    },
+    {
+      "index": 22,
+      "command": "run-app04-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 23,
+      "command": "run-app05-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 24,
+      "command": "run-app06-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 25,
+      "command": "run-app07-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 26,
+      "command": "run-app08-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 27,
+      "command": "run-app09-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 28,
+      "command": "run-app10-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 29,
+      "command": "run-app11-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 30,
+      "command": "run-app12-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 31,
+      "command": "run-app13-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 32,
+      "command": "run-app14-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 33,
+      "command": "run-app15-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 34,
+      "command": "run-app16-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 35,
+      "command": "check-catalog-update-transaction.js",
+      "status": "PASS"
+    },
+    {
+      "index": 36,
+      "command": "run-app17-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 37,
+      "command": "check-catalog-trust-chain.js",
+      "status": "PASS"
+    },
+    {
+      "index": 38,
+      "command": "run-app18-runtime-harness.js",
+      "status": "PASS"
+    },
+    {
+      "index": 39,
+      "command": "check-catalog-transparency.js",
+      "status": "PASS"
+    },
+    {
+      "index": 40,
+      "command": "run-app19-runtime-harness.js",
+      "status": "PASS"
+    }
+  ]
+}

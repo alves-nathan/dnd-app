@@ -1,0 +1,9 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Agregação e decisão em quórum"
+- assertVisible: "Aprovação independente"
+- assertVisible:
+    id: "rollout-aggregation-approval-import"
+- assertVisible: "Decisões registradas"

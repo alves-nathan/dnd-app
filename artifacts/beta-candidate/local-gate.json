@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "dnd-combat-beta-local-gate.v1",
+  "generatedAt": "2026-08-04T01:30:47.985Z",
+  "status": "failed",
+  "requiredInputs": {
+    "phbImportFile": null,
+    "compendiumPackageCount": 0
+  },
+  "results": [
+    {
+      "id": "app07.releaseGate",
+      "passed": false,
+      "exitCode": 1,
+      "durationMs": 115,
+      "logFile": "artifacts/beta-candidate/app07.releaseGate.log"
+    }
+  ]
+}

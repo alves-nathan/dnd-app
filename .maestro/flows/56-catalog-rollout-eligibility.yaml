@@ -1,0 +1,9 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Canais e rollout do catálogo"
+- assertVisible: "Importar publicação assinada"
+- assertVisible:
+    id: "catalog-publication-import"
+- assertVisible: "Evidências de elegibilidade"

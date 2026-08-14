@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "dnd-combat-import-v2-phase05-persistence-audit.v1",
+  "sourcePack": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+  "itemCount": 1284,
+  "firstInstall": {
+    "valid": true,
+    "executable": true,
+    "creates": 1284,
+    "itemsPersisted": 1284,
+    "storageIdsUnique": true,
+    "allContentHashesPersisted": true
+  },
+  "replay": {
+    "valid": true,
+    "executable": true,
+    "creates": 0,
+    "updates": 0,
+    "unchanged": 1284,
+    "conflicts": 0,
+    "hashesBackfilled": 1284,
+    "storageIdsPreserved": true,
+    "allContentHashesPersisted": true
+  },
+  "oneItemUpdate": {
+    "valid": true,
+    "updates": 1,
+    "unchanged": 1283,
+    "storageIdPreserved": true,
+    "changedPaths": [
+      "summary"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+appId: com.nalves.dndcombatmathmvp
+name: Cancelar importação de backup portátil
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-portable-backup
+- assertVisible: "Cenário E2E de importação de backup portátil preparado."
+- openLink: dndcombatmath://content-management
+- assertVisible:
+    id: portable-catalog-import-preview
+- tapOn:
+    id: catalog-impact-discard
+- assertNotVisible:
+    id: portable-catalog-import-preview

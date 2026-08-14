@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "dnd-combat-app30-validation-report.v1",
+  "status": "BLOCKED",
+  "generatedAt": "2026-08-04T23:28:38.301Z",
+  "app": {
+    "name": "D&D Combat",
+    "version": "1.0.0",
+    "androidPackage": "com.nalves.dndcombatmathmvp",
+    "androidVersionCode": 2,
+    "iosBundleIdentifier": "com.nalves.dndcombatmathmvp",
+    "iosBuildNumber": "1",
+    "runtimeVersionPolicy": "appVersion"
+  },
+  "checks": {
+    "inheritedRegressionPasses": 208,
+    "app30RegressionPasses": 9,
+    "accumulatedRegressionPasses": 217,
+    "typescriptSyntaxFiles": 380,
+    "runtimeHarnessAssertions": 26,
+    "requiredMaestroFlows": 83,
+    "maestroFlowFiles": 90,
+    "operationalDocuments": 8,
+    "privateMaterialFindings": 0,
+    "deliveryPackageFiles": 21
+  },
+  "productionGate": {
+    "status": "BLOCKED",
+    "evidenceSha256": "238c3a50475cfe1ee065e4c2860a7e31f61bd9f75938267c9106c2688a770edb",
+    "passedSteps": [
+      "app30-contracts",
+      "operational-docs",
+      "private-material-scan",
+      "delivery-package",
+      "production-identity"
+    ],
+    "blockedSteps": [
+      "app28-integral-gate",
+      "app29-release-candidate",
+      "production-build-artifact",
+      "store-publication-receipt"
+    ],
+    "failedSteps": []
+  },
+  "environment": {
+    "dependencyInstallStatus": "BLOCKED",
+    "dependencyClassification": "REGISTRY_PACKAGE_MISSING",
+    "nativeGateStatus": "BLOCKED",
+    "nativeExecutionStatus": "NOT_RUN",
+    "productionBinaryPresent": false,
+    "storePublicationReceiptPresent": false
+  },
+  "deliveryPackage": {
+    "path": "artifacts/app30-delivery/dnd-combat-1.0.0-operational-delivery.zip",
+    "bytes": 165752,
+    "sha256": "41f28271bf673070a97c88826e7720d606f69a483af079b87a08791741e925ae"
+  },
+  "limitations": [
+    "O registry disponível não contém todas as versões fixadas no package-lock.json.",
+    "Typecheck e Jest integrais dependem da instalação completa das dependências.",
+    "ADB, Maestro e dispositivo/emulador Android não estão disponíveis neste ambiente.",
+    "Nenhum AAB de produção foi gerado neste ambiente.",
+    "Nenhum recibo de disponibilidade da loja foi fornecido."
+  ]
+}

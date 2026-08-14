@@ -1,0 +1,8 @@
+{
+  "status": "GENERATED",
+  "output": "/tmp/app18-next-key.json",
+  "publisherId": "dnd-combat-official",
+  "keyId": "root-2027-01",
+  "algorithm": "ECDSA_P256_SHA256",
+  "publicKeyFingerprint": "36511a07a47851cb84da62d595319642cc28e3726ab6b7dea43f9dd29a2baeff"
+}

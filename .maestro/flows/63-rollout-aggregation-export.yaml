@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Agregação e decisão em quórum"
+- assertVisible: "Privacidade por construção"
+- assertVisible:
+    id: "rollout-aggregation-share-submissions"

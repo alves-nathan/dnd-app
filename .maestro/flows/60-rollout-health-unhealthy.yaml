@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Saúde e promoção do rollout"
+- assertVisible: "Importar limites de saúde assinados"
+- assertVisible:
+    id: "rollout-health-policy-import"

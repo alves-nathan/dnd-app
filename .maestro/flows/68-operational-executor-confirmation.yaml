@@ -1,0 +1,8 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Autorização operacional"
+- assertVisible: "Confirmação assinada do executor"
+- assertVisible:
+    id: "operational-executor-confirmation-import"

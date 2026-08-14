@@ -1,0 +1,4 @@
+[dependencies:lock:check] PASS
+directDependencies=35
+registryEntries=1199
+integrityEntries=1199

@@ -1,0 +1,44 @@
+{
+  "date": "2026-08-11",
+  "baseline": "dnd-combat-math-mvp-typecheck-test-remediation.zip",
+  "ownerBefore": {
+    "typecheck": "PASS",
+    "jestPassingSuites": 141,
+    "jestFailingSuites": 2,
+    "jestSkippedSuites": 1,
+    "jestPassingTests": 530,
+    "jestFailingTests": 2,
+    "jestSkippedTests": 2,
+    "importV2ReleaseGate": "PASS",
+    "tacticalMobileClosureGate": "PASS"
+  },
+  "fixes": [
+    {
+      "file": "src/tests/compendiumImportV2Normalization.test.ts",
+      "change": "Use a semantically valid Wizard class name in the synthetic spell fixture while testing legacy component normalization."
+    },
+    {
+      "file": "src/fixtures/exampleLibrary.ts",
+      "change": "Declare Wizard on both example spell fixtures so canonical V2 export/reimport semantic validation succeeds."
+    }
+  ],
+  "invariants": {
+    "spellClassesEmptyStillSemanticError": true,
+    "schemaLoosened": false,
+    "phbChanged": false,
+    "dependenciesChanged": false
+  },
+  "localGates": {
+    "typescriptSyntax": "PASS",
+    "typescriptFileCount": 437,
+    "projectShape": "PASS",
+    "accessibility": "PASS",
+    "bundledCompendium": "PASS",
+    "bundledItems": 1284,
+    "bundledUniqueIds": 1284,
+    "importV2ReleaseGate": "PASS",
+    "functionalParity": "PASS 13/13",
+    "tacticalMobileClosure": "PASS 4/4 runtime + 17/17 contracts",
+    "releaseReadiness": "PASS"
+  }
+}

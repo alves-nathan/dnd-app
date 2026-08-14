@@ -1,0 +1,43 @@
+{
+  "phase": "07",
+  "scope": "template-prompt-documentation-json-schema",
+  "templateVersion": "dnd-combat-import.v2",
+  "entityKinds": 13,
+  "minimalTemplateKinds": [
+    "class",
+    "feature",
+    "spell",
+    "background",
+    "feat",
+    "equipment"
+  ],
+  "jsonSchema": {
+    "path": "docs/dnd-combat-import-v2.schema.json",
+    "definitions": 34,
+    "generator": "buildImportV2JsonSchema -> z.toJSONSchema(compendiumImportV2Schema)"
+  },
+  "documentation": "docs/compendium-import-v2.md",
+  "promptDocumentationBuilder": "src/compendium/importV2Documentation.ts#buildImportSchemaDocumentation",
+  "template": "src/compendium/importTemplate.ts",
+  "uiModes": [
+    "json",
+    "markdown",
+    "prompt-json",
+    "prompt-markdown",
+    "guide",
+    "json-schema"
+  ],
+  "checks": {
+    "phase07Contract": "PASS",
+    "typescriptSyntax": "PASS (424 TS/TSX)",
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS (1284/1284)",
+    "releaseReadiness": "PASS",
+    "semanticHarness": "PASS (13 assertions)",
+    "previewHarness": "PASS (17 assertions)",
+    "persistenceHarness": "PASS (14 assertions)",
+    "exportHarness": "PASS (13 kinds; 13/13 round-trip)"
+  },
+  "environmentNote": "Full Jest/typecheck and exact schema regeneration require project node_modules; this delivery does not include node_modules."
+}

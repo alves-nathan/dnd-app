@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Reverter toda a sessão portátil
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-session-rollback
+- assertVisible: "Cenário E2E de sessão portátil rollback preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Restauração confirmada"
+- tapOn:
+    id: restore-session-rollback
+- assertVisible: "Rollback concluído"

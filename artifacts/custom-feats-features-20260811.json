@@ -1,0 +1,37 @@
+{
+  "id": "custom-feats-features-20260811",
+  "status": "implemented-awaiting-local-full-suite",
+  "features": {
+    "customFeatCreation": true,
+    "customFeatureCreation": true,
+    "friendlyFirePreset": true,
+    "damageTypeMultiplier": true,
+    "triggeredDamageStructured": true,
+    "directSpellGrant": true,
+    "classSpellListExpansion": true,
+    "spellReplacementByRest": true,
+    "backgroundToolLockedSelection": true,
+    "manualSpellDamageType": true
+  },
+  "friendlyFire": {
+    "damageType": "fire",
+    "multiplier": 2,
+    "trigger": "1 on 1d8",
+    "radiusFeet": 30,
+    "saveAbility": "DEX",
+    "saveSuccessDamage": "half",
+    "spellListAddition": "Fire Bolt"
+  },
+  "validation": {
+    "typescriptSyntax": "PASS (441 files)",
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "releaseReadiness": "PASS",
+    "compendiumFunctionalParity": "PASS 13/13",
+    "tacticalMobileClosureAudit": "PASS 4/4 + 17/17",
+    "customRulesSmoke": "PASS",
+    "customSpellListSmoke": "PASS",
+    "fullTypecheck": "PENDING local node_modules",
+    "fullJest": "PENDING local node_modules"
+  }
+}

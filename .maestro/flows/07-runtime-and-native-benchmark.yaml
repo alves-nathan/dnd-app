@@ -1,0 +1,16 @@
+appId: com.nalves.dndcombatmathmvp
+name: Validar identidade e benchmark nativo
+---
+- launchApp
+- openLink: dndcombatmath://beta-runtime
+- assertVisible: "Identidade da build"
+- assertVisible:
+    id: beta-runtime-stage
+- tapOn:
+    id: beta-runtime-open-benchmark
+- assertVisible: "Benchmark SQLite nativo"
+- tapOn:
+    id: native-benchmark-run
+- extendedWaitUntil:
+    visible: "Benchmark SQLite nativo ·.*1263 itens"
+    timeout: 45000

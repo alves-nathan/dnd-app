@@ -1,0 +1,17 @@
+appId: com.nalves.dndcombatmathmvp
+name: Cancelar desativação após preview preventivo
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-catalog-impact
+- assertVisible: "Cenário E2E de impacto preventivo do catálogo preparado."
+- openLink: dndcombatmath://content-management
+- tapOn: "Entidades"
+- tapOn: "Nome, ID ou tipo"
+- inputText: "Acid Splash"
+- tapOn: "Desativar"
+- assertVisible: "Preview preventivo"
+- tapOn:
+    id: catalog-impact-discard
+- assertNotVisible: "Preview preventivo"

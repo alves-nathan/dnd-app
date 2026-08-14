@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "assertions": 31,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "session": {
+    "id": "portable-restore-20260804131000000",
+    "conflicts": 2,
+    "acknowledgements": 2,
+    "events": 3
+  },
+  "preview": {
+    "before": {
+      "characters": 1,
+      "scenarios": 0,
+      "presets": 0,
+      "snapshots": 0,
+      "remediationPlans": 0,
+      "catalogRevision": 0
+    },
+    "after": {
+      "characters": 1,
+      "scenarios": 0,
+      "presets": 0,
+      "snapshots": 0,
+      "remediationPlans": 1,
+      "catalogRevision": 1
+    },
+    "imported": {
+      "characterCount": 1,
+      "scenarioCount": 0,
+      "buildPresetCount": 0,
+      "buildHistorySnapshotCount": 0
+    },
+    "remappedCharacterIds": 0,
+    "acceptedPlans": 0,
+    "preventivePlans": 1,
+    "preservedLocalPlanConflicts": 0,
+    "skippedPlans": 0,
+    "catalogRelation": "incomingAhead",
+    "affectedCharacters": 1,
+    "newBlockingIssues": 1,
+    "newWarnings": 0,
+    "conflictCount": 2
+  },
+  "recovery": {
+    "checkpointFingerprint": "55a1e4f0",
+    "projectedFingerprint": "38af769e",
+    "exactCatalogRollback": true,
+    "coordinatorCommit": true,
+    "idempotentResume": true,
+    "coordinatorRollback": true
+  },
+  "audit": {
+    "schemaVersion": "dnd-portable-restore-session-audit.v1",
+    "conflictCount": 2,
+    "catalogSessionLink": "portable-restore-20260804131000000"
+  }
+}

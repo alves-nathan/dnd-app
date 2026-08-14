@@ -1,0 +1,38 @@
+PASS APP-03 character choice bridge > combines official and local content without duplicating official carriers
+PASS APP-03 character choice bridge > respects book filters and resolves legacy references
+PASS APP-03 character choice application > applies official content with provenance and snapshot
+PASS APP-03 character choice application > is idempotent and preserves editorial warnings without blocking first application
+PASS APP-03 progression compatibility > normalizes legacy official IDs into namespaced catalog choices
+PASS APP-03 progression compatibility > advances the persisted store migration boundary
+PASS APP-03 real catalog and bundled compendium bridge > materializes the complete PHB creation payload without duplicate local carriers
+PASS APP-03 real catalog and bundled compendium bridge > blocks official choices when their source book is disabled
+PASS character creation draft > roundtrips a resumable wizard draft
+PASS character creation draft > sanitizes corrupt or out-of-range fields
+PASS explicit character store migrations > migrates version 0 to the current complete shape
+PASS explicit character store migrations > migrates version 1 to the current complete shape
+PASS explicit character store migrations > migrates version 2 to the current complete shape
+PASS explicit character store migrations > migrates version 3 to the current complete shape
+PASS explicit character store migrations > migrates version 4 to the current complete shape
+PASS explicit character store migrations > migrates version 5 to the current complete shape
+PASS explicit character store migrations > migrates version 6 to the current complete shape
+PASS explicit character store migrations > migrates version 7 to the current complete shape
+PASS explicit character store migrations > migrates version 8 to the current complete shape
+PASS explicit character store migrations > migrates version 9 to the current complete shape
+PASS explicit character store migrations > migrates version 10 to the current complete shape
+PASS explicit character store migrations > migrates version 11 to the current complete shape
+PASS explicit character store migrations > migrates version 12 to the current complete shape
+PASS explicit character store migrations > migrates version 13 to the current complete shape
+PASS explicit character store migrations > migrates version 14 to the current complete shape
+PASS explicit character store migrations > migrates version 15 to the current complete shape
+PASS explicit character store migrations > migrates version 16 to the current complete shape
+PASS explicit character store migrations > migrates version 17 to the current complete shape
+PASS explicit character store migrations > migrates version 18 to the current complete shape
+PASS explicit character store migrations > migrates version 19 to the current complete shape
+PASS explicit character store migrations > is idempotent for current characters
+PASS explicit character store migrations > deeply normalizes partially persisted build choices and collections
+{
+  "status": "PASS",
+  "tests": 32,
+  "passed": 32,
+  "failed": 0
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "dnd-combat-app07-release-gate.v1",
+  "status": "BLOCKED",
+  "generatedAt": "2026-08-04T01:31:00.560Z",
+  "executeNativeRequested": true,
+  "source": {
+    "fingerprint": "97721a0c05582deaaadae0589b34d6c68c7dd6036bc57e54685b2217244d9965",
+    "files": 363,
+    "gitSha": null
+  },
+  "environment": {
+    "node": "v22.16.0",
+    "npm": "10.9.2",
+    "platform": "linux",
+    "arch": "x64",
+    "dependenciesReady": false
+  },
+  "steps": [
+    {
+      "id": "dependency-lock",
+      "status": "PASS",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 31,
+      "logFile": "artifacts/app07-release-gate/dependency-lock.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "app06-smoke",
+      "status": "PASS",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 4715,
+      "logFile": "artifacts/app07-release-gate/app06-smoke.log",
+      "detail": "Etapa aprovada."
+    },
+    {
+      "id": "typecheck",
+      "status": "BLOCKED",
+      "exitCode": null,
+      "durationMs": 0,
+      "logFile": null,
+      "detail": "Dependências integrais ausentes ou incompletas; execute npm run app07:dependencies:install em um registry completo."
+    },
+    {
+      "id": "jest",
+      "status": "BLOCKED",
+      "exitCode": null,
+      "durationMs": 0,
+      "logFile": null,
+      "detail": "Jest e dependências da aplicação não estão instalados integralmente."
+    },
+    {
+      "id": "native-gate",
+      "status": "BLOCKED",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 31,
+      "logFile": "artifacts/app07-release-gate/native-gate.log",
+      "detail": "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente. | adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT. | Maestro CLI não encontrado. Configure MAESTRO_PATH."
+    }
+  ],
+  "nativeEvidence": {
+    "reportPath": "artifacts/app06-native-gate.json",
+    "status": "BLOCKED",
+    "device": null,
+    "appInstalled": false,
+    "appVersionMatches": false,
+    "installedVersion": null,
+    "expectedAndroid": {
+      "packageName": "com.nalves.dndcombatmathmvp",
+      "versionName": "0.1.0",
+      "versionCode": "2"
+    },
+    "maestroExecution": {
+      "status": "BLOCKED",
+      "reason": "Pré-requisitos nativos indisponíveis."
+    },
+    "junitPath": null,
+    "logcatPath": null,
+    "screenshotPath": null,
+    "testOutputPath": null,
+    "artifacts": {
+      "junit": null,
+      "logcat": null,
+      "screenshot": null
+    }
+  },
+  "remediation": [
+    "Dependências integrais ausentes ou incompletas; execute npm run app07:dependencies:install em um registry completo.",
+    "Jest e dependências da aplicação não estão instalados integralmente.",
+    "Dependências integrais ausentes ou incompletas; a build/dev client não pode ser iniciada neste ambiente. | adb não encontrado. Configure ADB_PATH ou ANDROID_SDK_ROOT. | Maestro CLI não encontrado. Configure MAESTRO_PATH."
+  ],
+  "evidenceSha256": "5cdbbf150211a7bc9e9d71f040a8ba47909a0f7b5f07f8367b0ddfb13d496c2a"
+}

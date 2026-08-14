@@ -1,0 +1,14 @@
+appId: com.nalves.dndcombatmathmvp
+name: Preparar e descartar sessão portátil sem gravar
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-session-preview
+- assertVisible: "Cenário E2E de sessão portátil preview preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Preview agregado"
+- tapOn:
+    id: restore-session-discard
+- assertVisible: "Preview descartado"

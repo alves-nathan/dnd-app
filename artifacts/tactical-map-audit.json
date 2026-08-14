@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "dnd-combat-tactical-map-audit.v2",
+  "generatedAt": "2026-08-11T15:14:59.457Z",
+  "contracts": {
+    "Linear mode preserved": true,
+    "Optional X/Y coordinates": true,
+    "Configurable diagonal distance": true,
+    "Regional difficult terrain": true,
+    "Per-target cover and LOS": true,
+    "Map distance reaches combat state": true,
+    "Target turn movement uses map cost": true,
+    "2D Cleave adjacency": true,
+    "Conservative automatic AoE membership": true,
+    "Persisted scenario migration v5": true,
+    "Roadmap block complete": true
+  },
+  "runtimeChecks": [
+    {
+      "name": "Diagonal rules",
+      "pass": true
+    },
+    {
+      "name": "Cover/LOS with map distance",
+      "pass": true
+    },
+    {
+      "name": "Regional difficult terrain",
+      "pass": true
+    },
+    {
+      "name": "Target movement consumes regional cost",
+      "pass": true
+    },
+    {
+      "name": "Automatic area membership",
+      "pass": true
+    },
+    {
+      "name": "2D Cleave adjacency",
+      "pass": true
+    }
+  ],
+  "diagonalRules": [
+    "fiveFeet",
+    "alternating5_10",
+    "euclidean"
+  ],
+  "terrainShapes": [
+    "rectangle",
+    "circle"
+  ],
+  "automaticAreaShapes": [
+    "line",
+    "cone",
+    "sphere",
+    "cylinder",
+    "emanation",
+    "square(point/target)"
+  ],
+  "status": "PASS",
+  "failures": []
+}

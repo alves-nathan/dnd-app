@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "dnd-combat-app21-linear-regression.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:25:57.957Z",
+  "inheritedBaselineChecks": 66,
+  "currentPassChecks": 28,
+  "currentPlannedChecks": 28,
+  "results": [
+    {
+      "command": "check-project-shape.js",
+      "status": "PASS",
+      "durationMs": 29,
+      "stdout": "Project shape OK",
+      "stderr": ""
+    },
+    {
+      "command": "check-accessibility-contracts.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "Contratos mínimos de acessibilidade: OK",
+      "stderr": ""
+    },
+    {
+      "command": "check-bundled-compendium.js",
+      "status": "PASS",
+      "durationMs": 47,
+      "stdout": "Bundled compendium OK: phb-2024-full-consolidated-import-pack-v5-complete-invocations.json\n- pack: phb-2024-full-consolidated-import-pack-v5-complete-invocations\n- items: 1284 (1284 IDs únicos)\n- kinds: {\"armor\":13,\"background\":16,\"class\":12,\"condition\":24,\"creatureStatBlock\":66,\"equipment\":42,\"feat\":75,\"feature\":546,\"magicItem\":3,\"species\":10,\"spell\":391,\"subclass\":48,\"weapon\":38}",
+      "stderr": ""
+    },
+    {
+      "command": "check-runtime-catalog.js",
+      "status": "PASS",
+      "durationMs": 106,
+      "stdout": "[catalog:runtime:check] PASS\nversion=4.8.0\nentities=5841\ndependencies=15385\ncategories=57\naliases=127\nsha256=8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-content-management.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:ui:check] PASS\nroute=app/content-management.tsx\nstore=src/store/catalogStore.ts\npersistence=src/storage/catalogFilterPreferences.ts",
+      "stderr": ""
+    },
+    {
+      "command": "check-character-choice-bridge.js",
+      "status": "PASS",
+      "durationMs": 128,
+      "stdout": "[catalog:character-bridge:check] PASS\ncatalogEntries=5841\ncarrierItems=1284\ncarrierByKind={\"condition\":24,\"feature\":546,\"weapon\":38,\"armor\":13,\"equipment\":42,\"magicItem\":3,\"creatureStatBlock\":66,\"spell\":391,\"class\":12,\"subclass\":48,\"feat\":75,\"background\":16,\"species\":10}\ndirectIdCarriers=598\ndirectByKind={\"condition\":15,\"weapon\":38,\"armor\":13,\"equipment\":37,\"creatureStatBlock\":66,\"spell\":371,\"class\":12,\"subclass\":20,\"background\":16,\"species\":10}\ncharacterStoreVersion=23\ncreationDraftVersion=8",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-dependency-progression.js",
+      "status": "PASS",
+      "durationMs": 90,
+      "stdout": "[catalog:dependency-progression:check] PASS\nsecondaryEditors=9\ngraphMetrics={\"edges\":15385,\"offersChoice\":79,\"allowsCandidate\":26,\"availableToClass\":949,\"belongsToClass\":612}",
+      "stderr": ""
+    },
+    {
+      "command": "check-progression-transaction.js",
+      "status": "PASS",
+      "durationMs": 20,
+      "stdout": "[catalog:progression-transaction:check] PASS\ntransactionEditors=10\nstoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-progression-recovery.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:progression-recovery:check] PASS\nstoreVersion=23\nmaestroFlows=4",
+      "stderr": ""
+    },
+    {
+      "command": "check-dependency-lock.js",
+      "status": "PASS",
+      "durationMs": 27,
+      "stdout": "[dependencies:lock:check] PASS\ndirectDependencies=35\nregistryEntries=1199\nintegrityEntries=1199",
+      "stderr": ""
+    },
+    {
+      "command": "check-app07-release-gate.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[app07:release:gate:check] PASS\ndependencyMode=exact\nbuildCandidateGate=mandatory",
+      "stderr": ""
+    },
+    {
+      "command": "check-character-compatibility.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:character-compatibility:check] PASS\nmanifestSchema=dnd-character-rules-manifest.v1\ncharacterStoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-compatibility-remediation.js",
+      "status": "PASS",
+      "durationMs": 17,
+      "stdout": "[catalog:compatibility-remediation:check] PASS\nremediationSchema=dnd-character-compatibility-remediation.v1\ncharacterStoreVersion=23",
+      "stderr": ""
+    },
+    {
+      "command": "check-compatibility-remediation-recovery.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:compatibility-remediation-recovery:check] PASS\nstoreVersion=23\nmaestroFlows=4",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-character-impact.js",
+      "status": "PASS",
+      "durationMs": 22,
+      "stdout": "[catalog:character-impact:check] PASS\npreventiveFlows=3\nnativeGateFlows=11",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-configuration-history.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:configuration-history:check] PASS\nhistorySchema=dnd-catalog-configuration-commit.v1\nnativeGateFlows=15",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-catalog-backup.js",
+      "status": "PASS",
+      "durationMs": 19,
+      "stdout": "[backup:portable-catalog:check] PASS\nbackupSchema=dnd-combat-character-backup.v3\nportableAuditSchema=dnd-portable-catalog-audit.v1\nnativeGateFlows=19",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-session.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[backup:portable-restore-session:check] PASS\nsessionSchema=dnd-portable-restore-session.v1\nauditSchema=dnd-portable-restore-session-audit.v1\nnativeGateFlows=83",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-verification.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[backup:portable-restore-verification:check] PASS\nverificationSchema=dnd-portable-restore-verification.v1\nreceiptSchema=dnd-portable-restore-integrity-receipt.v1\nevidenceSchema=dnd-portable-restore-evidence.v1\nnativeGateFlows=83",
+      "stderr": ""
+    },
+    {
+      "command": "check-portable-restore-evidence-center.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[backup:portable-restore-evidence:check] PASS\nrecordSchema=dnd-portable-restore-evidence-record.v1\narchiveSchema=dnd-portable-restore-evidence-archive.v1\nnativeGateFlows=83",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-update-transaction.js",
+      "status": "PASS",
+      "durationMs": 19,
+      "stdout": "[catalog:update:check] PASS\nsessionSchema=dnd-catalog-update-session.v1\nreceiptSchema=dnd-catalog-update-receipt.v1\nnativeGateFlows=83",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-trust-chain.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:trust:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-transparency.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:transparency:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-distribution.js",
+      "status": "PASS",
+      "durationMs": 18,
+      "stdout": "[catalog:distribution:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "check-catalog-publication.js",
+      "status": "PASS",
+      "durationMs": 17,
+      "stdout": "[catalog:publication:check] PASS",
+      "stderr": ""
+    },
+    {
+      "command": "check-typescript-syntax.js",
+      "status": "PASS",
+      "durationMs": 2992,
+      "stdout": "[typescript:syntax:check] PASS\nfiles=380",
+      "stderr": ""
+    },
+    {
+      "command": "run-app20-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 432,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 41,\n  \"mirrors\": 2,\n  \"chunks\": 3,\n  \"bundleBytes\": 634,\n  \"interruptionResume\": \"PASS\",\n  \"mirrorFallback\": \"PASS\",\n  \"staleMirror\": \"REJECTED\",\n  \"conflictingMirror\": \"REJECTED\",\n  \"offlineVerification\": \"PASS\",\n  \"evidenceTampering\": \"REJECTED\"\n}",
+      "stderr": ""
+    },
+    {
+      "command": "run-app21-runtime-harness.js",
+      "status": "PASS",
+      "durationMs": 439,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"assertions\": 34,\n  \"channels\": [\n    \"stable\",\n    \"beta\",\n    \"preview\"\n  ],\n  \"rollout\": \"DETERMINISTIC\",\n  \"validPublication\": \"app21-stable-1\",\n  \"pause\": \"PASS\",\n  \"withdrawal\": \"TERMINAL\",\n  \"appCompatibility\": \"PASS\",\n  \"releaseNotesTampering\": \"REJECTED\",\n  \"automaticApplication\": \"NOT_IMPLEMENTED\"\n}",
+      "stderr": ""
+    }
+  ]
+}

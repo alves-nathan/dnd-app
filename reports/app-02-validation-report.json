@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "dnd-combat-app02-validation.v1",
+  "status": "PASS_WITH_FULL_SUITE_BLOCKED_BY_REGISTRY",
+  "generatedAt": "2026-08-03T22:40:00.000Z",
+  "sourceArchive": "dnd-combat-math-mvp-phase5h-turn-cycle-reactions(1).zip",
+  "catalog": {
+    "version": "4.8.0",
+    "entities": 5841,
+    "dependencies": 15385,
+    "categories": 57,
+    "aliases": 127,
+    "bundleBytes": 10548880,
+    "sha256": "8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08"
+  },
+  "checks": {
+    "projectShape": "PASS",
+    "accessibilityContracts": "PASS",
+    "bundledCompendium": "PASS",
+    "runtimeCatalog": "PASS",
+    "contentManagementShape": "PASS",
+    "typescriptSyntax": {
+      "status": "PASS",
+      "files": 277
+    },
+    "isolatedStrictTypecheck": "PASS",
+    "runtimeHarness": {
+      "status": "PASS",
+      "assertions": 23,
+      "mmDisableImpact": {
+        "disabledEntities": 2077,
+        "hardDependencyBreaks": 75
+      }
+    },
+    "fullNpmTypecheck": "BLOCKED_NOT_RUN",
+    "fullJestSuite": "BLOCKED_NOT_RUN",
+    "zipIntegrity": "PASS"
+  },
+  "blocker": {
+    "internalRegistry": [
+      "404 zustand@5.0.14",
+      "404 zod@4.4.3"
+    ],
+    "publicRegistry": "EAI_AGAIN registry.npmjs.org"
+  }
+}

@@ -1,0 +1,20 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- openLink: "dndcombatmath://e2e-seed"
+- tapOn:
+    id: "e2e-seed-catalog-update"
+- tapOn:
+    id: "e2e-open-catalog-update"
+- tapOn:
+    id: "catalog-update-migrate-all"
+- tapOn:
+    id: "catalog-update-ack-impact"
+- tapOn:
+    id: "catalog-update-commit"
+- tapOn:
+    id: "catalog-update-rollback"
+- openLink: "dndcombatmath://catalog-trust"
+- assertVisible:
+    id: "catalog-trust-anchor-dnd-combat-official"
+- assertVisible: "Último bundle: seq. 0"

@@ -1,0 +1,3 @@
+status=PASS
+compiler=TypeScript 5.8.3 (global validation compiler)
+scope=src/catalog, src/storage/catalogFilterPreferences.ts, src/store/catalogStore.ts

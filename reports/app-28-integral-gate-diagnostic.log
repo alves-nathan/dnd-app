@@ -1,0 +1,10 @@
+PASS dependency-lock (30 ms)
+PASS app27-regression (17393 ms)
+BLOCKED full-typecheck: Dependências integrais ausentes; o typecheck completo não pode carregar Expo, React e tipos do projeto.
+BLOCKED full-jest: Jest e a árvore completa de dependências não estão instalados.
+PASS native-gate (32 ms)
+{
+  "status": "BLOCKED",
+  "evidenceSha256": "42247b49bc697cbccc4c9c6de26707fe15cb407f577b5b7eac3331c7529c6ec0",
+  "report": "artifacts/app28-integral-gate.json"
+}

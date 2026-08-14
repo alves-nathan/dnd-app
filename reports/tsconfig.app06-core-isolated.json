@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2022", "DOM"],
+    "types": [],
+    "noEmit": true
+  },
+  "files": [
+    "app-06-test-stubs.d.ts",
+    "../src/characters/progressionTransaction.ts",
+    "../src/characters/progressionRecovery.ts",
+    "../src/tests/characterProgressionRecovery.test.ts"
+  ]
+}

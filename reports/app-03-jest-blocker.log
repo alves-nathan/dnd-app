@@ -1,0 +1,5 @@
+
+> dnd-combat-math-mvp@0.1.0 test:catalog-character-bridge
+> jest src/tests/catalogCharacterChoiceBridge.test.ts src/tests/catalogCharacterChoiceApplication.test.ts src/tests/catalogCharacterProgressionIntegration.test.ts src/tests/catalogCharacterChoiceRealData.test.ts --runInBand
+
+sh: 1: jest: not found

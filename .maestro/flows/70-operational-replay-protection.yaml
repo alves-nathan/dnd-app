@@ -1,0 +1,7 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- tapOn: "Ajustes"
+- tapOn: "Autorização operacional"
+- assertVisible: "uso máximo 1"
+- assertVisible: "Recibos de execução"

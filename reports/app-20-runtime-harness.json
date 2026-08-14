@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "assertions": 41,
+  "mirrors": 2,
+  "chunks": 3,
+  "bundleBytes": 634,
+  "interruptionResume": "PASS",
+  "mirrorFallback": "PASS",
+  "staleMirror": "REJECTED",
+  "conflictingMirror": "REJECTED",
+  "offlineVerification": "PASS",
+  "evidenceTampering": "REJECTED"
+}

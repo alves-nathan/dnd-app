@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "dnd-combat-native-owner-preflight.v1",
+  "generatedAt": "2026-07-16T13:13:22.195Z",
+  "status": "blocked",
+  "offline": false,
+  "projectId": "d2e0ddd4-a2f1-4d13-9415-a634c4ac1e94",
+  "gitSha": "4c7f26b01b18b6d7ab35a460a50844ec8d526bbf",
+  "tools": {
+    "eas": "node_modules/.bin/eas",
+    "adb": "/mnt/c/Users/natha/AppData/Local/Android/Sdk/platform-tools/adb"
+  },
+  "devices": [
+    {
+      "serial": "emulator-5554",
+      "status": "device",
+      "details": "product:sdk_gphone16k_x86_64 model:sdk_gphone16k_x86_64 device:emu64xa16k transport_id:1"
+    }
+  ],
+  "checks": [
+    {
+      "id": "easProjectId",
+      "status": "pass",
+      "message": "Projeto EAS configurado: d2e0ddd4-a2f1-4d13-9415-a634c4ac1e94"
+    },
+    {
+      "id": "easCli",
+      "status": "pass",
+      "message": "EAS CLI local encontrado."
+    },
+    {
+      "id": "easAuthentication",
+      "status": "pass",
+      "message": "Autenticado no EAS como alvesnathan\naalves.nathan@gmail.com\n\nAccounts:\n• alvesnathan (Role: Owner)\n• alvesnathans-team (Role: Owner).",
+      "details": "★ eas-cli@21.0.1 is now available.\nTo upgrade, run:\nnpm install -g eas-cli\nProceeding with outdated version."
+    },
+    {
+      "id": "easProjectAccess",
+      "status": "pass",
+      "message": "A conta autenticada acessa o projeto configurado.",
+      "details": "★ eas-cli@21.0.1 is now available.\nTo upgrade, run:\nnpm install -g eas-cli\nProceeding with outdated version.\n\nFound eas-cli in your project dependencies.\nIt's recommended to use the \"cli.version\" field in eas.json to enforce the eas-cli version for your project.\nLearn more: https://github.com/expo/eas-cli#enforcing-eas-cli-version-for-your-project"
+    },
+    {
+      "id": "gitCommit",
+      "status": "pass",
+      "message": "Commit identificado: 4c7f26b01b18b6d7ab35a460a50844ec8d526bbf"
+    },
+    {
+      "id": "gitWorkingTree",
+      "status": "pass",
+      "message": "Working tree limpa."
+    },
+    {
+      "id": "adb",
+      "status": "pass",
+      "message": "ADB encontrado: /mnt/c/Users/natha/AppData/Local/Android/Sdk/platform-tools/adb"
+    },
+    {
+      "id": "androidDevice",
+      "status": "pass",
+      "message": "1 dispositivo(s) Android autorizado(s).",
+      "details": [
+        {
+          "serial": "emulator-5554",
+          "status": "device",
+          "details": "product:sdk_gphone16k_x86_64 model:sdk_gphone16k_x86_64 device:emu64xa16k transport_id:1"
+        }
+      ]
+    },
+    {
+      "id": "maestro",
+      "status": "blocked",
+      "message": "Maestro não encontrado. Configure MAESTRO_PATH."
+    }
+  ]
+}

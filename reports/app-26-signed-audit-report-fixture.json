@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "dnd-catalog-operational-audit-report.v1",
+  "reportId": "catalog-operational-audit-report-949eb6096a217cb5",
+  "generatedAt": "2026-08-04T12:15:00.000Z",
+  "publisherId": "app26-official",
+  "keyId": "auditor",
+  "packageId": "catalog-operational-audit-186d21ab48dc763b",
+  "packageChecksum": "2d95883f75e4c419ba7f7f3216628a3145054012393c0077c61fd33be03ab9b7",
+  "auditStatus": "approved",
+  "findingCodes": [],
+  "firstSequence": 1,
+  "lastSequence": 7,
+  "headHash": "5528172f181f117c5b3d257edd0aea69ef8bf208bbdb4093aeb03c6945d74cf0",
+  "auditorStatement": "Auditoria independente aprovada.",
+  "signature": "Gsqk4wJqoEugcVfHAm3hG68gp4S7VDzY6TOqHGOxR27xkrXPDc9Xpu3UCpKL_pPzSrkIQtJvUi4viK-Cp2bkvQ"
+}

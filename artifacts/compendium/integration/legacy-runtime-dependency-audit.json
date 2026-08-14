@@ -1,0 +1,455 @@
+{
+  "schemaVersion": "dnd-combat-legacy-runtime-dependency-audit.v1",
+  "compatibilityProfile": "2024-first+legacy",
+  "packs": {
+    "mm2024Delta": {
+      "id": "mm-2024-runtime-dependency-delta-v1",
+      "items": 2
+    },
+    "forge2025": {
+      "id": "forge-artificer-2025-full-consolidated-import-pack-v1",
+      "items": 200
+    },
+    "spelljammer2022": {
+      "id": "spelljammer-2022-full-consolidated-import-pack-v1",
+      "items": 182
+    },
+    "tasha2020": {
+      "id": "tcoe-2020-2024-compatible-import-pack-v2",
+      "items": 273
+    },
+    "phb2014Delta": {
+      "id": "phb-2014-2024-compatible-delta-v1",
+      "items": 56
+    }
+  },
+  "resolvedDuringThisGate": {
+    "spelljammerPhb2014": {
+      "uniqueReferences": 55,
+      "occurrences": 171,
+      "remainingPhb2014": 0
+    },
+    "tashaAliasesToBundledPhb2024": [
+      {
+        "from": "dmg-2014-magic-item-potion-of-healing",
+        "to": "phb-2024-magic-item-potion-of-healing"
+      },
+      {
+        "from": "dmg-2014-rule-exhaustion",
+        "to": "phb-2024-condition-exhaustion"
+      },
+      {
+        "from": "mm-2014-creature-cat",
+        "to": "phb-2024-creature-cat"
+      },
+      {
+        "from": "mm-2014-creature-giant-spider",
+        "to": "phb-2024-creature-giant-spider"
+      },
+      {
+        "from": "mm-2014-creature-skeleton",
+        "to": "phb-2024-creature-skeleton"
+      },
+      {
+        "from": "mm-2014-creature-zombie",
+        "to": "phb-2024-creature-zombie"
+      }
+    ],
+    "extractionCorrections": {
+      "forge": [
+        {
+          "code": "FORGE_HUNTERS_MARK_CANONICAL_ID",
+          "count": 3,
+          "evidence": "PHB 2024 bundled spell entity uses phb-2024-spell-hunter-s-mark."
+        }
+      ],
+      "spelljammer": [
+        {
+          "code": "SPELLJAMMER_PSURLON_SPELLREF_OCR_REPAIR",
+          "count": 1,
+          "evidence": "Boo’s Astral Menagerie p.44: Psurlon casts disguise self and mage armor 2/day each, suggestion 1/day."
+        },
+        {
+          "code": "SPELLJAMMER_ASTRAL_ELF_COMMANDER_TELEPORT_OCR_REPAIR",
+          "count": 1,
+          "evidence": "Boo’s Astral Menagerie p.12: Astral Elf Commander Spellcasting is 2/day: teleport."
+        }
+      ]
+    }
+  },
+  "residual": {
+    "totalOccurrences": 32,
+    "totalUniqueReferences": 24,
+    "byClassification": {
+      "runtime-required": {
+        "occurrences": 0,
+        "uniqueReferences": [],
+        "items": []
+      },
+      "display-only": {
+        "occurrences": 25,
+        "uniqueReferences": [
+          "dmg-2014-disease-sight-rot",
+          "dmg-2014-magic-item-deck-of-many-things",
+          "dmg-2014-magic-item-mace-of-disruption",
+          "dmg-2014-magic-item-sword-of-wounding",
+          "dmg-2014-rule-extreme-cold",
+          "dmg-2014-rule-firearms",
+          "dmg-2014-rule-lycanthropy",
+          "dmg-2014-rule-quicksand",
+          "dmg-2014-rule-random-treasure",
+          "dmg-2014-rule-sentient-magic-items",
+          "dmg-2014-rule-social-interaction",
+          "mm-2014-creature-beholder",
+          "mm-2014-creature-blink-dog",
+          "mm-2014-creature-death-slaad",
+          "mm-2014-creature-flying-sword",
+          "mm-2014-creature-galeb-duhr",
+          "mm-2014-creature-ghost",
+          "mm-2014-creature-gibbering-mouther",
+          "mm-2014-creature-shadow",
+          "mm-2014-creature-swarm-of-rats",
+          "mm-2014-creature-swarm-of-ravens",
+          "mm-2014-creature-treant"
+        ],
+        "items": [
+          "spelljammer-2022-feature-ship-living-ship",
+          "spelljammer-2022-feature-ship-tyrant-ship",
+          "tcoe-2020-feat-gunner",
+          "tcoe-2020-feature-eldritch-storms",
+          "tcoe-2020-feature-parleying-with-monsters",
+          "tcoe-2020-feature-primal-fruit",
+          "tcoe-2020-feature-supernatural-region-blessed-radiance",
+          "tcoe-2020-feature-supernatural-region-far-realm",
+          "tcoe-2020-feature-supernatural-region-haunted",
+          "tcoe-2020-feature-supernatural-region-infested",
+          "tcoe-2020-feature-supernatural-region-mirror-zone",
+          "tcoe-2020-feature-supernatural-region-unraveling-magic"
+        ]
+      },
+      "provenance-only": {
+        "occurrences": 7,
+        "uniqueReferences": [
+          "phb-2014-class-cleric",
+          "phb-2014-class-wizard"
+        ],
+        "items": [
+          "phb-2014-subclass-cleric-knowledge-domain",
+          "phb-2014-subclass-cleric-nature-domain",
+          "phb-2014-subclass-cleric-tempest-domain",
+          "phb-2014-subclass-wizard-school-of-conjuration",
+          "phb-2014-subclass-wizard-school-of-enchantment",
+          "phb-2014-subclass-wizard-school-of-necromancy",
+          "phb-2014-subclass-wizard-school-of-transmutation"
+        ]
+      }
+    },
+    "occurrences": [
+      {
+        "packKey": "spelljammer2022",
+        "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+        "itemId": "spelljammer-2022-feature-ship-living-ship",
+        "itemName": "Living Ship",
+        "referenceId": "mm-2014-creature-treant",
+        "path": "payload.mechanics.vehicle.specialRules.treantBond.externalCreatureId",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "spelljammer2022",
+        "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+        "itemId": "spelljammer-2022-feature-ship-living-ship",
+        "itemName": "Living Ship",
+        "referenceId": "mm-2014-creature-treant",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "spelljammer2022",
+        "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+        "itemId": "spelljammer-2022-feature-ship-tyrant-ship",
+        "itemName": "Tyrant Ship",
+        "referenceId": "mm-2014-creature-beholder",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feat-gunner",
+        "itemName": "Gunner",
+        "referenceId": "dmg-2014-rule-firearms",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-parleying-with-monsters",
+        "itemName": "Parleying with Monsters",
+        "referenceId": "dmg-2014-rule-social-interaction",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-blessed-radiance",
+        "itemName": "Blessed Radiance",
+        "referenceId": "dmg-2014-magic-item-mace-of-disruption",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-blessed-radiance",
+        "itemName": "Blessed Radiance",
+        "referenceId": "mm-2014-creature-flying-sword",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-swarm-of-ravens",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-swarm-of-rats",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-treant",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-galeb-duhr",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-gibbering-mouther",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-far-realm",
+        "itemName": "Far Realm",
+        "referenceId": "mm-2014-creature-death-slaad",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-haunted",
+        "itemName": "Haunted",
+        "referenceId": "mm-2014-creature-ghost",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-haunted",
+        "itemName": "Haunted",
+        "referenceId": "dmg-2014-magic-item-deck-of-many-things",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-haunted",
+        "itemName": "Haunted",
+        "referenceId": "dmg-2014-rule-sentient-magic-items",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-infested",
+        "itemName": "Infested",
+        "referenceId": "dmg-2014-rule-random-treasure",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-infested",
+        "itemName": "Infested",
+        "referenceId": "dmg-2014-rule-quicksand",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-infested",
+        "itemName": "Infested",
+        "referenceId": "dmg-2014-disease-sight-rot",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-mirror-zone",
+        "itemName": "Mirror Zone",
+        "referenceId": "mm-2014-creature-shadow",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-mirror-zone",
+        "itemName": "Mirror Zone",
+        "referenceId": "dmg-2014-magic-item-sword-of-wounding",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-unraveling-magic",
+        "itemName": "Unraveling Magic",
+        "referenceId": "mm-2014-creature-blink-dog",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-supernatural-region-unraveling-magic",
+        "itemName": "Unraveling Magic",
+        "referenceId": "dmg-2014-rule-extreme-cold",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-eldritch-storms",
+        "itemName": "Eldritch Storms",
+        "referenceId": "dmg-2014-rule-extreme-cold",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "tasha2020",
+        "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+        "itemId": "tcoe-2020-feature-primal-fruit",
+        "itemName": "Primal Fruit",
+        "referenceId": "dmg-2014-rule-lycanthropy",
+        "path": "payload.references.[]",
+        "classification": "display-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-cleric-knowledge-domain",
+        "itemName": "Knowledge Domain",
+        "referenceId": "phb-2014-class-cleric",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-cleric-nature-domain",
+        "itemName": "Nature Domain",
+        "referenceId": "phb-2014-class-cleric",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-cleric-tempest-domain",
+        "itemName": "Tempest Domain",
+        "referenceId": "phb-2014-class-cleric",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-wizard-school-of-conjuration",
+        "itemName": "School of Conjuration",
+        "referenceId": "phb-2014-class-wizard",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-wizard-school-of-enchantment",
+        "itemName": "School of Enchantment",
+        "referenceId": "phb-2014-class-wizard",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-wizard-school-of-necromancy",
+        "itemName": "School of Necromancy",
+        "referenceId": "phb-2014-class-wizard",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      },
+      {
+        "packKey": "phb2014Delta",
+        "packId": "phb-2014-2024-compatible-delta-v1",
+        "itemId": "phb-2014-subclass-wizard-school-of-transmutation",
+        "itemName": "School of Transmutation",
+        "referenceId": "phb-2014-class-wizard",
+        "path": "payload.mechanics.originalClassId",
+        "classification": "provenance-only"
+      }
+    ]
+  },
+  "decision": {
+    "runtimeRequiredNow": [],
+    "runtimeRequiredReason": "All executable external base-creature dependencies are now satisfied by bundled current-rules entities. Mage and Flumph resolve through the minimal MM 2024 runtime delta.",
+    "displayOnlyRequiresDelta": false,
+    "provenanceOnlyRequiresDelta": false,
+    "xgteDeltaRequired": false,
+    "dmg2014DeltaRequired": false,
+    "mm2014FullImportRequired": false,
+    "preferredNextSource": "None for current runtime-required references; future deltas should remain demand-driven and 2024-first."
+  },
+  "validation": {
+    "malformedLegacyIds": 0,
+    "phb2014ReferencesOutsideProvenance": 0,
+    "xgteResidualReferences": 0,
+    "runtimeRequiredUnique": 0,
+    "pass": true
+  }
+}

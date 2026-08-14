@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "dnd-combat-app28-validation.v1",
+  "status": "IMPLEMENTED_GATE_BLOCKED_BY_ENVIRONMENT",
+  "generatedAt": "2026-08-04T21:58:54.013308Z",
+  "sourceArchive": "dnd-combat-math-mvp-app27-federated-operational-audit.zip",
+  "sourceArchiveSha256": "eb3a1fecb9851e102ea047339ec990c36df08c2cb3e7e4af17fc03afe4a6e36f",
+  "summary": {
+    "inheritedChecks": 202,
+    "currentChecks": 4,
+    "totalPassedChecks": 206,
+    "typescriptFiles": 373,
+    "runtimeHarnessAssertions": 19,
+    "maestroYamlFiles": 82,
+    "mandatoryNativeFlows": 75,
+    "privateMaterialFindings": 0
+  },
+  "checks": {
+    "app28Contracts": "PASS",
+    "linearRegression": "PASS",
+    "runtimeHarness": "PASS",
+    "typescriptSyntax": "PASS",
+    "dependencyLock": "PASS",
+    "dependencyInstall": "BLOCKED",
+    "fullTypecheck": {
+      "status": "BLOCKED",
+      "exitCode": 2,
+      "log": "reports/app-28-full-typecheck.log"
+    },
+    "fullJest": {
+      "status": "BLOCKED",
+      "exitCode": 127,
+      "log": "reports/app-28-full-jest.log"
+    },
+    "nativeGate": "BLOCKED",
+    "integralGate": "BLOCKED",
+    "privateMaterialScan": "PASS"
+  },
+  "blockers": [
+    {
+      "id": "dependency-install",
+      "detail": "O mirror interno não disponibiliza as versões do lockfile e o registry público não é alcançável de forma estável neste ambiente.",
+      "classification": "NPM_CLIENT_FAILURE"
+    },
+    {
+      "id": "full-typecheck",
+      "detail": "Ausência de expo/tsconfig.base e tipos de React, Node e Jest por falta de node_modules."
+    },
+    {
+      "id": "full-jest",
+      "detail": "Executável jest ausente por falta de node_modules."
+    },
+    {
+      "id": "native-gate",
+      "detail": "Dependências, ADB, Maestro e dispositivo/emulador Android não estão disponíveis neste ambiente."
+    }
+  ],
+  "gateEvidence": {
+    "status": "BLOCKED",
+    "evidenceSha256": "42247b49bc697cbccc4c9c6de26707fe15cb407f577b5b7eac3331c7529c6ec0",
+    "sourceFingerprint": "055e676a6fecca059c5d242742b9b5178551a565b6817128b4dfbb36a8066fa3",
+    "packageLockSha256": "9d5155ab052fdb9e3191f8d1a7819324161e29b91be90401ad09661b0c9ffd41"
+  }
+}

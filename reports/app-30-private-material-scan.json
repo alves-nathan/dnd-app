@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "dnd-combat-app30-private-material-scan.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:28:38.194Z",
+  "inheritedScannerStatus": "PASS",
+  "suspiciousNames": [],
+  "inheritedOutput": "{\n  \"schemaVersion\": \"dnd-combat-app29-private-material-scan.v1\",\n  \"status\": \"PASS\",\n  \"generatedAt\": \"2026-08-04T23:28:38.183Z\",\n  \"filesScanned\": 1371,\n  \"findings\": []\n}"
+}

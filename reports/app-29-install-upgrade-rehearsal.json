@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "dnd-combat-app29-install-upgrade-rehearsal.v1",
+  "status": "PASS",
+  "generatedAt": "2026-08-04T23:27:22.471Z",
+  "assertions": 12,
+  "scenarios": {
+    "cleanInstall": 2,
+    "upgrades": 3,
+    "unsafeSessionDiscarded": true,
+    "immutableSourceFixture": true
+  }
+}

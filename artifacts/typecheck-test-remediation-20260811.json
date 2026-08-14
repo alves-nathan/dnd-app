@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "dnd-combat-typecheck-test-remediation.v1",
+  "date": "2026-08-11",
+  "baseline": "tactical-mobile-closure-android-owner-runner",
+  "reported": {
+    "typescriptErrors": 31,
+    "typescriptFiles": 14,
+    "failingJestSuites": 8,
+    "failingJestTests": 11
+  },
+  "rootCauses": [
+    "missing-import-and-stale-fixtures",
+    "zod-shared-domain-type-drift",
+    "legacy-phb-shapes-at-v2-boundary",
+    "legacy-needs-review-normalization-gaps"
+  ],
+  "canonicalPhb": {
+    "items": 1284,
+    "uniqueIds": 1284,
+    "kinds": 13,
+    "sha256": "6091dacf28f74bf2f645b3fe00b7d32ad5adee76fc933ac299102cd535a43fd6"
+  },
+  "containerGates": {
+    "typescriptSyntax": "PASS",
+    "mobileClosureAudit": "PASS",
+    "projectShape": "PASS",
+    "accessibility": "PASS",
+    "bundledPhb": "PASS",
+    "phbMigration": "PASS",
+    "functionalParity": "PASS",
+    "cutover": "PASS",
+    "postCutover": "PASS",
+    "finalBaseline": "PASS",
+    "releaseReadiness": "PASS"
+  },
+  "ownerVerificationRequired": [
+    "npm run typecheck",
+    "npm test -- --runInBand"
+  ]
+}

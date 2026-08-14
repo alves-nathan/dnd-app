@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "assertions": 32,
+  "logEntries": 3,
+  "treeRoot": "886617da6b3fbed2ddfa50b1cebcc617f92abfc9c9b7c71a33eb9c2c8d69e4be",
+  "inclusionProof": "PASS",
+  "consistencyProof": "PASS",
+  "remoteRollback": "REJECTED",
+  "omission": "REJECTED",
+  "portableTrustTampering": "REJECTED",
+  "quorumRecovery": "PASS"
+}

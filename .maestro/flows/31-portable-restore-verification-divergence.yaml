@@ -1,0 +1,12 @@
+appId: com.nalves.dndcombatmathmvp
+name: Bloquear encerramento com divergência pós-restauração
+---
+- launchApp
+- openLink: dndcombatmath://e2e-seed
+- tapOn:
+    id: e2e-seed-restore-verification-divergence
+- assertVisible: "Cenário E2E de verificação pós-restauração divergence preparado."
+- tapOn:
+    id: e2e-open-restore-session
+- assertVisible: "Divergência bloqueante"
+- assertVisible: "RESTORE_EFFECTIVE_FINGERPRINT_MISMATCH"

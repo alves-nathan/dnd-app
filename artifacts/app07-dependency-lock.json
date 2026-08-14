@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "dnd-combat-app07-dependency-lock.v1",
+  "generatedAt": "2026-08-14T13:05:08.529Z",
+  "status": "PASS",
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >=25.0.0",
+    "npm": ">=10.0.0"
+  },
+  "directDependencies": 34,
+  "registryEntries": 856,
+  "integrityEntries": 856,
+  "nonRegistryEntries": 0,
+  "installedCheck": [
+    {
+      "name": "@expo/vector-icons",
+      "status": "MATCH",
+      "version": "15.1.1"
+    },
+    {
+      "name": "@hookform/resolvers",
+      "status": "MATCH",
+      "version": "5.4.0"
+    },
+    {
+      "name": "@react-native-async-storage/async-storage",
+      "status": "MATCH",
+      "version": "2.2.0"
+    },
+    {
+      "name": "expo",
+      "status": "MATCH",
+      "version": "57.0.12"
+    },
+    {
+      "name": "expo-constants",
+      "status": "MATCH",
+      "version": "57.0.10"
+    },
+    {
+      "name": "expo-dev-client",
+      "status": "MATCH",
+      "version": "57.0.11"
+    },
+    {
+      "name": "expo-document-picker",
+      "status": "MATCH",
+      "version": "57.0.1"
+    },
+    {
+      "name": "expo-file-system",
+      "status": "MATCH",
+      "version": "57.0.2"
+    },
+    {
+      "name": "expo-font",
+      "status": "MATCH",
+      "version": "57.0.1"
+    },
+    {
+      "name": "expo-linking",
+      "status": "MATCH",
+      "version": "57.0.5"
+    },
+    {
+      "name": "expo-router",
+      "status": "MATCH",
+      "version": "57.0.12"
+    },
+    {
+      "name": "expo-splash-screen",
+      "status": "MATCH",
+      "version": "57.0.6"
+    },
+    {
+      "name": "expo-sqlite",
+      "status": "MATCH",
+      "version": "57.0.1"
+    },
+    {
+      "name": "expo-status-bar",
+      "status": "MATCH",
+      "version": "57.0.1"
+    },
+    {
+      "name": "expo-system-ui",
+      "status": "MATCH",
+      "version": "57.0.2"
+    },
+    {
+      "name": "react",
+      "status": "MATCH",
+      "version": "19.2.3"
+    },
+    {
+      "name": "react-dom",
+      "status": "MATCH",
+      "version": "19.2.3"
+    },
+    {
+      "name": "react-hook-form",
+      "status": "MATCH",
+      "version": "7.81.0"
+    },
+    {
+      "name": "react-native",
+      "status": "MATCH",
+      "version": "0.86.2"
+    },
+    {
+      "name": "react-native-gesture-handler",
+      "status": "MATCH",
+      "version": "2.32.0"
+    },
+    {
+      "name": "react-native-reanimated",
+      "status": "MATCH",
+      "version": "4.5.1"
+    },
+    {
+      "name": "react-native-safe-area-context",
+      "status": "MATCH",
+      "version": "5.7.0"
+    },
+    {
+      "name": "react-native-screens",
+      "status": "MATCH",
+      "version": "4.26.0"
+    },
+    {
+      "name": "react-native-web",
+      "status": "MATCH",
+      "version": "0.21.2"
+    },
+    {
+      "name": "react-native-worklets",
+      "status": "MATCH",
+      "version": "0.10.1"
+    },
+    {
+      "name": "zod",
+      "status": "MATCH",
+      "version": "4.4.3"
+    },
+    {
+      "name": "zustand",
+      "status": "MATCH",
+      "version": "5.0.14"
+    },
+    {
+      "name": "@react-native/jest-preset",
+      "status": "MATCH",
+      "version": "0.86.2"
+    },
+    {
+      "name": "@types/jest",
+      "status": "MATCH",
+      "version": "29.5.14"
+    },
+    {
+      "name": "@types/node",
+      "status": "MATCH",
+      "version": "26.1.1"
+    },
+    {
+      "name": "@types/react",
+      "status": "MATCH",
+      "version": "19.2.17"
+    },
+    {
+      "name": "jest",
+      "status": "MATCH",
+      "version": "29.7.0"
+    },
+    {
+      "name": "jest-expo",
+      "status": "MATCH",
+      "version": "57.0.4"
+    },
+    {
+      "name": "typescript",
+      "status": "MATCH",
+      "version": "6.0.3"
+    }
+  ],
+  "warnings": [],
+  "errors": []
+}

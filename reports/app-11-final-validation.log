@@ -1,0 +1,58 @@
+Project shape OK
+Contratos mínimos de acessibilidade: OK
+Bundled compendium OK: phb-2024-full-consolidated-import-pack-v5-complete-invocations.json
+- pack: phb-2024-full-consolidated-import-pack-v5-complete-invocations
+- items: 1284 (1284 IDs únicos)
+- kinds: {"armor":13,"background":16,"class":12,"condition":24,"creatureStatBlock":66,"equipment":42,"feat":75,"feature":546,"magicItem":3,"species":10,"spell":391,"subclass":48,"weapon":38}
+[catalog:runtime:check] PASS
+version=4.8.0
+entities=5841
+dependencies=15385
+categories=57
+aliases=127
+sha256=8c64d156da2653835ca2052b2618abdb1de93a4f6e6efe14a0afabdbebafed08
+[catalog:character-impact:check] PASS
+preventiveFlows=3
+nativeGateFlows=11
+[typescript:syntax:check] PASS
+files=308
+{
+  "status": "PASS",
+  "assertions": 23,
+  "catalogVersion": "4.8.0",
+  "catalogEntries": 5841,
+  "impact": {
+    "charactersScanned": 3,
+    "affectedCharacters": 2,
+    "newlyBlockedCharacters": 2,
+    "affectedReferences": 2,
+    "affectedEntities": 1,
+    "affectedBooks": 1,
+    "affectedCategories": 1,
+    "newBlockingIssues": 2,
+    "newWarnings": 0
+  },
+  "groups": [
+    {
+      "kind": "entity",
+      "key": "phb-2024-spell-acid-splash",
+      "characters": 2
+    },
+    {
+      "kind": "book",
+      "key": "phb-2024",
+      "characters": 2
+    },
+    {
+      "kind": "category",
+      "key": "phb-2024-spells",
+      "characters": 2
+    }
+  ],
+  "plans": {
+    "created": 1,
+    "skipped": 1,
+    "automaticDecisions": 0
+  },
+  "reverseActivationAffectedCharacters": 0
+}

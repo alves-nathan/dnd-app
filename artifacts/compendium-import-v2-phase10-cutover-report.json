@@ -1,0 +1,53 @@
+{
+  "phase": 10,
+  "title": "Controlled bundled PHB V2 cutover",
+  "generatedAt": "2026-08-14T13:05:06.546Z",
+  "bundled": {
+    "file": "assets/compendium/phb-2024-full-consolidated-import-pack-v2-canonical.json",
+    "templateVersion": "dnd-combat-import.v2",
+    "packId": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+    "items": 1284,
+    "uniqueIds": 1284
+  },
+  "compatibility": {
+    "legacyAssetPreserved": true,
+    "sameLogicalPackId": true,
+    "sameCanonicalIds": true,
+    "sameKinds": true,
+    "sameSourceIds": true,
+    "deterministicStorageIdsPreserved": true,
+    "v1InputPathPreserved": true,
+    "v2UserImportEnabled": true
+  },
+  "safety": {
+    "existingV1ReconciliationEnabled": true,
+    "autoReconciliationOnlyForUnchangedContent": true,
+    "localDivergenceDeferred": true,
+    "freshInstallUsesV2": true,
+    "functionalParityFromPhase09": true
+  },
+  "contracts": {
+    "bundledUsesCanonicalV2": true,
+    "bundledDoesNotLoadLegacyV1": true,
+    "bootstrapRoutesV2": true,
+    "bootstrapReconcilesExisting": true,
+    "reconciliationPreservesLocalContent": true,
+    "activeHydrationReconciles": true,
+    "userImportRoutesV2": true,
+    "userImportKeepsV1": true,
+    "filePreviewIsVersionAware": true,
+    "manualPreviewIsVersionAware": true,
+    "projectShapeRequiresV2": true,
+    "bundledCheckRequiresV2": true,
+    "legacyAssetPreserved": true,
+    "v2AssetPresent": true,
+    "functionalParityPassed": true
+  },
+  "mismatches": {
+    "missing": [],
+    "unexpected": [],
+    "kindMismatches": [],
+    "sourceMismatches": [],
+    "storageIdMismatches": []
+  }
+}

@@ -1,0 +1,13 @@
+appId: com.nalves.dndcombatmathmvp
+---
+- launchApp
+- openLink: "dndcombatmath://e2e-seed"
+- tapOn:
+    id: "e2e-seed-catalog-update"
+- assertVisible: "Atualização transacional do catálogo preparada para E2E."
+- tapOn:
+    id: "e2e-open-catalog-update"
+- assertVisible:
+    id: "catalog-update-candidate-version"
+- assertVisible:
+    id: "catalog-update-affected-characters"

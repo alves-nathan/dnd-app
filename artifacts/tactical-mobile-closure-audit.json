@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "dnd-combat-tactical-mobile-closure-audit.v1",
+  "generatedAt": "2026-08-11T17:55:01.195Z",
+  "status": "PASS",
+  "nativeExecution": "not-run-by-this-audit",
+  "contracts": {
+    "Dedicated tactical E2E fixture": true,
+    "Seed screen prepares deterministic tactical state": true,
+    "Four tactical Maestro flows are present": true,
+    "Four tactical Maestro flows share closure tag": true,
+    "Initiative and round flow has stable selectors": true,
+    "Sap/concentration flow has stable selectors": true,
+    "Opportunity/War Caster flow has stable selectors": true,
+    "Ready/slot flow has stable selectors": true,
+    "Tactical screen exposes persistent state for native assertions": true,
+    "Tactical status rows expose accessibility labels": true,
+    "Tactical screen no longer uses legacy hard-coded gray labels": true,
+    "Native evidence contract is v3": true,
+    "Accessibility checklist includes screen reader and large text": true,
+    "Native closure checklist is documented": true,
+    "Focused native Android runner exists": true,
+    "Artifact runner supports selected flows and remote Maestro host": true,
+    "Maestro resolver checks default installer directory": true
+  },
+  "runtimeChecks": [
+    {
+      "name": "Initiative order completes a round",
+      "pass": true,
+      "details": {
+        "round": 2
+      }
+    },
+    {
+      "name": "Target attack consumes Sap, applies damage and resolves concentration failure",
+      "pass": true,
+      "details": {
+        "rollMode": "disadvantage",
+        "concentrationDC": 10,
+        "hitPoints": 20
+      }
+    },
+    {
+      "name": "Opportunity movement exposes War Caster spell and spends reaction",
+      "pass": true,
+      "details": {
+        "targetHitPoints": 23,
+        "reactionAvailable": false
+      }
+    },
+    {
+      "name": "Ready spell commits slot immediately and never refunds it when triggered",
+      "pass": true,
+      "details": {
+        "slotAfterPrepare": 0,
+        "slotAfterResolve": 0,
+        "targetHitPoints": 21
+      }
+    }
+  ],
+  "maestroFlows": [
+    ".maestro/flows/91-tactical-initiative-round.yaml",
+    ".maestro/flows/92-tactical-sap-concentration.yaml",
+    ".maestro/flows/93-tactical-opportunity-war-caster.yaml",
+    ".maestro/flows/94-tactical-ready-spell-slot.yaml"
+  ],
+  "evidenceSchema": "dnd-combat-beta-native-evidence.v3",
+  "failures": []
+}
