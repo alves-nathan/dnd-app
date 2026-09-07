@@ -10,6 +10,7 @@ import {
   findCompendiumItemByReference,
   getProgressionFeatureReferences
 } from '../compendium/classProgression';
+import { hasPactOfTheBlade } from './pactWeaponRules';
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -180,6 +181,27 @@ export const validateFeatPrerequisites = ({
     selectedClassUnlocksFeature(classEntries, allItems, 'Fighting Style');
   if (/Fighting Style Feature/i.test(prerequisite) && !hasFightingStyle) {
     issues.push({ severity: 'error', code: 'FEAT_FIGHTING_STYLE_PREREQUISITE', message: `${featItem.name} exige a feature Fighting Style.` });
+  }
+
+  if (/Proficiency with a martial weapon/i.test(prerequisite)) {
+    const weaponProficiencies = new Set(proficiencies.weapons.map(normalize));
+    const hasMartialWeaponProficiency = weaponProficiencies.has('martial')
+      || allItems.some((item) => {
+        if (item.type !== 'weapon' || !weaponProficiencies.has(normalize(item.name))) return false;
+        return normalize(asString(asRecord(item.normalizedJson).weaponCategory) ?? '') === 'martial';
+      })
+      // Pact of the Blade explicitly grants proficiency with the bonded/conjured
+      // weapon and can create a Martial melee weapon. Treat the active invocation
+      // as satisfying legacy prerequisites such as Fighting Initiate even before
+      // the post-creation Pact Weapon editor has materialized a concrete weapon.
+      || Boolean(character && hasPactOfTheBlade(character, allItems));
+    if (!hasMartialWeaponProficiency) {
+      issues.push({
+        severity: 'error',
+        code: 'FEAT_MARTIAL_WEAPON_PROFICIENCY_PREREQUISITE',
+        message: `${featItem.name} exige proficiência com pelo menos uma arma marcial.`
+      });
+    }
   }
 
   const trainingChecks: Array<[RegExp, string, string]> = [

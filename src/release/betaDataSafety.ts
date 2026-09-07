@@ -131,6 +131,7 @@ const buildLegacyCharacters = (entities: CharacterBackupEntities): unknown[] =>
     currency: undefined,
     activeEffects: undefined,
     resourceTransactions: undefined,
+    abilityUseTransactions: undefined,
     spellSlotTransactions: undefined,
     activeEffectTransactions: undefined
   }));

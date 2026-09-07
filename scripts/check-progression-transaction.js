@@ -36,7 +36,7 @@ const contracts = [
     'progressionDrafts'
   ]],
   ['src/storage/characterMigrations.ts', [
-    'CHARACTER_STORE_VERSION = 24',
+    'CHARACTER_STORE_VERSION = 25',
     'progressionTransactions',
     'progressionDrafts'
   ]],
@@ -107,4 +107,4 @@ if (errors.length) {
 
 console.log('[catalog:progression-transaction:check] PASS');
 console.log(`transactionEditors=${transactionEditors.length}`);
-console.log('storeVersion=24');
+console.log('storeVersion=25');

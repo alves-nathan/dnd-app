@@ -27,10 +27,9 @@ for (const token of ['startOrResumeDownload', 'prepareCachedUpdate', 'probeMirro
 for (const token of ['catalog-distribution-manifest-import', 'catalog-distribution-policy-mode', 'catalog-download-evidence-share', 'catalog-cache-prepare-']) if (!screen.includes(token)) issues.push(`Controle de interface ausente: ${token}`);
 const layout = fs.readFileSync(path.join(root, 'app/_layout.tsx'), 'utf8');
 if (!layout.includes('catalog-distribution')) issues.push('A rota de distribuição não foi registrada no Stack.');
-const settings = fs.readFileSync(path.join(root, 'app/settings.tsx'), 'utf8');
-if (!settings.includes('/catalog-distribution')) issues.push('Ajustes não expõe a distribuição offline.');
-const home = fs.readFileSync(path.join(root, 'app/index.tsx'), 'utf8');
-if (!home.includes('open-catalog-distribution')) issues.push('Home não alerta downloads interrompidos ou cache offline.');
+const maintenance = fs.readFileSync(path.join(root, 'app/compendium/maintenance.tsx'), 'utf8');
+if (!maintenance.includes('/catalog-distribution')) issues.push('A manutenção do Compêndio não expõe a distribuição offline.');
+if (!maintenance.includes('open-catalog-distribution')) issues.push('A manutenção do Compêndio não alerta downloads interrompidos ou cache offline.');
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 for (const script of ['catalog:distribution:check', 'catalog:distribution:harness', 'catalog:distribution:sign', 'app20:linear']) if (!packageJson.scripts?.[script]) issues.push(`Script npm ausente: ${script}`);
 const result = { schemaVersion: 'dnd-combat-app20-contracts.v1', status: issues.length ? 'FAIL' : 'PASS', checkedAt: new Date().toISOString(), files: required.length, issues };

@@ -1,5 +1,7 @@
 import { ContentPolicyService } from '../catalog/contentPolicyService';
 import { listCharacterChoices, resolveCharacterChoice } from '../catalog/characterChoiceBridge';
+import { applyCharacterChoice } from '../catalog/characterChoiceApplication';
+import { createEmptyCharacter } from '../data/mockData';
 import type { CatalogSnapshot, RuntimeCatalogEntry } from '../catalog/types';
 import type { StoredCompendiumItem } from '../compendium/types';
 
@@ -102,20 +104,88 @@ describe('APP-03 character choice bridge', () => {
     const subclass = item('phb-2024-subclass-evoker', 'subclass', 'Evoker', 'phb-2024', 'validated', { classId: 'phb-2024-class-wizard' });
     const homebrew = item('homebrew-wizard', 'class', 'Wizard', 'homebrew');
     const needsReview = item('draft-class', 'class', 'Draft Class', 'homebrew', 'needsReview');
+    const disabledLocal = item('disabled-class', 'class', 'Disabled Class', 'homebrew', 'disabled');
 
     const result = listCharacterChoices({
       snapshot,
       filterState,
-      compendiumItems: [officialCarrier, officialFeat, subclass, homebrew, needsReview],
+      compendiumItems: [officialCarrier, officialFeat, subclass, homebrew, needsReview, disabledLocal],
       enabledSourceIds: ['phb-2024', 'homebrew']
     });
 
     expect(result.choices.filter((choice) => choice.name === 'Wizard')).toHaveLength(2);
     expect(result.choices.some((choice) => choice.choiceId === 'catalog:phb-2024-class-wizard')).toBe(true);
     expect(result.choices.some((choice) => choice.choiceId === `compendium:${officialCarrier.id}`)).toBe(false);
-    expect(result.choices.some((choice) => choice.choiceId === `compendium:${needsReview.id}`)).toBe(false);
+    const reviewChoice = result.choices.find((choice) => choice.choiceId === `compendium:${needsReview.id}`);
+    expect(reviewChoice).toMatchObject({
+      available: true,
+      manualReviewRequired: true,
+      blockedReasons: []
+    });
     expect(result.choices.find((choice) => choice.entityId === 'phb-2024-feat-alert')?.manualReviewRequired).toBe(true);
+    expect(result.choices.some((choice) => choice.choiceId === `compendium:${disabledLocal.id}`)).toBe(false);
     expect(result.choices.find((choice) => choice.entityId === 'phb-2024-subclass-evoker')?.ownerIds).toContain('phb-2024-class-wizard');
+  });
+
+  it('keeps technical spell-list and import-index records out of character choices', () => {
+    const snapshot = makeSnapshot();
+    const filterState = new ContentPolicyService(snapshot).createDefaultState();
+    const spellList = item('phb-2024-spell-list-wizard', 'feature', 'Wizard Spell List', 'phb-2024', 'needsReview', {
+      sourceType: 'spellList',
+      listKind: 'classSpellList',
+      classId: 'phb-2024-class-wizard'
+    });
+    const importIndex = item('phb-2024-import-index-and-dependencies', 'feature', 'PHB 2024 Import Index and Dependencies', 'phb-2024', 'needsReview', {
+      sourceType: 'importIndex'
+    });
+
+    const input = {
+      snapshot,
+      filterState,
+      compendiumItems: [spellList, importIndex],
+      enabledSourceIds: ['phb-2024']
+    };
+    const visible = listCharacterChoices(input);
+    const inspectable = listCharacterChoices(input, { includeUnavailable: true });
+
+    expect(visible.choices).toHaveLength(0);
+    expect(inspectable.choices).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        choiceId: `compendium:${spellList.id}`,
+        available: false,
+        blockedReasons: expect.arrayContaining([expect.objectContaining({ code: 'unsupportedKind' })])
+      }),
+      expect.objectContaining({
+        choiceId: `compendium:${importIndex.id}`,
+        available: false,
+        blockedReasons: expect.arrayContaining([expect.objectContaining({ code: 'unsupportedKind' })])
+      })
+    ]));
+  });
+
+  it('applies an enabled local needsReview feat without changing its editorial state', () => {
+    const snapshot = makeSnapshot();
+    const filterState = new ContentPolicyService(snapshot).createDefaultState();
+    const reviewFeat = item('tcoe-2020-feat-metamagic-adept', 'feat', 'Metamagic Adept', 'tcoe-2020', 'needsReview', { category: 'general' });
+    const result = listCharacterChoices({
+      snapshot,
+      filterState,
+      compendiumItems: [reviewFeat],
+      enabledSourceIds: ['tcoe-2020']
+    });
+    const reviewChoice = result.choices.find((candidate) => candidate.compendiumItemId === reviewFeat.id);
+
+    expect(reviewChoice).toMatchObject({ available: true, manualReviewRequired: true });
+    const applied = applyCharacterChoice({ character: createEmptyCharacter('Wizard'), choice: reviewChoice! });
+
+    expect(applied.ok).toBe(true);
+    expect(applied.character.feats.map((feat) => feat.name)).toContain('Metamagic Adept');
+    expect(applied.character.compendiumLinks?.find((link) => link.appliedAs === 'feat')).toMatchObject({
+      status: 'active',
+      manualReviewRequired: true,
+      choiceId: reviewChoice?.choiceId
+    });
+    expect(reviewFeat.status).toBe('needsReview');
   });
 
   it('respects book filters and resolves legacy references', () => {

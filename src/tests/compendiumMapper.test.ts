@@ -47,6 +47,16 @@ describe('compendium mapper', () => {
   });
 
 
+  it('maps imported speciesTrait features to the speciesFeature damage/source domain', () => {
+    const character = createDefaultCharacter('Species Feature Mapper Test');
+    const item = buildItem('feature', { sourceType: 'speciesTrait', speciesId: 'goliath-test' });
+
+    const result = applyCompendiumItemToCharacter(character, item);
+
+    expect(result.ok).toBe(true);
+    expect(result.character.features.at(-1)?.sourceType).toBe('speciesFeature');
+  });
+
   it('preserves explicit Attack action capacity from imported progression features', () => {
     const character = createDefaultCharacter('Mapper Test');
     const item = buildItem('feature', { sourceType: 'classFeature', attackActionAttackCount: 3 });

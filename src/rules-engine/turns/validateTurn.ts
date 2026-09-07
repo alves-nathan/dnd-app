@@ -1,11 +1,12 @@
 import { Character, CombatState, RuleValidationIssue, RuleValidationResult, TurnRotation } from '../../types';
-import { checkRotationSpellSlots } from '../resources/spellSlotManager';
+import { checkRotationSpellSlots, spellSlotCostsFromTurnAction } from '../resources/spellSlotManager';
 import { getActiveConcentrationEffect, validateActiveEffectConflicts } from '../effects/activeEffects';
 import { gazeCastingOriginIssues } from '../../characters/warlockSpecializedInvocations';
 import { checkRotationAmmunition } from '../../characters/ammunitionRules';
 import { validateEquipmentLoadout } from '../../characters/equipmentLoadoutRules';
 import { turnActionAttackCount, validateRotationInteractionEconomy } from '../../characters/interactionEconomyRules';
 import { checkRotationThrownWeapons } from './tacticalCombat';
+import { resolveTurnFeatureActivations, turnExtraActionAllowance, turnHasMagicRestrictedExtraAction } from './turnFeatureActivations';
 
 const actionCostLabels: Record<string, string> = {
   action: 'ação',
@@ -15,7 +16,9 @@ const actionCostLabels: Record<string, string> = {
 };
 
 export const validateTurnRotation = (rotation: TurnRotation, character: Character, combatState?: CombatState): RuleValidationResult => {
-  const issues: RuleValidationIssue[] = [];
+  const activationResolution = resolveTurnFeatureActivations(rotation);
+  const resolvedRotation = activationResolution.rotation;
+  const issues: RuleValidationIssue[] = [...activationResolution.issues];
   const limitedCosts = new Set(['action', 'bonusAction', 'reaction']);
   const usage = new Map<string, string[]>();
   const oncePerTurn = new Set<string>();
@@ -31,10 +34,42 @@ export const validateTurnRotation = (rotation: TurnRotation, character: Characte
   let ownAttackCount = 0;
   let weaponAttackActionUsed = false;
   issues.push(...validateEquipmentLoadout(character));
-  issues.push(...validateRotationInteractionEconomy(rotation, character));
+  issues.push(...validateRotationInteractionEconomy(resolvedRotation, character));
   if (combatState) issues.push(...validateActiveEffectConflicts(character, combatState));
 
-  for (const turnAction of rotation.actions) {
+  for (const activation of resolvedRotation.activations ?? []) {
+    const activationCost = activation.actionCost;
+    if (activationCost && limitedCosts.has(activationCost)) {
+      const items = usage.get(activationCost) ?? [];
+      items.push(activation.name);
+      usage.set(activationCost, items);
+    }
+    for (const costItem of activation.consumes ?? []) {
+      const current = resourceCurrent.get(costItem.resourceId);
+      if (current === undefined) {
+        issues.push({
+          severity: 'error',
+          code: 'RESOURCE_NOT_FOUND',
+          message: `Recurso não cadastrado para ${activation.name}: ${costItem.label ?? costItem.resourceId}.`
+        });
+      } else if (current < costItem.amount) {
+        issues.push({
+          severity: 'error',
+          code: 'RESOURCE_UNAVAILABLE',
+          message: `Recurso insuficiente para ${activation.name}: ${costItem.label ?? costItem.resourceId}.`
+        });
+      }
+      if (current !== undefined) resourceCurrent.set(costItem.resourceId, current - costItem.amount);
+      if (costItem.oncePerTurnKey) {
+        if (oncePerTurn.has(costItem.oncePerTurnKey)) {
+          issues.push({ severity: 'error', code: 'ONCE_PER_TURN_CONFLICT', message: `O recurso "${costItem.label ?? costItem.oncePerTurnKey}" foi usado mais de uma vez no turno.` });
+        }
+        oncePerTurn.add(costItem.oncePerTurnKey);
+      }
+    }
+  }
+
+  for (const turnAction of resolvedRotation.actions) {
     const cost = turnAction.actionCost;
     if (turnAction.action.type === 'attack' && turnAction.action.weaponId && turnAction.actionCost === 'action' && !turnAction.action.tags?.includes('pact-familiar')) weaponAttackActionUsed = true;
     if (turnAction.action.type === 'attack') {
@@ -173,24 +208,65 @@ export const validateTurnRotation = (rotation: TurnRotation, character: Characte
 
   const oneWithShadowsEffectId = character.buildChoices?.oneWithShadows?.activeEffectId;
   if (oneWithShadowsEffectId && character.activeEffects.some((effect) => effect.id === oneWithShadowsEffectId && effect.status === 'active')) {
-    const breaker = rotation.actions.find((entry) => entry.action.type === 'attack' || entry.action.type === 'spell');
+    const breaker = resolvedRotation.actions.find((entry) => entry.action.type === 'attack' || entry.action.type === 'spell');
     if (breaker) issues.push({ severity: 'info', code: 'ONE_WITH_SHADOWS_ENDS_AFTER_ACTION', message: `One with Shadows termina após "${breaker.name}" por ser ataque ou conjuração.` });
   }
 
+  const extraActions = turnExtraActionAllowance(resolvedRotation);
   for (const [cost, items] of usage.entries()) {
-    if (items.length > 1) {
+    const allowed = cost === 'action' ? 1 + extraActions : 1;
+    if (items.length > allowed) {
       issues.push({
         severity: 'error',
         code: 'ACTION_ECONOMY_CONFLICT',
-        message: `Rotação usa mais de uma ${actionCostLabels[cost] ?? cost}: ${items.join(', ')}.`
+        message: `Rotação usa ${items.length} ${actionCostLabels[cost] ?? cost}(ões), mas possui ${allowed} disponível(is): ${items.join(', ')}.`
       });
     }
   }
 
-  const spellSlotAvailability = checkRotationSpellSlots(rotation, character);
+  if (turnHasMagicRestrictedExtraAction(resolvedRotation)) {
+    const magicActions = resolvedRotation.actions.filter((entry) => entry.actionCost === 'action' && entry.action.type === 'spell');
+    if (magicActions.length > 1) {
+      issues.push({
+        severity: 'error',
+        code: 'ACTION_SURGE_MAGIC_ACTION_RESTRICTION',
+        message: `Action Surge não pode fornecer a Magic action adicional. A rotação contém ${magicActions.length} magias com custo de Ação: ${magicActions.map((entry) => entry.name).join(', ')}.`
+      });
+    }
+  }
+
+  const quickenedActivations = (resolvedRotation.activations ?? []).filter((activation) => activation.modifier === 'quickenedSpell' && activation.targetActionId);
+  for (const activation of quickenedActivations) {
+    const otherLevelledSpells = resolvedRotation.actions.filter((entry) =>
+      entry.action.type === 'spell'
+      && entry.action.id !== activation.targetActionId
+      && entry.id !== activation.targetActionId
+      && (entry.action.spellLevel ?? 0) >= 1
+    );
+    if (otherLevelledSpells.length) {
+      issues.push({
+        severity: 'error',
+        code: 'METAMAGIC_QUICKENED_LEVELLED_SPELL_CONFLICT',
+        message: `Quickened Spell não pode ser combinado no mesmo turno com outra magia de nível 1+: ${otherLevelledSpells.map((entry) => entry.name).join(', ')}.`
+      });
+    }
+  }
+
+  const spellSlotCastCount = resolvedRotation.actions.reduce((count, entry) =>
+    entry.action.type === 'spell' ? count + spellSlotCostsFromTurnAction(entry).reduce((sum, cost) => sum + cost.amount, 0) : count
+  , 0);
+  if (spellSlotCastCount > 1) {
+    issues.push({
+      severity: 'error',
+      code: 'SPELL_SLOT_CAST_LIMIT_PER_TURN',
+      message: `As regras 2024 permitem gastar apenas um spell slot para conjurar magia no mesmo turno; esta rotação tenta gastar ${spellSlotCastCount}.`
+    });
+  }
+
+  const spellSlotAvailability = checkRotationSpellSlots(resolvedRotation, character);
   issues.push(...spellSlotAvailability.issues);
-  issues.push(...checkRotationAmmunition(rotation, character).issues);
-  issues.push(...checkRotationThrownWeapons(rotation, character).issues);
+  issues.push(...checkRotationAmmunition(resolvedRotation, character).issues);
+  issues.push(...checkRotationThrownWeapons(resolvedRotation, character).issues);
 
   if (!rotation.actions.length) {
     issues.push({ severity: 'warning', code: 'EMPTY_ROTATION', message: 'Rotação não possui ações.' });

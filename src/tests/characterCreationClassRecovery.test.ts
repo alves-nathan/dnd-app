@@ -35,6 +35,8 @@ describe('character creation class recovery contract', () => {
     expect(source).toContain('installBundledPack');
     expect(source).toContain('repairRequiredBundledContent');
     expect(source).toContain('mechanicalFeedback');
+    expect(source).toContain('buildImportedCompendiumSourceRows');
+    expect(source).toContain('Fontes instaladas localmente');
   });
 
   it('keeps a bundled PHB mechanical fallback for missing persisted carriers', () => {

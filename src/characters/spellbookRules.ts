@@ -6,6 +6,10 @@ import type {
 } from '../types';
 import type { StoredCompendiumItem } from '../compendium/types';
 import { applyCompendiumItemToCharacter } from '../compendium/mapper';
+import {
+  characterLinkMatchesReference,
+  findCompendiumItemForCharacterLink
+} from '../compendium/characterLinkIdentity';
 import { createId } from '../utils/id';
 import {
   annotateLatestSpellWithClass,
@@ -84,6 +88,8 @@ export interface LearnSpellbookSpellInput {
   acquisition: SpellbookAcquisition;
   source: SpellChangeTransaction['source'];
   notes?: string;
+  grantedByFeatureItemId?: string;
+  spellbookFeatureChoiceId?: string;
 }
 
 export const learnSpellbookSpell = ({
@@ -93,7 +99,9 @@ export const learnSpellbookSpell = ({
   classEntityId,
   acquisition,
   source,
-  notes
+  notes,
+  grantedByFeatureItemId,
+  spellbookFeatureChoiceId
 }: LearnSpellbookSpellInput): Character => {
   if (!isSpellbookProfile(profile) || spellItem.type !== 'spell' || spellItemLevel(spellItem) <= 0) return character;
   if (!isSpellItemEligibleForProfile(spellItem, profile)) return character;
@@ -111,7 +119,9 @@ export const learnSpellbookSpell = ({
     learnedAtClassLevel: profile.classLevel,
     prepared: false,
     createdAt: now(),
-    notes
+    notes,
+    grantedByFeatureItemId,
+    spellbookFeatureChoiceId
   };
 
   return recordTransaction(
@@ -252,7 +262,7 @@ export const reconcileSpellbookEntries = (
       const link = (character.compendiumLinks ?? []).find(
         (entry) => entry.appliedAs === 'class' && entry.appliedEntityId === classEntity.id && entry.status === 'active'
       );
-      const classItem = allItems.find((item) => item.id === link?.itemId);
+      const classItem = link ? findCompendiumItemForCharacterLink(allItems, link) : undefined;
       const profile = classItem ? getClassSpellcastingProfile(classItem, classEntity.level) : undefined;
       return profile?.preparationMode === 'spellbook' ? [classEntity.id] : [];
     })
@@ -267,7 +277,8 @@ export const reconcileSpellbookEntries = (
     const link = (character.compendiumLinks ?? []).find(
       (candidate) => candidate.appliedAs === 'spell' && candidate.appliedEntityId === spell.id && candidate.status !== 'removed'
     );
-    return Boolean(link && entryKeys.has(`${spell.spellcastingClassId}:${link.itemId}`));
+    const linkedItem = link ? findCompendiumItemForCharacterLink(allItems, link) : undefined;
+    return Boolean(linkedItem && entryKeys.has(`${spell.spellcastingClassId}:${linkedItem.id}`));
   });
   const activeSpellIds = new Set(spells.map((spell) => spell.id));
   const compendiumLinks = (character.compendiumLinks ?? []).map((link) =>
@@ -281,7 +292,15 @@ export const reconcileSpellbookEntries = (
       ...entry,
       prepared: spells.some((spell) =>
         spell.spellcastingClassId === entry.classEntityId
-        && compendiumLinks.some((link) => link.appliedAs === 'spell' && link.appliedEntityId === spell.id && link.itemId === entry.spellItemId && link.status !== 'removed')
+        && compendiumLinks.some((link) =>
+          link.appliedAs === 'spell' &&
+          link.appliedEntityId === spell.id &&
+          link.status !== 'removed' &&
+          (
+            findCompendiumItemForCharacterLink(allItems, link)?.id === entry.spellItemId ||
+            characterLinkMatchesReference(allItems, link, entry.spellItemId)
+          )
+        )
       )
     })),
     spells,

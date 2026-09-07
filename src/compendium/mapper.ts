@@ -26,6 +26,7 @@ import { parseEffectTemplatesFromPayload } from '../rules-engine/effects/derived
 import { focusMetadataFromLabel } from '../characters/spellComponentRules';
 import { describeTacticalAreaTemplate, normalizeTacticalAreaTemplate } from '../rules-engine/targeting/areaTemplates';
 import { getAbilityModifier, getProficiencyBonus, getTotalLevel } from '../rules-engine/characters/derivedStats';
+import { resourcePoolsFromAutomaticFeature } from './automaticFeatureApplication';
 
 export interface ApplyCompendiumItemResult {
   ok: boolean;
@@ -98,6 +99,7 @@ const asActionCost = (value: unknown): ActionCost | undefined => {
 };
 const asDamageSourceType = (value: unknown): DamageSourceType | undefined => {
   const text = asString(value);
+  if (text === 'speciesTrait') return 'speciesFeature';
   return text && damageSourceTypeSet.has(text) ? (text as DamageSourceType) : undefined;
 };
 
@@ -149,7 +151,8 @@ const resourceMinimumFromFormula = (record: Record<string, unknown>): number | u
 const scaledResourceMaximum = (
   value: unknown,
   payload: Record<string, unknown>,
-  character: Character
+  character: Character,
+  fallbackMinimum = 0
 ): number | undefined => {
   const direct = asNumber(value);
   if (direct !== undefined) return direct;
@@ -168,14 +171,16 @@ const scaledResourceMaximum = (
     const ability = abilityFromResourceFormula(record);
     if (!ability) return undefined;
     const valueFromAbility = getAbilityModifier(character.abilities, ability);
-    return Math.max(resourceMinimumFromFormula(record) ?? 0, valueFromAbility);
+    return Math.max(resourceMinimumFromFormula(record) ?? fallbackMinimum, valueFromAbility);
   }
   if (kind === 'custom') {
     const formula = asString(record.formula);
-    if (formula && /^(PB|proficiency bonus)$/i.test(formula.trim())) return getProficiencyBonus(character);
+    if (formula && /^(PB|proficiency bonus)$/i.test(formula.trim())) {
+      return Math.max(fallbackMinimum, getProficiencyBonus(character));
+    }
     const ability = abilityFromResourceFormula(record);
-    if (ability && formula && /\bmod(?:ifier)?\b/i.test(formula)) {
-      return Math.max(resourceMinimumFromFormula(record) ?? 0, getAbilityModifier(character.abilities, ability));
+    if (ability && formula && (/\bmod(?:ifier)?\b/i.test(formula) || /^(STR|DEX|CON|INT|WIS|CHA)$/i.test(formula.trim()))) {
+      return Math.max(resourceMinimumFromFormula(record) ?? fallbackMinimum, getAbilityModifier(character.abilities, ability));
     }
   }
 
@@ -185,7 +190,7 @@ const scaledResourceMaximum = (
 const resourcePoolFromPayload = (payload: Record<string, unknown>, item: StoredCompendiumItem, character: Character): ResourcePool | undefined => {
   const record = asRecord(payload.resource ?? payload.resourcePool ?? payload.uses);
   if (!Object.keys(record).length) return undefined;
-  const max = scaledResourceMaximum(record.max, payload, character)
+  const max = scaledResourceMaximum(record.max, payload, character, asNumber(record.minimum) ?? 0)
     ?? asNumber(record.maximum)
     ?? asNumber(record.uses)
     ?? asNumber(record.maxUses);
@@ -406,7 +411,8 @@ const mapSpell = (character: Character, item: StoredCompendiumItem): MappedEntit
 const mapFeature = (character: Character, item: StoredCompendiumItem): MappedEntityResult => {
   const payload = item.normalizedJson;
   const entityId = createId('feature');
-  const resource = resourcePoolFromPayload(payload, item, character);
+  const resources = resourcePoolsFromAutomaticFeature(character, item);
+  const resource = resources[0];
   const feature: Feature = {
     id: entityId,
     name: item.name,
@@ -430,13 +436,13 @@ const mapFeature = (character: Character, item: StoredCompendiumItem): MappedEnt
     grantsActions: parseGrantedActionsFromPayload(item, entityId)
   };
 
-  const withResource = addResourceIfMissing(character, resource);
+  const withResources = resources.reduce((current, candidate) => addResourceIfMissing(current, candidate), character);
 
   return {
     entityType: 'feature',
     entityId,
     entityName: feature.name,
-    character: { ...withResource, features: [...withResource.features, feature] },
+    character: { ...withResources, features: [...withResources.features, feature] },
     issues: []
   };
 };

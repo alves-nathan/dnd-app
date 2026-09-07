@@ -8,15 +8,24 @@ import { Card } from '../../../../src/components/Card';
 import { Chip } from '../../../../src/components/Chip';
 import { useCharacterStore } from '../../../../src/store/characterStore';
 import { useCombatScenarioStore } from '../../../../src/store/combatScenarioStore';
+import { useCompendiumStore } from '../../../../src/store/compendiumStore';
+import { useCharacterChoiceBridge } from '../../../../src/catalog/useCharacterChoiceBridge';
 import { buildAvailableActions } from '../../../../src/rules-engine/actions/buildActions';
-import type { CharacterAction, DamageCondition, TacticalMovement, TurnAction, TurnRotation, WeaponInteractionKind, WeaponInteractionTiming } from '../../../../src/types';
+import type { CharacterAction, DamageCondition, TacticalMovement, TurnAction, TurnFeatureActivation, TurnRotation, WeaponInteractionKind, WeaponInteractionTiming } from '../../../../src/types';
 import { createId } from '../../../../src/utils/id';
 import { isSpellSlotLevel, spellSlotLabel, toSpellSlotLevel } from '../../../../src/rules-engine/resources/spellSlotManager';
 import { getActiveLoadout, isWeaponEquipped } from '../../../../src/characters/equipmentLoadoutRules';
 import { attackActionCapacity } from '../../../../src/characters/interactionEconomyRules';
 import { normalizeCombatScenario } from '../../../../src/rules-engine/turns/tacticalCombat';
+import { buildTurnFeatureActivationOptions, instantiateTurnFeatureActivation, type TurnFeatureActivationOption } from '../../../../src/characters/turnFeatureActivationRules';
+import { getCharacterMetamagicSources } from '../../../../src/characters/metamagicRules';
 
 const getId = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
+
+const activationExclusiveGroup = (activation: TurnFeatureActivation): string => {
+  if (activation.modifier === 'quickenedSpell' || activation.modifier === 'distantSpell' || activation.modifier === 'subtleSpell') return 'metamagic';
+  return activation.modifier ?? activation.kind;
+};
 
 const actionConditions = (action: CharacterAction): DamageCondition[] => {
   const seen = new Set<string>();
@@ -44,6 +53,9 @@ export default function NewRotationScreen() {
   const id = getId(useLocalSearchParams().id);
   const character = useCharacterStore((state) => state.characters.find((item) => item.id === id));
   const updateCharacter = useCharacterStore((state) => state.updateCharacter);
+  const compendiumItems = useCompendiumStore((state) => state.items);
+  const characterChoiceBridge = useCharacterChoiceBridge();
+  const characterRuleItems = characterChoiceBridge.items.length ? characterChoiceBridge.items : compendiumItems;
   const allScenarios = useCombatScenarioStore((state) => state.scenarios);
   const ensureDefaultScenario = useCombatScenarioStore((state) => state.ensureDefaultScenario);
   const scenarios = useMemo(() => allScenarios.filter((scenario) => scenario.characterId === id).map(normalizeCombatScenario), [allScenarios, id]);
@@ -58,8 +70,13 @@ export default function NewRotationScreen() {
   const [targetsByAction, setTargetsByAction] = useState<Record<string, string>>({});
   const [movementModes, setMovementModes] = useState<Record<string, MovementMode>>({});
   const [movementDistances, setMovementDistances] = useState<Record<string, string>>({});
+  const [selectedActivations, setSelectedActivations] = useState<TurnFeatureActivation[]>([]);
   const actions = useMemo(() => (character ? buildAvailableActions(character, { includeStowedWeapons: true }) : []), [character]);
+  const activationOptions = useMemo(() => character ? buildTurnFeatureActivationOptions(character, characterRuleItems, actions) : [], [actions, character, characterRuleItems]);
   const maxAttackActionAttacks = character ? attackActionCapacity(character) : 1;
+  const actionSurgeSelected = selectedActivations.some((activation) => activation.kind === 'extraAction');
+  const maxRotationAttackCount = maxAttackActionAttacks * (1 + (actionSurgeSelected ? 1 : 0));
+  const metamagicSources = character ? getCharacterMetamagicSources(character, characterRuleItems) : [];
 
   useEffect(() => {
     if (!id) return;
@@ -73,7 +90,9 @@ export default function NewRotationScreen() {
   const targets = selectedScenario?.targets ?? [];
 
   const toggleAction = (action: CharacterAction) => {
+    const removing = selected.some((item) => item.id === action.id);
     setSelected((current) => (current.some((item) => item.id === action.id) ? current.filter((item) => item.id !== action.id) : [...current, action]));
+    if (removing) setSelectedActivations((current) => current.filter((activation) => activation.targetActionId !== action.id));
     if (!targetsByAction[action.id] && targets[0]) setTargetsByAction((current) => ({ ...current, [action.id]: targets[0].id }));
     if (action.type === 'attack') {
       setAttackCounts((current) => ({ ...current, [action.id]: current[action.id] ?? String(Math.max(1, Math.min(maxAttackActionAttacks, action.attacksCount ?? 1))) }));
@@ -84,6 +103,26 @@ export default function NewRotationScreen() {
     if (action.type === 'spell' && !spellSlots[action.id]) {
       setSpellSlots((current) => ({ ...current, [action.id]: defaultSlotText(action) }));
     }
+  };
+
+  const toggleActivation = (option: TurnFeatureActivationOption, targetActionId?: string) => {
+    const activation = instantiateTurnFeatureActivation(option, targetActionId);
+    setSelectedActivations((current) => {
+      const alreadySelected = current.some((entry) => entry.id === activation.id);
+      if (alreadySelected) return current.filter((entry) => entry.id !== activation.id);
+      if (option.targetMode === 'action' && targetActionId) {
+        const group = activationExclusiveGroup(activation);
+        return [
+          ...current.filter((entry) => !(
+            entry.kind === 'actionModifier'
+            && entry.targetActionId === targetActionId
+            && activationExclusiveGroup(entry) === group
+          )),
+          activation
+        ];
+      }
+      return [...current, activation];
+    });
   };
 
   const moveSelectedAction = (actionId: string, offset: -1 | 1) => {
@@ -131,7 +170,7 @@ export default function NewRotationScreen() {
             }
           : undefined,
         attackCountOverride: action.type === 'attack'
-          ? Math.max(1, Math.min(maxAttackActionAttacks, Number(attackCounts[action.id]) || 1))
+          ? Math.max(1, Math.min(maxRotationAttackCount, Number(attackCounts[action.id]) || 1))
           : undefined,
         targetId: targetsByAction[action.id] ?? targets[0]?.id,
         movement: movementMode !== 'none' && movementDistance > 0 ? {
@@ -141,7 +180,7 @@ export default function NewRotationScreen() {
         } : undefined
       };
     });
-    const rotation: TurnRotation = { id: createId('rot'), characterId: id, name, favorite: true, actions: turnActions };
+    const rotation: TurnRotation = { id: createId('rot'), characterId: id, name, favorite: true, actions: turnActions, activations: selectedActivations };
     updateCharacter(id, (current) => ({ ...current, rotations: [...current.rotations, rotation] }));
     router.replace(`/characters/${id}/tactical`);
   };
@@ -169,6 +208,30 @@ export default function NewRotationScreen() {
               </View>
             );
           })}
+        </Card>
+      ) : null}
+      {activationOptions.some((option) => option.targetMode === 'turn') ? (
+        <Card variant="filled" title="Ativações de turno" subtitle="Recursos que alteram a economia do turno são validados e gastos junto com a rotação.">
+          {activationOptions.filter((option) => option.targetMode === 'turn').map((option) => {
+            const active = selectedActivations.some((activation) => activation.id === option.id);
+            return (
+              <View key={option.id} style={{ gap: 6, paddingVertical: 6 }}>
+                <Text style={{ fontWeight: '800' }}>{option.name}</Text>
+                <Text style={{ color: '#475569' }}>{option.summary}</Text>
+                <Chip label={active ? 'Ativado nesta rotação' : 'Usar nesta rotação'} selected={active} onPress={() => toggleActivation(option)} />
+              </View>
+            );
+          })}
+        </Card>
+      ) : null}
+      {metamagicSources.length ? (
+        <Card variant="outlined" title="Metamagic" subtitle="A rotação oferece somente as opções selecionadas em cada fonte do personagem.">
+          {metamagicSources.map((source) => (
+            <Text key={source.id} style={{ color: '#475569' }}>
+              {source.label}: {source.selectedOptionIds.length}/{source.optionLimit} selecionada(s)
+            </Text>
+          ))}
+          <Button label="Configurar Metamagic" variant="outlined" onPress={() => router.push(`/characters/${character.id}/metamagic`)} />
         </Card>
       ) : null}
       <Card variant="filled" title="Cenário e alvos" subtitle="Os alvos escolhidos ficam vinculados às ações. Em outro cenário, a engine usa o alvo principal quando o ID não existir.">
@@ -214,7 +277,7 @@ export default function NewRotationScreen() {
             {active && action.type === 'attack' ? (
               <View style={{ gap: 6, marginTop: 8 }}>
                 <Text style={{ color: '#334155', fontWeight: '800' }}>Ataques com esta opção</Text>
-                <Field label={`Quantidade nesta sequência (máximo da Ação de Ataque: ${maxAttackActionAttacks})`} value={attackCounts[action.id] ?? '1'} onChangeText={(text) => setAttackCounts((current) => ({ ...current, [action.id]: text }))} keyboardType="number-pad" />
+                <Field label={`Quantidade nesta sequência (máximo nesta rotação: ${maxRotationAttackCount})`} value={attackCounts[action.id] ?? '1'} onChangeText={(text) => setAttackCounts((current) => ({ ...current, [action.id]: text }))} keyboardType="number-pad" />
                 {action.weaponGrip === 'twoHanded' ? <Text>Duas mãos precisam estar livres no momento de cada ataque.</Text> : null}
                 {action.loading ? <Text>Loading limita esta arma a um disparo por ação, bônus ou reação, salvo exceção.</Text> : null}
                 {action.thrownWeapon && action.weaponId && !isWeaponEquipped(character, action.weaponId) ? <Text style={{ color: '#166534' }}>Arma Thrown: pode ser sacada como parte do próprio ataque.</Text> : null}
@@ -253,6 +316,26 @@ export default function NewRotationScreen() {
                 <Text>{[action.components.verbal ? 'V' : '', action.components.somatic ? 'S' : '', action.components.material ? 'M' : ''].filter(Boolean).join(', ') || 'Nenhum'}{action.materialDescription ? ` · ${action.materialDescription}` : ''}</Text>
               </View>
             ) : null}
+            {active ? (() => {
+              const options = activationOptions.filter((option) => option.targetMode === 'action' && option.eligibleActionIds.includes(action.id));
+              if (!options.length) return null;
+              const selectedForAction = selectedActivations.filter((activation) => activation.kind === 'actionModifier' && activation.targetActionId === action.id);
+              return (
+                <View style={{ gap: 6, marginTop: 8 }}>
+                  <Text style={{ color: '#334155', fontWeight: '800' }}>Ativações e modificadores desta ação</Text>
+                  <Text style={{ color: '#475569' }}>Recursos opcionais como Metamagic e Giant Ancestry podem modificar esta ação; os custos entram no gasto da rotação.</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {options.map((option) => {
+                      const activationId = instantiateTurnFeatureActivation(option, action.id).id;
+                      return <Chip key={option.id} label={option.name} selected={selectedForAction.some((entry) => entry.id === activationId)} onPress={() => toggleActivation(option, action.id)} />;
+                    })}
+                  </View>
+                  {selectedForAction.flatMap((activation) => activation.notes?.map((note, index) => (
+                    <Text key={`${activation.id}-note-${index}`} style={{ color: '#475569' }}>• {note}</Text>
+                  )) ?? [])}
+                </View>
+              );
+            })() : null}
             {active && action.type === 'spell' && action.gazeCastingOriginAvailable ? (
               <View style={{ gap: 6, marginTop: 8 }}>
                 <Text style={{ color: '#334155', fontWeight: '800' }}>Origem da conjuração</Text>

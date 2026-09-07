@@ -10,7 +10,7 @@ import { PendingChoiceContextCard } from '../../../src/components/PendingChoiceC
 import { Screen } from '../../../src/components/Screen';
 import { SubclassChoiceEditor } from '../../../src/components/SubclassChoiceEditor';
 import { validateMulticlassPrerequisites } from '../../../src/characters/characterBuildRules';
-import { reconcileCharacterProgression } from '../../../src/characters/progressionReconciliation';
+import { reconcileCharacterSnapshot } from '../../../src/characters/characterReconciliation';
 import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
 import { manualSource } from '../../../src/data/mockData';
 import { getProficiencyBonus, getTotalLevel } from '../../../src/rules-engine/characters/derivedStats';
@@ -101,18 +101,17 @@ export default function ClassesScreen() {
       Alert.alert('Multiclasse inválida', prerequisites.map((issue) => issue.message).join('\n'));
       return;
     }
-    const reconciliation = reconcileCharacterProgression(leveled, items);
-    const buildReconciliation = reconcileCharacterBuild(reconciliation.character, items);
-    setLastIssues([...reconciliation.issues, ...buildReconciliation.issues]);
-    updateCharacter(id, () => buildReconciliation.character);
+    const reconciliation = reconcileCharacterSnapshot(leveled, items);
+    setLastIssues(reconciliation.issues);
+    updateCharacter(id, () => reconciliation.character);
     Alert.alert(
       'Níveis salvos',
       [
-        `Nível total: ${buildReconciliation.character.level}.`,
-        reconciliation.appliedFeatureCount ? `${reconciliation.appliedFeatureCount} feature(s) adicionada(s).` : undefined,
-        reconciliation.removedFeatureCount ? `${reconciliation.removedFeatureCount} feature(s) removida(s).` : undefined,
-        reconciliation.removedSubclassCount ? `${reconciliation.removedSubclassCount} subclasse(s) removida(s).` : undefined,
-        reconciliation.removedResourceCount ? `${reconciliation.removedResourceCount} recurso(s) removido(s).` : undefined
+        `Nível total: ${reconciliation.character.level}.`,
+        reconciliation.summary.appliedFeatureCount ? `${reconciliation.summary.appliedFeatureCount} feature(s) adicionada(s).` : undefined,
+        reconciliation.summary.removedFeatureCount ? `${reconciliation.summary.removedFeatureCount} feature(s) removida(s).` : undefined,
+        reconciliation.summary.removedSubclassCount ? `${reconciliation.summary.removedSubclassCount} subclasse(s) removida(s).` : undefined,
+        reconciliation.summary.removedResourceCount ? `${reconciliation.summary.removedResourceCount} recurso(s) removido(s).` : undefined
       ].filter(Boolean).join('\n')
     );
   };

@@ -133,7 +133,7 @@ export default function CharacterCompatibilityScreen() {
           testID="compatibility-open-character"
           label={report.requiresReview ? 'Abrir ficha mesmo assim' : 'Abrir ficha'}
           icon="person-outline"
-          onPress={() => router.replace(`/characters/${character.id}?compatibilityReviewed=1` as never)}
+          onPress={() => router.replace(`/characters/${character.id}` as never)}
         />
         {report.requiresReview && !plan ? (
           <Button testID="compatibility-create-remediation-plan" label="Criar plano de remediação" icon="construct-outline" variant="tonal" onPress={beginPlan} />

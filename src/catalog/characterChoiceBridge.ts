@@ -43,6 +43,14 @@ const itemPayload = (item: StoredCompendiumItem): Record<string, unknown> => ({
   ...item.normalizedJson
 });
 
+const isTechnicalSupportLocalItem = (item: StoredCompendiumItem): boolean => {
+  if (item.type !== 'feature') return false;
+  const payload = itemPayload(item);
+  const sourceType = typeof payload.sourceType === 'string' ? payload.sourceType.trim().toLowerCase() : '';
+  const listKind = typeof payload.listKind === 'string' ? payload.listKind.trim().toLowerCase() : '';
+  return sourceType === 'spelllist' || sourceType === 'importindex' || listKind === 'classspelllist';
+};
+
 const buildFallbackEntryIds = (
   input: CharacterChoiceBridgeInput
 ): Map<string, string[]> => {
@@ -146,7 +154,6 @@ const localChoice = (
 ): CharacterChoiceItem => {
   const { item } = prepared;
   const sourceEnabled = input.enabledSourceIds.includes(item.sourceId);
-  const allowedByReview = item.status === 'validated';
   const blockedReasons: CharacterChoiceBlockReason[] = [];
   if (!sourceEnabled) {
     blockedReasons.push({
@@ -154,10 +161,21 @@ const localChoice = (
       message: `A fonte local ${localSourceLabel(item)} está desativada.`
     });
   }
-  if (!allowedByReview) {
+  // Character usage and compendium editorial approval are intentionally
+  // separate concerns. Active local/imported records may remain needsReview
+  // or draft and still be chosen explicitly by a character; the review flag
+  // is preserved as provenance and never promoted here. Only disabled content
+  // is mechanically unavailable.
+  if (item.status === 'disabled') {
     blockedReasons.push({
       code: 'localItemNotValidated',
-      message: `O item local está como ${item.status} e não pode ser aplicado automaticamente.`
+      message: `O item local está desativado e não pode ser aplicado à ficha.`
+    });
+  }
+  if (isTechnicalSupportLocalItem(item)) {
+    blockedReasons.push({
+      code: 'unsupportedKind',
+      message: 'Este registro é suporte técnico do compêndio e não representa uma escolha aplicável à ficha.'
     });
   }
   if (prepared.ambiguous) {

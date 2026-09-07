@@ -2,6 +2,10 @@ import { initializeBundledCatalog } from '../catalog/bundledCatalog';
 import { ContentPolicyService } from '../catalog/contentPolicyService';
 import { listCharacterChoices, resolveCharacterChoice } from '../catalog/characterChoiceBridge';
 import { applyCharacterChoice } from '../catalog/characterChoiceApplication';
+import { characterChoiceToMapperItem } from '../catalog/catalogCompendiumAdapter';
+import { resolveCharacterSpellAccess } from '../characters/characterSpellAccess';
+import { getWizardSpellbookFeatureRequirements } from '../characters/wizardSpellbookRules';
+import { getSubclassChoiceRequirements } from '../characters/subclassChoiceRules';
 import type { StoredCompendiumItem } from '../compendium/types';
 import { createEmptyCharacter } from '../data/mockData';
 
@@ -102,6 +106,75 @@ describe('APP-03 real catalog and bundled compendium bridge', () => {
       catalogEntityId: 'phb-2024-class-wizard',
       status: 'active'
     });
+  });
+
+
+  it('preserves canonical carrier references behind catalog ids for dependent spell mechanics', () => {
+    const snapshot = initializeBundledCatalog();
+    const input = {
+      snapshot,
+      filterState: new ContentPolicyService(snapshot).createDefaultState(),
+      compendiumItems,
+      enabledSourceIds: [rawPack.source.id]
+    };
+    const result = listCharacterChoices(input, { includeUnavailable: true });
+    const originalById = new Map(compendiumItems.map((item) => [item.id, item] as const));
+    const mappedItems = result.choices
+      .filter((choice) => choice.available || Boolean(choice.compendiumItemId) || choice.origin === 'compendium')
+      .map((choice) => characterChoiceToMapperItem(
+        choice,
+        choice.compendiumItemId ? originalById.get(choice.compendiumItemId) : undefined
+      ));
+    const byCarrierReference = (reference: string) => mappedItems.find((item) => {
+      const rawId = (item.rawJson as { id?: string }).id;
+      return item.id === reference || item.importItemId === reference || rawId === reference;
+    });
+
+    const mageHandLegerdemain = byCarrierReference('phb-2024-feature-rogue-arcane-trickster-mage-hand-legerdemain');
+    expect(mageHandLegerdemain).toBeDefined();
+    expect(mageHandLegerdemain?.importItemId).toBe(
+      'phb-2024-subclass-feature-rogue-arcane-trickster-mage-hand-legerdemain'
+    );
+    expect((mageHandLegerdemain?.rawJson as { id?: string }).id).toBe(
+      'phb-2024-feature-rogue-arcane-trickster-mage-hand-legerdemain'
+    );
+
+    const rogue = byCarrierReference('phb-2024-class-rogue');
+    const arcaneTrickster = byCarrierReference('phb-2024-subclass-rogue-arcane-trickster');
+    expect(rogue).toBeDefined();
+    expect(arcaneTrickster).toBeDefined();
+    if (rogue && arcaneTrickster) {
+      const access = resolveCharacterSpellAccess({
+        classItem: rogue,
+        classLevel: 3,
+        subclassItem: arcaneTrickster,
+        items: mappedItems
+      });
+      expect(access.grantedSpellReferences).toContain('phb-2024-spell-mage-hand');
+    }
+
+    const wizard = byCarrierReference('phb-2024-class-wizard');
+    const abjurer = byCarrierReference('phb-2024-subclass-wizard-abjurer');
+    expect(wizard).toBeDefined();
+    expect(abjurer).toBeDefined();
+    if (wizard && abjurer) {
+      expect(getWizardSpellbookFeatureRequirements({
+        classItem: wizard,
+        classLevel: 3,
+        subclassItem: abjurer,
+        items: mappedItems
+      })).toEqual(expect.arrayContaining([
+        expect.objectContaining({ kind: 'savantInitial', featureName: 'Abjuration Savant', count: 2 })
+      ]));
+    }
+
+    const land = byCarrierReference('phb-2024-subclass-druid-circle-of-the-land');
+    expect(land).toBeDefined();
+    if (land) {
+      expect(getSubclassChoiceRequirements(land, mappedItems, 3)).toEqual(expect.arrayContaining([
+        expect.objectContaining({ choiceId: 'land-spell-list' })
+      ]));
+    }
   });
 
   it('blocks official choices when their source book is disabled', () => {

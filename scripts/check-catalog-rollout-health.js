@@ -24,7 +24,7 @@ const publicationStore = fs.readFileSync(path.join(root, 'src/store/catalogPubli
 const distributionStore = fs.readFileSync(path.join(root, 'src/store/catalogDistributionStore.ts'), 'utf8');
 const updateStore = fs.readFileSync(path.join(root, 'src/store/catalogUpdateSessionStore.ts'), 'utf8');
 const screen = fs.readFileSync(path.join(root, 'app/catalog-rollout-health.tsx'), 'utf8');
-const settings = fs.readFileSync(path.join(root, 'app/settings.tsx'), 'utf8');
+const maintenance = fs.readFileSync(path.join(root, 'app/compendium/maintenance.tsx'), 'utf8');
 const publicationScreen = fs.readFileSync(path.join(root, 'app/catalog-publication.tsx'), 'utf8');
 for (const token of ['dnd-catalog-rollout-health-policy.v1', 'dnd-catalog-rollout-health-evidence.v1', 'dnd-catalog-rollout-directive.v1', 'createCatalogRolloutHealthEvidence', 'verifySignedCatalogRolloutDirective', 'resolveEffectiveCatalogRollout', 'preview', 'beta', 'stable']) if (!core.includes(token)) issues.push(`Contrato de saúde ausente: ${token}`);
 for (const token of ['sharingOptIn', 'importPolicy', 'importDirective', 'recordSignal', 'generateEvidence', 'effectiveRolloutFor']) if (!store.includes(token)) issues.push(`Store de saúde incompleta: ${token}`);
@@ -33,7 +33,7 @@ if (!publicationStore.includes('useCatalogRolloutHealthStore') || !publicationSt
 for (const token of ['downloadStarted', 'downloadSucceeded', 'downloadFailed', 'integrityFailed', 'previewOpened']) if (!distributionStore.includes(token)) issues.push(`Distribuição não registra métrica: ${token}`);
 for (const token of ['commitSucceeded', 'commitFailed', 'rollbackCompleted']) if (!updateStore.includes(token)) issues.push(`Atualização não registra métrica: ${token}`);
 for (const token of ['rollout-health-opt-in', 'rollout-health-policy-import', 'rollout-health-directive-import', 'rollout-health-evidence-share']) if (!screen.includes(token)) issues.push(`Controle de interface ausente: ${token}`);
-if (!settings.includes('/catalog-rollout-health')) issues.push('Ajustes não expõe a saúde do rollout.');
+if (!maintenance.includes('/catalog-rollout-health')) issues.push('A manutenção do Compêndio não expõe a saúde do rollout.');
 if (!publicationScreen.includes('open-rollout-health')) issues.push('A tela de publicação não expõe a saúde do rollout.');
 if (store.includes('prepareCandidate(') || core.includes('prepareCandidate(') || core.includes('startOrResumeDownload(')) issues.push('A camada de saúde não pode aplicar ou baixar catálogos automaticamente.');
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));

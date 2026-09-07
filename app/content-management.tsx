@@ -30,6 +30,7 @@ import { useCharacterChoiceBridge } from '../src/catalog/useCharacterChoiceBridg
 import { useCharacterStore } from '../src/store/characterStore';
 import { useCompendiumStore } from '../src/store/compendiumStore';
 import { BUNDLED_COMPENDIUM_PACKS, isRequiredCharacterCreationBundledPack } from '../src/compendium/bundledCompendium';
+import { buildImportedCompendiumSourceRows } from '../src/compendium/contentManagementSources';
 import {
   buildCatalogChangeCharacterImpact,
   createPreventiveCompatibilityPlans,
@@ -123,7 +124,9 @@ export default function ContentManagementScreen() {
   const history = useCatalogStore((state) => state.history);
   const revision = useCatalogStore((state) => state.revision);
   const bridge = useCharacterChoiceBridge();
+  const compendiumSources = useCompendiumStore((state) => state.sources);
   const compendiumPacks = useCompendiumStore((state) => state.packs);
+  const compendiumItems = useCompendiumStore((state) => state.items);
   const compendiumEnabledSourceIds = useCompendiumStore((state) => state.enabledSourceIds);
   const compendiumHydrated = useCompendiumStore((state) => state.isHydrated);
   const compendiumHydrating = useCompendiumStore((state) => state.isHydrating);
@@ -145,6 +148,17 @@ export default function ContentManagementScreen() {
   const policy = useMemo(
     () => (snapshot ? new ContentPolicyService(snapshot) : undefined),
     [snapshot]
+  );
+
+  const importedCompendiumSources = useMemo(
+    () => buildImportedCompendiumSourceRows({
+      sources: compendiumSources,
+      packs: compendiumPacks,
+      items: compendiumItems,
+      enabledSourceIds: compendiumEnabledSourceIds,
+      bundledDefinitions: BUNDLED_COMPENDIUM_PACKS
+    }),
+    [compendiumEnabledSourceIds, compendiumItems, compendiumPacks, compendiumSources]
   );
 
   const enabledCount = useMemo(() => {
@@ -343,12 +357,12 @@ export default function ContentManagementScreen() {
         (entry) => entry.sourceBookId === bookId
       ).length;
       return (
-        <View key={bookId} style={[styles.bookRow, { borderTopColor: colors.outlineVariant }]}> 
+        <View key={bookId} style={[styles.bookRow, { borderTopColor: colors.outlineVariant }]}>
           <View style={styles.flex}>
-            <Text style={[styles.rowTitle, { color: colors.onSurface }]}> 
+            <Text style={[styles.rowTitle, { color: colors.onSurface }]}>
               {bookLabels[bookId] ?? bookId}
             </Text>
-            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
               {memberCount.toLocaleString('pt-BR')} entidades · {enabled ? 'ativo' : 'inativo'}
             </Text>
           </View>
@@ -374,6 +388,9 @@ export default function ContentManagementScreen() {
       : undefined;
     const required = isRequiredCharacterCreationBundledPack(definition.id);
     const enabled = installed ? compendiumEnabledSourceIds.includes(installed.sourceId) : false;
+    const installedSourceItemCount = installed
+      ? compendiumItems.filter((item) => item.sourceId === installed.sourceId).length
+      : 0;
     const busy = compendiumHydrating || compendiumSaving;
     const feedback = mechanicalFeedback?.packId === definition.id ? mechanicalFeedback : undefined;
     const displayLabel = bundledBookLabels[definition.id] ?? definition.label;
@@ -384,7 +401,7 @@ export default function ContentManagementScreen() {
             <Text style={[styles.rowTitle, { color: colors.onSurface }]}>{displayLabel}</Text>
             <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
               {installed
-                ? `${installed.itemCount.toLocaleString('pt-BR')} itens · ${required ? 'conteúdo básico' : enabled ? 'ativo' : 'inativo'}`
+                ? `${installedSourceItemCount.toLocaleString('pt-BR')} itens · ${required ? 'conteúdo básico' : enabled ? 'ativo' : 'inativo'}`
                 : predecessorInstalled
                   ? `${predecessorInstalled.itemCount.toLocaleString('pt-BR')} itens na versão anterior · atualização compatível disponível`
                   : required
@@ -412,6 +429,51 @@ export default function ContentManagementScreen() {
               }}
             />
           )}
+        </View>
+        {feedback ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={[
+              feedback.tone === 'error' ? styles.error : feedback.tone === 'success' ? styles.success : styles.muted,
+              { color: feedback.tone === 'error' ? colors.error : feedback.tone === 'success' ? colors.secondary : colors.onSurfaceVariant }
+            ]}
+          >
+            {feedback.message}
+          </Text>
+        ) : null}
+      </View>
+    );
+  });
+
+  const renderImportedSourceControls = () => importedCompendiumSources.map((source) => {
+    const busy = compendiumHydrating || compendiumSaving;
+    const feedbackKey = `source:${source.sourceId}`;
+    const feedback = mechanicalFeedback?.packId === feedbackKey ? mechanicalFeedback : undefined;
+    return (
+      <View
+        key={source.sourceId}
+        testID={`compendium-imported-source-${source.sourceId}`}
+        style={[styles.mechanicalPackRow, { borderTopColor: colors.outlineVariant }]}
+      >
+        <View style={styles.rowInline}>
+          <View style={styles.flex}>
+            <Text style={[styles.rowTitle, { color: colors.onSurface }]}>{source.label}</Text>
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+              {source.itemCount.toLocaleString('pt-BR')} itens · {source.packCount.toLocaleString('pt-BR')} pacote(s) · {source.enabled ? 'ativo' : 'inativo'}
+            </Text>
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+              Fonte local: {source.sourceId}
+            </Text>
+          </View>
+          <Switch
+            testID={`compendium-imported-source-toggle-${source.sourceId}`}
+            accessibilityLabel={`${source.enabled ? 'Desativar' : 'Ativar'} ${source.label}`}
+            value={source.enabled}
+            disabled={busy}
+            onValueChange={(next) => { void handleMechanicalSourceToggle(feedbackKey, source.sourceId, next); }}
+            trackColor={{ false: colors.outlineVariant, true: colors.secondaryContainer }}
+            thumbColor={source.enabled ? colors.secondary : colors.outline}
+          />
         </View>
         {feedback ? (
           <Text
@@ -541,6 +603,13 @@ export default function ContentManagementScreen() {
                   <Text style={[styles.error, { color: colors.error }]}>{compendiumStorageError}</Text>
                 ) : null}
                 {renderMechanicalPackControls()}
+                {importedCompendiumSources.length ? (
+                  <>
+                    <Text style={[styles.importedSourceHeading, { color: colors.onSurface }]}>Fontes instaladas localmente</Text>
+                    <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>Livros importados aparecem automaticamente aqui. Deltas que usam a mesma fonte são consolidados na linha do livro de origem.</Text>
+                    {renderImportedSourceControls()}
+                  </>
+                ) : null}
               </Card>
             </>
           ) : null}
@@ -569,7 +638,7 @@ export default function ContentManagementScreen() {
                   onPress={() => setIncludeManualReview((value) => !value)}
                 />
               </View>
-              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
                 {rows.length.toLocaleString('pt-BR')} resultado(s) exibido(s).
               </Text>
             </Card>
@@ -581,7 +650,7 @@ export default function ContentManagementScreen() {
               title="Preview preventivo"
               subtitle={pendingChange.label}
             >
-              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
                 {formatImpact(pendingChange.impact)}
               </Text>
               {pendingChange.origin === 'restore' ? (
@@ -729,7 +798,7 @@ export default function ContentManagementScreen() {
               subtitle={`${category.memberCount.toLocaleString('pt-BR')} entidades · ${category.sourceBookId ?? 'multilivro'}`}
             >
               <View style={styles.rowInline}>
-                <Text style={[styles.muted, styles.flex, { color: colors.onSurfaceVariant }]}> 
+                <Text style={[styles.muted, styles.flex, { color: colors.onSurfaceVariant }]}>
                   {category.canDisable
                     ? enabled
                       ? 'Categoria ativa'
@@ -765,11 +834,11 @@ export default function ContentManagementScreen() {
             title={entry.displayName}
             subtitle={`${entry.kind} · ${entry.sourceBookId ?? 'núcleo'} · ${availability.enabled ? 'ativa' : 'inativa'}`}
           >
-            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
               {entry.entityId}
             </Text>
             {entry.manualReviewRequired ? (
-              <Text style={[styles.warning, { color: colors.warning }]}> 
+              <Text style={[styles.warning, { color: colors.warning }]}>
                 Revisão editorial independente ainda indicada.
               </Text>
             ) : null}
@@ -793,7 +862,7 @@ export default function ContentManagementScreen() {
                 onPress={() => setEntityState(entry.entityId, 'disabled')}
               />
             </View>
-            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
               Motivo efetivo: {availability.reason}
             </Text>
           </Card>
@@ -804,7 +873,7 @@ export default function ContentManagementScreen() {
           title="Segurança da configuração"
           subtitle="As preferências são persistidas separadamente do compêndio e não alteram personagens ou combates já salvos."
         >
-          <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}> 
+          <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
             Mudanças com dependências obrigatórias quebradas sempre exibem aviso antes da confirmação.
           </Text>
         </Card>
@@ -829,6 +898,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingTop: 12
   },
+  importedSourceHeading: { fontSize: 14, lineHeight: 20, fontWeight: '900', marginTop: 8 },
   rowInline: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   impactRow: { flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, paddingTop: 10 },
   rowTitle: { fontSize: 15, lineHeight: 21, fontWeight: '800' },

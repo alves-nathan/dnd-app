@@ -85,6 +85,54 @@ export interface BackgroundProficiencyRequirement extends ToolProficiencyRequire
   backgroundName: string;
 }
 
+export interface ReconcileClassSkillChoicesInput {
+  currentChoices: string[];
+  requirement?: ClassProficiencyRequirement;
+  unavailableSkills?: string[];
+}
+
+/**
+ * Keeps the persisted/UI class-skill selection compatible with the currently
+ * selected class chassis and with proficiencies already granted by origin.
+ * This is intentionally a reconciliation helper (not a validator): stale
+ * choices from resumed drafts are removed instead of trapping the user behind
+ * a count limit they can no longer satisfy.
+ */
+export const reconcileClassSkillChoices = ({
+  currentChoices,
+  requirement,
+  unavailableSkills = []
+}: ReconcileClassSkillChoicesInput): string[] => {
+  if (!requirement || requirement.skillChoiceCount <= 0) return [];
+  const unavailable = new Set(unavailableSkills);
+  return uniqueChoices(currentChoices)
+    .filter((skill) => requirement.skillOptions.includes(skill) && !unavailable.has(skill))
+    .slice(0, requirement.skillChoiceCount);
+};
+
+const classChassisPreferenceScore = (item: StoredCompendiumItem): number => {
+  const source = asRecord(asRecord(item.rawJson).source);
+  const version = `${item.version ?? ''} ${String(source.version ?? '')} ${item.sourceId}`.toLowerCase();
+  return (item.status === 'validated' ? 100 : 0) + (/2024|2025/.test(version) ? 20 : 0);
+};
+
+const resolveClassProficiencyChassisItem = (
+  classItem: StoredCompendiumItem,
+  allItems: StoredCompendiumItem[]
+): StoredCompendiumItem => {
+  const ownPayload = asRecord(classItem.normalizedJson);
+  if (asStringArray(ownPayload.skillProficienciesChoice).length) return classItem;
+
+  return allItems
+    .filter((candidate) =>
+      candidate.type === 'class' &&
+      candidate.id !== classItem.id &&
+      normalizeName(candidate.name) === normalizeName(classItem.name) &&
+      asStringArray(asRecord(candidate.normalizedJson).skillProficienciesChoice).length > 0
+    )
+    .sort((left, right) => classChassisPreferenceScore(right) - classChassisPreferenceScore(left))[0] ?? classItem;
+};
+
 const expertiseCountFromFeature = (
   feature: StoredCompendiumItem,
   classLevel: number
@@ -113,7 +161,12 @@ export const getClassProficiencyRequirement = (
   classLevel: number,
   allItems: StoredCompendiumItem[]
 ): ClassProficiencyRequirement => {
-  const payload = asRecord(classItem.normalizedJson);
+  // A legacy/compatibility class record can omit the level-1 proficiency
+  // chassis while still being a valid progression carrier. In that case use
+  // the same-named current class chassis (prefer 2024/2025 validated data).
+  // Subclass data never replaces the base-class proficiency source.
+  const chassisItem = resolveClassProficiencyChassisItem(classItem, allItems);
+  const payload = asRecord(chassisItem.normalizedJson);
   const toolRequirement = parseToolProficiencyEntries(asStringArray(payload.toolProficiencies));
   const mechanics = asRecord(payload.mechanics);
   const structuredToolChoice = asRecord(mechanics.toolProficiencyChoice);
@@ -202,6 +255,8 @@ export interface BuildProficiencySelectionInput {
   fixedLanguages?: string[];
   speciesSkillGrants?: string[];
   speciesLanguageGrants?: string[];
+  classFeatureWeaponGrants?: string[];
+  classFeatureArmorGrants?: string[];
   requiredLanguageChoiceCount?: number;
   allowedLanguageOptions?: readonly string[];
 }
@@ -228,6 +283,8 @@ export const buildProficiencySelection = ({
   fixedLanguages = [],
   speciesSkillGrants = [],
   speciesLanguageGrants = [],
+  classFeatureWeaponGrants = [],
+  classFeatureArmorGrants = [],
   requiredLanguageChoiceCount = 0,
   allowedLanguageOptions = []
 }: BuildProficiencySelectionInput): ProficiencySelectionResult => {
@@ -352,8 +409,8 @@ export const buildProficiencySelection = ({
     skills,
     expertiseSkills: validExpertise,
     tools: unique([...background.tools, ...requirement.fixedTools, ...uniqueTools]),
-    weapons: unique(requirement.weapons),
-    armor: unique(requirement.armor),
+    weapons: unique([...requirement.weapons, ...classFeatureWeaponGrants]),
+    armor: unique([...requirement.armor, ...classFeatureArmorGrants]),
     languages: unique([
       ...background.languages,
       ...speciesLanguageGrants,

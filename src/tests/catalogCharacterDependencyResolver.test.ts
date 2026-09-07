@@ -158,6 +158,88 @@ describe('APP-04 dependency-aware pending choices', () => {
     expect(result.issues.some((issue) => issue.code === 'CATALOG_PENDING_CHOICE_BLOCKED_CANDIDATES')).toBe(true);
   });
 
+  it('treats a generated general-feat progression slot as an open choice across active sources', () => {
+    const wizard = entry('phb-2024-class-wizard', 'class', 'Wizard');
+    const phbFeat = entry('phb-2024-feat-ability-score-improvement', 'feat', 'Ability Score Improvement');
+    const snapshot = snapshotFrom([wizard, phbFeat], [
+      edge('e-feat', wizard.entityId, phbFeat.entityId, 'allowsCandidate')
+    ]);
+    const legacyFeat: CharacterChoiceItem = {
+      ...choice('tcoe-2020-feat-metamagic-adept', 'feat', 'Metamagic Adept'),
+      choiceId: 'compendium:tcoe-2020-feat-metamagic-adept',
+      entityId: 'tcoe-2020-feat-metamagic-adept',
+      origin: 'compendium',
+      sourceBookId: 'tcoe-2020',
+      sourceLabel: "Tasha's Cauldron of Everything",
+      catalogEntityId: undefined,
+      compendiumItemId: 'tcoe-2020-feat-metamagic-adept',
+      manualReviewRequired: true,
+      payload: { category: 'general' },
+      provenance: {
+        origin: 'compendium',
+        sourceId: 'tcoe-2020',
+        sourceBookId: 'tcoe-2020',
+        compendiumItemId: 'tcoe-2020-feat-metamagic-adept',
+        legacyItemIds: ['tcoe-2020-feat-metamagic-adept'],
+        overrideAuthorized: false
+      }
+    };
+    const asiChoice = {
+      ...choice(phbFeat.entityId, 'feat', phbFeat.displayName),
+      payload: { category: 'general' }
+    };
+    const fightingStyleChoice = {
+      ...choice('phb-2024-feat-archery', 'feat', 'Archery'),
+      payload: { category: 'fightingStyle' }
+    };
+    const character = createEmptyCharacter('Wizard 5');
+    character.classes = [{ id: 'wizard-entity', name: 'Wizard', level: 5, source: { id: 'phb-2024', status: 'active', confidence: 'exact' } }];
+    character.compendiumLinks = [{
+      id: 'wizard-link',
+      characterId: character.id,
+      itemId: 'catalog:phb-2024-class-wizard',
+      choiceId: 'catalog:phb-2024-class-wizard',
+      catalogEntityId: 'phb-2024-class-wizard',
+      origin: 'catalog',
+      importItemId: 'phb-2024-class-wizard',
+      packId: 'catalog',
+      sourceId: 'phb-2024',
+      itemType: 'class',
+      appliedAs: 'class',
+      appliedEntityId: 'wizard-entity',
+      appliedEntityName: 'Wizard',
+      status: 'active',
+      addedAt: '2026-08-18T00:00:00.000Z'
+    }];
+    const pendingChoice = {
+      id: 'pending-general-feat',
+      kind: 'feat' as const,
+      title: 'Escolher feat geral / Ability Score Improvement',
+      description: 'Escolha aberta concedida pela progressão.',
+      sourceItemId: 'catalog:phb-2024-class-wizard',
+      sourceEntityId: 'wizard-entity',
+      featCategory: 'general' as const,
+      requiredCount: 1,
+      currentCount: 0,
+      status: 'pending' as const,
+      createdAt: '2026-08-18T00:00:00.000Z'
+    };
+
+    const result = resolveCharacterPendingChoice({
+      character,
+      pendingChoice,
+      choices: [choice(wizard.entityId, 'class', wizard.displayName), asiChoice, fightingStyleChoice, legacyFeat],
+      snapshot
+    });
+
+    expect(result.mode).toBe('kindFallback');
+    expect(result.availableCandidateChoices.map((item) => item.choiceId)).toEqual(expect.arrayContaining([
+      'catalog:phb-2024-feat-ability-score-improvement',
+      'compendium:tcoe-2020-feat-metamagic-adept'
+    ]));
+    expect(result.candidateChoices.map((item) => item.choiceId)).not.toContain('catalog:phb-2024-feat-archery');
+  });
+
   it('falls back by compatible kind when a legacy pending choice has no canonical source', () => {
     const spell = entry('spell-shield', 'spell', 'Shield');
     const snapshot = snapshotFrom([spell], []);

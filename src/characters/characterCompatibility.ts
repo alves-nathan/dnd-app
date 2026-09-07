@@ -135,6 +135,29 @@ const collectCharacterReferences = (character: Character): CollectedReference[] 
   for (const choice of character.buildChoices?.subclassChoices ?? []) {
     push(choice.subclassItemId, 'subclass', 'Configuração de subclasse', 'buildChoices.subclassChoices.subclassItemId');
   }
+  for (const choice of character.buildChoices?.classFeatureChoices ?? []) {
+    push(choice.classItemId, 'class', 'Classe da opção de feature', 'buildChoices.classFeatureChoices.classItemId');
+    push(choice.featureItemId, 'feature', 'Feature de classe configurada', 'buildChoices.classFeatureChoices.featureItemId');
+  }
+  for (const choice of character.buildChoices?.classMetamagicChoices ?? []) {
+    push(choice.classItemId, 'class', 'Classe da escolha de Metamagic', 'buildChoices.classMetamagicChoices.classItemId');
+    push(choice.featureItemId, 'feature', 'Feature Metamagic configurada', 'buildChoices.classMetamagicChoices.featureItemId');
+  }
+  for (const choice of character.buildChoices?.bonusSpellChoices ?? []) {
+    push(choice.classItemId, 'class', 'Classe da magia bônus', 'buildChoices.bonusSpellChoices.classItemId');
+    push(choice.featureItemId, 'feature', 'Origem da magia bônus', 'buildChoices.bonusSpellChoices.featureItemId');
+    for (const spellItemId of choice.spellItemIds ?? []) push(spellItemId, 'spell', 'Magia bônus', 'buildChoices.bonusSpellChoices.spellItemIds');
+  }
+  for (const choice of character.buildChoices?.spellbookFeatureChoices ?? []) {
+    push(choice.classItemId, 'class', 'Classe da regra especial do spellbook', 'buildChoices.spellbookFeatureChoices.classItemId');
+    push(choice.featureItemId, 'feature', 'Origem da regra especial do spellbook', 'buildChoices.spellbookFeatureChoices.featureItemId');
+    for (const spellItemId of choice.spellItemIds ?? []) push(spellItemId, 'spell', 'Magia especial do spellbook', 'buildChoices.spellbookFeatureChoices.spellItemIds');
+  }
+  for (const choice of character.buildChoices?.mysticArcanumChoices ?? []) {
+    push(choice.classItemId, 'class', 'Classe do Mystic Arcanum', 'buildChoices.mysticArcanumChoices.classItemId');
+    push(choice.featureItemId, 'feature', 'Origem do Mystic Arcanum', 'buildChoices.mysticArcanumChoices.featureItemId');
+    push(choice.spellItemId, 'spell', `Mystic Arcanum de ${choice.spellLevel}º círculo`, 'buildChoices.mysticArcanumChoices.spellItemId');
+  }
   for (const [source, target] of Object.entries(character.buildChoices?.spellAssignments ?? {})) {
     push(source, 'spellSource', 'Origem de magia', 'buildChoices.spellAssignments.key');
     push(target, 'spell', 'Magia atribuída', 'buildChoices.spellAssignments.value');
@@ -164,7 +187,17 @@ const collectCharacterReferences = (character: Character): CollectedReference[] 
     push(feat.featItemId, 'feat', 'Feat', 'featChoices.featItemId');
     for (const id of feat.spellItemIds ?? []) push(id, 'spell', 'Magia de feat', 'featChoices.spellItemIds');
     for (const id of feat.weaponItemIds ?? []) push(id, 'weapon', 'Arma de feat', 'featChoices.weaponItemIds');
-    push(feat.fightingStyleItemId, 'feature', 'Fighting Style', 'featChoices.fightingStyleItemId');
+    push(feat.fightingStyleItemId, 'feat', 'Fighting Style', 'featChoices.fightingStyleItemId');
+    push(feat.eldritchInvocationItemId, 'invocation', 'Eldritch Invocation de feat', 'featChoices.eldritchInvocationItemId');
+    const invocation = feat.eldritchInvocationChoice;
+    if (invocation) {
+      push(invocation.invocationItemId, 'invocation', 'Eldritch Invocation de feat', 'featChoices.eldritchInvocationChoice.invocationItemId');
+      for (const id of invocation.cantripItemIds ?? []) push(id, 'spell', 'Cantrip de invocation de feat', 'featChoices.eldritchInvocationChoice.cantripItemIds');
+      for (const id of invocation.ritualSpellItemIds ?? []) push(id, 'spell', 'Ritual de invocation de feat', 'featChoices.eldritchInvocationChoice.ritualSpellItemIds');
+      push(invocation.targetCantripItemId, 'spell', 'Cantrip alvo de invocation de feat', 'featChoices.eldritchInvocationChoice.targetCantripItemId');
+      push(invocation.originFeatItemId, 'feat', 'Origin Feat concedido por invocation de feat', 'featChoices.eldritchInvocationChoice.originFeatItemId');
+      push(invocation.familiarCreatureItemId, 'creature', 'Familiar de invocation de feat', 'featChoices.eldritchInvocationChoice.familiarCreatureItemId');
+    }
   }
   for (const entry of character.spellbookEntries ?? []) {
     push(entry.classItemId, 'class', 'Classe do spellbook', 'spellbookEntries.classItemId');

@@ -21,8 +21,8 @@ if (!issues.length) {
   for (const token of ['readOnly: true','importAuditPackage','importSignedReport','compareImportedWithLocal']) if (!store.includes(token)) issues.push(`Store APP-26 incompleta: ${token}`);
   const ui = read('app/catalog-operational-audit.tsx');
   for (const token of ['Auditoria operacional externa','Compartilhar pacote completo','Importar para auditoria','Relatório de auditoria assinado','Verificador independente']) if (!ui.includes(token)) issues.push(`UI APP-26 incompleta: ${token}`);
-  const settings = read('app/settings.tsx');
-  if (!settings.includes('/catalog-operational-audit')) issues.push('Ajustes não expõem a auditoria operacional externa.');
+  const maintenance = read('app/compendium/maintenance.tsx');
+  if (!maintenance.includes('/catalog-operational-audit')) issues.push('A manutenção do Compêndio não expõe a auditoria operacional externa.');
   const journal = read('app/catalog-operational-journal.tsx');
   if (!journal.includes('operational-audit-open')) issues.push('O diário operacional não oferece acesso à auditoria externa.');
   const packageJson = JSON.parse(read('package.json'));

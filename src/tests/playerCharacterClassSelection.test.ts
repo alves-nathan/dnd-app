@@ -8,6 +8,7 @@ const storedClass = (input: {
   name: string;
   sidekickClass?: boolean;
   tags?: string[];
+  hitDie?: number;
 }): StoredCompendiumItem => ({
   id: `test-pack:${input.id}`,
   importItemId: input.id,
@@ -26,6 +27,7 @@ const storedClass = (input: {
     id: input.id,
     name: input.name,
     type: 'class',
+    hitDie: input.hitDie ?? (input.sidekickClass ? undefined : 10),
     mechanics: input.sidekickClass === undefined ? undefined : { sidekickClass: input.sidekickClass }
   },
   tags: input.tags ?? ['class'],
@@ -42,6 +44,14 @@ describe('player character class selection', () => {
       expect(isPlayerCharacterClassItem(item)).toBe(false);
     }
     expect(isPlayerCharacterClassItem(storedClass({ id: 'phb-2024-class-fighter', name: 'Fighter' }))).toBe(true);
+  });
+
+  it('rejects class-typed option records that do not carry a player-class chassis', () => {
+    expect(isPlayerCharacterClassItem(storedClass({
+      id: 'legacy-class-option',
+      name: 'Legacy Class Option',
+      hitDie: 0
+    }))).toBe(false);
   });
 
   it('keeps compatibility with older snapshots that only retain the sidekick tag/id', () => {

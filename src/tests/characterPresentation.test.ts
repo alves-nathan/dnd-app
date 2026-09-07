@@ -40,6 +40,25 @@ describe('character journey presentation', () => {
     expect(nextCharacterStep(character).key).toBe('ready');
   });
 
+  it('surfaces limited resources directly on the main character sheet', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const source = fs.readFileSync(path.join(process.cwd(), 'app/characters/[id]/index.tsx'), 'utf8');
+    expect(source).toContain('character.resources.map((resource) => {');
+    expect(source).not.toContain('character.resources.slice(0, 6)');
+    expect(source).toContain('sharedResourceUses.length');
+    expect(source).toContain('title={`Recursos (${character.resources.length})`}');
+    expect(source).toContain('label="Gerenciar recursos e descansos"');
+    expect(source).not.toContain('applyAutomaticClassProgression');
+    expect(source).not.toContain('applyAutomaticSpeciesProgression');
+    expect(source).not.toContain('reconcileFeatSubchoiceResources');
+    expect(source).not.toContain('reconcileCharacterHitPoints');
+    expect(source).not.toContain('buildPendingCharacterChoices');
+    expect(source).not.toContain('const repairCharacterId = character?.id;');
+    expect(source).not.toContain('useCharacterStore.getState().characters.find');
+    expect(source).not.toContain('state.updateCharacter');
+  });
+
   it('replaces singleton origins while keeping the old link as non-blocking history', () => {
     const character = createDefaultCharacter('Seraphiel');
     const first = applyCompendiumItemToCharacter(character, importedItem('pack-a', 'source-a', 'species', 'First Species'));

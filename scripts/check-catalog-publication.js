@@ -22,14 +22,13 @@ const core = fs.readFileSync(path.join(root, 'src/catalog/catalogPublication.ts'
 const store = fs.readFileSync(path.join(root, 'src/store/catalogPublicationStore.ts'), 'utf8');
 const distributionStore = fs.readFileSync(path.join(root, 'src/store/catalogDistributionStore.ts'), 'utf8');
 const screen = fs.readFileSync(path.join(root, 'app/catalog-publication.tsx'), 'utf8');
-const home = fs.readFileSync(path.join(root, 'app/index.tsx'), 'utf8');
-const settings = fs.readFileSync(path.join(root, 'app/settings.tsx'), 'utf8');
+const maintenance = fs.readFileSync(path.join(root, 'app/compendium/maintenance.tsx'), 'utf8');
 for (const token of ['dnd-catalog-publication.v1', 'dnd-catalog-publication-control.v1', 'dnd-catalog-publication-eligibility.v1', 'stable', 'beta', 'preview', 'calculateCatalogCohortScore', 'evaluateCatalogPublicationEligibility', 'verifySignedCatalogPublicationControl']) if (!core.includes(token)) issues.push(`Contrato ausente: ${token}`);
 for (const token of ['selectedChannel', 'cohortId', 'setSelectedChannel', 'importPublication', 'importControl', 'assertDistributionEligible']) if (!store.includes(token)) issues.push(`Store de publicação incompleta: ${token}`);
 if (!distributionStore.includes('assertDistributionEligible')) issues.push('Download e cache não estão protegidos pela elegibilidade da publicação.');
 for (const token of ['catalog-channel-${channel}', 'catalog-publication-import', 'catalog-publication-control-import', 'catalog-publication-evidence-share']) if (!screen.includes(token)) issues.push(`Controle de interface ausente: ${token}`);
-if (!home.includes('open-catalog-publication')) issues.push('A Home não expõe publicações elegíveis.');
-if (!settings.includes('/catalog-publication')) issues.push('Ajustes não expõe canais e rollout.');
+if (!maintenance.includes('open-catalog-publication')) issues.push('A manutenção do Compêndio não expõe publicações elegíveis.');
+if (!maintenance.includes('/catalog-publication')) issues.push('A manutenção do Compêndio não expõe canais e rollout.');
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 for (const script of ['catalog:publication:check', 'catalog:publication:harness', 'catalog:publication:sign', 'catalog:publication:control:sign', 'app21:linear']) if (!packageJson.scripts?.[script]) issues.push(`Script npm ausente: ${script}`);
 const appVersion = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8')).expo.version;

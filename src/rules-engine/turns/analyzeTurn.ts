@@ -22,6 +22,7 @@ import { checkRotationAmmunition } from '../../characters/ammunitionRules';
 import { combatStateForTarget, normalizeCombatScenario, tacticalTargetById } from './tacticalCombat';
 import { createId } from '../../utils/id';
 import { actorMapPoint, moveMapPointRelativeTo, tacticalDiagonalRule, tacticalMovementCostBetweenPoints, targetMapPoint } from '../targeting/spatialMap';
+import { resolveTurnFeatureActivations, turnActivationResourceCosts } from './turnFeatureActivations';
 
 const addRange = (left: DamageRange, right: DamageRange): DamageRange => ({
   min: left.min + right.min,
@@ -222,8 +223,10 @@ export const analyzeTurnRotation = (
   character: Character,
   combatContext: CombatState | CombatScenario
 ): TurnAnalysisResult => {
-  const resolvedActions = applyCompanionAttackReplacement(rotation.actions.map(resolveTurnActionAttackOverride).map((turnAction) => resolveTurnActionSpellSlot(turnAction, character)));
-  const resolvedRotation: TurnRotation = { ...rotation, actions: resolvedActions };
+  const activationResolution = resolveTurnFeatureActivations(rotation);
+  const activationRotation = activationResolution.rotation;
+  const resolvedActions = applyCompanionAttackReplacement(activationRotation.actions.map(resolveTurnActionAttackOverride).map((turnAction) => resolveTurnActionSpellSlot(turnAction, character)));
+  const resolvedRotation: TurnRotation = { ...activationRotation, actions: resolvedActions };
   const baseCombatState = isScenario(combatContext) ? normalizeCombatScenario(combatContext).combatState : combatContext;
   const effectiveCombatState = buildCombatStateWithActiveEffects(character, baseCombatState);
   const baseValidation = validateTurnRotation(rotation, character, effectiveCombatState);
@@ -244,7 +247,7 @@ export const analyzeTurnRotation = (
   const total = actions.reduce<DamageRange>((acc, action) => addRange(acc, action.total), { min: 0, max: 0, average: 0 });
   const weightedValues = actions.map((action) => action.weightedAverage).filter((value): value is number => value !== undefined);
   const weightedAverage = weightedValues.length === actions.length ? weightedValues.reduce((sum, value) => sum + value, 0) : undefined;
-  const resourcesConsumed: ResourceCost[] = actions.flatMap((action) => action.resourcesConsumed);
+  const resourcesConsumed: ResourceCost[] = [...turnActivationResourceCosts(resolvedRotation), ...actions.flatMap((action) => action.resourcesConsumed)];
   const spellSlotsConsumed: SpellSlotCost[] = actions.flatMap((action) => action.spellSlotsConsumed);
   const resourceAvailability = checkRotationResources(resolvedRotation, character, effectiveCombatState.availableResourceOverrides);
   const spellSlotAvailability = checkRotationSpellSlots(resolvedRotation, character, effectiveCombatState.availableSpellSlotOverrides);

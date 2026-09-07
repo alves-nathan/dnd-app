@@ -1,0 +1,965 @@
+{
+  "status": "PASS",
+  "generatedAt": "2026-08-20T23:21:19.854Z",
+  "bundledItemCount": 1997,
+  "classCount": 16,
+  "subclassCount": 78,
+  "progressionFeatureCount": 635,
+  "spellAccessFeatureCount": 80,
+  "runtimeSubclassSpellGrantCount": 35,
+  "runtimeSubclassSpellGrantSpellReferenceCount": 222,
+  "runtimeSubclassSpellGrantExplicitRepresentedReferenceCount": 61,
+  "runtimeSubclassSpellGrantRawUnrepresentedReferenceCount": 161,
+  "runtimeSubclassSpellGrantBridgeBackedReferenceCount": 161,
+  "runtimeSubclassSpellGrantUncoveredReferenceCount": 0,
+  "catalogReconciliationCount": 10,
+  "genieCoverage": {
+    "featureId": "tcoe-2020-feature-the-genie-expanded-spell-list",
+    "commonSpellReferenceCount": 6,
+    "kinds": {
+      "dao": 5,
+      "djinni": 5,
+      "efreeti": 5,
+      "marid": 5
+    },
+    "hasAllFourKinds": true
+  },
+  "pendingShapeCounts": {
+    "catalogReconciliationRequired": 0,
+    "subclassSpellcasting": 0,
+    "mysticArcanum": 0,
+    "spellbookBonusChoice": 0,
+    "spellbookGrant": 0,
+    "spellbookSpecialChoice": 0,
+    "ritualGrant": 0,
+    "directSpellReference": 0,
+    "grantedCantrip": 0,
+    "conditionalList": 0
+  },
+  "pendingShapes": {
+    "catalogReconciliationRequired": [],
+    "subclassSpellcasting": [],
+    "mysticArcanum": [],
+    "spellbookBonusChoice": [],
+    "spellbookGrant": [],
+    "spellbookSpecialChoice": [],
+    "ritualGrant": [],
+    "directSpellReference": [],
+    "grantedCantrip": [],
+    "conditionalList": []
+  },
+  "runtimeGrantChecks": [
+    {
+      "grantId": "phb-2024-subclass-spell-grant-barbarian-wild-heart",
+      "runtimeClassId": "phb-2024-class-barbarian",
+      "classId": "phb-2024-class-barbarian",
+      "runtimeSubclassId": "phb-2024-subclass-barbarian-wild-heart",
+      "subclassId": "phb-2024-subclass-barbarian-path-of-the-wild-heart",
+      "spellReferenceCount": 3,
+      "explicitRepresentedCount": 3,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-bard-glamour",
+      "runtimeClassId": "phb-2024-class-bard",
+      "classId": "phb-2024-class-bard",
+      "runtimeSubclassId": "phb-2024-subclass-bard-glamour",
+      "subclassId": "phb-2024-subclass-bard-college-of-glamour",
+      "spellReferenceCount": 3,
+      "explicitRepresentedCount": 3,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-cleric-life-domain",
+      "runtimeClassId": "phb-2024-class-cleric",
+      "classId": "phb-2024-class-cleric",
+      "runtimeSubclassId": "phb-2024-subclass-cleric-life-domain",
+      "subclassId": "phb-2024-subclass-cleric-life-domain",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 5,
+      "rawUnrepresentedCount": 5,
+      "bridgeBackedCount": 5,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-bless",
+        "phb-2024-spell-mass-healing-word",
+        "phb-2024-spell-aura-of-life",
+        "phb-2024-spell-death-ward",
+        "phb-2024-spell-greater-restoration"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-bless",
+        "phb-2024-spell-mass-healing-word",
+        "phb-2024-spell-aura-of-life",
+        "phb-2024-spell-death-ward",
+        "phb-2024-spell-greater-restoration"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-cleric-light-domain",
+      "runtimeClassId": "phb-2024-class-cleric",
+      "classId": "phb-2024-class-cleric",
+      "runtimeSubclassId": "phb-2024-subclass-cleric-light-domain",
+      "subclassId": "phb-2024-subclass-cleric-light-domain",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 5,
+      "rawUnrepresentedCount": 5,
+      "bridgeBackedCount": 5,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-see-invisibility",
+        "phb-2024-spell-daylight",
+        "phb-2024-spell-arcane-eye",
+        "phb-2024-spell-flame-strike",
+        "phb-2024-spell-scrying"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-see-invisibility",
+        "phb-2024-spell-daylight",
+        "phb-2024-spell-arcane-eye",
+        "phb-2024-spell-flame-strike",
+        "phb-2024-spell-scrying"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-cleric-trickery-domain",
+      "runtimeClassId": "phb-2024-class-cleric",
+      "classId": "phb-2024-class-cleric",
+      "runtimeSubclassId": "phb-2024-subclass-cleric-trickery-domain",
+      "subclassId": "phb-2024-subclass-cleric-trickery-domain",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 4,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-pass-without-trace",
+        "phb-2024-spell-nondetection",
+        "phb-2024-spell-confusion",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-dominate-person",
+        "phb-2024-spell-modify-memory"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-pass-without-trace",
+        "phb-2024-spell-nondetection",
+        "phb-2024-spell-confusion",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-dominate-person",
+        "phb-2024-spell-modify-memory"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-cleric-war-domain",
+      "runtimeClassId": "phb-2024-class-cleric",
+      "classId": "phb-2024-class-cleric",
+      "runtimeSubclassId": "phb-2024-subclass-cleric-war-domain",
+      "subclassId": "phb-2024-subclass-cleric-war-domain",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 4,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-spiritual-weapon",
+        "phb-2024-spell-crusader-s-mantle",
+        "phb-2024-spell-fire-shield",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-hold-monster",
+        "phb-2024-spell-steel-wind-strike"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-spiritual-weapon",
+        "phb-2024-spell-crusader-s-mantle",
+        "phb-2024-spell-fire-shield",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-hold-monster",
+        "phb-2024-spell-steel-wind-strike"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-land-arid",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-land",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-land",
+      "spellReferenceCount": 6,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-blur",
+        "phb-2024-spell-burning-hands",
+        "phb-2024-spell-fire-bolt",
+        "phb-2024-spell-fireball",
+        "phb-2024-spell-blight",
+        "phb-2024-spell-wall-of-stone"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-blur",
+        "phb-2024-spell-burning-hands",
+        "phb-2024-spell-fire-bolt",
+        "phb-2024-spell-fireball",
+        "phb-2024-spell-blight",
+        "phb-2024-spell-wall-of-stone"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-land-polar",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-land",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-land",
+      "spellReferenceCount": 6,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-fog-cloud",
+        "phb-2024-spell-hold-person",
+        "phb-2024-spell-ray-of-frost",
+        "phb-2024-spell-sleet-storm",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-cone-of-cold"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-fog-cloud",
+        "phb-2024-spell-hold-person",
+        "phb-2024-spell-ray-of-frost",
+        "phb-2024-spell-sleet-storm",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-cone-of-cold"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-land-temperate",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-land",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-land",
+      "spellReferenceCount": 6,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-shocking-grasp",
+        "phb-2024-spell-sleep",
+        "phb-2024-spell-lightning-bolt",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-tree-stride"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-shocking-grasp",
+        "phb-2024-spell-sleep",
+        "phb-2024-spell-lightning-bolt",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-tree-stride"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-land-tropical",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-land",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-land",
+      "spellReferenceCount": 6,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-acid-splash",
+        "phb-2024-spell-ray-of-sickness",
+        "phb-2024-spell-web",
+        "phb-2024-spell-stinking-cloud",
+        "phb-2024-spell-polymorph",
+        "phb-2024-spell-insect-plague"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-acid-splash",
+        "phb-2024-spell-ray-of-sickness",
+        "phb-2024-spell-web",
+        "phb-2024-spell-stinking-cloud",
+        "phb-2024-spell-polymorph",
+        "phb-2024-spell-insect-plague"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-moon",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-moon",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-moon",
+      "spellReferenceCount": 6,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-cure-wounds",
+        "phb-2024-spell-moonbeam",
+        "phb-2024-spell-starry-wisp",
+        "phb-2024-spell-conjure-animals",
+        "phb-2024-spell-fount-of-moonlight",
+        "phb-2024-spell-mass-cure-wounds"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-cure-wounds",
+        "phb-2024-spell-moonbeam",
+        "phb-2024-spell-starry-wisp",
+        "phb-2024-spell-conjure-animals",
+        "phb-2024-spell-fount-of-moonlight",
+        "phb-2024-spell-mass-cure-wounds"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-sea",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-sea",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-sea",
+      "spellReferenceCount": 11,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 11,
+      "bridgeBackedCount": 11,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-fog-cloud",
+        "phb-2024-spell-gust-of-wind",
+        "phb-2024-spell-ray-of-frost",
+        "phb-2024-spell-shatter",
+        "phb-2024-spell-thunderwave",
+        "phb-2024-spell-lightning-bolt",
+        "phb-2024-spell-water-breathing",
+        "phb-2024-spell-control-water",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-conjure-elemental",
+        "phb-2024-spell-hold-monster"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-fog-cloud",
+        "phb-2024-spell-gust-of-wind",
+        "phb-2024-spell-ray-of-frost",
+        "phb-2024-spell-shatter",
+        "phb-2024-spell-thunderwave",
+        "phb-2024-spell-lightning-bolt",
+        "phb-2024-spell-water-breathing",
+        "phb-2024-spell-control-water",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-conjure-elemental",
+        "phb-2024-spell-hold-monster"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-druid-stars",
+      "runtimeClassId": "phb-2024-class-druid",
+      "classId": "phb-2024-class-druid",
+      "runtimeSubclassId": "phb-2024-subclass-druid-stars",
+      "subclassId": "phb-2024-subclass-druid-circle-of-the-stars",
+      "spellReferenceCount": 2,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 1,
+      "bridgeBackedCount": 1,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-guidance"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-guidance"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-fighter-psi-warrior",
+      "runtimeClassId": "phb-2024-class-fighter",
+      "classId": "phb-2024-class-fighter",
+      "runtimeSubclassId": "phb-2024-subclass-fighter-psi-warrior",
+      "subclassId": "phb-2024-subclass-fighter-psi-warrior",
+      "spellReferenceCount": 1,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-monk-elements",
+      "runtimeClassId": "phb-2024-class-monk",
+      "classId": "phb-2024-class-monk",
+      "runtimeSubclassId": "phb-2024-subclass-monk-elements",
+      "subclassId": "phb-2024-subclass-monk-warrior-of-the-elements",
+      "spellReferenceCount": 1,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 1,
+      "bridgeBackedCount": 1,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-elementalism"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-elementalism"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-monk-shadow",
+      "runtimeClassId": "phb-2024-class-monk",
+      "classId": "phb-2024-class-monk",
+      "runtimeSubclassId": "phb-2024-subclass-monk-shadow",
+      "subclassId": "phb-2024-subclass-monk-warrior-of-shadow",
+      "spellReferenceCount": 2,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 1,
+      "bridgeBackedCount": 1,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-minor-illusion"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-minor-illusion"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-paladin-ancients",
+      "runtimeClassId": "phb-2024-class-paladin",
+      "classId": "phb-2024-class-paladin",
+      "runtimeSubclassId": "phb-2024-subclass-paladin-ancients",
+      "subclassId": "phb-2024-subclass-paladin-oath-of-the-ancients",
+      "spellReferenceCount": 9,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 9,
+      "bridgeBackedCount": 9,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-ensnaring-strike",
+        "phb-2024-spell-speak-with-animals",
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-moonbeam",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-stoneskin",
+        "phb-2024-spell-commune-with-nature",
+        "phb-2024-spell-tree-stride"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-ensnaring-strike",
+        "phb-2024-spell-speak-with-animals",
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-moonbeam",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-ice-storm",
+        "phb-2024-spell-stoneskin",
+        "phb-2024-spell-commune-with-nature",
+        "phb-2024-spell-tree-stride"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-paladin-devotion",
+      "runtimeClassId": "phb-2024-class-paladin",
+      "classId": "phb-2024-class-paladin",
+      "runtimeSubclassId": "phb-2024-subclass-paladin-devotion",
+      "subclassId": "phb-2024-subclass-paladin-oath-of-devotion",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 10,
+      "bridgeBackedCount": 10,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-protection-from-evil-and-good",
+        "phb-2024-spell-shield-of-faith",
+        "phb-2024-spell-aid",
+        "phb-2024-spell-zone-of-truth",
+        "phb-2024-spell-beacon-of-hope",
+        "phb-2024-spell-dispel-magic",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-guardian-of-faith",
+        "phb-2024-spell-commune",
+        "phb-2024-spell-flame-strike"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-protection-from-evil-and-good",
+        "phb-2024-spell-shield-of-faith",
+        "phb-2024-spell-aid",
+        "phb-2024-spell-zone-of-truth",
+        "phb-2024-spell-beacon-of-hope",
+        "phb-2024-spell-dispel-magic",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-guardian-of-faith",
+        "phb-2024-spell-commune",
+        "phb-2024-spell-flame-strike"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-paladin-glory",
+      "runtimeClassId": "phb-2024-class-paladin",
+      "classId": "phb-2024-class-paladin",
+      "runtimeSubclassId": "phb-2024-subclass-paladin-glory",
+      "subclassId": "phb-2024-subclass-paladin-oath-of-glory",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 10,
+      "bridgeBackedCount": 10,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-guiding-bolt",
+        "phb-2024-spell-heroism",
+        "phb-2024-spell-enhance-ability",
+        "phb-2024-spell-magic-weapon",
+        "phb-2024-spell-haste",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-compulsion",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-legend-lore",
+        "phb-2024-spell-yolande-s-regal-presence"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-guiding-bolt",
+        "phb-2024-spell-heroism",
+        "phb-2024-spell-enhance-ability",
+        "phb-2024-spell-magic-weapon",
+        "phb-2024-spell-haste",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-compulsion",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-legend-lore",
+        "phb-2024-spell-yolande-s-regal-presence"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-paladin-vengeance",
+      "runtimeClassId": "phb-2024-class-paladin",
+      "classId": "phb-2024-class-paladin",
+      "runtimeSubclassId": "phb-2024-subclass-paladin-vengeance",
+      "subclassId": "phb-2024-subclass-paladin-oath-of-vengeance",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 10,
+      "bridgeBackedCount": 10,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-bane",
+        "phb-2024-spell-hunter-s-mark",
+        "phb-2024-spell-hold-person",
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-haste",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-banishment",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-hold-monster",
+        "phb-2024-spell-scrying"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-bane",
+        "phb-2024-spell-hunter-s-mark",
+        "phb-2024-spell-hold-person",
+        "phb-2024-spell-misty-step",
+        "phb-2024-spell-haste",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-banishment",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-hold-monster",
+        "phb-2024-spell-scrying"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-ranger-fey-wanderer",
+      "runtimeClassId": "phb-2024-class-ranger",
+      "classId": "phb-2024-class-ranger",
+      "runtimeSubclassId": "phb-2024-subclass-ranger-fey-wanderer",
+      "subclassId": "phb-2024-subclass-ranger-fey-wanderer",
+      "spellReferenceCount": 5,
+      "explicitRepresentedCount": 2,
+      "rawUnrepresentedCount": 3,
+      "bridgeBackedCount": 3,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-charm-person",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-mislead"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-charm-person",
+        "phb-2024-spell-dimension-door",
+        "phb-2024-spell-mislead"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-ranger-fey-wanderer-free",
+      "runtimeClassId": "phb-2024-class-ranger",
+      "classId": "phb-2024-class-ranger",
+      "runtimeSubclassId": "phb-2024-subclass-ranger-fey-wanderer",
+      "subclassId": "phb-2024-subclass-ranger-fey-wanderer",
+      "spellReferenceCount": 2,
+      "explicitRepresentedCount": 2,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-ranger-gloom-stalker",
+      "runtimeClassId": "phb-2024-class-ranger",
+      "classId": "phb-2024-class-ranger",
+      "runtimeSubclassId": "phb-2024-subclass-ranger-gloom-stalker",
+      "subclassId": "phb-2024-subclass-ranger-gloom-stalker",
+      "spellReferenceCount": 5,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 5,
+      "bridgeBackedCount": 5,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-disguise-self",
+        "phb-2024-spell-rope-trick",
+        "phb-2024-spell-fear",
+        "phb-2024-spell-greater-invisibility",
+        "phb-2024-spell-seeming"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-disguise-self",
+        "phb-2024-spell-rope-trick",
+        "phb-2024-spell-fear",
+        "phb-2024-spell-greater-invisibility",
+        "phb-2024-spell-seeming"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-rogue-arcane-trickster",
+      "runtimeClassId": "phb-2024-class-rogue",
+      "classId": "phb-2024-class-rogue",
+      "runtimeSubclassId": "phb-2024-subclass-rogue-arcane-trickster",
+      "subclassId": "phb-2024-subclass-rogue-arcane-trickster",
+      "spellReferenceCount": 1,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-sorcerer-aberrant",
+      "runtimeClassId": "phb-2024-class-sorcerer",
+      "classId": "phb-2024-class-sorcerer",
+      "runtimeSubclassId": "phb-2024-subclass-sorcerer-aberrant",
+      "subclassId": "phb-2024-subclass-sorcerer-aberrant-sorcery",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 4,
+      "rawUnrepresentedCount": 6,
+      "bridgeBackedCount": 6,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-arms-of-hadar",
+        "phb-2024-spell-calm-emotions",
+        "phb-2024-spell-sending",
+        "phb-2024-spell-evard-s-black-tentacles",
+        "phb-2024-spell-rarys-telepathic-bond",
+        "phb-2024-spell-telekinesis"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-arms-of-hadar",
+        "phb-2024-spell-calm-emotions",
+        "phb-2024-spell-sending",
+        "phb-2024-spell-evard-s-black-tentacles",
+        "phb-2024-spell-rarys-telepathic-bond",
+        "phb-2024-spell-telekinesis"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-sorcerer-clockwork",
+      "runtimeClassId": "phb-2024-class-sorcerer",
+      "classId": "phb-2024-class-sorcerer",
+      "runtimeSubclassId": "phb-2024-subclass-sorcerer-clockwork",
+      "subclassId": "phb-2024-subclass-sorcerer-clockwork-sorcery",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 10,
+      "bridgeBackedCount": 10,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-aid",
+        "phb-2024-spell-alarm",
+        "phb-2024-spell-lesser-restoration",
+        "phb-2024-spell-protection-from-evil-and-good",
+        "phb-2024-spell-dispel-magic",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-summon-construct",
+        "phb-2024-spell-greater-restoration",
+        "phb-2024-spell-wall-of-force"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-aid",
+        "phb-2024-spell-alarm",
+        "phb-2024-spell-lesser-restoration",
+        "phb-2024-spell-protection-from-evil-and-good",
+        "phb-2024-spell-dispel-magic",
+        "phb-2024-spell-protection-from-energy",
+        "phb-2024-spell-freedom-of-movement",
+        "phb-2024-spell-summon-construct",
+        "phb-2024-spell-greater-restoration",
+        "phb-2024-spell-wall-of-force"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-sorcerer-draconic",
+      "runtimeClassId": "phb-2024-class-sorcerer",
+      "classId": "phb-2024-class-sorcerer",
+      "runtimeSubclassId": "phb-2024-subclass-sorcerer-draconic",
+      "subclassId": "phb-2024-subclass-sorcerer-draconic-sorcery",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 9,
+      "bridgeBackedCount": 9,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-alter-self",
+        "phb-2024-spell-chromatic-orb",
+        "phb-2024-spell-command",
+        "phb-2024-spell-dragons-breath",
+        "phb-2024-spell-fear",
+        "phb-2024-spell-fly",
+        "phb-2024-spell-arcane-eye",
+        "phb-2024-spell-charm-monster",
+        "phb-2024-spell-legend-lore"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-alter-self",
+        "phb-2024-spell-chromatic-orb",
+        "phb-2024-spell-command",
+        "phb-2024-spell-dragons-breath",
+        "phb-2024-spell-fear",
+        "phb-2024-spell-fly",
+        "phb-2024-spell-arcane-eye",
+        "phb-2024-spell-charm-monster",
+        "phb-2024-spell-legend-lore"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-sorcerer-draconic-free",
+      "runtimeClassId": "phb-2024-class-sorcerer",
+      "classId": "phb-2024-class-sorcerer",
+      "runtimeSubclassId": "phb-2024-subclass-sorcerer-draconic",
+      "subclassId": "phb-2024-subclass-sorcerer-draconic-sorcery",
+      "spellReferenceCount": 1,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-warlock-archfey",
+      "runtimeClassId": "phb-2024-class-warlock",
+      "classId": "phb-2024-class-warlock",
+      "runtimeSubclassId": "phb-2024-subclass-warlock-archfey",
+      "subclassId": "phb-2024-subclass-warlock-archfey-patron",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 5,
+      "rawUnrepresentedCount": 5,
+      "bridgeBackedCount": 5,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-calm-emotions",
+        "phb-2024-spell-phantasmal-force",
+        "phb-2024-spell-dominate-beast",
+        "phb-2024-spell-dominate-person",
+        "phb-2024-spell-seeming"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-calm-emotions",
+        "phb-2024-spell-phantasmal-force",
+        "phb-2024-spell-dominate-beast",
+        "phb-2024-spell-dominate-person",
+        "phb-2024-spell-seeming"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-warlock-celestial",
+      "runtimeClassId": "phb-2024-class-warlock",
+      "classId": "phb-2024-class-warlock",
+      "runtimeSubclassId": "phb-2024-subclass-warlock-celestial",
+      "subclassId": "phb-2024-subclass-warlock-celestial-patron",
+      "spellReferenceCount": 11,
+      "explicitRepresentedCount": 4,
+      "rawUnrepresentedCount": 7,
+      "bridgeBackedCount": 7,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-aid",
+        "phb-2024-spell-lesser-restoration",
+        "phb-2024-spell-light",
+        "phb-2024-spell-daylight",
+        "phb-2024-spell-revivify",
+        "phb-2024-spell-guardian-of-faith",
+        "phb-2024-spell-greater-restoration"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-aid",
+        "phb-2024-spell-lesser-restoration",
+        "phb-2024-spell-light",
+        "phb-2024-spell-daylight",
+        "phb-2024-spell-revivify",
+        "phb-2024-spell-guardian-of-faith",
+        "phb-2024-spell-greater-restoration"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-warlock-fiend",
+      "runtimeClassId": "phb-2024-class-warlock",
+      "classId": "phb-2024-class-warlock",
+      "runtimeSubclassId": "phb-2024-subclass-warlock-fiend",
+      "subclassId": "phb-2024-subclass-warlock-fiend-patron",
+      "spellReferenceCount": 10,
+      "explicitRepresentedCount": 5,
+      "rawUnrepresentedCount": 5,
+      "bridgeBackedCount": 5,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-suggestion",
+        "phb-2024-spell-stinking-cloud",
+        "phb-2024-spell-fire-shield",
+        "phb-2024-spell-geas",
+        "phb-2024-spell-insect-plague"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-suggestion",
+        "phb-2024-spell-stinking-cloud",
+        "phb-2024-spell-fire-shield",
+        "phb-2024-spell-geas",
+        "phb-2024-spell-insect-plague"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-warlock-great-old-one",
+      "runtimeClassId": "phb-2024-class-warlock",
+      "classId": "phb-2024-class-warlock",
+      "runtimeSubclassId": "phb-2024-subclass-warlock-great-old-one",
+      "subclassId": "phb-2024-subclass-warlock-great-old-one-patron",
+      "spellReferenceCount": 9,
+      "explicitRepresentedCount": 6,
+      "rawUnrepresentedCount": 3,
+      "bridgeBackedCount": 3,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-phantasmal-force",
+        "phb-2024-spell-confusion",
+        "phb-2024-spell-modify-memory"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-phantasmal-force",
+        "phb-2024-spell-confusion",
+        "phb-2024-spell-modify-memory"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-wizard-abjurer",
+      "runtimeClassId": "phb-2024-class-wizard",
+      "classId": "phb-2024-class-wizard",
+      "runtimeSubclassId": "phb-2024-subclass-wizard-abjurer",
+      "subclassId": "phb-2024-subclass-wizard-abjurer",
+      "spellReferenceCount": 2,
+      "explicitRepresentedCount": 2,
+      "rawUnrepresentedCount": 0,
+      "bridgeBackedCount": 0,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [],
+      "bridgeBackedSpellReferences": [],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-wizard-diviner",
+      "runtimeClassId": "phb-2024-class-wizard",
+      "classId": "phb-2024-class-wizard",
+      "runtimeSubclassId": "phb-2024-subclass-wizard-diviner",
+      "subclassId": "phb-2024-subclass-wizard-diviner",
+      "spellReferenceCount": 1,
+      "explicitRepresentedCount": 0,
+      "rawUnrepresentedCount": 1,
+      "bridgeBackedCount": 1,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-see-invisibility"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-see-invisibility"
+      ],
+      "uncoveredSpellReferences": []
+    },
+    {
+      "grantId": "phb-2024-subclass-spell-grant-wizard-illusionist",
+      "runtimeClassId": "phb-2024-class-wizard",
+      "classId": "phb-2024-class-wizard",
+      "runtimeSubclassId": "phb-2024-subclass-wizard-illusionist",
+      "subclassId": "phb-2024-subclass-wizard-illusionist",
+      "spellReferenceCount": 3,
+      "explicitRepresentedCount": 1,
+      "rawUnrepresentedCount": 2,
+      "bridgeBackedCount": 2,
+      "uncoveredCount": 0,
+      "rawUnrepresentedSpellReferences": [
+        "phb-2024-spell-summon-beast",
+        "phb-2024-spell-summon-fey"
+      ],
+      "bridgeBackedSpellReferences": [
+        "phb-2024-spell-summon-beast",
+        "phb-2024-spell-summon-fey"
+      ],
+      "uncoveredSpellReferences": []
+    }
+  ],
+  "failures": {
+    "missingClassRefs": [],
+    "missingProgressionFeatures": [],
+    "unresolvedExplicitSpellRefs": [],
+    "runtimeGrantOwnershipErrors": [],
+    "unresolvedRuntimeGrantSpellRefs": [],
+    "runtimeGrantBridgeCoverageErrors": [],
+    "catalogReconciliationErrors": []
+  }
+}

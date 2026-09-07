@@ -11,6 +11,14 @@ import type { StoredCompendiumItem } from '../compendium/types';
 import { ABILITY_ORDER, abilityScoresFromValues } from './abilityGeneration';
 import { applyCompendiumItemToCharacter } from '../compendium/mapper';
 import { createId } from '../utils/id';
+import { getProficiencyBonus } from '../rules-engine/characters/derivedStats';
+import {
+  applyFeatSubchoiceEffects,
+  validateEldritchAdeptInvocationChoice,
+  validateFightingStyleFeatChoice,
+  validateManeuverFeatChoice,
+  validateMetamagicFeatChoice
+} from './featSubchoiceRules';
 import {
   ALL_LANGUAGE_OPTIONS,
   ALL_TOOL_OPTIONS,
@@ -62,7 +70,11 @@ export type FeatChoiceKind =
   | 'magicInitiate'
   | 'spellChoice'
   | 'damageType'
-  | 'weaponMastery';
+  | 'weaponMastery'
+  | 'fightingStyle'
+  | 'eldritchInvocation'
+  | 'metamagic'
+  | 'maneuver';
 
 export interface FeatChoiceSchema {
   kinds: FeatChoiceKind[];
@@ -90,10 +102,16 @@ export interface FeatChoiceSchema {
   genericSpellReferences: string[];
   spellChoiceSchools: string[];
   alwaysPreparedSpellReferences: string[];
+  ritualSpellChoiceCountFormula?: 'PB';
+  ritualSpellLevel?: number;
   damageTypeOptions: string[];
   weaponMasteryChoiceCount: number;
   weaponMasteryRequirement?: string;
   weaponMasteryChangeOnLongRest: boolean;
+  fightingStyleChoiceCount: number;
+  eldritchInvocationChoiceCount: number;
+  metamagicChoiceCount: number;
+  maneuverChoiceCount: number;
   unsupportedChoiceTypes: string[];
 }
 
@@ -185,10 +203,13 @@ export const getFeatChoiceSchema = (item: StoredCompendiumItem): FeatChoiceSchem
   const fixedSpellcastingAbility = fixedSpellcastingAbilityRaw && abilitySet.has(fixedSpellcastingAbilityRaw)
     ? fixedSpellcastingAbilityRaw as AbilityScore
     : undefined;
+  const invocationSpellcastingAbilityChoice = asRecord(mechanics.invocationSpellcastingAbilityChoice);
   const spellcastingAbilityOptions = unique([
     ...asAbilities(mechanics.spellcastingAbilityChoice),
-    ...asAbilities(structuredSpellChoice.spellcastingAbilityChoice)
+    ...asAbilities(structuredSpellChoice.spellcastingAbilityChoice),
+    ...asAbilities(invocationSpellcastingAbilityChoice.options)
   ]);
+  if (spellcastingAbilityOptions.length) kinds.push('spellChoice');
   const pluralCantripCount = structuredSpellChoices
     .filter((entry) => asNumber(entry.spellLevel) === 0)
     .reduce((sum, entry) => sum + Math.max(0, Math.floor(asNumber(entry.count) ?? 0)), 0);
@@ -213,8 +234,11 @@ export const getFeatChoiceSchema = (item: StoredCompendiumItem): FeatChoiceSchem
     ...asStringArray(mechanics.alwaysPrepared),
     ...(structuredSpellChoice.alwaysPrepared === true ? [] : asStringArray(structuredSpellChoice.alwaysPrepared))
   ]);
+  const ritualSpellsPrepared = asRecord(mechanics.ritualSpellsPrepared);
+  const ritualSpellChoiceCountFormula = normalize(asString(ritualSpellsPrepared.countFormula) ?? '') === 'pb' ? 'PB' as const : undefined;
+  const ritualSpellLevel = ritualSpellChoiceCountFormula ? Math.max(0, Math.floor(asNumber(ritualSpellsPrepared.spellLevel) ?? 1)) : undefined;
   if (spellListOptions.length || cantripChoiceCount || level1SpellChoiceCount) kinds.push('magicInitiate');
-  if (genericSpellChoiceCount || spellChoiceSchools.length || alwaysPreparedSpellReferences.length) kinds.push('spellChoice');
+  if (genericSpellChoiceCount || spellChoiceSchools.length || alwaysPreparedSpellReferences.length || ritualSpellChoiceCountFormula) kinds.push('spellChoice');
 
   const damageTypeOptions = asStringArray(
     asRecord(mechanics.damageTypeChoice).options ?? mechanics.damageTypeChoice ?? asRecord(mechanics.energyResistanceChoice).damageTypes
@@ -227,12 +251,23 @@ export const getFeatChoiceSchema = (item: StoredCompendiumItem): FeatChoiceSchem
   const weaponMasteryChangeOnLongRest = asBoolean(masteryChoice.changeOnLongRest) ?? false;
   if (weaponMasteryChoiceCount > 0) kinds.push('weaponMastery');
 
-  const unsupportedChoiceTypes = [
-    Object.keys(asRecord(mechanics.invocationChoice)).length ? 'Eldritch Invocation' : undefined,
-    Object.keys(asRecord(mechanics.fightingStyleChoice)).length ? 'Fighting Style' : undefined,
-    Object.keys(asRecord(mechanics.metamagicChoice)).length ? 'Metamagic' : undefined,
-    Object.keys(asRecord(mechanics.maneuverChoice)).length ? 'Battle Master Maneuver' : undefined
-  ].filter((entry): entry is string => Boolean(entry));
+  const fightingStyleChoice = asRecord(mechanics.fightingStyleChoice);
+  const fightingStyleChoiceCount = Math.max(0, Math.floor(asNumber(fightingStyleChoice.count) ?? 0));
+  if (fightingStyleChoiceCount > 0) kinds.push('fightingStyle');
+
+  const invocationChoice = asRecord(mechanics.invocationChoice);
+  const eldritchInvocationChoiceCount = Math.max(0, Math.floor(asNumber(invocationChoice.count) ?? 0));
+  if (eldritchInvocationChoiceCount > 0) kinds.push('eldritchInvocation');
+
+  const metamagicChoice = asRecord(mechanics.metamagicChoice);
+  const metamagicChoiceCount = Math.max(0, Math.floor(asNumber(metamagicChoice.count) ?? 0));
+  if (metamagicChoiceCount > 0) kinds.push('metamagic');
+
+  const maneuverChoice = asRecord(mechanics.maneuverChoice);
+  const maneuverChoiceCount = Math.max(0, Math.floor(asNumber(maneuverChoice.count) ?? 0));
+  if (maneuverChoiceCount > 0) kinds.push('maneuver');
+
+  const unsupportedChoiceTypes: string[] = [];
 
   return {
     kinds: unique(kinds),
@@ -260,10 +295,16 @@ export const getFeatChoiceSchema = (item: StoredCompendiumItem): FeatChoiceSchem
     genericSpellReferences,
     spellChoiceSchools,
     alwaysPreparedSpellReferences,
+    ritualSpellChoiceCountFormula,
+    ritualSpellLevel,
     damageTypeOptions,
     weaponMasteryChoiceCount,
     weaponMasteryRequirement,
     weaponMasteryChangeOnLongRest,
+    fightingStyleChoiceCount,
+    eldritchInvocationChoiceCount,
+    metamagicChoiceCount,
+    maneuverChoiceCount,
     unsupportedChoiceTypes
   };
 };
@@ -286,6 +327,8 @@ export const emptyFeatChoice = (
   spellItemIds: [],
   weaponItemIds: [],
   weaponMasterySelections: [],
+  metamagicOptionIds: [],
+  maneuverOptionIds: [],
   abilityScoreIncreases: {}
 });
 
@@ -298,7 +341,7 @@ export const isSpellItemEligibleForGenericFeatChoice = (
   spellItem: StoredCompendiumItem,
   schema: FeatChoiceSchema
 ): boolean => {
-  if (spellItem.type !== 'spell' || schema.genericSpellChoiceCount <= 0) return false;
+  if (spellItem.type !== 'spell' || (schema.genericSpellChoiceCount <= 0 && !schema.ritualSpellChoiceCountFormula)) return false;
   const rawId = asString(asRecord(spellItem.rawJson).id);
   const explicit = schema.genericSpellReferences.some((reference) =>
     reference === spellItem.id || reference === spellItem.importItemId || reference === rawId
@@ -308,8 +351,18 @@ export const isSpellItemEligibleForGenericFeatChoice = (
   const level = Math.max(0, asNumber(asRecord(spellItem.normalizedJson).level) ?? 0);
   const onSourceList = sourceLists.length > 0 && classes.some((className) => sourceLists.includes(className));
   const levelAllowed = schema.genericSpellMaximumLevel === undefined || level <= schema.genericSpellMaximumLevel;
-  return explicit || (onSourceList && levelAllowed);
+  const ritualEligible = schema.ritualSpellChoiceCountFormula
+    ? level === (schema.ritualSpellLevel ?? 1) && asRecord(spellItem.normalizedJson).ritual === true
+    : false;
+  return ritualEligible || explicit || (onSourceList && levelAllowed);
 };
+
+export const getFeatGenericSpellChoiceCount = (
+  schema: FeatChoiceSchema,
+  character?: Pick<Character, 'level' | 'classes' | 'proficiencyBonusOverride'>
+): number => schema.ritualSpellChoiceCountFormula === 'PB' && character
+  ? getProficiencyBonus(character)
+  : schema.genericSpellChoiceCount;
 
 export const isWeaponItemEligibleForMasteryWithProficiencies = (
   weaponProficiencies: string[],
@@ -402,6 +455,10 @@ export const validateFeatChoice = (
   if (schema.toolChoiceCount > 0 && (choice.tools ?? []).length !== schema.toolChoiceCount) issues.push(issue('FEAT_TOOL_CHOICE_COUNT', `${item.name} exige ${schema.toolChoiceCount} escolha(s) de ferramenta.`));
   if (schema.mixedSkillToolChoiceCount > 0 && unique([...(choice.skills ?? []), ...(choice.tools ?? [])]).length !== schema.mixedSkillToolChoiceCount) issues.push(issue('FEAT_MIXED_PROFICIENCY_CHOICE_COUNT', `${item.name} exige ${schema.mixedSkillToolChoiceCount} escolha(s) no total entre perícias e ferramentas.`));
   if (schema.languageChoiceCount > 0 && unique(choice.languages ?? []).length !== schema.languageChoiceCount) issues.push(issue('FEAT_LANGUAGE_CHOICE_COUNT', `${item.name} exige ${schema.languageChoiceCount} escolha(s) de idioma.`));
+  if (schema.fightingStyleChoiceCount > 0) issues.push(...validateFightingStyleFeatChoice(choice, allItems, character));
+  if (schema.eldritchInvocationChoiceCount > 0) issues.push(...validateEldritchAdeptInvocationChoice(choice, allItems, character));
+  if (schema.metamagicChoiceCount > 0) issues.push(...validateMetamagicFeatChoice(choice, schema.metamagicChoiceCount));
+  if (schema.maneuverChoiceCount > 0) issues.push(...validateManeuverFeatChoice(choice, schema.maneuverChoiceCount));
 
   const normalizedSpellList = normalize(choice.spellList ?? '');
   const individualSpellLists = schema.spellListOptions.map(normalize);
@@ -444,9 +501,10 @@ export const validateFeatChoice = (
     }
   }
 
-  if (schema.genericSpellChoiceCount > 0) {
-    if (selectedSpellIds.length !== schema.genericSpellChoiceCount) {
-      issues.push(issue('FEAT_GENERIC_SPELL_CHOICE_COUNT', `${item.name} exige ${schema.genericSpellChoiceCount} escolha(s) de magia.`));
+  const effectiveGenericSpellChoiceCount = getFeatGenericSpellChoiceCount(schema, character);
+  if (effectiveGenericSpellChoiceCount > 0) {
+    if (selectedSpellIds.length !== effectiveGenericSpellChoiceCount) {
+      issues.push(issue('FEAT_GENERIC_SPELL_CHOICE_COUNT', `${item.name} exige ${effectiveGenericSpellChoiceCount} escolha(s) de magia.`));
     } else if (allItems.length) {
       for (const spellId of selectedSpellIds) {
         const spell = findByReference(allItems, spellId);
@@ -507,16 +565,11 @@ const freeCastResource = (
   choice: CharacterFeatChoice
 ): { character: Character; resource?: ResourcePool } => {
   const mechanics = asRecord(asRecord(featItem.normalizedJson).mechanics);
-  const directFreeCast = asRecord(mechanics.freeCast);
-  const spellChoiceFreeCast = asRecord(asRecord(mechanics.spellChoice).freeCast);
-  const pluralSpellChoiceWithFreeCast = (Array.isArray(mechanics.spellChoices) ? mechanics.spellChoices.map(asRecord) : [])
-    .find((entry) => Object.keys(asRecord(entry.freeCast)).length > 0);
-  const pluralFreeCast = asRecord(pluralSpellChoiceWithFreeCast?.freeCast);
-  const freeCast = Object.keys(directFreeCast).length
-    ? directFreeCast
-    : Object.keys(spellChoiceFreeCast).length
-      ? spellChoiceFreeCast
-      : pluralFreeCast;
+  // Only direct feat-level free casts are materialized here for immediate
+  // feedback in the editor (Magic Initiate / Telepathic). Structured per-spell
+  // grants are reconciled centrally by externalSpellGrantRules so they do not
+  // create an extra orphan resource.
+  const freeCast = asRecord(mechanics.freeCast);
   const uses = Math.max(0, asNumber(freeCast.uses) ?? 0);
   if (!uses) return { character };
   const resourceId = `feat_free_cast_${choice.featEntityId}`;
@@ -612,34 +665,21 @@ export const applyFeatChoiceEffects = (
       ...result.character,
       spells: result.character.spells.map((spell) => {
         if (beforeIds.has(spell.id)) return spell;
-        const directFreeCastRules = asRecord(mechanics.freeCast);
-        const singularSpellChoice = asRecord(mechanics.spellChoice);
-        const singularFreeCastRules = asRecord(singularSpellChoice.freeCast);
-        const pluralSpellChoice = (Array.isArray(mechanics.spellChoices) ? mechanics.spellChoices.map(asRecord) : [])
-          .find((entry) => Object.keys(asRecord(entry.freeCast)).length > 0);
-        const freeCastRules = Object.keys(directFreeCastRules).length
-          ? directFreeCastRules
-          : Object.keys(singularFreeCastRules).length
-            ? { ...singularFreeCastRules, spellLevel: singularSpellChoice.spellLevel }
-            : pluralSpellChoice
-              ? { ...asRecord(pluralSpellChoice.freeCast), spellLevel: pluralSpellChoice.spellLevel }
-              : {};
-        const configuredSpellLevel = asNumber(freeCastRules.spellLevel);
-        const isFreeCastSpell = Boolean(freeCast.resource) && (configuredSpellLevel === undefined || spell.level === configuredSpellLevel);
         return {
           ...spell,
           spellcastingClassName: featItem.name,
           spellcastingAbility: choice.spellcastingAbility ?? schema.fixedSpellcastingAbility ?? spell.spellcastingAbility,
           grantedByFeatEntityId: choice.featEntityId,
           prepared: true,
-          consumes: isFreeCastSpell
-            ? unique([...(spell.consumes ?? []), { resourceId: freeCast.resource!.id, amount: 1, label: freeCast.resource!.name }])
-            : spell.consumes
+          // The normal spell action must keep its normal slot behavior. FIX44
+          // materializes the no-slot feat cast as a separate action/resource.
+          consumes: spell.consumes
         };
       })
     };
   }
 
+  next = applyFeatSubchoiceEffects(next, featItem, choice, allItems);
   return recalculateCharacterAbilities(next);
 };
 
@@ -657,9 +697,20 @@ export const validateFeatChoiceSequence = (
   const issues: RuleValidationIssue[] = [];
   let projected = { ...baseAbilities };
   const previousByItem = new Map<string, CharacterFeatChoice[]>();
+  const selectedDirectFightingStyleIds = new Set(
+    instances.filter(({ item }) => normalize(asString(asRecord(item.normalizedJson).category) ?? '') === 'fightingstyle').map(({ item }) => item.id)
+  );
+  const selectedNestedFightingStyleIds = new Set<string>();
   for (const { item, choice } of instances) {
     issues.push(...validateFeatChoice(item, choice, projected, allItems, character));
     issues.push(...validateFeatChoiceUniqueness(item, choice, previousByItem.get(item.id) ?? []));
+    if (choice?.fightingStyleItemId) {
+      if (selectedDirectFightingStyleIds.has(choice.fightingStyleItemId) || selectedNestedFightingStyleIds.has(choice.fightingStyleItemId)) {
+        const style = allItems.find((candidate) => candidate.id === choice.fightingStyleItemId);
+        issues.push(issue('FEAT_FIGHTING_STYLE_ALREADY_SELECTED', `${style?.name ?? 'O Fighting Style escolhido'} já foi selecionado por outra fonte nesta progressão.`));
+      }
+      selectedNestedFightingStyleIds.add(choice.fightingStyleItemId);
+    }
     if (choice) previousByItem.set(item.id, [...(previousByItem.get(item.id) ?? []), choice]);
     for (const ability of ABILITY_ORDER) projected[ability] = Math.min(30, projected[ability] + (choice?.abilityScoreIncreases?.[ability] ?? 0));
   }

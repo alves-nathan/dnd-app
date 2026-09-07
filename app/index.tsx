@@ -11,12 +11,6 @@ import { Screen } from '../src/components/Screen';
 import { useCompendiumStore } from '../src/store/compendiumStore';
 import { useCharacterStore } from '../src/store/characterStore';
 import { usePortableRestoreSessionStore } from '../src/store/portableRestoreSessionStore';
-import { useCatalogUpdateSessionStore } from '../src/store/catalogUpdateSessionStore';
-import { useCatalogTransparencyStore } from '../src/store/catalogTransparencyStore';
-import { useCatalogDistributionStore } from '../src/store/catalogDistributionStore';
-import { useCatalogPublicationStore } from '../src/store/catalogPublicationStore';
-import { useCatalogRolloutHealthStore } from '../src/store/catalogRolloutHealthStore';
-import { useCatalogRolloutAggregationStore } from '../src/store/catalogRolloutAggregationStore';
 import { analyzeTurnRotation } from '../src/rules-engine/turns/analyzeTurn';
 import { getArmorClass, getProficiencyBonus, getTotalLevel } from '../src/rules-engine/characters/derivedStats';
 import { characterClassSummary, characterCompletion, nextCharacterStep } from '../src/ui/characterPresentation';
@@ -32,15 +26,6 @@ export default function HomeScreen() {
   const progressionRecovery = useCharacterStore((state) => state.progressionRecovery);
   const restoreSession = usePortableRestoreSessionStore((state) => state.activeSession);
   const restoreEvidence = usePortableRestoreSessionStore((state) => state.evidenceRecords);
-  const catalogUpdateSession = useCatalogUpdateSessionStore((state) => state.activeSession);
-  const remoteCatalogManifests = useCatalogTransparencyStore((state) => state.remoteManifests);
-  const remoteCatalogUpdates = Object.values(remoteCatalogManifests).filter((entry) => entry.status === 'updateAvailable').length;
-  const eligibleCatalogPublications = useCatalogPublicationStore((state) => state.eligibilityEvidence.filter((entry) => entry.eligible).length);
-  const selectedCatalogChannel = useCatalogPublicationStore((state) => state.selectedChannel);
-  const rolloutHealthAttention = useCatalogRolloutHealthStore((state) => state.evidence.filter((entry) => entry.status === 'unhealthy' || entry.status === 'watch').length);
-  const rolloutQuorumAttention = useCatalogRolloutAggregationStore((state) => state.decisions.filter((entry) => entry.status === 'pending' || entry.status === 'rejected').length);
-  const cachedCatalogBundles = useCatalogDistributionStore((state) => Object.keys(state.cachedBundles).length);
-  const interruptedCatalogDownloads = useCatalogDistributionStore((state) => Object.values(state.sessions).filter((entry) => ['paused', 'failed'].includes(entry.status)).length);
   const compendiumItems = useCompendiumStore((state) => state.items);
   const enabledSources = useCompendiumStore((state) => state.enabledSourceIds);
   const [showTools, setShowTools] = useState(false);
@@ -84,46 +69,6 @@ export default function HomeScreen() {
         </View>
         <Text style={[styles.libraryStatus, { color: colors.onPrimaryContainer }]}>{validatedCount} itens validados · {enabledSources.length} fontes ativas</Text>
       </Card>
-
-      {remoteCatalogUpdates ? (
-        <Card variant="filled" title={`${remoteCatalogUpdates} atualização(ões) assinada(s) anunciada(s)`} subtitle="O manifesto remoto foi verificado, mas nenhum catálogo foi baixado ou aplicado automaticamente.">
-          <Button testID="open-catalog-transparency" label="Revisar transparência" icon="git-network-outline" onPress={() => router.push('/catalog-transparency')} />
-        </Card>
-      ) : null}
-
-      {eligibleCatalogPublications ? (
-        <Card variant="filled" title={`${eligibleCatalogPublications} publicação(ões) elegível(is) no canal ${selectedCatalogChannel}`} subtitle="A elegibilidade foi assinada e avaliada localmente. Nenhum download ou aplicação ocorre automaticamente.">
-          <Button testID="open-catalog-publication" label="Revisar canais e rollout" icon="git-branch-outline" onPress={() => router.push('/catalog-publication')} />
-        </Card>
-      ) : null}
-
-      {rolloutHealthAttention ? (
-        <Card variant="filled" title={`${rolloutHealthAttention} avaliação(ões) de rollout exigem revisão`} subtitle="A recomendação é local e não pausa, reduz ou reverte publicações automaticamente.">
-          <Button testID="open-rollout-health-attention" label="Revisar saúde do rollout" icon="pulse-outline" onPress={() => router.push('/catalog-rollout-health')} />
-        </Card>
-      ) : null}
-
-      {rolloutQuorumAttention ? (
-        <Card variant="filled" title={`${rolloutQuorumAttention} decisão(ões) de release aguardam revisão`} subtitle="Relatórios agregados e votos independentes nunca executam uma mudança automaticamente.">
-          <Button testID="open-rollout-quorum-attention" label="Revisar agregação e quórum" icon="people-circle-outline" onPress={() => router.push('/catalog-rollout-aggregation')} />
-        </Card>
-      ) : null}
-
-      {cachedCatalogBundles || interruptedCatalogDownloads ? (
-        <Card variant="filled" title={interruptedCatalogDownloads ? `${interruptedCatalogDownloads} download(s) de catálogo aguardando retomada` : `${cachedCatalogBundles} bundle(s) de catálogo disponível(is) offline`} subtitle="O cache foi verificado e nenhuma atualização é aplicada sem abrir o preview transacional.">
-          <Button testID="open-catalog-distribution" label="Abrir distribuição offline" icon="download-outline" onPress={() => router.push('/catalog-distribution')} />
-        </Card>
-      ) : null}
-
-      {catalogUpdateSession && !['rolledBack', 'failed'].includes(catalogUpdateSession.status) ? (
-        <Card
-          variant="filled"
-          title={`Atualização do catálogo: ${catalogUpdateSession.status}`}
-          subtitle={catalogUpdateSession.status === 'interrupted' ? 'A troca de versão foi interrompida e precisa ser retomada.' : `${catalogUpdateSession.diff.fromVersion} → ${catalogUpdateSession.diff.toVersion}`}
-        >
-          <Button testID="open-catalog-update-session" label="Revisar atualização do catálogo" icon="cloud-download-outline" onPress={() => router.push('/catalog-update')} />
-        </Card>
-      ) : null}
 
       {restoreSession && !['rolledBack', 'discarded'].includes(restoreSession.status) ? (
         <Card

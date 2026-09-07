@@ -1,6 +1,6 @@
 import type { Character, SpellSlotLevel, SpellSlotPool } from '../types';
 import type { StoredCompendiumItem } from '../compendium/types';
-import { getClassSpellcastingProfile } from './spellcastingRules';
+import { getActiveSubclassItemForClass, getClassOrSubclassSpellcastingProfile } from './spellcastingRules';
 import { toSpellSlotLevel } from '../rules-engine/resources/spellSlotManager';
 
 const asRecord = (value: unknown): Record<string, unknown> =>
@@ -23,7 +23,10 @@ const classBindings = (character: Character, items: StoredCompendiumItem[]) =>
       (entry) => entry.appliedAs === 'class' && entry.appliedEntityId === classEntity.id && entry.status === 'active'
     );
     const item = items.find((candidate) => candidate.id === link?.itemId);
-    return item ? [{ entity: classEntity, item }] : [];
+    if (!item) return [];
+    const subclassItem = getActiveSubclassItemForClass(character, classEntity.id, items);
+    const profile = getClassOrSubclassSpellcastingProfile(item, classEntity.level, subclassItem, items);
+    return [{ entity: classEntity, item, profile }];
   });
 
 const slotsForClassLevel = (item: StoredCompendiumItem, classLevel: number): Record<string, unknown> => {
@@ -52,13 +55,10 @@ export const deriveCharacterSpellSlots = (
   items: StoredCompendiumItem[]
 ): DerivedSpellSlots => {
   const bindings = classBindings(character, items);
-  const regular = bindings.filter(({ item, entity }) => {
-    const profile = getClassSpellcastingProfile(item, entity.level);
-    return profile && profile.progression !== 'pactMagic';
-  });
-  const pact = bindings.filter(({ item, entity }) => getClassSpellcastingProfile(item, entity.level)?.progression === 'pactMagic');
-  const contributions = regular.map(({ item, entity }) => {
-    const progression = getClassSpellcastingProfile(item, entity.level)?.progression;
+  const regular = bindings.filter(({ profile }) => profile && profile.progression !== 'pactMagic');
+  const pact = bindings.filter(({ profile }) => profile?.progression === 'pactMagic');
+  const contributions = regular.map(({ profile, entity }) => {
+    const progression = profile?.progression;
     if (progression === 'fullCaster') return entity.level;
     if (progression === 'halfCaster') return Math.ceil(entity.level / 2);
     if (progression === 'thirdCaster') return Math.floor(entity.level / 3);
@@ -67,7 +67,7 @@ export const deriveCharacterSpellSlots = (
   const effectiveCasterLevel = contributions.reduce((sum, value) => sum + value, 0);
 
   const regularSlots = regular.length === 1
-    ? slotsForClassLevel(regular[0]!.item, regular[0]!.entity.level)
+    ? (regular[0]!.profile?.slotCounts ?? {})
     : effectiveCasterLevel > 0
       ? canonicalMulticlassSlots(items, effectiveCasterLevel)
       : {};

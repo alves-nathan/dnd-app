@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../src/components/Button';
 import { Card } from '../../src/components/Card';
@@ -49,7 +49,7 @@ import {
   isOriginFeatItem,
   itemReferenceMatches
 } from '../../src/characters/creationData';
-import { buildProficiencySelection } from '../../src/characters/proficiencyRules';
+import { buildProficiencySelection, reconcileClassSkillChoices } from '../../src/characters/proficiencyRules';
 import {
   backgroundChoiceForRequirement,
   getBackgroundChoiceRequirements,
@@ -57,6 +57,41 @@ import {
   validateBackgroundChoices
 } from '../../src/characters/backgroundChoiceRules';
 import { isPlayerCharacterClassItem, isSidekickClassItem } from '../../src/characters/classSelectionRules';
+import {
+  getExplicitProgressionSelectionReviewItems,
+  REVIEWABLE_CHARACTER_CHOICE_STATUSES
+} from '../../src/characters/characterChoiceAvailability';
+import { prefer2024FirstCharacterChoices } from '../../src/characters/characterChoiceCandidates';
+import {
+  getProgressionStepReadinessIssues,
+  pruneProgressionFeatCounts,
+  pruneSelectedSubclassByClass
+} from '../../src/characters/progressionStepReadiness';
+import {
+  applyClassFeatureChoiceAlternativesToFeatRequirements,
+  classFeatureChoiceForRequirement,
+  getClassFeatureChoiceProficiencyGrants,
+  getSpellAffectingClassFeatureChoiceRequirements,
+  pruneClassFeatureChoices,
+  setClassFeatureChoiceOption,
+  validateClassFeatureChoices
+} from '../../src/characters/classFeatureChoiceRules';
+import { resolveCharacterSpellAccess } from '../../src/characters/characterSpellAccess';
+import { reconcileAutomaticSpellAccess } from '../../src/characters/automaticSpellAccessRules';
+import {
+  bonusSpellChoiceForRequirement,
+  getBonusSpellChoiceCandidates,
+  pruneBonusSpellChoices,
+  toggleBonusSpellChoiceSpell,
+  validateBonusSpellChoices
+} from '../../src/characters/bonusSpellChoiceRules';
+import {
+  getNestedSpeciesVariantsForBase,
+  getSpeciesVariantBaseItem,
+  getSpeciesVariantLabel,
+  getSpeciesVariantRelationshipDescription,
+  getTopLevelSpeciesChoices
+} from '../../src/characters/speciesVariantRules';
 import {
   CUSTOM_BACKGROUND_ABILITY_COUNT,
   CUSTOM_BACKGROUND_EQUIPMENT_BUDGET_COPPER,
@@ -84,9 +119,19 @@ import {
   getLevelAvailableEldritchInvocations,
   getSelectedWarlockLevel,
   isEldritchInvocationRepeatable,
+  pruneEldritchInvocationCounts,
   validateEldritchInvocationSelection
 } from '../../src/characters/eldritchInvocationRules';
 import { getEldritchInvocationCardAction, isEldritchInvocationCardDisabled } from '../../src/characters/eldritchInvocationInteraction';
+import {
+  getEldritchAdeptInvocationCandidates,
+  getFightingStyleFeatChoiceCandidates
+} from '../../src/characters/featSubchoiceRules';
+import {
+  describeFeatOption,
+  getMartialAdeptManeuverOptions,
+  getMetamagicFeatOptions
+} from '../../src/characters/featOptionCatalog';
 import { applyEldritchInvocationSelection } from '../../src/characters/eldritchInvocationSelection';
 import {
   applyEldritchInvocationChoices,
@@ -97,6 +142,7 @@ import {
   emptyFeatChoice,
   featChoiceKey,
   getFeatChoiceSchema,
+  getFeatGenericSpellChoiceCount,
   isSpellItemEligibleForGenericFeatChoice,
   isWeaponItemEligibleForMasteryWithProficiencies,
   validateFeatChoiceSequence
@@ -114,10 +160,30 @@ import {
 } from '../../src/characters/higherLevelStartingRules';
 import { reconcileCharacterSpellSlots } from '../../src/characters/spellSlotProgression';
 import { learnSpellbookSpell, prepareSpellbookSpell } from '../../src/characters/spellbookRules';
+import {
+  getAutomaticWizardSpellbookGrantReferences,
+  getWizardSpellbookFeatureCandidates,
+  getWizardSpellbookFeatureRequirements,
+  pruneWizardSpellbookFeatureChoices,
+  spellbookFeatureChoiceForRequirement,
+  toggleWizardSpellbookFeatureChoiceSpell,
+  validateWizardSpellbookFeatureChoices
+} from '../../src/characters/wizardSpellbookRules';
+import {
+  getMysticArcanumCandidates,
+  getMysticArcanumRequirements,
+  mysticArcanumChoiceForRequirement,
+  pruneMysticArcanumChoices,
+  reconcileMysticArcanum,
+  setMysticArcanumChoice,
+  validateMysticArcanumChoices,
+  type MysticArcanumChoiceContext
+} from '../../src/characters/warlockMysticArcanumRules';
 import { reconcileCharacterBuild } from '../../src/characters/buildReconciliation';
 import {
   getClassFeaturePreview,
   getClassSelectionDescription,
+  getSelectionShortDescription,
   getSpeciesFeaturePreview,
   getSpeciesSelectionDescription
 } from '../../src/characters/selectionPreview';
@@ -130,15 +196,18 @@ import {
 import {
   applyAutomaticSpeciesProgression,
   applyDirectSpeciesChoiceEffects,
+  getSpeciesChoiceOptionFeatureItem,
   getSpeciesChoiceProficiencyGrants,
   getSpeciesChoiceRequirements,
   getSpeciesFeatChoiceRequirement,
   getSpeciesFeatureItems,
+  getSpeciesGrantedSpellReferences,
   setSpeciesChoiceOption,
   setSpeciesChoiceSkill,
   setSpeciesChoiceSpellcastingAbility,
   speciesChoiceForRequirement,
-  validateSpeciesChoices
+  validateSpeciesChoices,
+  type SpeciesChoiceRequirement
 } from '../../src/characters/speciesChoiceRules';
 import { SKILLS } from '../../src/characters/proficiencies';
 import {
@@ -155,6 +224,11 @@ import {
   validateSpellAssignments
 } from '../../src/characters/spellcastingRules';
 import {
+  getClassSpellListReferences,
+  getFeatSpellListAdditionReferences,
+  getSpeciesSpellListReferences
+} from '../../src/characters/spellListRules';
+import {
   reconcileSpellAssignmentReferences
 } from '../../src/characters/spellAssignmentReferences';
 import {
@@ -163,6 +237,7 @@ import {
   getSubclassUnlockLevel
 } from '../../src/compendium/classProgression';
 import { applyCompendiumItemToCharacter } from '../../src/compendium/mapper';
+import { applyCharacterChoice } from '../../src/catalog/characterChoiceApplication';
 import type { StoredCompendiumItem } from '../../src/compendium/types';
 import { createEmptyCharacter, manualSource } from '../../src/data/mockData';
 import { CHARACTER_CREATION_DRAFT_VERSION, type CharacterCreationDraft } from '../../src/characters/creationDraft';
@@ -170,7 +245,6 @@ import { characterCreationDraftRepository } from '../../src/characters/creationD
 import { useCharacterStore } from '../../src/store/characterStore';
 import { useCompendiumStore } from '../../src/store/compendiumStore';
 import { useCharacterChoiceBridge } from '../../src/catalog/useCharacterChoiceBridge';
-import { getCompendiumReviewTargetId } from '../../src/catalog/compendiumReviewTarget';
 import { useAppTheme } from '../../src/theme';
 import { createId } from '../../src/utils/id';
 import type {
@@ -180,10 +254,14 @@ import type {
   AbilityScores,
   Character,
   CharacterBackgroundChoice,
+  CharacterBonusSpellChoice,
+  CharacterClassFeatureChoice,
   CharacterEldritchInvocationChoice,
   CharacterEquipmentSelection,
   CharacterFeatChoice,
   CharacterHigherLevelStartingBenefits,
+  CharacterMysticArcanumChoice,
+  CharacterSpellbookFeatureChoice,
   CharacterSpeciesChoice,
   CharacterSubclassChoice
 } from '../../src/types';
@@ -254,6 +332,10 @@ export default function NewCharacterScreen() {
   const [customEquipmentSearch, setCustomEquipmentSearch] = useState('');
   const [selectedSubclassByClass, setSelectedSubclassByClass] = useState<Record<string, string>>({});
   const [subclassChoices, setSubclassChoices] = useState<CharacterSubclassChoice[]>([]);
+  const [classFeatureChoices, setClassFeatureChoices] = useState<CharacterClassFeatureChoice[]>([]);
+  const [bonusSpellChoices, setBonusSpellChoices] = useState<CharacterBonusSpellChoice[]>([]);
+  const [spellbookFeatureChoices, setSpellbookFeatureChoices] = useState<CharacterSpellbookFeatureChoice[]>([]);
+  const [mysticArcanumChoices, setMysticArcanumChoices] = useState<CharacterMysticArcanumChoice[]>([]);
   const [selectedOriginFeatId, setSelectedOriginFeatId] = useState<string>();
   const [selectedFeatCounts, setSelectedFeatCounts] = useState<Record<string, number>>({});
   const [selectedInvocationCounts, setSelectedInvocationCounts] = useState<Record<string, number>>({});
@@ -281,12 +363,13 @@ export default function NewCharacterScreen() {
   const [draftHydrated, setDraftHydrated] = useState(false);
   const [draftUpdatedAt, setDraftUpdatedAt] = useState<string>();
   const [draftSaveError, setDraftSaveError] = useState<string>();
+  const [discardDraftConfirmationVisible, setDiscardDraftConfirmationVisible] = useState(false);
+  const discardingDraftRef = useRef(false);
 
   const addCharacter = useCharacterStore((state) => state.addCharacter);
   const updateCharacter = useCharacterStore((state) => state.updateCharacter);
   const choiceBridge = useCharacterChoiceBridge();
   const { items, enabledSourceIds, searchItems, catalogSnapshotId, choiceForItemId } = choiceBridge;
-  const updateItemsReview = useCompendiumStore((state) => state.updateItemsReview);
   const hydrate = useCompendiumStore((state) => state.hydrate);
   const isHydrated = useCompendiumStore((state) => state.isHydrated);
   const isHydrating = useCompendiumStore((state) => state.isHydrating);
@@ -314,6 +397,10 @@ export default function NewCharacterScreen() {
         setCustomBackground(draft.customBackground ?? createDefaultCustomBackgroundChoice());
         setSelectedSubclassByClass(draft.selectedSubclassByClass);
         setSubclassChoices(draft.subclassChoices ?? []);
+        setClassFeatureChoices(draft.classFeatureChoices ?? []);
+        setBonusSpellChoices(draft.bonusSpellChoices ?? []);
+        setSpellbookFeatureChoices(draft.spellbookFeatureChoices ?? []);
+        setMysticArcanumChoices(draft.mysticArcanumChoices ?? []);
         setSelectedOriginFeatId(draft.selectedOriginFeatId);
         setSelectedFeatCounts(draft.selectedFeatCounts);
         setSelectedInvocationCounts(draft.selectedInvocationCounts);
@@ -353,9 +440,10 @@ export default function NewCharacterScreen() {
   }, []);
 
   const classes = useMemo(
-    () => searchItems(classSearch, { types: ['class'], statuses: ['validated'], onlyEnabled: true })
-      .filter(isPlayerCharacterClassItem)
-      .slice(0, 30),
+    () => prefer2024FirstCharacterChoices(
+      searchItems(classSearch, { types: ['class'], statuses: REVIEWABLE_CHARACTER_CHOICE_STATUSES, onlyEnabled: true })
+        .filter(isPlayerCharacterClassItem)
+    ).slice(0, 30),
     [classSearch, enabledSourceIds, items, searchItems]
   );
   const classChoices = useMemo(
@@ -375,12 +463,20 @@ export default function NewCharacterScreen() {
   const classSearchHasNoMatches = Boolean(classSearch.trim()) &&
     classChoices.some((choice) => choice.available) &&
     classes.length === 0;
-  const species = useMemo(
-    () => searchItems('', { types: ['species'], statuses: ['validated'], onlyEnabled: true }).slice(0, 30),
+  const allSpeciesChoices = useMemo(
+    () => prefer2024FirstCharacterChoices(
+      searchItems('', { types: ['species'], statuses: REVIEWABLE_CHARACTER_CHOICE_STATUSES, onlyEnabled: true })
+    ),
     [enabledSourceIds, items, searchItems]
   );
+  const species = useMemo(
+    () => getTopLevelSpeciesChoices(allSpeciesChoices),
+    [allSpeciesChoices]
+  );
   const backgrounds = useMemo(
-    () => searchItems('', { types: ['background'], statuses: ['validated'], onlyEnabled: true }).slice(0, 30),
+    () => prefer2024FirstCharacterChoices(
+      searchItems('', { types: ['background'], statuses: REVIEWABLE_CHARACTER_CHOICE_STATUSES, onlyEnabled: true })
+    ),
     [enabledSourceIds, items, searchItems]
   );
   const selectableFeatCandidates = useMemo(
@@ -418,6 +514,10 @@ export default function NewCharacterScreen() {
     customBackground,
     selectedSubclassByClass,
     subclassChoices,
+    classFeatureChoices,
+    bonusSpellChoices,
+    spellbookFeatureChoices,
+    mysticArcanumChoices,
     selectedOriginFeatId,
     selectedFeatCounts,
     selectedInvocationCounts,
@@ -473,6 +573,10 @@ export default function NewCharacterScreen() {
     selectedSpeciesFeatId,
     selectedSubclassByClass,
     subclassChoices,
+    classFeatureChoices,
+    bonusSpellChoices,
+    spellbookFeatureChoices,
+    mysticArcanumChoices,
     spellAssignments,
     spellSearch,
     spellbookAssignments,
@@ -482,8 +586,9 @@ export default function NewCharacterScreen() {
   ]);
 
   useEffect(() => {
-    if (!draftHydrated) return;
+    if (!draftHydrated || discardingDraftRef.current) return;
     const timer = setTimeout(() => {
+      if (discardingDraftRef.current) return;
       const updatedAt = new Date().toISOString();
       void characterCreationDraftRepository
         .save({ ...currentDraft, updatedAt })
@@ -542,20 +647,20 @@ export default function NewCharacterScreen() {
     ? createCustomBackgroundCompendiumItem(customBackground)
     : items.find((item) => item.id === selectedBackgroundId);
   const selectedSpecies = items.find((item) => item.id === selectedSpeciesId);
+  const selectedSpeciesBase = useMemo(
+    () => getSpeciesVariantBaseItem(selectedSpecies, allSpeciesChoices) ?? selectedSpecies,
+    [selectedSpeciesId, allSpeciesChoices]
+  );
+  const selectedSpeciesVariants = useMemo(
+    () => getNestedSpeciesVariantsForBase(selectedSpeciesBase, allSpeciesChoices),
+    [selectedSpeciesBase?.id, allSpeciesChoices]
+  );
   const backgroundChoiceRequirements = useMemo(() => getBackgroundChoiceRequirements(selectedBackground), [selectedBackgroundId, selectedBackground?.id]);
   const backgroundChoiceIssues = useMemo(() => validateBackgroundChoices(backgroundChoiceRequirements, backgroundChoices), [backgroundChoiceRequirements, backgroundChoices]);
   const backgroundDefaults = backgroundSuggestions(selectedBackground);
   const backgroundAbilityOptions = getBackgroundAbilityOptions(selectedBackground);
   const backgroundUsesFreeAbilitySelection = Boolean(selectedBackground && backgroundDefaults.abilityOptions.length === 0);
   const speciesAbilityScoreIncreaseIgnored = speciesHasIgnoredAbilityScoreIncrease(selectedSpecies);
-  const backgroundSkillKey = backgroundDefaults.proficiencies.skills.join('|');
-  useEffect(() => {
-    if (!backgroundDefaults.proficiencies.skills.length) return;
-    setClassSkillChoices((current) => {
-      const next = current.filter((skill) => !backgroundDefaults.proficiencies.skills.includes(skill));
-      return next.length === current.length ? current : next;
-    });
-  }, [selectedBackgroundId, backgroundSkillKey]);
   const suggestedOriginFeat = backgroundDefaults.featIds
     .map((reference) => originFeatCandidates.find((feat) => itemReferenceMatches(feat, reference)))
     .find(Boolean);
@@ -620,15 +725,21 @@ export default function NewCharacterScreen() {
     () => selectedClassItems.map(({ item: classItem, level }) => ({
       classItem,
       level,
-      subclasses: searchItems('', { types: ['subclass'], statuses: ['validated'], onlyEnabled: true })
-        .filter((subclass) =>
-          getCompendiumClassReference(subclass) === classItem.importItemId &&
-          getSubclassUnlockLevel(subclass) <= level
-        )
-        .slice(0, 20)
+      subclasses: prefer2024FirstCharacterChoices(
+        searchItems('', { types: ['subclass'], statuses: REVIEWABLE_CHARACTER_CHOICE_STATUSES, onlyEnabled: true })
+          .filter((subclass) =>
+            getCompendiumClassReference(subclass) === classItem.importItemId &&
+            getSubclassUnlockLevel(subclass) <= level
+          )
+      )
     })),
     [enabledSourceIds, items, searchItems, selectedClassLevels]
   );
+
+  useEffect(() => {
+    if (choiceBridge.status !== 'ready') return;
+    setSelectedSubclassByClass((current) => pruneSelectedSubclassByClass(current, eligibleSubclasses));
+  }, [choiceBridge.status, eligibleSubclasses]);
 
   const selectedSubclassEntries = useMemo(() => eligibleSubclasses.flatMap(({ classItem, level, subclasses }) => {
     const selectedId = selectedSubclassByClass[classItem.id];
@@ -652,6 +763,29 @@ export default function NewCharacterScreen() {
       getSubclassSpellListReferences(subclassItem, subclassChoices, items, classLevel)
     ])
   ), [items, selectedSubclassEntries, subclassChoices]);
+  const classSpellReferencesByClassItemId = useMemo(() => Object.fromEntries(
+    selectedClassItems.map(({ item, level }) => [
+      item.id,
+      getClassSpellListReferences(item, items, level)
+    ])
+  ), [items, selectedClassLevels]);
+  const speciesSpellReferencesByClassItemId = useMemo(() => Object.fromEntries(
+    selectedClassItems.map(({ item }) => [
+      item.id,
+      getSpeciesSpellListReferences(selectedSpecies, speciesChoices, items, desiredLevel, item.name)
+    ])
+  ), [items, selectedClassLevels, selectedSpeciesId, speciesChoices, desiredLevel]);
+  const additionalSpellReferencesByClassItemId = useMemo(() => Object.fromEntries(
+    selectedClassItems.map(({ item }) => [
+      item.id,
+      Array.from(new Set([
+        ...(classSpellReferencesByClassItemId[item.id] ?? []),
+        ...(subclassSpellReferencesByClassItemId[item.id] ?? []),
+        ...(speciesSpellReferencesByClassItemId[item.id] ?? []),
+        ...[selectedOriginFeat, selectedSpeciesFeat, ...Object.entries(selectedFeatCounts).flatMap(([featItemId, count]) => Array.from({ length: count }, () => items.find((candidate) => candidate.id === featItemId))).filter((candidate): candidate is StoredCompendiumItem => Boolean(candidate))].flatMap((featItem) => getFeatSpellListAdditionReferences(featItem))
+      ]))
+    ])
+  ), [selectedClassLevels, classSpellReferencesByClassItemId, subclassSpellReferencesByClassItemId, speciesSpellReferencesByClassItemId, selectedOriginFeatId, selectedSpeciesFeatId, selectedFeatCounts, items]);
 
   useEffect(() => {
     if (choiceBridge.status !== 'ready') return;
@@ -666,20 +800,97 @@ export default function NewCharacterScreen() {
     });
   }, [choiceBridge.status, subclassChoiceRequirements]);
 
-  const featRequirements = useMemo(
-    () => getProgressionFeatChoiceRequirements(selectedClassItems, items),
+  const classFeatureChoiceRequirements = useMemo(
+    () => getSpellAffectingClassFeatureChoiceRequirements(selectedClassItems, items),
     [items, selectedClassLevels]
   );
+  const classFeatureChoiceIssues = useMemo(
+    () => validateClassFeatureChoices(classFeatureChoiceRequirements, classFeatureChoices),
+    [classFeatureChoiceRequirements, classFeatureChoices]
+  );
+  const classFeatureChoiceProficiencyGrants = useMemo(
+    () => getClassFeatureChoiceProficiencyGrants(classFeatureChoiceRequirements, classFeatureChoices),
+    [classFeatureChoiceRequirements, classFeatureChoices]
+  );
+
+  useEffect(() => {
+    if (choiceBridge.status !== 'ready') return;
+    setClassFeatureChoices((current) => {
+      const pruned = pruneClassFeatureChoices(current, classFeatureChoiceRequirements);
+      return pruned.length === current.length && pruned.every((choice, index) =>
+        choice.classItemId === current[index]?.classItemId &&
+        choice.featureItemId === current[index]?.featureItemId &&
+        choice.optionId === current[index]?.optionId
+      ) ? current : pruned;
+    });
+  }, [choiceBridge.status, classFeatureChoiceRequirements]);
+
+  const featRequirements = useMemo(
+    () => applyClassFeatureChoiceAlternativesToFeatRequirements(
+      getProgressionFeatChoiceRequirements(selectedClassItems, items),
+      classFeatureChoiceRequirements,
+      classFeatureChoices
+    ),
+    [items, selectedClassLevels, classFeatureChoiceRequirements, classFeatureChoices]
+  );
+
+  useEffect(() => {
+    if (choiceBridge.status !== 'ready') return;
+    setSelectedFeatCounts((current) => pruneProgressionFeatCounts(current, items, featRequirements));
+  }, [
+    choiceBridge.status,
+    featRequirements.general,
+    featRequirements.fightingStyle,
+    featRequirements.epicBoon,
+    items
+  ]);
+
   const selectedGeneralCount = countSelectedFeatsByCategory(selectedFeatCounts, items, 'general');
   const selectedFightingStyleCount = countSelectedFeatsByCategory(selectedFeatCounts, items, 'fightingStyle');
   const selectedEpicBoonCount = countSelectedFeatsByCategory(selectedFeatCounts, items, 'epicBoon');
 
   const warlockLevel = getSelectedWarlockLevel(selectedClassItems);
+
+  // A resumed draft can retain Warlock-only choices after the user removes the
+  // last Warlock level. Those orphaned invocation selections previously kept
+  // the entire progression step blocked even after switching to Wizard or
+  // another class. Prune them as soon as Warlock is no longer selected.
+  useEffect(() => {
+    if (warlockLevel > 0) return;
+    if (Object.values(selectedInvocationCounts).some((count) => count > 0)) {
+      setSelectedInvocationCounts({});
+    }
+    if (eldritchInvocationChoices.length) setEldritchInvocationChoices([]);
+  }, [warlockLevel]);
+
+  useEffect(() => {
+    const selectedIds = new Set(
+      Object.entries(selectedInvocationCounts)
+        .filter(([, count]) => Math.max(0, Math.floor(count)) > 0)
+        .map(([itemId]) => itemId)
+    );
+    setEldritchInvocationChoices((current) => {
+      const pruned = current.filter((choice) =>
+        selectedIds.has(choice.invocationItemId)
+        && choice.instanceIndex < Math.max(0, Math.floor(selectedInvocationCounts[choice.invocationItemId] ?? 0))
+      );
+      return pruned.length === current.length ? current : pruned;
+    });
+  }, [selectedInvocationCounts]);
+
   const invocationLimit = getEldritchInvocationLimit(warlockLevel, selectedClassItems, items);
   const invocationCandidates = useMemo(
     () => getLevelAvailableEldritchInvocations(items, enabledSourceIds, warlockLevel),
     [enabledSourceIds, items, warlockLevel]
   );
+
+  useEffect(() => {
+    if (choiceBridge.status !== 'ready') return;
+    setSelectedInvocationCounts((current) =>
+      pruneEldritchInvocationCounts(current, invocationCandidates, invocationLimit)
+    );
+  }, [choiceBridge.status, invocationCandidates, invocationLimit]);
+
   const selectedInvocationCount = Object.values(selectedInvocationCounts).reduce(
     (sum, count) => sum + Math.max(0, Math.floor(count)),
     0
@@ -737,6 +948,8 @@ export default function NewCharacterScreen() {
       fixedLanguages: [COMMON_LANGUAGE],
       speciesSkillGrants: speciesChoiceProficiencyGrants.skills,
       speciesLanguageGrants: speciesChoiceProficiencyGrants.languages,
+      classFeatureWeaponGrants: classFeatureChoiceProficiencyGrants.weapons,
+      classFeatureArmorGrants: classFeatureChoiceProficiencyGrants.armor,
       requiredLanguageChoiceCount: 2,
       allowedLanguageOptions: STANDARD_LANGUAGE_OPTIONS
     }),
@@ -753,9 +966,38 @@ export default function NewCharacterScreen() {
       languagesText,
       classLanguagesText,
       speciesChoiceProficiencyGrants.skills.join('|'),
-      speciesChoiceProficiencyGrants.languages.join('|')
+      speciesChoiceProficiencyGrants.languages.join('|'),
+      classFeatureChoiceProficiencyGrants.weapons.join('|'),
+      classFeatureChoiceProficiencyGrants.armor.join('|')
     ]
   );
+
+  const originGrantedClassSkills = Array.from(new Set([
+    ...backgroundDefaults.proficiencies.skills,
+    ...speciesChoiceProficiencyGrants.skills
+  ]));
+  const originGrantedClassSkillKey = originGrantedClassSkills.join('|');
+  const classSkillRequirementKey = proficiencySelection.requirement
+    ? `${proficiencySelection.requirement.skillChoiceCount}:${proficiencySelection.requirement.skillOptions.join('|')}`
+    : 'none';
+  const validClassSkillChoices = reconcileClassSkillChoices({
+    currentChoices: classSkillChoices,
+    requirement: proficiencySelection.requirement,
+    unavailableSkills: originGrantedClassSkills
+  });
+
+  useEffect(() => {
+    setClassSkillChoices((current) => {
+      const next = reconcileClassSkillChoices({
+        currentChoices: current,
+        requirement: proficiencySelection.requirement,
+        unavailableSkills: originGrantedClassSkills
+      });
+      return next.length === current.length && next.every((skill, index) => skill === current[index])
+        ? current
+        : next;
+    });
+  }, [classSkillRequirementKey, originGrantedClassSkillKey]);
 
   const inheritedBackgroundTools = Array.from(new Set([
     ...(proficiencySelection.backgroundRequirement?.fixedTools ?? []),
@@ -792,9 +1034,44 @@ export default function NewCharacterScreen() {
   const proficienciesValid = proficiencyIssues.every((issue) => issue.severity !== 'error');
 
   const spellProfiles = useMemo(
-    () => getSpellcastingProfiles(selectedClassItems),
-    [selectedClassLevels, items]
+    () => getSpellcastingProfiles(
+      selectedClassItems.map(({ item, level }) => ({
+        item,
+        level,
+        subclassItem: selectedSubclassEntries.find((entry) => entry.classItem.id === item.id)?.subclassItem
+      })),
+      items
+    ),
+    [selectedClassLevels, selectedSubclassEntries, items]
   );
+  const spellAccessByClassItemId = useMemo(() => Object.fromEntries(
+    selectedClassItems.map(({ item: classItem, level }) => {
+      const selectedSubclass = selectedSubclassEntries.find((entry) => entry.classItem.id === classItem.id)?.subclassItem;
+      return [classItem.id, resolveCharacterSpellAccess({
+        classItem,
+        classLevel: level,
+        items,
+        subclassItem: selectedSubclass,
+        subclassChoices,
+        classFeatureChoices,
+        speciesItem: selectedSpecies,
+        speciesChoices,
+        characterLevel: desiredLevel
+      })];
+    })
+  ), [selectedClassLevels, selectedSubclassEntries, subclassChoices, classFeatureChoices, selectedSpeciesId, speciesChoices, desiredLevel, items]);
+  const activeBonusSpellRequirements = useMemo(
+    () => Object.values(spellAccessByClassItemId).flatMap((resolution) => resolution.activeBonusChoiceRequirements),
+    [spellAccessByClassItemId]
+  );
+
+  useEffect(() => {
+    if (choiceBridge.status !== 'ready') return;
+    setBonusSpellChoices((current) => {
+      const pruned = pruneBonusSpellChoices(current, activeBonusSpellRequirements, spellProfiles, allSpells, items);
+      return JSON.stringify(pruned) === JSON.stringify(current) ? current : pruned;
+    });
+  }, [choiceBridge.status, activeBonusSpellRequirements, spellProfiles, allSpells, items]);
   useEffect(() => {
     if (!spellProfiles.length) {
       setActiveSpellClassItemId(undefined);
@@ -807,18 +1084,50 @@ export default function NewCharacterScreen() {
     }
   }, [spellProfiles, activeSpellClassItemId]);
 
+  const speciesGrantedSpellReferences = useMemo(
+    () => getSpeciesGrantedSpellReferences(selectedSpecies, items, desiredLevel, speciesChoices),
+    [selectedSpeciesId, items, desiredLevel, speciesChoices]
+  );
+  const speciesGrantedSpellItems = useMemo(
+    () => allSpells.filter((spell) =>
+      speciesGrantedSpellReferences.some((reference) => itemReferenceMatches(spell, reference))
+    ),
+    [allSpells, speciesGrantedSpellReferences]
+  );
   const activeSpellProfile = spellProfiles.find((profile) => profile.classItemId === activeSpellClassItemId);
+  const activeSpellAccess = activeSpellClassItemId ? spellAccessByClassItemId[activeSpellClassItemId] : undefined;
+  const activeAutomaticSpellReferences = activeSpellAccess
+    ? activeSpellAccess.entries
+        .filter((entry) => (entry.kind === 'alwaysPrepared' || entry.kind === 'granted') && entry.source.kind !== 'species')
+        .map((entry) => entry.spellReference)
+    : [];
+  const activeAutomaticSpellItems = allSpells.filter((spell) =>
+    activeAutomaticSpellReferences.some((reference) => itemReferenceMatches(spell, reference))
+  );
   const focusedSpellItem = focusedSpellItemId
     ? allSpells.find((spell) => spell.id === focusedSpellItemId)
     : undefined;
   const visibleSpells = useMemo(() => {
     if (!activeSpellProfile) return [];
     const query = spellSearch.trim().toLowerCase();
-    const additionalSpellReferences = subclassSpellReferencesByClassItemId[activeSpellProfile.classItemId] ?? [];
+    const additionalSpellReferences = additionalSpellReferencesByClassItemId[activeSpellProfile.classItemId] ?? [];
+    const bonusSelectedIds = new Set(
+      bonusSpellChoices
+        .filter((choice) => choice.classItemId === activeSpellProfile.classItemId)
+        .flatMap((choice) => choice.spellItemIds)
+    );
+    const automaticReferences = spellAccessByClassItemId[activeSpellProfile.classItemId]
+      ? [
+          ...spellAccessByClassItemId[activeSpellProfile.classItemId]!.alwaysPreparedSpellReferences,
+          ...spellAccessByClassItemId[activeSpellProfile.classItemId]!.grantedSpellReferences
+        ]
+      : [];
     return allSpells
       .filter((spell) => isSpellItemEligibleForProfile(spell, activeSpellProfile, additionalSpellReferences))
+      .filter((spell) => !automaticReferences.some((reference) => itemReferenceMatches(spell, reference)))
+      .filter((spell) => !bonusSelectedIds.has(spell.id))
       .filter((spell) => !query || spell.name.toLowerCase().includes(query));
-  }, [activeSpellProfile, allSpells, spellSearch, subclassSpellReferencesByClassItemId]);
+  }, [activeSpellProfile, allSpells, spellSearch, additionalSpellReferencesByClassItemId, bonusSpellChoices, spellAccessByClassItemId]);
   const spellReferenceReconciliation = useMemo(
     () => reconcileSpellAssignmentReferences({
       assignments: spellAssignments,
@@ -854,10 +1163,10 @@ export default function NewCharacterScreen() {
       spellbookAssignments: effectiveSpellbookAssignments,
       spellItems: allSpells,
       profiles: spellProfiles,
-      additionalSpellReferencesByClassItemId: subclassSpellReferencesByClassItemId,
+      additionalSpellReferencesByClassItemId,
       requireExact: false
     }),
-    [effectiveSpellAssignments, effectiveSpellbookAssignments, allSpells, spellProfiles, subclassSpellReferencesByClassItemId]
+    [effectiveSpellAssignments, effectiveSpellbookAssignments, allSpells, spellProfiles, additionalSpellReferencesByClassItemId]
   );
   const spellCompletionValidation = useMemo(
     () => validateSpellAssignments({
@@ -865,14 +1174,132 @@ export default function NewCharacterScreen() {
       spellbookAssignments: effectiveSpellbookAssignments,
       spellItems: allSpells,
       profiles: spellProfiles,
-      additionalSpellReferencesByClassItemId: subclassSpellReferencesByClassItemId,
+      additionalSpellReferencesByClassItemId,
       requireExact: true
     }),
-    [effectiveSpellAssignments, effectiveSpellbookAssignments, allSpells, spellProfiles, subclassSpellReferencesByClassItemId]
+    [effectiveSpellAssignments, effectiveSpellbookAssignments, allSpells, spellProfiles, additionalSpellReferencesByClassItemId]
   );
   const spellCompletionIssues = spellCompletionValidation.issues.filter((issue) =>
     ['CANTRIP_SELECTION_COUNT', 'PREPARED_SPELL_SELECTION_COUNT', 'SPELLBOOK_SELECTION_COUNT'].includes(issue.code)
   );
+  const bonusSpellChoiceIssues = useMemo(() => validateBonusSpellChoices({
+    requirements: activeBonusSpellRequirements,
+    choices: bonusSpellChoices,
+    profiles: spellProfiles,
+    selectableSpells: allSpells,
+    allItems: items,
+    normalSpellAssignments: effectiveSpellAssignments,
+    requireExact: true
+  }), [activeBonusSpellRequirements, bonusSpellChoices, spellProfiles, allSpells, items, effectiveSpellAssignments]);
+  const activeClassBonusSpellRequirements = activeSpellProfile
+    ? activeBonusSpellRequirements.filter((requirement) => requirement.classItemId === activeSpellProfile.classItemId)
+    : [];
+
+  const wizardSpellbookRequirements = useMemo(() =>
+    selectedClassItems.flatMap(({ item: classItem, level }) => {
+      const profile = spellProfiles.find((entry) => entry.classItemId === classItem.id);
+      if (profile?.preparationMode !== 'spellbook') return [];
+      const subclassItem = selectedSubclassEntries.find((entry) => entry.classItem.id === classItem.id)?.subclassItem;
+      return getWizardSpellbookFeatureRequirements({ classItem, classLevel: level, subclassItem, items });
+    }),
+    [selectedClassLevels, selectedSubclassEntries, spellProfiles, items]
+  );
+  const wizardProfileByClassItemId = useMemo(
+    () => new Map(spellProfiles.filter((profile) => profile.preparationMode === 'spellbook').map((profile) => [profile.classItemId, profile])),
+    [spellProfiles]
+  );
+  const wizardAutomaticGrantSpellItemIdsByClassItemId = useMemo(() => {
+    const result = new Map<string, ReadonlySet<string>>();
+    for (const { item: classItem, level } of selectedClassItems) {
+      const profile = wizardProfileByClassItemId.get(classItem.id);
+      if (!profile) continue;
+      const subclassItem = selectedSubclassEntries.find((entry) => entry.classItem.id === classItem.id)?.subclassItem;
+      result.set(classItem.id, new Set(
+        getAutomaticWizardSpellbookGrantReferences(classItem, level, subclassItem, items).map((grant) => grant.spellItemId)
+      ));
+    }
+    return result;
+  }, [selectedClassLevels, selectedSubclassEntries, wizardProfileByClassItemId, items]);
+  const wizardAvailableSpellbookItemIdsByClassItemId = useMemo(() => {
+    const result = new Map<string, ReadonlySet<string>>();
+    for (const [classItemId] of wizardProfileByClassItemId) {
+      result.set(classItemId, new Set([
+        ...Object.entries(effectiveSpellbookAssignments)
+          .filter(([, ownerClassItemId]) => ownerClassItemId === classItemId)
+          .map(([spellItemId]) => spellItemId),
+        ...spellbookFeatureChoices
+          .filter((choice) => choice.classItemId === classItemId)
+          .filter((choice) => {
+            const requirement = wizardSpellbookRequirements.find((entry) => entry.id === choice.requirementId);
+            return requirement?.kind === 'savantInitial' || requirement?.kind === 'savantNewSlotLevel';
+          })
+          .flatMap((choice) => choice.spellItemIds),
+        ...(wizardAutomaticGrantSpellItemIdsByClassItemId.get(classItemId) ?? [])
+      ]));
+    }
+    return result;
+  }, [wizardProfileByClassItemId, effectiveSpellbookAssignments, spellbookFeatureChoices, wizardSpellbookRequirements, wizardAutomaticGrantSpellItemIdsByClassItemId]);
+  const wizardSpellbookFeatureIssues = useMemo(() => validateWizardSpellbookFeatureChoices({
+    requirements: wizardSpellbookRequirements,
+    choices: spellbookFeatureChoices,
+    profileByClassItemId: wizardProfileByClassItemId,
+    spellItems: allSpells,
+    normalSpellbookAssignments: effectiveSpellbookAssignments,
+    automaticGrantSpellItemIdsByClassItemId: wizardAutomaticGrantSpellItemIdsByClassItemId,
+    availableSpellbookItemIdsByClassItemId: wizardAvailableSpellbookItemIdsByClassItemId,
+    requireExact: true
+  }), [wizardSpellbookRequirements, spellbookFeatureChoices, wizardProfileByClassItemId, allSpells, effectiveSpellbookAssignments, wizardAutomaticGrantSpellItemIdsByClassItemId, wizardAvailableSpellbookItemIdsByClassItemId]);
+  const activeWizardSpellbookRequirements = activeSpellProfile?.preparationMode === 'spellbook'
+    ? wizardSpellbookRequirements.filter((requirement) => requirement.classItemId === activeSpellProfile.classItemId)
+    : [];
+
+  useEffect(() => {
+    if (!draftHydrated || choiceBridge.status !== 'ready') return;
+    setSpellbookFeatureChoices((current) => {
+      const pruned = pruneWizardSpellbookFeatureChoices({
+        requirements: wizardSpellbookRequirements,
+        choices: current,
+        profileByClassItemId: wizardProfileByClassItemId,
+        spellItems: allSpells,
+        normalSpellbookAssignments: effectiveSpellbookAssignments,
+        automaticGrantSpellItemIdsByClassItemId: wizardAutomaticGrantSpellItemIdsByClassItemId,
+        availableSpellbookItemIdsByClassItemId: wizardAvailableSpellbookItemIdsByClassItemId
+      });
+      return JSON.stringify(pruned) === JSON.stringify(current) ? current : pruned;
+    });
+  }, [draftHydrated, choiceBridge.status, wizardSpellbookRequirements, wizardProfileByClassItemId, allSpells, effectiveSpellbookAssignments, wizardAutomaticGrantSpellItemIdsByClassItemId, wizardAvailableSpellbookItemIdsByClassItemId]);
+
+  const mysticArcanumContexts = useMemo<MysticArcanumChoiceContext[]>(() =>
+    selectedClassItems.flatMap(({ item: classItem, level }) => {
+      const subclassItem = selectedSubclassEntries.find((entry) => entry.classItem.id === classItem.id)?.subclassItem;
+      return getMysticArcanumRequirements({ classItem, classLevel: level, items }).map((requirement) => ({
+        requirement,
+        classItem,
+        classLevel: level,
+        subclassItem,
+        subclassChoices,
+        classFeatureChoices
+      }));
+    }),
+    [selectedClassLevels, selectedSubclassEntries, subclassChoices, classFeatureChoices, items]
+  );
+  const mysticArcanumIssues = useMemo(() => validateMysticArcanumChoices(
+    mysticArcanumContexts,
+    mysticArcanumChoices,
+    items,
+    true
+  ), [mysticArcanumContexts, mysticArcanumChoices, items]);
+  const activeMysticArcanumContexts = activeSpellProfile
+    ? mysticArcanumContexts.filter((context) => context.requirement.classItemId === activeSpellProfile.classItemId)
+    : [];
+
+  useEffect(() => {
+    if (!draftHydrated || choiceBridge.status !== 'ready') return;
+    setMysticArcanumChoices((current) => {
+      const pruned = pruneMysticArcanumChoices(current, mysticArcanumContexts, items);
+      return JSON.stringify(pruned) === JSON.stringify(current) ? current : pruned;
+    });
+  }, [draftHydrated, choiceBridge.status, mysticArcanumContexts, items]);
 
   const selectedFeatItems = Object.entries(selectedFeatCounts).flatMap(([itemId, count]) => {
     const item = items.find((candidate) => candidate.id === itemId);
@@ -889,17 +1316,51 @@ export default function NewCharacterScreen() {
       return item ? Array.from({ length: count }, (_, instanceIndex) => ({ item, instanceIndex, key: featChoiceKey(item.id, instanceIndex), origin: false, species: false })) : [];
     })
   ];
+  const featChoiceValidationBase = createEmptyCharacter('Validação da criação');
   const featChoiceValidationCharacter: Character = {
-    ...createEmptyCharacter('Validação da criação'),
+    ...featChoiceValidationBase,
     level: desiredLevel,
     abilities: finalAbilities,
-    proficiencies: proficiencySelection.proficiencies
+    proficiencies: proficiencySelection.proficiencies,
+    classes: selectedClassItems.map(({ item, level }) => ({ id: `validation-${item.id}`, name: item.name, level })),
+    featChoices: selectedFeatInstances.flatMap((instance) => {
+      const draft = featChoiceDrafts[instance.key];
+      return draft ? [{ ...draft, featEntityId: draft.featEntityId || instance.key }] : [];
+    }),
+    buildChoices: {
+      ...featChoiceValidationBase.buildChoices!,
+      eldritchInvocationCounts: selectedInvocationCounts,
+      eldritchInvocationChoices
+    }
   };
   const featChoiceIssues = validateFeatChoiceSequence(
-    selectedFeatInstances.map((instance) => ({ item: instance.item, choice: featChoiceDrafts[instance.key] })),
+    selectedFeatInstances.map((instance) => ({
+      item: instance.item,
+      choice: featChoiceDrafts[instance.key]
+        ? { ...featChoiceDrafts[instance.key]!, featEntityId: featChoiceDrafts[instance.key]!.featEntityId || instance.key }
+        : undefined
+    })),
     finalAbilities,
     items,
     featChoiceValidationCharacter
+  );
+
+  // Feats are selected before the ability-score step, so ability prerequisites
+  // stay deferred until final build validation. Prerequisites that are already
+  // knowable here (class features, level, armor/weapon proficiency) must block
+  // progression immediately; otherwise an invalid Fighting Initiate can be
+  // presented as "Progressão pronta".
+  const progressionFeatPrerequisiteIssues = selectedFeatItems.flatMap((featItem, index) =>
+    validateFeatPrerequisites({
+      featItem,
+      totalLevel: desiredLevel,
+      abilities: finalAbilities,
+      proficiencies: proficiencySelection.proficiencies,
+      classEntries: selectedClassItems,
+      allItems: items,
+      character: featChoiceValidationCharacter,
+      currentCopies: selectedFeatItems.slice(0, index).filter((candidate) => candidate.id === featItem.id).length
+    }).filter((entry) => entry.code !== 'FEAT_ABILITY_PREREQUISITE')
   );
 
   const startingClassEquipmentOptions = getStartingEquipmentOptions(startingClassEntry?.item, 'class');
@@ -931,9 +1392,10 @@ export default function NewCharacterScreen() {
       abilities: finalAbilities,
       proficiencies: proficiencySelection.proficiencies,
       featItems: allSelectedFeatItems,
-      allItems: items
+      allItems: items,
+      character: featChoiceValidationCharacter
     }),
-    [selectedClassLevels, finalAbilities, proficiencySelection.proficiencies, selectedOriginFeatId, selectedSpeciesFeatId, selectedFeatCounts, items]
+    [selectedClassLevels, finalAbilities, proficiencySelection.proficiencies, selectedOriginFeatId, selectedSpeciesFeatId, selectedFeatCounts, selectedInvocationCounts, items]
   );
   const multiclassIssues = generatedAbilityAssignmentsComplete
     ? validateMulticlassPrerequisites(selectedClassItems.map(({ item }) => item), finalAbilities)
@@ -951,13 +1413,15 @@ export default function NewCharacterScreen() {
     ? bonusAbilities.length === 2 && new Set(bonusAbilities).size === 2
     : bonusAbilities.length === 3 && new Set(bonusAbilities).size === 3);
 
-  const unavailableReferences = (references: Array<string | undefined>): string[] =>
-    Array.from(new Set(references.filter((reference): reference is string => Boolean(reference))))
+  const unavailableReferences = (references: Array<string | undefined>): string[] => {
+    const enabled = new Set(enabledSourceIds);
+    return Array.from(new Set(references.filter((reference): reference is string => Boolean(reference))))
       .filter((reference) => reference !== CUSTOM_BACKGROUND_ITEM_ID)
       .filter((reference) => {
         const item = items.find((candidate) => candidate.id === reference);
-        return !item || item.status !== 'validated';
+        return !item || item.status === 'disabled' || !enabled.has(item.sourceId);
       });
+  };
 
   const classUnavailableReferences = unavailableReferences(Object.keys(selectedClassLevels));
   const originUnavailableReferences = unavailableReferences([
@@ -967,18 +1431,37 @@ export default function NewCharacterScreen() {
     selectedSpeciesFeatId,
     ...selectedSpeciesFeatureItems.map((item) => item.id)
   ]);
+  const activeFeatChoiceKeys = new Set(selectedFeatInstances.map((instance) => instance.key));
+  const activeFeatChoiceDrafts = Object.entries(featChoiceDrafts)
+    .filter(([key]) => activeFeatChoiceKeys.has(key))
+    .map(([, choice]) => choice);
+  const activeInvocationChoices = eldritchInvocationChoices.filter((choice) =>
+    choice.instanceIndex < Math.max(0, Math.floor(selectedInvocationCounts[choice.invocationItemId] ?? 0))
+  );
   const progressionUnavailableReferences = unavailableReferences([
-    ...Object.values(selectedSubclassByClass),
-    ...Object.keys(selectedFeatCounts),
-    ...Object.keys(selectedInvocationCounts),
-    ...Object.values(featChoiceDrafts).flatMap((choice) => [
+    ...selectedSubclassEntries.map(({ subclassItem }) => subclassItem.id),
+    ...classFeatureChoices.flatMap((choice) => [choice.classItemId, choice.featureItemId]),
+    ...Object.entries(selectedFeatCounts)
+      .filter(([, count]) => Math.max(0, Math.floor(count)) > 0)
+      .map(([itemId]) => itemId),
+    ...Object.entries(selectedInvocationCounts)
+      .filter(([, count]) => Math.max(0, Math.floor(count)) > 0)
+      .map(([itemId]) => itemId),
+    ...activeFeatChoiceDrafts.flatMap((choice) => [
       choice.featItemId,
       choice.fightingStyleItemId,
+      choice.eldritchInvocationItemId,
+      choice.eldritchInvocationChoice?.invocationItemId,
+      choice.eldritchInvocationChoice?.targetCantripItemId,
+      choice.eldritchInvocationChoice?.originFeatItemId,
+      choice.eldritchInvocationChoice?.familiarCreatureItemId,
+      ...(choice.eldritchInvocationChoice?.cantripItemIds ?? []),
+      ...(choice.eldritchInvocationChoice?.ritualSpellItemIds ?? []),
       ...(choice.spellItemIds ?? []),
       ...(choice.weaponItemIds ?? []),
       ...(choice.weaponMasterySelections ?? []).flatMap((selection) => [selection.sourceItemId, selection.weaponItemId])
     ]),
-    ...eldritchInvocationChoices.flatMap((choice) => [
+    ...activeInvocationChoices.flatMap((choice) => [
       choice.invocationItemId,
       choice.targetCantripItemId,
       choice.originFeatItemId,
@@ -987,6 +1470,19 @@ export default function NewCharacterScreen() {
       ...(choice.ritualSpellItemIds ?? [])
     ])
   ]);
+  const progressionStepIssues = getProgressionStepReadinessIssues({
+    subclassGroups: eligibleSubclasses,
+    selectedSubclassByClass,
+    featRequirements,
+    selectedFeatCounts,
+    items,
+    subclassChoiceIssues,
+    featChoiceIssues,
+    featPrerequisiteIssues: progressionFeatPrerequisiteIssues,
+    classFeatureChoiceIssues,
+    invocationIssues: allInvocationIssues,
+    unavailableReferences: progressionUnavailableReferences
+  });
   const equipmentUnavailableReferences = unavailableReferences(
     equipmentSelections.flatMap((selection) => [
       selection.sourceItemId,
@@ -997,7 +1493,9 @@ export default function NewCharacterScreen() {
     ...Object.keys(effectiveSpellAssignments),
     ...Object.values(effectiveSpellAssignments),
     ...Object.keys(effectiveSpellbookAssignments),
-    ...Object.values(effectiveSpellbookAssignments)
+    ...Object.values(effectiveSpellbookAssignments),
+    ...bonusSpellChoices.flatMap((choice) => [choice.classItemId, choice.featureItemId, ...choice.spellItemIds]),
+    ...mysticArcanumChoices.flatMap((choice) => [choice.classItemId, choice.featureItemId, choice.spellItemId])
   ]);
   const allUnavailableReferences = Array.from(new Set([
     ...classUnavailableReferences,
@@ -1010,27 +1508,71 @@ export default function NewCharacterScreen() {
   const validateSelectedCompendiumItems = async (
     selectedItems: StoredCompendiumItem[]
   ): Promise<boolean> => {
-    const entries = selectedItems
-      .filter((item) => item.status !== 'validated' && item.status !== 'disabled')
-      .flatMap((item) => {
-        const itemId = getCompendiumReviewTargetId(item, choiceForItemId);
-        return itemId ? [{
-          itemId,
-          update: {
-            status: 'validated' as const,
-            reviewDecision: 'approved' as const,
-            reviewedBy: 'Escolha explícita durante a criação do personagem',
-            reviewNotes: 'Aprovado ao ser escolhido explicitamente no fluxo de criação.'
-          }
-        }] : [];
-      });
-    if (!entries.length) return true;
-    const result = await updateItemsReview(entries);
-    if (!result.ok) {
-      Alert.alert('Não foi possível validar a escolha', result.issues.map((issue) => issue.message).join('\n'));
-    }
-    return result.ok;
+    const unavailable = selectedItems.filter((item) => item.status === 'disabled');
+    if (!unavailable.length) return true;
+    Alert.alert(
+      'Escolha indisponível',
+      `${unavailable.map((item) => item.name).join(', ')} está desativado no Compêndio. Reative ou substitua o conteúdo antes de continuar.`
+    );
+    return false;
   };
+
+  const selectClass = async (item: StoredCompendiumItem) => {
+    if (item.id in selectedClassLevels) {
+      setSelectedClassLevels((current) => Object.fromEntries(
+        Object.entries(current).filter(([id]) => id !== item.id)
+      ));
+      const removedSubclassId = selectedSubclassByClass[item.id];
+      setSelectedSubclassByClass((current) => Object.fromEntries(
+        Object.entries(current).filter(([classId]) => classId !== item.id)
+      ));
+      if (removedSubclassId) {
+        setSubclassChoices((current) => current.filter((choice) => choice.subclassItemId !== removedSubclassId));
+      }
+      return;
+    }
+
+    const initialLevel = Object.keys(selectedClassLevels).length ? 1 : desiredLevel;
+    const reviewItems = getExplicitProgressionSelectionReviewItems(item, items, initialLevel);
+    const ok = await validateSelectedCompendiumItems(reviewItems);
+    if (!ok) return;
+
+    setSelectedClassLevels((current) => ({
+      ...current,
+      [item.id]: Object.keys(current).length ? 1 : desiredLevel
+    }));
+  };
+
+  const changeSelectedClassLevel = async (item: StoredCompendiumItem, value: string) => {
+    const level = Math.max(1, Math.min(20, Number(value) || 1));
+    const reviewItems = getExplicitProgressionSelectionReviewItems(item, items, level);
+    const ok = await validateSelectedCompendiumItems(reviewItems);
+    if (!ok) return;
+    setSelectedClassLevels((current) => ({ ...current, [item.id]: level }));
+  };
+
+  const selectSubclass = async (
+    classItem: StoredCompendiumItem,
+    classLevel: number,
+    item: StoredCompendiumItem
+  ) => {
+    const previousSubclassId = selectedSubclassByClass[classItem.id];
+    if (previousSubclassId === item.id) {
+      setSelectedSubclassByClass((current) => ({ ...current, [classItem.id]: '' }));
+      setSubclassChoices((current) => current.filter((choice) => choice.subclassItemId !== item.id));
+      return;
+    }
+
+    const reviewItems = getExplicitProgressionSelectionReviewItems(item, items, classLevel);
+    const ok = await validateSelectedCompendiumItems(reviewItems);
+    if (!ok) return;
+
+    setSelectedSubclassByClass((current) => ({ ...current, [classItem.id]: item.id }));
+    if (previousSubclassId) {
+      setSubclassChoices((current) => current.filter((choice) => choice.subclassItemId !== previousSubclassId));
+    }
+  };
+
 
   const addCustomBackgroundEquipment = async (candidate: CustomBackgroundEquipmentCandidate) => {
     const ok = await validateSelectedCompendiumItems([candidate.item]);
@@ -1055,6 +1597,18 @@ export default function NewCharacterScreen() {
     setSelectedSpeciesId(item.id);
     if (selectedSpeciesId !== item.id) setSelectedSpeciesFeatId(undefined);
     setSpeciesChoices((current) => current.filter((choice) => choice.speciesItemId === item.id));
+  };
+
+  const selectSpeciesChoiceOption = async (
+    requirement: SpeciesChoiceRequirement,
+    optionId: string
+  ) => {
+    const optionFeature = getSpeciesChoiceOptionFeatureItem(requirement, optionId, items);
+    if (optionFeature) {
+      const ok = await validateSelectedCompendiumItems([optionFeature]);
+      if (!ok) return;
+    }
+    setSpeciesChoices((current) => setSpeciesChoiceOption(current, requirement, optionId));
   };
 
   const selectSpeciesFeat = async (item: StoredCompendiumItem) => {
@@ -1290,12 +1844,12 @@ export default function NewCharacterScreen() {
   const canContinue = (): boolean => {
     if (step === 0) return classAllocationValid;
     if (step === 1) return originStepIssues.length === 0;
-    if (step === 2) return progressionUnavailableReferences.length === 0 && !missingSubclass && subclassChoiceIssues.length === 0 && featCountsValid && featChoiceIssues.length === 0 && allInvocationIssues.length === 0;
+    if (step === 2) return progressionStepIssues.length === 0;
     if (step === 3) return pointBuyValid && generatedAbilityAssignmentsComplete && bonusCountValid && multiclassIssues.length === 0;
     if (step === 4) return proficienciesValid;
     if (step === 5) return equipmentUnavailableReferences.length === 0 && equipmentIssues.length === 0;
-    if (step === 6) return spellUnavailableReferences.length === 0 && spellValidation.ok;
-    return allUnavailableReferences.length === 0 && buildIssues.length === 0 && subclassChoiceIssues.length === 0 && featChoiceIssues.length === 0 && speciesChoiceIssues.length === 0 && pointBuyValid && generatedAbilityAssignmentsComplete && bonusCountValid && proficienciesValid && equipmentIssues.length === 0 && spellValidation.ok && !missingSubclass && featCountsValid && allInvocationIssues.length === 0;
+    if (step === 6) return spellUnavailableReferences.length === 0 && spellValidation.ok && bonusSpellChoiceIssues.length === 0 && wizardSpellbookFeatureIssues.length === 0 && mysticArcanumIssues.length === 0;
+    return allUnavailableReferences.length === 0 && buildIssues.length === 0 && subclassChoiceIssues.length === 0 && featChoiceIssues.length === 0 && classFeatureChoiceIssues.length === 0 && speciesChoiceIssues.length === 0 && pointBuyValid && generatedAbilityAssignmentsComplete && bonusCountValid && proficienciesValid && equipmentIssues.length === 0 && spellValidation.ok && bonusSpellChoiceIssues.length === 0 && wizardSpellbookFeatureIssues.length === 0 && mysticArcanumIssues.length === 0 && !missingSubclass && featCountsValid && allInvocationIssues.length === 0;
   };
 
   const applyWithClassLevel = (
@@ -1370,7 +1924,11 @@ export default function NewCharacterScreen() {
         speciesFeatItemId: selectedSpeciesFeatId,
         backgroundChoices,
         subclassChoices,
-        classSkillChoices,
+        classFeatureChoices,
+        bonusSpellChoices,
+        spellbookFeatureChoices,
+        mysticArcanumChoices,
+        classSkillChoices: validClassSkillChoices,
         classToolChoices: csv(classToolChoicesText),
         backgroundToolChoices: isCustomBackground ? [] : csv(backgroundToolChoicesText),
         customBackground: isCustomBackground ? customBackground : undefined,
@@ -1393,12 +1951,23 @@ export default function NewCharacterScreen() {
     for (const itemId of Object.values(selectedSubclassByClass).filter(Boolean)) {
       const item = items.find((entry) => entry.id === itemId);
       if (!item) continue;
-      const result = applyCompendiumItemToCharacter(next, item);
+      const canonicalChoice = item.status === 'validated' ? undefined : choiceForItemId(item.id);
+      const result = canonicalChoice
+        ? applyCharacterChoice({ character: next, choice: canonicalChoice })
+        : applyCompendiumItemToCharacter(next, item);
       if (result.ok) next = result.character;
     }
 
     for (const instance of selectedFeatInstances) {
-      const result = applyCompendiumItemToCharacter(next, instance.item);
+      // Character creation may intentionally use catalog content that still has
+      // editorial review flags. Apply through the canonical character-choice
+      // bridge so the character can use the rule without mutating the global
+      // compendium review state. Falling back to the strict mapper keeps custom
+      // or legacy local-only entries working when no bridge identity exists.
+      const canonicalChoice = instance.item.status === 'validated' ? undefined : choiceForItemId(instance.item.id);
+      const result = canonicalChoice
+        ? applyCharacterChoice({ character: next, choice: canonicalChoice })
+        : applyCompendiumItemToCharacter(next, instance.item);
       if (!result.ok || !result.link) continue;
       next = result.character;
       if (instance.origin) next = { ...next, originFeatId: result.link.appliedEntityId };
@@ -1465,6 +2034,43 @@ export default function NewCharacterScreen() {
     }
     next = applyAutomaticSpeciesProgression(next, items).character;
     next = applyAutomaticClassProgression(next, items).character;
+    next = reconcileAutomaticSpellAccess(next, items).character;
+    next = reconcileMysticArcanum(next, items).character;
+
+    // Bonus spell choices are applied after progression features so they can be
+    // attributed to the feature that granted them without counting against the
+    // normal class spell-selection limits.
+    for (const bonusChoice of bonusSpellChoices) {
+      const requirement = activeBonusSpellRequirements.find((candidate) => candidate.id === bonusChoice.requirementId);
+      const localClass = localClassByCompendiumItemId.get(bonusChoice.classItemId);
+      const profile = spellProfiles.find((entry) => entry.classItemId === bonusChoice.classItemId);
+      if (!requirement || !localClass || !profile) continue;
+      const featureEntityId = (next.compendiumLinks ?? []).find((link) =>
+        link.appliedAs === 'feature' && link.status === 'active' && link.itemId === bonusChoice.featureItemId
+      )?.appliedEntityId;
+
+      for (const spellItemId of bonusChoice.spellItemIds) {
+        const spellItem = items.find((entry) => entry.id === spellItemId && entry.type === 'spell');
+        if (!spellItem) continue;
+        const before = next;
+        const result = applyCompendiumItemToCharacter(next, spellItem);
+        if (!result.ok) continue;
+        next = annotateLatestSpellWithClass(before, result.character, localClass.id, localClass.name, requirement.spellcastingAbility ?? profile.ability);
+        const beforeIds = new Set(before.spells.map((spell) => spell.id));
+        const added = next.spells.find((spell) => !beforeIds.has(spell.id));
+        if (added) {
+          next = {
+            ...next,
+            spells: next.spells.map((spell) => spell.id === added.id ? {
+              ...spell,
+              bonusSpellChoiceId: requirement.id,
+              grantedByFeatureEntityId: featureEntityId ?? spell.grantedByFeatureEntityId
+            } : spell)
+          };
+        }
+      }
+    }
+
     next = reconcileCharacterSpellSlots(next, items, { refill: true });
     next = reconcileCharacterBuild(next, items).character;
     updateCharacter(initial.id, () => next);
@@ -1472,7 +2078,7 @@ export default function NewCharacterScreen() {
     router.replace(`/characters/${initial.id}`);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const currentUnavailable = step === 0
       ? classUnavailableReferences
       : step === 1
@@ -1493,11 +2099,50 @@ export default function NewCharacterScreen() {
       );
       return;
     }
+    if (step === 2) {
+      const progressionReviewIds = Array.from(new Set([
+        ...selectedSubclassEntries.map(({ subclassItem }) => subclassItem.id),
+    ...classFeatureChoices.flatMap((choice) => [choice.classItemId, choice.featureItemId]),
+        ...Object.entries(selectedFeatCounts)
+          .filter(([, count]) => Math.max(0, Math.floor(count)) > 0)
+          .map(([itemId]) => itemId),
+        ...Object.entries(selectedInvocationCounts)
+          .filter(([, count]) => Math.max(0, Math.floor(count)) > 0)
+          .map(([itemId]) => itemId),
+        ...activeFeatChoiceDrafts.flatMap((choice) => [
+          choice.featItemId,
+          choice.fightingStyleItemId,
+          choice.eldritchInvocationItemId,
+          choice.eldritchInvocationChoice?.invocationItemId,
+          choice.eldritchInvocationChoice?.targetCantripItemId,
+          choice.eldritchInvocationChoice?.originFeatItemId,
+          choice.eldritchInvocationChoice?.familiarCreatureItemId,
+          ...(choice.eldritchInvocationChoice?.cantripItemIds ?? []),
+          ...(choice.eldritchInvocationChoice?.ritualSpellItemIds ?? []),
+          ...(choice.spellItemIds ?? []),
+          ...(choice.weaponItemIds ?? []),
+          ...(choice.weaponMasterySelections ?? []).flatMap((selection) => [selection.sourceItemId, selection.weaponItemId])
+        ]),
+        ...activeInvocationChoices.flatMap((choice) => [
+          choice.invocationItemId,
+          choice.targetCantripItemId,
+          choice.originFeatItemId,
+          choice.familiarCreatureItemId,
+          ...(choice.cantripItemIds ?? []),
+          ...(choice.ritualSpellItemIds ?? [])
+        ])
+      ].filter((value): value is string => Boolean(value))));
+      const reviewItems = progressionReviewIds
+        .map((itemId) => items.find((item) => item.id === itemId))
+        .filter((item): item is StoredCompendiumItem => Boolean(item));
+      if (!await validateSelectedCompendiumItems(reviewItems)) return;
+    }
+
     if (!canContinue()) {
       const stepIssues = step === 1
         ? originStepIssues
         : step === 2
-          ? [...subclassChoiceIssues, ...featChoiceIssues, ...allInvocationIssues]
+          ? progressionStepIssues
         : step === 3
           ? multiclassIssues
           : step === 4
@@ -1521,7 +2166,18 @@ export default function NewCharacterScreen() {
 
 
   const discardCreationDraft = async () => {
-    await characterCreationDraftRepository.clear();
+    // Pause autosave before touching storage so a pending save cannot restore
+    // the draft between clear() and the state reset.
+    discardingDraftRef.current = true;
+    setDraftHydrated(false);
+    setDiscardDraftConfirmationVisible(false);
+    let clearFailed = false;
+    try {
+      await characterCreationDraftRepository.clear();
+    } catch {
+      clearFailed = true;
+    }
+
     setStep(0);
     setName('');
     setTargetLevel('1');
@@ -1531,11 +2187,17 @@ export default function NewCharacterScreen() {
     setStartingClassItemId(undefined);
     setSelectedSpeciesId(undefined);
     setSpeciesChoices([]);
+    setSelectedSpeciesFeatId(undefined);
     setSelectedBackgroundId(undefined);
+    setBackgroundChoices([]);
     setCustomBackground(createDefaultCustomBackgroundChoice());
     setCustomEquipmentSearch('');
     setSelectedSubclassByClass({});
     setSubclassChoices([]);
+    setClassFeatureChoices([]);
+    setBonusSpellChoices([]);
+    setSpellbookFeatureChoices([]);
+    setMysticArcanumChoices([]);
     setSelectedOriginFeatId(undefined);
     setSelectedFeatCounts({});
     setSelectedInvocationCounts({});
@@ -1546,7 +2208,8 @@ export default function NewCharacterScreen() {
     setBonusAbilities(['STR', 'DEX']);
     setAbilityMethod('standardArray');
     setAbilityGeneration(standardArrayState());
-    setBaseAbilities(abilityScoresFromValues([...STANDARD_ARRAY]));
+    setAbilityValueAssignments({});
+    setBaseAbilities(emptyAbilityScores());
     setClassSkillChoices([]);
     setClassToolChoicesText('');
     setBackgroundToolChoicesText('');
@@ -1557,8 +2220,11 @@ export default function NewCharacterScreen() {
     setActiveSpellClassItemId(undefined);
     setSpellAssignments({});
     setSpellbookAssignments({});
+    setFocusedSpellItemId(undefined);
     setDraftUpdatedAt(undefined);
-    setDraftSaveError(undefined);
+    setDraftSaveError(clearFailed ? 'O armazenamento não respondeu ao descarte; o rascunho vazio será gravado novamente automaticamente.' : undefined);
+    discardingDraftRef.current = false;
+    setDraftHydrated(true);
   };
 
   const footer = (
@@ -1575,8 +2241,8 @@ export default function NewCharacterScreen() {
         <Button
           label={step === steps.length - 1 ? 'Criar personagem' : 'Continuar'}
           icon={step === steps.length - 1 ? 'checkmark' : 'arrow-forward'}
-          disabled={!canContinue()}
-          onPress={handleNext}
+          disabled={step === 2 ? false : !canContinue()}
+          onPress={() => { void handleNext(); }}
         />
       </View>
     </View>
@@ -1590,6 +2256,15 @@ export default function NewCharacterScreen() {
   ) => {
     if (required === 0) return null;
     const available = selectableFeatCandidates.filter((item) => getFeatCategory(item) === category);
+    const immediatePrerequisiteIssues = (item: StoredCompendiumItem) => validateFeatPrerequisites({
+      featItem: item,
+      totalLevel: desiredLevel,
+      abilities: finalAbilities,
+      proficiencies: proficiencySelection.proficiencies,
+      classEntries: selectedClassItems,
+      allItems: items,
+      character: featChoiceValidationCharacter
+    }).filter((entry) => entry.code !== 'FEAT_ABILITY_PREREQUISITE');
     const selected = Object.entries(selectedFeatCounts)
       .map(([itemId, count]) => ({ item: items.find((candidate) => candidate.id === itemId), count }))
       .filter((entry): entry is { item: StoredCompendiumItem; count: number } =>
@@ -1608,12 +2283,15 @@ export default function NewCharacterScreen() {
           descriptionForItem={getCompendiumChoiceDescription}
           metaForItem={(item) => {
             const count = selectedFeatCounts[item.id] ?? 0;
+            const prerequisiteIssues = immediatePrerequisiteIssues(item);
+            if (count > 0 && prerequisiteIssues.length) return `Selecionado · ${prerequisiteIssues.map((entry) => entry.message).join(' ')}`;
             if (count > 0) return `Selecionado${count > 1 ? ` ×${count}` : ''}`;
+            if (prerequisiteIssues.length) return prerequisiteIssues.map((entry) => entry.message).join(' ');
             if (item.status !== 'validated') return 'Toque para validar e selecionar';
             return selectedCount >= required ? 'Limite da categoria atingido' : 'Toque para selecionar';
           }}
           isSelected={(item) => (selectedFeatCounts[item.id] ?? 0) > 0}
-          isDisabled={(item) => selectedCount >= required || ((selectedFeatCounts[item.id] ?? 0) > 0 && !isFeatRepeatable(item))}
+          isDisabled={(item) => immediatePrerequisiteIssues(item).length > 0 || selectedCount >= required || ((selectedFeatCounts[item.id] ?? 0) > 0 && !isFeatRepeatable(item))}
           onPressItem={(item) => { void selectProgressionFeat(item); }}
           pageSize={8}
           resetKey={`${category}:${selectedCount}`}
@@ -1710,7 +2388,7 @@ export default function NewCharacterScreen() {
     updater: (choice: CharacterFeatChoice) => CharacterFeatChoice
   ) => {
     setFeatChoiceDrafts((current) => {
-      const base = current[key] ?? emptyFeatChoice(item.id, '', instanceIndex);
+      const base = current[key] ?? emptyFeatChoice(item.id, key, instanceIndex);
       return { ...current, [key]: updater(base) };
     });
   };
@@ -1718,6 +2396,7 @@ export default function NewCharacterScreen() {
   const renderFeatInternalChoice = (instance: typeof selectedFeatInstances[number]) => {
     const schema = getFeatChoiceSchema(instance.item);
     if (!schema.kinds.length) return null;
+    const effectiveGenericSpellChoiceCount = getFeatGenericSpellChoiceCount(schema, { level: desiredLevel, classes: [] });
     const choice = featChoiceDrafts[instance.key] ?? emptyFeatChoice(instance.item.id, '', instance.instanceIndex);
     const increases = choice.abilityScoreIncreases ?? {};
     const increaseEntries = Object.entries(increases).filter(([, value]) => (value ?? 0) > 0);
@@ -1747,7 +2426,7 @@ export default function NewCharacterScreen() {
     const featCantripChoices = spellChoices.filter((spell) => spellItemLevel(spell) === 0);
     const featLevelOneSpellChoices = spellChoices.filter((spell) => spellItemLevel(spell) === 1);
 
-    const featGenericSpellChoices = schema.genericSpellChoiceCount > 0
+    const featGenericSpellChoices = effectiveGenericSpellChoiceCount > 0
       ? allSpells.filter((spell) => isSpellItemEligibleForGenericFeatChoice(spell, schema))
       : [];
 
@@ -1757,6 +2436,32 @@ export default function NewCharacterScreen() {
           .filter((item) => isWeaponItemEligibleForMasteryWithProficiencies(proficiencySelection.proficiencies.weapons, item))
           .filter((item) => Boolean(String(asRecord(item.normalizedJson).mastery ?? '').trim()))
           .slice(0, 80)
+      : [];
+    const directFightingStyleIds = new Set(
+      selectedFeatInstances
+        .filter((entry) => getFeatCategory(entry.item) === 'fightingStyle')
+        .map((entry) => entry.item.id)
+    );
+    const fightingStyleChoices = schema.fightingStyleChoiceCount > 0
+      ? getFightingStyleFeatChoiceCandidates(items, enabledSourceIds, featChoiceValidationCharacter, instance.key)
+          .filter((style) => style.id === choice.fightingStyleItemId || !directFightingStyleIds.has(style.id))
+      : [];
+    const eldritchAdeptInvocationChoices = schema.eldritchInvocationChoiceCount > 0
+      ? getEldritchAdeptInvocationCandidates(items, enabledSourceIds, featChoiceValidationCharacter, instance.key)
+      : [];
+    const metamagicChoices = schema.metamagicChoiceCount > 0
+      ? getMetamagicFeatOptions(enabledSourceIds)
+      : [];
+    const maneuverChoices = schema.maneuverChoiceCount > 0
+      ? getMartialAdeptManeuverOptions(enabledSourceIds)
+      : [];
+    const warlockEntryForFeat = selectedClassItems.find(({ item }) => normalized(item.name) === 'warlock');
+    const knownWarlockCantripItemIds = warlockEntryForFeat
+      ? Object.entries(effectiveSpellAssignments)
+          .filter(([, classItemId]) => classItemId === warlockEntryForFeat.item.id)
+          .map(([spellItemId]) => items.find((item) => item.id === spellItemId))
+          .filter((item): item is StoredCompendiumItem => Boolean(item && item.type === 'spell' && spellItemLevel(item) === 0))
+          .map((item) => item.id)
       : [];
 
     const toggleFeatSpell = async (spell: StoredCompendiumItem) => {
@@ -1768,8 +2473,8 @@ export default function NewCharacterScreen() {
       updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => {
         const ids = current.spellItemIds ?? [];
         if (ids.includes(spell.id)) return { ...current, spellItemIds: ids.filter((id) => id !== spell.id) };
-        if (schema.genericSpellChoiceCount > 0) {
-          if (ids.length >= schema.genericSpellChoiceCount) return current;
+        if (effectiveGenericSpellChoiceCount > 0) {
+          if (ids.length >= effectiveGenericSpellChoiceCount) return current;
           return { ...current, spellItemIds: [...ids, spell.id] };
         }
         const level = spellItemLevel(spell);
@@ -1870,6 +2575,132 @@ export default function NewCharacterScreen() {
           />
         ) : null}
 
+        {schema.fightingStyleChoiceCount > 0 ? (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Fighting Style ({choice.fightingStyleItemId ? 1 : 0}/{schema.fightingStyleChoiceCount})</Text>
+            <PaginatedOptionCardList
+              items={fightingStyleChoices}
+              keyExtractor={(style) => `${instance.key}-fighting-style-${style.id}`}
+              titleForItem={(style) => style.name}
+              descriptionForItem={getCompendiumChoiceDescription}
+              metaForItem={(style) => choice.fightingStyleItemId === style.id ? 'Selecionado' : 'Toque para selecionar'}
+              isSelected={(style) => choice.fightingStyleItemId === style.id}
+              onPressItem={(style) => {
+                void (async () => {
+                  if (choice.fightingStyleItemId !== style.id && !(await validateSelectedCompendiumItems([style]))) return;
+                  updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => ({
+                    ...current,
+                    fightingStyleItemId: current.fightingStyleItemId === style.id ? undefined : style.id
+                  }));
+                })();
+              }}
+              pageSize={10}
+              resetKey={`${instance.key}:fighting-style:${choice.fightingStyleItemId ?? 'none'}`}
+              emptyText="Nenhum Fighting Style elegível foi encontrado nas fontes ativas."
+            />
+          </>
+        ) : null}
+
+        {schema.eldritchInvocationChoiceCount > 0 ? (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Eldritch Invocation ({choice.eldritchInvocationItemId ? 1 : 0}/{schema.eldritchInvocationChoiceCount})</Text>
+            <PaginatedOptionCardList
+              items={eldritchAdeptInvocationChoices}
+              keyExtractor={(invocation) => `${instance.key}-eldritch-adept-${invocation.id}`}
+              titleForItem={(invocation) => invocation.name}
+              descriptionForItem={getCompendiumChoiceDescription}
+              metaForItem={(invocation) => choice.eldritchInvocationItemId === invocation.id
+                ? 'Selecionada por Eldritch Adept'
+                : `Nível mínimo ${getEldritchInvocationMinimumLevel(invocation)} · toque para selecionar`}
+              isSelected={(invocation) => choice.eldritchInvocationItemId === invocation.id}
+              onPressItem={(invocation) => {
+                void (async () => {
+                  if (choice.eldritchInvocationItemId !== invocation.id && !(await validateSelectedCompendiumItems([invocation]))) return;
+                  updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => ({
+                    ...current,
+                    eldritchInvocationItemId: invocation.id,
+                    eldritchInvocationChoice: current.eldritchInvocationItemId === invocation.id ? current.eldritchInvocationChoice : undefined
+                  }));
+                })();
+              }}
+              pageSize={10}
+              resetKey={`${instance.key}:eldritch-adept:${choice.eldritchInvocationItemId ?? 'none'}`}
+              emptyText="Nenhuma Eldritch Invocation elegível foi encontrada. Invocations com pré-requisito só aparecem quando o personagem é Warlock e cumpre esse pré-requisito."
+            />
+            {choice.eldritchInvocationItemId ? (
+              <EldritchInvocationChoiceEditor
+                items={items}
+                enabledSourceIds={enabledSourceIds}
+                selectedCounts={{ [choice.eldritchInvocationItemId]: 1 }}
+                choices={choice.eldritchInvocationChoice ? [{ ...choice.eldritchInvocationChoice, invocationItemId: choice.eldritchInvocationItemId, instanceIndex: 0 }] : []}
+                onChange={(invocationChoices) => updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => ({
+                  ...current,
+                  eldritchInvocationChoice: invocationChoices[0]
+                }))}
+                knownWarlockCantripItemIds={warlockEntryForFeat ? knownWarlockCantripItemIds : []}
+                selectedOriginFeatItemIds={[selectedOriginFeatId, selectedSpeciesFeatId].filter((value): value is string => Boolean(value))}
+                onBeforeSelectItem={async (item) => validateSelectedCompendiumItems([item])}
+              />
+            ) : null}
+          </>
+        ) : null}
+
+        {schema.metamagicChoiceCount > 0 ? (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Metamagic ({choice.metamagicOptionIds?.length ?? 0}/{schema.metamagicChoiceCount})</Text>
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>As opções usam o catálogo atual de Metamagic do Sorcerer 2024. Os 2 Sorcery Points de Metamagic Adept são rastreados separadamente e só podem alimentar Metamagic.</Text>
+            <PaginatedOptionCardList
+              items={metamagicChoices}
+              keyExtractor={(option) => `${instance.key}-metamagic-${option.id}`}
+              titleForItem={(option) => option.name}
+              descriptionForItem={describeFeatOption}
+              metaForItem={(option) => (choice.metamagicOptionIds ?? []).includes(option.id) ? 'Selecionado' : 'Toque para selecionar'}
+              isSelected={(option) => (choice.metamagicOptionIds ?? []).includes(option.id)}
+              isDisabled={(option) => !(choice.metamagicOptionIds ?? []).includes(option.id) && (choice.metamagicOptionIds ?? []).length >= schema.metamagicChoiceCount}
+              onPressItem={(option) => updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => {
+                const selected = current.metamagicOptionIds ?? [];
+                return {
+                  ...current,
+                  metamagicOptionIds: selected.includes(option.id)
+                    ? selected.filter((id) => id !== option.id)
+                    : [...selected, option.id]
+                };
+              })}
+              pageSize={10}
+              resetKey={`${instance.key}:metamagic:${choice.metamagicOptionIds?.join('|') ?? ''}`}
+              emptyText="Nenhuma opção de Metamagic do Sorcerer 2024 está disponível nas fontes ativas."
+            />
+          </>
+        ) : null}
+
+        {schema.maneuverChoiceCount > 0 ? (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Battle Master Maneuvers ({choice.maneuverOptionIds?.length ?? 0}/{schema.maneuverChoiceCount})</Text>
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>Inclui as maneuvers atuais do Battle Master 2024 e, quando Tasha está ativa, as opções legacy ainda não reimpressas no PHB 2024. Martial Adept concede 1 Superiority Die d6.</Text>
+            <PaginatedOptionCardList
+              items={maneuverChoices}
+              keyExtractor={(option) => `${instance.key}-maneuver-${option.id}`}
+              titleForItem={(option) => option.name}
+              descriptionForItem={describeFeatOption}
+              metaForItem={(option) => (choice.maneuverOptionIds ?? []).includes(option.id) ? 'Selecionado' : `${option.sourceLabel} · toque para selecionar`}
+              isSelected={(option) => (choice.maneuverOptionIds ?? []).includes(option.id)}
+              isDisabled={(option) => !(choice.maneuverOptionIds ?? []).includes(option.id) && (choice.maneuverOptionIds ?? []).length >= schema.maneuverChoiceCount}
+              onPressItem={(option) => updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => {
+                const selected = current.maneuverOptionIds ?? [];
+                return {
+                  ...current,
+                  maneuverOptionIds: selected.includes(option.id)
+                    ? selected.filter((id) => id !== option.id)
+                    : [...selected, option.id]
+                };
+              })}
+              pageSize={10}
+              resetKey={`${instance.key}:maneuvers:${choice.maneuverOptionIds?.join('|') ?? ''}`}
+              emptyText="Nenhuma Battle Master Maneuver está disponível nas fontes ativas."
+            />
+          </>
+        ) : null}
+
         {schema.skillUpgradeOptions.length ? <><Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Aprimorar perícia</Text><View style={styles.chips}>{schema.skillUpgradeOptions.map((skill) => <Chip key={`${instance.key}-upgrade-${skill}`} label={skill} selected={choice.skillUpgrade === skill} onPress={() => updateFeatChoiceDraft(instance.key, instance.item, instance.instanceIndex, (current) => ({ ...current, skillUpgrade: skill }))} />)}</View></> : null}
         {schema.weaponMasteryChoiceCount > 0 ? <>
           <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Maestria de arma ({choice.weaponMasterySelections?.length ?? 0}/{schema.weaponMasteryChoiceCount})</Text>
@@ -1961,10 +2792,10 @@ export default function NewCharacterScreen() {
             />
           </>
         ) : null}
-        {schema.genericSpellChoiceCount > 0 ? (
+        {effectiveGenericSpellChoiceCount > 0 ? (
           <>
-            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Magia ({selectedSpellIds.length}/{schema.genericSpellChoiceCount})</Text>
-            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>Escolha conforme os critérios do feat{schema.genericSpellMaximumLevel !== undefined ? ` · nível máximo ${schema.genericSpellMaximumLevel}` : ''}{schema.genericSpellSourceLists.length ? ` · lista ${schema.genericSpellSourceLists.join(' ou ')}` : ''}.</Text>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Magia ({selectedSpellIds.length}/{effectiveGenericSpellChoiceCount})</Text>
+            <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>Escolha conforme os critérios do feat{schema.ritualSpellChoiceCountFormula ? ` · rituais de nível ${schema.ritualSpellLevel ?? 1} · quantidade = PB` : ''}{schema.genericSpellMaximumLevel !== undefined ? ` · nível máximo ${schema.genericSpellMaximumLevel}` : ''}{schema.genericSpellSourceLists.length ? ` · lista ${schema.genericSpellSourceLists.join(' ou ')}` : ''}.</Text>
             <PaginatedChipList
               items={featGenericSpellChoices}
               keyExtractor={(spell) => `${instance.key}-generic-spell-${spell.id}`}
@@ -2028,18 +2859,37 @@ export default function NewCharacterScreen() {
         subtitle={draftUpdatedAt ? `Última gravação: ${new Date(draftUpdatedAt).toLocaleString('pt-BR')}` : 'O progresso desta criação será preservado neste dispositivo.'}
       >
         {draftSaveError ? <Text style={{ color: colors.error }}>{draftSaveError}</Text> : null}
-        <Button
-          label="Descartar rascunho e recomeçar"
-          variant="text"
-          onPress={() => Alert.alert(
-            'Descartar rascunho?',
-            'Todas as escolhas desta criação serão removidas.',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Descartar', style: 'destructive', onPress: () => { void discardCreationDraft(); } }
-            ]
-          )}
-        />
+        {discardDraftConfirmationVisible ? (
+          <View style={{ gap: 8 }}>
+            <Text style={{ color: colors.error, fontWeight: '800' }}>
+              Todas as escolhas desta criação serão removidas. Confirma o descarte?
+            </Text>
+            <View style={styles.footerRow}>
+              <View style={styles.flex}>
+                <Button
+                  label="Cancelar"
+                  variant="text"
+                  onPress={() => setDiscardDraftConfirmationVisible(false)}
+                />
+              </View>
+              <View style={styles.flex}>
+                <Button
+                  testID="character-creation-discard-confirm"
+                  label="Descartar e recomeçar"
+                  variant="danger"
+                  onPress={() => { void discardCreationDraft(); }}
+                />
+              </View>
+            </View>
+          </View>
+        ) : (
+          <Button
+            testID="character-creation-discard-draft"
+            label="Descartar rascunho e recomeçar"
+            variant="text"
+            onPress={() => setDiscardDraftConfirmationVisible(true)}
+          />
+        )}
       </Card>
 
       {step === 0 ? (
@@ -2061,10 +2911,7 @@ export default function NewCharacterScreen() {
                 key={item.id}
                 label={item.name}
                 selected={item.id in selectedClassLevels}
-                onPress={() => setSelectedClassLevels((current) => {
-                  if (item.id in current) return Object.fromEntries(Object.entries(current).filter(([id]) => id !== item.id));
-                  return { ...current, [item.id]: Object.keys(current).length ? 1 : desiredLevel };
-                })}
+                onPress={() => { void selectClass(item); }}
               />
             ))}
           </View>
@@ -2082,7 +2929,7 @@ export default function NewCharacterScreen() {
                   ? 'As classes existem no catálogo, mas o Player’s Handbook 2024 ou a categoria de classes está desativada.'
                   : classesMissingMechanicalPayload
                     ? 'O catálogo encontrou as classes, mas o payload mecânico do PHB 2024 não está disponível no compêndio local.'
-                    : 'Nenhuma classe validada está disponível. O app pode recarregar o conteúdo básico incluído sem apagar seus dados.'}
+                    : 'Nenhuma classe ativa está disponível. Conteúdo em revisão aparece aqui e é validado somente quando você o escolhe explicitamente.'}
             >
               {classSearchHasNoMatches ? (
                 <Button
@@ -2135,7 +2982,7 @@ export default function NewCharacterScreen() {
                 <Field
                   label="Nível nesta classe"
                   value={String(level)}
-                  onChangeText={(value) => setSelectedClassLevels((current) => ({ ...current, [item.id]: Math.max(1, Math.min(20, Number(value) || 1)) }))}
+                  onChangeText={(value) => { void changeSelectedClassLevel(item, value); }}
                   keyboardType="number-pad"
                 />
                 <Text style={[styles.previewHeading, { color: colors.onSurface }]}>Features até o nível {previewLevel}</Text>
@@ -2167,11 +3014,40 @@ export default function NewCharacterScreen() {
               <Chip
                 key={item.id}
                 label={item.name}
-                selected={selectedSpeciesId === item.id}
+                selected={selectedSpeciesBase?.id === item.id}
                 onPress={() => { void selectSpecies(item); }}
               />
             ))}
           </View>
+
+          {selectedSpeciesBase && selectedSpeciesVariants.length ? (
+            <Card
+              variant="outlined"
+              title={`Variante / subespécie de ${selectedSpeciesBase.name}`}
+              subtitle="Variantes legadas ficam agrupadas sob a espécie-base para evitar que Dragonmarks, linhagens de Tiefling e subraças apareçam como espécies independentes."
+            >
+              <View style={styles.chips}>
+                <Chip
+                  label="Padrão"
+                  selected={selectedSpecies?.id === selectedSpeciesBase.id}
+                  onPress={() => { void selectSpecies(selectedSpeciesBase); }}
+                />
+                {selectedSpeciesVariants.map((variant) => (
+                  <Chip
+                    key={variant.id}
+                    label={getSpeciesVariantLabel(variant)}
+                    selected={selectedSpecies?.id === variant.id}
+                    onPress={() => { void selectSpecies(variant); }}
+                  />
+                ))}
+              </View>
+              {selectedSpecies && selectedSpecies.id !== selectedSpeciesBase.id ? (
+                <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+                  {getSpeciesVariantRelationshipDescription(selectedSpecies, allSpeciesChoices)}
+                </Text>
+              ) : null}
+            </Card>
+          ) : null}
 
           {selectedSpecies ? (
             <Card
@@ -2199,6 +3075,7 @@ export default function NewCharacterScreen() {
           {speciesChoiceRequirements.map((requirement) => {
             const selectedChoice = speciesChoiceForRequirement(speciesChoices, requirement);
             const selectedOption = requirement.options.find((option) => option.id === selectedChoice?.optionId);
+            const selectedOptionFeature = getSpeciesChoiceOptionFeatureItem(requirement, selectedChoice?.optionId, items);
             return (
               <Card
                 key={requirement.featureItemId}
@@ -2212,10 +3089,15 @@ export default function NewCharacterScreen() {
                       key={`${requirement.featureItemId}-${option.id}`}
                       label={option.label}
                       selected={selectedChoice?.optionId === option.id}
-                      onPress={() => setSpeciesChoices((current) => setSpeciesChoiceOption(current, requirement, option.id))}
+                      onPress={() => { void selectSpeciesChoiceOption(requirement, option.id); }}
                     />
                   ))}
                 </View>
+                {selectedOptionFeature ? (
+                  <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>{getSelectionShortDescription(selectedOptionFeature, 520)}</Text>
+                ) : selectedOption?.description ? (
+                  <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>{selectedOption.description}</Text>
+                ) : null}
                 {selectedOption?.skillChoiceCount ? (
                   <ChoiceChipSelector
                     title={`Perícia (${selectedChoice?.skill ? 1 : 0}/${selectedOption.skillChoiceCount})`}
@@ -2321,6 +3203,7 @@ export default function NewCharacterScreen() {
               title={`Regras de ${selectedBackground.name}`}
               subtitle={`Atributos: ${backgroundUsesFreeAbilitySelection ? 'escolha livre entre os 6' : backgroundAbilityOptions.join(', ')} · Origin Feat: ${suggestedOriginFeat?.name ?? 'escolha livre'}`}
             >
+              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>{getSelectionShortDescription(selectedBackground)}</Text>
               <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
                 Perícias concedidas: {backgroundDefaults.proficiencies.skills.join(', ') || '—'} · Ferramentas: {backgroundDefaults.proficiencies.tools.join(', ') || (proficiencySelection.backgroundRequirement?.toolChoiceCount ? 'escolha livre' : '—')}
               </Text>
@@ -2380,25 +3263,98 @@ export default function NewCharacterScreen() {
       {step === 2 ? (
         <>
           <Card variant="hero" title="Escolhas liberadas pelo nível" subtitle="Features fixas são aplicadas automaticamente; subclasses, feats e Eldritch Invocations obrigatórias precisam ser preenchidos." />
-          {eligibleSubclasses.map(({ classItem, level, subclasses }) => subclasses.length ? (
-            <Card key={classItem.id} variant="filled" title={`Subclasse de ${classItem.name}`} subtitle={`Classe no nível ${level}`}>
-              <View style={styles.chips}>{subclasses.map((item) => <Chip key={item.id} label={item.name} selected={selectedSubclassByClass[classItem.id] === item.id} onPress={() => setSelectedSubclassByClass((current) => ({ ...current, [classItem.id]: current[classItem.id] === item.id ? '' : item.id }))} />)}</View>
-            </Card>
-          ) : null)}
+          {eligibleSubclasses.map(({ classItem, level, subclasses }) => {
+            if (!subclasses.length) return null;
+            const selectedSubclass = subclasses.find((item) => selectedSubclassByClass[classItem.id] === item.id);
+            const selectedSubclassFeatures = selectedSubclass
+              ? getExplicitProgressionSelectionReviewItems(selectedSubclass, items, level).filter((item) => item.type === 'feature')
+              : [];
+            return (
+              <Card key={classItem.id} variant="filled" title={`Subclasse de ${classItem.name}`} subtitle={`Classe no nível ${level}`}>
+                <View style={styles.chips}>
+                  {subclasses.map((item) => (
+                    <Chip
+                      key={item.id}
+                      label={item.name}
+                      selected={selectedSubclassByClass[classItem.id] === item.id}
+                      onPress={() => { void selectSubclass(classItem, level, item); }}
+                    />
+                  ))}
+                </View>
+                {selectedSubclass ? (
+                  <View style={styles.previewFeature}>
+                    <Text style={[styles.previewFeatureTitle, { color: colors.onSurface }]}>{selectedSubclass.name}</Text>
+                    <Text style={[styles.previewFeatureSummary, { color: colors.onSurfaceVariant }]}>{getSelectionShortDescription(selectedSubclass)}</Text>
+                    {selectedSubclassFeatures.map((feature) => (
+                      <View key={feature.id} style={styles.previewFeature}>
+                        <Text style={[styles.previewFeatureTitle, { color: colors.onSurface }]}>{feature.name}</Text>
+                        <Text style={[styles.previewFeatureSummary, { color: colors.onSurfaceVariant }]}>{getSelectionShortDescription(feature)}</Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+              </Card>
+            );
+          })}
           <SubclassChoiceEditor
             requirements={subclassChoiceRequirements}
             choices={subclassChoices}
             onChange={setSubclassChoices}
             allowResolvedOverride
           />
-          {subclassChoiceIssues.length ? <IssueList issues={subclassChoiceIssues} /> : null}
+          {classFeatureChoiceRequirements.map((requirement) => {
+            const selected = classFeatureChoiceForRequirement(classFeatureChoices, requirement);
+            return (
+              <Card
+                key={`${requirement.classItemId}:${requirement.featureItemId}`}
+                variant="outlined"
+                title={`${requirement.featureName} · ${requirement.className}`}
+                subtitle={requirement.required
+                  ? 'Escolha uma opção desta feature de classe. A seleção também controla eventuais magias bônus.'
+                  : 'Alternativa opcional ao Fighting Style normal. Se ativada, substitui uma escolha de Fighting Style feat.'}
+              >
+                <View style={styles.chips}>
+                  {requirement.options.map((option) => (
+                    <Chip
+                      key={`${requirement.featureItemId}:${option.id}`}
+                      label={option.label}
+                      selected={selected?.optionId === option.id}
+                      onPress={() => setClassFeatureChoices((current) => setClassFeatureChoiceOption(
+                        current,
+                        requirement,
+                        !requirement.required && selected?.optionId === option.id ? undefined : option.id
+                      ))}
+                    />
+                  ))}
+                </View>
+                {selected ? (
+                  <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+                    {requirement.options.find((option) => option.id === selected.optionId)?.description ?? 'Opção selecionada.'}
+                  </Text>
+                ) : null}
+              </Card>
+            );
+          })}
           {renderFeatChoices('Fighting Styles', 'fightingStyle', featRequirements.fightingStyle, selectedFightingStyleCount)}
           {renderFeatChoices('Feats gerais / ASI', 'general', featRequirements.general, selectedGeneralCount)}
           {renderFeatChoices('Epic Boons', 'epicBoon', featRequirements.epicBoon, selectedEpicBoonCount)}
           {renderEldritchInvocationChoices()}
           {selectedFeatInstances.map(renderFeatInternalChoice)}
-          {featChoiceIssues.length ? <IssueList issues={featChoiceIssues} /> : null}
-          {missingSubclass || subclassChoiceIssues.length > 0 || !featCountsValid || allInvocationIssues.length > 0 ? <Text style={{ color: colors.error }}>Complete as subclasses, suas configurações internas, feats e Eldritch Invocations exigidos pela progressão.</Text> : null}
+          {progressionStepIssues.length ? (
+            <Card
+              variant="outlined"
+              title="Pendências desta etapa"
+              subtitle="O botão Continuar permanece clicável para mostrar exatamente o que ainda falta; escolhas antigas de outras classes são removidas automaticamente."
+            >
+              <IssueList issues={progressionStepIssues} />
+            </Card>
+          ) : (
+            <Card
+              variant="outlined"
+              title="Progressão pronta"
+              subtitle="Subclasse e escolhas obrigatórias desta combinação de classes estão completas. Você pode continuar."
+            />
+          )}
         </>
       ) : null}
 
@@ -2551,23 +3507,29 @@ export default function NewCharacterScreen() {
           ) : null}
           {proficiencySelection.requirement ? (
             <>
-              <Card variant="filled" title={`Perícias de ${proficiencySelection.requirement.className}`} subtitle={`Escolha exatamente ${proficiencySelection.requirement.skillChoiceCount}.`}>
+              <Card
+                variant="filled"
+                title={`Perícias de ${proficiencySelection.requirement.className} (${validClassSkillChoices.length}/${proficiencySelection.requirement.skillChoiceCount})`}
+                subtitle={originGrantedClassSkills.some((skill) => proficiencySelection.requirement?.skillOptions.includes(skill))
+                  ? `Escolha ${proficiencySelection.requirement.skillChoiceCount} perícia(s) adicionais da lista da classe. As opções já concedidas pela origem aparecem marcadas e bloqueadas, mas não consomem escolhas da classe.`
+                  : `Escolha exatamente ${proficiencySelection.requirement.skillChoiceCount}.`}
+              >
                 <View style={styles.chips}>
                   {proficiencySelection.requirement.skillOptions.map((skill) => {
                     const grantedByBackground = backgroundDefaults.proficiencies.skills.includes(skill);
                     const grantedBySpecies = speciesChoiceProficiencyGrants.skills.includes(skill);
                     const grantedByOrigin = grantedByBackground || grantedBySpecies;
-                    const selectedByClass = classSkillChoices.includes(skill);
+                    const selectedByClass = validClassSkillChoices.includes(skill);
                     return (
                       <Chip
                         key={skill}
-                        label={skill}
+                        label={grantedByOrigin ? `${skill} · origem` : skill}
                         selected={grantedByOrigin || selectedByClass}
-                        disabled={grantedByOrigin || (!selectedByClass && classSkillChoices.length >= proficiencySelection.requirement!.skillChoiceCount)}
+                        disabled={grantedByOrigin || (!selectedByClass && validClassSkillChoices.length >= proficiencySelection.requirement!.skillChoiceCount)}
                         accessibilityHint={grantedByBackground
-                          ? 'Esta perícia já é concedida pelo background; escolha outra perícia da classe.'
+                          ? 'Esta perícia já é concedida pelo background; ela não consome uma escolha da classe.'
                           : grantedBySpecies
-                            ? 'Esta perícia já é concedida pela espécie; escolha outra perícia da classe.'
+                            ? 'Esta perícia já é concedida pela espécie; ela não consome uma escolha da classe.'
                             : undefined}
                         onPress={() => setClassSkillChoices((current) => current.includes(skill) ? current.filter((entry) => entry !== skill) : [...current, skill])}
                       />
@@ -2767,18 +3729,182 @@ export default function NewCharacterScreen() {
       {step === 6 ? (
         <>
           <Card variant="hero" title="Magias" subtitle="Selecione agora as magias desejadas ou deixe escolhas pendentes para completar depois na ficha do personagem." />
-          {spellProfiles.length === 0 ? <Card variant="filled" title="Sem conjuração" subtitle="As classes escolhidas não possuem Spellcasting ou Pact Magic nesta progressão." /> : null}
+          {spellProfiles.length === 0 ? (
+            <Card
+              variant="filled"
+              title="Sem conjuração de classe"
+              subtitle={speciesGrantedSpellItems.length
+                ? 'As classes escolhidas não possuem Spellcasting ou Pact Magic nesta progressão, mas a espécie concede as magias automáticas exibidas abaixo.'
+                : 'As classes escolhidas não possuem Spellcasting ou Pact Magic nesta progressão.'}
+            />
+          ) : null}
+          {speciesGrantedSpellItems.length ? (
+            <Card
+              variant="filled"
+              title={`Magias concedidas pela espécie${selectedSpecies?.name ? ` · ${selectedSpecies.name}` : ''}`}
+              subtitle="Concedidas pelas regras da espécie no nível atual. Elas serão adicionadas à ficha automaticamente e não consomem escolhas, magias preparadas/conhecidas ou espaço no spellbook da classe."
+            >
+              <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+                {speciesGrantedSpellItems.map((spell) => spell.name).join(', ')}
+              </Text>
+            </Card>
+          ) : null}
           <View style={styles.chips}>{spellProfiles.map((profile) => <Chip key={profile.classItemId} label={profile.className} selected={activeSpellClassItemId === profile.classItemId} onPress={() => setActiveSpellClassItemId(profile.classItemId)} />)}</View>
           {activeSpellProfile ? (
             <>
               <Card variant="filled" title={`${activeSpellProfile.className} ${activeSpellProfile.classLevel}`} subtitle={`Cantrips: ${spellValidation.countsByClassItemId[activeSpellProfile.classItemId]?.cantrips ?? 0}/${activeSpellProfile.cantripLimit} · Preparadas/conhecidas: ${spellValidation.countsByClassItemId[activeSpellProfile.classItemId]?.prepared ?? 0}/${activeSpellProfile.preparedSpellLimit}${activeSpellProfile.preparationMode === 'spellbook' ? ` · Spellbook: ${spellValidation.countsByClassItemId[activeSpellProfile.classItemId]?.spellbook ?? 0}/${activeSpellProfile.spellbookMinimumSpellCount}` : ''} · nível máximo ${activeSpellProfile.maxSpellLevel} · ${activeSpellProfile.preparationMode}`} />
-              <Card variant="outlined" title="Escolhas opcionais nesta etapa" subtitle="Quantidades ainda não preenchidas serão registradas como pendências. Depois de criar o personagem, abra Magias para concluir as escolhas restantes." />
+              <Card variant="outlined" title="Escolhas opcionais nesta etapa" subtitle="As escolhas normais podem ficar pendentes. Magias bônus de features precisam ser concluídas aqui porque não consomem os limites normais da classe." />
+              {activeAutomaticSpellItems.length ? (
+                <Card
+                  variant="filled"
+                  title="Magias automáticas"
+                  subtitle="Concedidas ou sempre preparadas pelas regras ativas. Elas serão adicionadas à ficha automaticamente e não consomem o limite normal da classe."
+                >
+                  <Text style={[styles.muted, { color: colors.onSurfaceVariant }]}>
+                    {activeAutomaticSpellItems.map((spell) => spell.name).join(', ')}
+                  </Text>
+                </Card>
+              ) : null}
               <Field label="Buscar magia" value={spellSearch} onChangeText={setSpellSearch} />
+              {activeClassBonusSpellRequirements.map((requirement) => {
+                const selected = bonusSpellChoiceForRequirement(bonusSpellChoices, requirement)?.spellItemIds ?? [];
+                const usedByOtherBonusChoices = new Set(
+                  bonusSpellChoices
+                    .filter((choice) => choice.classItemId === requirement.classItemId && choice.requirementId !== requirement.id)
+                    .flatMap((choice) => choice.spellItemIds)
+                );
+                const candidates = getBonusSpellChoiceCandidates(requirement, activeSpellProfile, allSpells, items)
+                  .filter((spell) => effectiveSpellAssignments[spell.id] !== requirement.classItemId)
+                  .filter((spell) => !usedByOtherBonusChoices.has(spell.id) || selected.includes(spell.id))
+                  .filter((spell) => !spellSearch.trim() || spell.name.toLowerCase().includes(spellSearch.trim().toLowerCase()));
+                const sourceLabel = requirement.sourceClassNames.length
+                  ? requirement.sourceClassNames.join(' / ')
+                  : 'lista específica da feature';
+                return (
+                  <Card
+                    key={requirement.id}
+                    variant="filled"
+                    title={`${requirement.source.name} · magia bônus (${selected.length}/${requirement.count})`}
+                    subtitle={`Escolha de ${sourceLabel}${requirement.spellLevel !== undefined ? ` · nível ${requirement.spellLevel}` : ` · até nível ${activeSpellProfile.maxSpellLevel}`}. Não consome o limite normal de ${requirement.className}.`}
+                  >
+                    <PaginatedChipList
+                      items={candidates}
+                      keyExtractor={(item) => `bonus-${requirement.id}-${item.id}`}
+                      labelForItem={(item) => `${item.name}${spellItemLevel(item) > 0 ? ` · nv ${spellItemLevel(item)}` : ''}`}
+                      isSelected={(item) => selected.includes(item.id)}
+                      descriptionForSelectedItem={getSpellChoiceInlineDescription}
+                      onPressItem={(item) => {
+                        void (async () => {
+                          if (!selected.includes(item.id)) {
+                            const ok = await validateSelectedCompendiumItems([item]);
+                            if (!ok) return;
+                          }
+                          setBonusSpellChoices((current) => toggleBonusSpellChoiceSpell(current, requirement, item.id));
+                        })();
+                      }}
+                      pageSize={18}
+                      resetKey={`bonus:${requirement.id}:${spellSearch}:${selected.join(',')}`}
+                      emptyText={`Nenhuma magia elegível para ${requirement.source.name}.`}
+                    />
+                  </Card>
+                );
+              })}
+              {activeMysticArcanumContexts.map((context) => {
+                const requirement = context.requirement;
+                const selected = mysticArcanumChoiceForRequirement(mysticArcanumChoices, requirement)?.spellItemId;
+                const candidates = getMysticArcanumCandidates({ ...context, items })
+                  .filter((spell) => !spellSearch.trim() || spell.name.toLowerCase().includes(spellSearch.trim().toLowerCase()));
+                return (
+                  <Card
+                    key={requirement.id}
+                    variant="filled"
+                    title={`${requirement.featureName} · ${requirement.spellLevel}º círculo${selected ? ' · escolhido' : ''}`}
+                    subtitle={`Escolha 1 magia de ${requirement.spellLevel}º círculo da lista de Warlock ativa. Expanded Spell Lists contam aqui; a magia é conjurada 1 vez por Descanso Longo sem usar Pact Magic slot.`}
+                  >
+                    <PaginatedChipList
+                      items={candidates}
+                      keyExtractor={(item) => `arcanum-${requirement.id}-${item.id}`}
+                      labelForItem={(item) => item.name}
+                      isSelected={(item) => selected === item.id}
+                      descriptionForSelectedItem={getSpellChoiceInlineDescription}
+                      onPressItem={(item) => {
+                        void (async () => {
+                          if (selected !== item.id) {
+                            const ok = await validateSelectedCompendiumItems([item]);
+                            if (!ok) return;
+                          }
+                          setMysticArcanumChoices((current) => setMysticArcanumChoice(current, requirement, item.id));
+                        })();
+                      }}
+                      pageSize={18}
+                      resetKey={`arcanum:${requirement.id}:${spellSearch}:${selected ?? ''}`}
+                      emptyText={`Nenhuma magia de ${requirement.spellLevel}º círculo disponível para este Mystic Arcanum.`}
+                    />
+                  </Card>
+                );
+              })}
+              {activeWizardSpellbookRequirements.map((requirement) => {
+                const selected = spellbookFeatureChoiceForRequirement(spellbookFeatureChoices, requirement)?.spellItemIds ?? [];
+                const isSavant = requirement.kind === 'savantInitial' || requirement.kind === 'savantNewSlotLevel';
+                const usedByOtherSavantChoices = new Set(
+                  spellbookFeatureChoices
+                    .filter((choice) => choice.classItemId === requirement.classItemId && choice.requirementId !== requirement.id)
+                    .filter((choice) => {
+                      const otherRequirement = wizardSpellbookRequirements.find((entry) => entry.id === choice.requirementId);
+                      return otherRequirement?.kind === 'savantInitial' || otherRequirement?.kind === 'savantNewSlotLevel';
+                    })
+                    .flatMap((choice) => choice.spellItemIds)
+                );
+                const candidates = getWizardSpellbookFeatureCandidates({
+                  requirement,
+                  profile: activeSpellProfile,
+                  spellItems: allSpells,
+                  availableSpellbookItemIds: wizardAvailableSpellbookItemIdsByClassItemId.get(requirement.classItemId)
+                })
+                  .filter((spell) => !isSavant || effectiveSpellbookAssignments[spell.id] !== requirement.classItemId || selected.includes(spell.id))
+                  .filter((spell) => !isSavant || !usedByOtherSavantChoices.has(spell.id) || selected.includes(spell.id))
+                  .filter((spell) => !spellSearch.trim() || spell.name.toLowerCase().includes(spellSearch.trim().toLowerCase()));
+                const title = requirement.kind === 'savantInitial'
+                  ? `${requirement.featureName} · magias gratuitas (${selected.length}/${requirement.count})`
+                  : requirement.kind === 'savantNewSlotLevel'
+                    ? `${requirement.featureName} · novo nível de slot ${requirement.maximumSpellLevel} (${selected.length}/${requirement.count})`
+                    : requirement.kind === 'spellMastery'
+                      ? `${requirement.featureName} · nível ${requirement.exactSpellLevel} (${selected.length}/${requirement.count})`
+                      : `${requirement.featureName} · nível 3 (${selected.length}/${requirement.count})`;
+                const subtitle = isSavant
+                  ? `Adicione gratuitamente ao spellbook ${requirement.school ?? ''}${requirement.kind === 'savantNewSlotLevel' ? ` · até nível ${requirement.maximumSpellLevel}` : ' · níveis 1–2'}. Não substitui as magias normais ganhas por nível.`
+                  : requirement.kind === 'spellMastery'
+                    ? 'Escolha uma magia já no spellbook com tempo de conjuração de 1 Ação. Ela fica sempre preparada e pode ser conjurada no menor nível sem gastar slot.'
+                    : 'Escolha duas magias de 3º círculo já no spellbook. Elas ficam sempre preparadas e cada uma recebe 1 conjuração gratuita, recarregada em Descanso Curto ou Longo.';
+                return (
+                  <Card key={requirement.id} variant="filled" title={title} subtitle={subtitle}>
+                    <PaginatedChipList
+                      items={candidates}
+                      keyExtractor={(item) => `wizard-feature-${requirement.id}-${item.id}`}
+                      labelForItem={(item) => `${item.name} · nv ${spellItemLevel(item)}`}
+                      isSelected={(item) => selected.includes(item.id)}
+                      descriptionForSelectedItem={getSpellChoiceInlineDescription}
+                      onPressItem={(item) => {
+                        void (async () => {
+                          if (!selected.includes(item.id)) {
+                            const ok = await validateSelectedCompendiumItems([item]);
+                            if (!ok) return;
+                          }
+                          setSpellbookFeatureChoices((current) => toggleWizardSpellbookFeatureChoiceSpell(current, requirement, item.id));
+                        })();
+                      }}
+                      pageSize={18}
+                      resetKey={`wizard-feature:${requirement.id}:${spellSearch}:${selected.join(',')}`}
+                      emptyText={`Nenhuma magia elegível para ${requirement.featureName}.`}
+                    />
+                  </Card>
+                );
+              })}
               {focusedSpellItem
                 && isSpellItemEligibleForProfile(
                   focusedSpellItem,
                   activeSpellProfile,
-                  subclassSpellReferencesByClassItemId[activeSpellProfile.classItemId] ?? []
+                  additionalSpellReferencesByClassItemId[activeSpellProfile.classItemId] ?? []
                 )
                 && effectiveSpellAssignments[focusedSpellItem.id] !== activeSpellProfile.classItemId
                 && effectiveSpellbookAssignments[focusedSpellItem.id] !== activeSpellProfile.classItemId ? (
@@ -2848,6 +3974,20 @@ export default function NewCharacterScreen() {
               )}
             </>
           ) : null}
+          {bonusSpellChoiceIssues.length ? (
+            <Card variant="outlined" title="Magias bônus pendentes" subtitle="Estas escolhas vêm de features e não podem ser descontadas do limite normal da classe.">
+              {bonusSpellChoiceIssues.map((issue) => (
+                <Text key={`${issue.code}:${issue.message}`} style={[styles.muted, { color: colors.onSurfaceVariant }]}>• {issue.message}</Text>
+              ))}
+            </Card>
+          ) : null}
+          {wizardSpellbookFeatureIssues.length ? (
+            <Card variant="outlined" title="Escolhas especiais do spellbook pendentes" subtitle="Savant, Spell Mastery e Signature Spells usam regras próprias e não consomem as escolhas normais do spellbook/preparação.">
+              {wizardSpellbookFeatureIssues.map((issue) => (
+                <Text key={`${issue.code}:${issue.message}`} style={[styles.muted, { color: colors.onSurfaceVariant }]}>• {issue.message}</Text>
+              ))}
+            </Card>
+          ) : null}
           {spellCompletionIssues.length ? (
             <Card variant="filled" title="Magias para escolher depois" subtitle={`${spellCompletionIssues.length} requisito(s) de quantidade permanecem pendentes.`}>
               {spellCompletionIssues.map((issue) => (
@@ -2856,6 +3996,7 @@ export default function NewCharacterScreen() {
             </Card>
           ) : null}
           {spellValidation.issues.length ? <IssueList issues={spellValidation.issues} /> : null}
+          {mysticArcanumIssues.length ? <IssueList issues={mysticArcanumIssues} /> : null}
         </>
       ) : null}
 
@@ -2873,6 +4014,13 @@ export default function NewCharacterScreen() {
           {featChoiceIssues.length ? <IssueList issues={featChoiceIssues} /> : null}
           {proficiencyIssues.length ? <IssueList issues={proficiencyIssues} /> : null}
           {equipmentIssues.length ? <IssueList issues={equipmentIssues} /> : null}
+          {wizardSpellbookFeatureIssues.length ? (
+            <Card variant="outlined" title="Escolhas especiais do spellbook pendentes" subtitle="Savant, Spell Mastery e Signature Spells usam regras próprias e não consomem as escolhas normais do spellbook/preparação.">
+              {wizardSpellbookFeatureIssues.map((issue) => (
+                <Text key={`${issue.code}:${issue.message}`} style={[styles.muted, { color: colors.onSurfaceVariant }]}>• {issue.message}</Text>
+              ))}
+            </Card>
+          ) : null}
           {spellCompletionIssues.length ? (
             <Card variant="filled" title="Escolhas de magia pendentes" subtitle="O personagem poderá ser concluído agora. As escolhas restantes aparecerão na ficha.">
               {spellCompletionIssues.map((issue) => (

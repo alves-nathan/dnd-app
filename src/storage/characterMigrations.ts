@@ -4,8 +4,13 @@ import type {
   CharacterProficiencies
 } from '../types';
 import { normalizeCharacterChoiceReference } from '../catalog/characterChoiceBridge';
+import {
+  emptyCharacterCatalogReconciliationState,
+  normalizeCharacterCatalogReconciliationState,
+  type CharacterCatalogReconciliationState
+} from './characterCatalogReconciliationState';
 
-export const CHARACTER_STORE_VERSION = 24;
+export const CHARACTER_STORE_VERSION = 25;
 
 export interface PersistedCharacterStoreState {
   characters?: Character[];
@@ -14,6 +19,7 @@ export interface PersistedCharacterStoreState {
   compatibilityRemediationPlans?: Record<string, unknown>;
   compatibilityRemediationRecovery?: unknown;
   compatibilityRemediationQuarantine?: Record<string, unknown>;
+  catalogAwareReconciliation?: CharacterCatalogReconciliationState;
   [key: string]: unknown;
 }
 
@@ -64,6 +70,11 @@ const normalizeOptionalChoiceReference = (value: string | undefined): string | u
 const emptyBuildChoices = (): CharacterBuildChoices => ({
   speciesChoices: [],
   subclassChoices: [],
+  classFeatureChoices: [],
+  classMetamagicChoices: [],
+  bonusSpellChoices: [],
+  spellbookFeatureChoices: [],
+  mysticArcanumChoices: [],
   classSkillChoices: [],
   classToolChoices: [],
   expertiseSkills: [],
@@ -94,11 +105,41 @@ const normalizeBuildChoices = (
     speciesChoices: (buildChoices?.speciesChoices ?? []).map((choice) => ({
       ...choice,
       speciesItemId: normalizeCharacterChoiceReference(choice.speciesItemId),
-      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId)
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId),
+      replacementSpellItemId: normalizeOptionalChoiceReference(choice.replacementSpellItemId)
     })),
     subclassChoices: (buildChoices?.subclassChoices ?? []).map((choice) => ({
       ...choice,
       subclassItemId: normalizeCharacterChoiceReference(choice.subclassItemId)
+    })),
+    classFeatureChoices: (buildChoices?.classFeatureChoices ?? []).map((choice) => ({
+      ...choice,
+      classItemId: normalizeCharacterChoiceReference(choice.classItemId),
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId)
+    })),
+    classMetamagicChoices: (buildChoices?.classMetamagicChoices ?? []).map((choice) => ({
+      ...choice,
+      classItemId: normalizeCharacterChoiceReference(choice.classItemId),
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId),
+      optionIds: Array.from(new Set(choice.optionIds ?? []))
+    })),
+    bonusSpellChoices: (buildChoices?.bonusSpellChoices ?? []).map((choice) => ({
+      ...choice,
+      classItemId: normalizeCharacterChoiceReference(choice.classItemId),
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId),
+      spellItemIds: (choice.spellItemIds ?? []).map(normalizeCharacterChoiceReference)
+    })),
+    spellbookFeatureChoices: (buildChoices?.spellbookFeatureChoices ?? []).map((choice) => ({
+      ...choice,
+      classItemId: normalizeCharacterChoiceReference(choice.classItemId),
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId),
+      spellItemIds: (choice.spellItemIds ?? []).map(normalizeCharacterChoiceReference)
+    })),
+    mysticArcanumChoices: (buildChoices?.mysticArcanumChoices ?? []).map((choice) => ({
+      ...choice,
+      classItemId: normalizeCharacterChoiceReference(choice.classItemId),
+      featureItemId: normalizeCharacterChoiceReference(choice.featureItemId),
+      spellItemId: normalizeCharacterChoiceReference(choice.spellItemId)
     })),
     spellAssignments: normalizeChoiceAssignmentRecord(buildChoices?.spellAssignments),
     spellbookAssignments: normalizeChoiceAssignmentRecord(buildChoices?.spellbookAssignments),
@@ -153,7 +194,8 @@ export const ensureCharacterCollections = (character: Character): Character => (
   subclasses: character.subclasses ?? [],
   feats: (character.feats ?? []).map((feat) => ({
     ...feat,
-    grantedByInvocationItemId: normalizeOptionalChoiceReference(feat.grantedByInvocationItemId)
+    grantedByInvocationItemId: normalizeOptionalChoiceReference(feat.grantedByInvocationItemId),
+    grantedByFeatEntityId: normalizeOptionalChoiceReference(feat.grantedByFeatEntityId)
   })),
   featChoices: (character.featChoices ?? []).map((choice) => ({
     ...choice,
@@ -161,6 +203,20 @@ export const ensureCharacterCollections = (character: Character): Character => (
     spellItemIds: (choice.spellItemIds ?? []).map(normalizeCharacterChoiceReference),
     weaponItemIds: (choice.weaponItemIds ?? []).map(normalizeCharacterChoiceReference),
     fightingStyleItemId: normalizeOptionalChoiceReference(choice.fightingStyleItemId),
+    eldritchInvocationItemId: normalizeOptionalChoiceReference(choice.eldritchInvocationItemId),
+    // Internal feat-option ids are stable runtime identifiers, not catalog
+    // references, so they must never receive catalog:/compendium: prefixes.
+    metamagicOptionIds: Array.from(new Set(choice.metamagicOptionIds ?? [])),
+    maneuverOptionIds: Array.from(new Set(choice.maneuverOptionIds ?? [])),
+    eldritchInvocationChoice: choice.eldritchInvocationChoice ? {
+      ...choice.eldritchInvocationChoice,
+      invocationItemId: normalizeCharacterChoiceReference(choice.eldritchInvocationChoice.invocationItemId),
+      cantripItemIds: (choice.eldritchInvocationChoice.cantripItemIds ?? []).map(normalizeCharacterChoiceReference),
+      ritualSpellItemIds: (choice.eldritchInvocationChoice.ritualSpellItemIds ?? []).map(normalizeCharacterChoiceReference),
+      targetCantripItemId: normalizeOptionalChoiceReference(choice.eldritchInvocationChoice.targetCantripItemId),
+      originFeatItemId: normalizeOptionalChoiceReference(choice.eldritchInvocationChoice.originFeatItemId),
+      familiarCreatureItemId: normalizeOptionalChoiceReference(choice.eldritchInvocationChoice.familiarCreatureItemId)
+    } : undefined,
     weaponMasterySelections: (choice.weaponMasterySelections ?? []).map((selection) => ({
       ...selection,
       sourceItemId: normalizeOptionalChoiceReference(selection.sourceItemId),
@@ -179,6 +235,7 @@ export const ensureCharacterCollections = (character: Character): Character => (
     ...companion,
     sourceCreatureItemId: normalizeCharacterChoiceReference(companion.sourceCreatureItemId),
     grantedByInvocationItemId: normalizeCharacterChoiceReference(companion.grantedByInvocationItemId),
+    grantedByFeatEntityId: normalizeOptionalChoiceReference(companion.grantedByFeatEntityId),
     resources: companion.resources ?? [],
     activeEffects: companion.activeEffects ?? [],
     transactions: companion.transactions ?? []
@@ -193,7 +250,11 @@ export const ensureCharacterCollections = (character: Character): Character => (
   magicItems: character.magicItems ?? [],
   spells: (character.spells ?? []).map((spell) => ({
     ...spell,
-    grantedByInvocationItemId: normalizeOptionalChoiceReference(spell.grantedByInvocationItemId)
+    grantedByInvocationItemId: normalizeOptionalChoiceReference(spell.grantedByInvocationItemId),
+    automaticSpellAccessSources: spell.automaticSpellAccessSources?.map((source) => ({
+      ...source,
+      sourceItemId: normalizeCharacterChoiceReference(source.sourceItemId)
+    }))
   })),
   compendiumLinks: (character.compendiumLinks ?? []).map((link) => {
     const itemId = normalizeCharacterChoiceReference(link.choiceId ?? link.itemId);
@@ -232,12 +293,14 @@ export const ensureCharacterCollections = (character: Character): Character => (
     : emptyProficiencies(),
   resources: (character.resources ?? []).map((resource) => ({
     ...resource,
-    sourceInvocationItemId: normalizeOptionalChoiceReference(resource.sourceInvocationItemId)
+    sourceInvocationItemId: normalizeOptionalChoiceReference(resource.sourceInvocationItemId),
+    sourceFeatEntityId: normalizeOptionalChoiceReference(resource.sourceFeatEntityId)
   })),
   spellSlots: character.spellSlots ?? [],
   activeEffects: character.activeEffects ?? [],
   rotations: character.rotations ?? [],
   resourceTransactions: character.resourceTransactions ?? [],
+  abilityUseTransactions: character.abilityUseTransactions ?? [],
   spellSlotTransactions: character.spellSlotTransactions ?? [],
   activeEffectTransactions: character.activeEffectTransactions ?? [],
   hitDieTransactions: character.hitDieTransactions ?? [],
@@ -258,7 +321,10 @@ const normalizeStateCharacters = (
   progressionRecovery: state.progressionRecovery ?? { hydrated: false, recoverableCharacterIds: [], conflictedCharacterIds: [], issues: [] },
   compatibilityRemediationPlans: state.compatibilityRemediationPlans ?? {},
   compatibilityRemediationRecovery: state.compatibilityRemediationRecovery ?? { hydrated: false, pendingAcknowledgementCharacterIds: [], conflictedCharacterIds: [], staleCatalogCharacterIds: [], quarantinedPlanIds: [], issues: [] },
-  compatibilityRemediationQuarantine: state.compatibilityRemediationQuarantine ?? {}
+  compatibilityRemediationQuarantine: state.compatibilityRemediationQuarantine ?? {},
+  catalogAwareReconciliation: state.catalogAwareReconciliation
+    ? normalizeCharacterCatalogReconciliationState(state.catalogAwareReconciliation)
+    : emptyCharacterCatalogReconciliationState()
 });
 
 /**
@@ -289,7 +355,11 @@ const migrationSteps: Record<number, (state: PersistedCharacterStoreState) => Pe
   20: normalizeStateCharacters,
   21: normalizeStateCharacters,
   22: normalizeStateCharacters,
-  23: normalizeStateCharacters
+  23: normalizeStateCharacters,
+  // v24 -> v25 is intentionally structural only. Carrier repair requires the
+  // hydrated Compendium and therefore runs in the catalog-aware pass instead
+  // of inside Zustand's persistence migration callback.
+  24: normalizeStateCharacters
 };
 
 export const migrateCharacterStoreState = (

@@ -33,7 +33,7 @@ const contracts = [
     'acknowledgeProgressionRecovery',
     'onRehydrateStorage'
   ]],
-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'progressionRecovery']],
+  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 25', 'progressionRecovery']],
   ['app/progression-recovery.tsx', ['Recuperação de progressão', 'Retomar com segurança', 'Conflito de recuperação']],
   ['app/characters/[id]/progression.tsx', ['Rascunho recuperado após reinício', 'progression-recovery-resume']],
   ['app/e2e-seed.tsx', ['Preparar recuperação transacional', 'Preparar conflito transacional', 'Preparar rollback transacional']],
@@ -63,5 +63,5 @@ if (errors.length) {
 }
 
 console.log('[catalog:progression-recovery:check] PASS');
-console.log('storeVersion=24');
+console.log('storeVersion=25');
 console.log('maestroFlows=4');

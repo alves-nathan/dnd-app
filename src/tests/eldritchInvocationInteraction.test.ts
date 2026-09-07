@@ -75,7 +75,8 @@ describe('invocation screens integration contract', () => {
     const management = fs.readFileSync(path.join(projectRoot, 'app/characters/[id]/invocations.tsx'), 'utf8');
     const levelUp = fs.readFileSync(path.join(projectRoot, 'app/characters/[id]/level-up.tsx'), 'utf8');
 
-    expect(creation).toContain('getCompendiumReviewTargetId(item, choiceForItemId)');
+    expect(creation).not.toContain('getCompendiumReviewTargetId(item, choiceForItemId)');
+    expect(creation).not.toContain('updateItemsReview');
     expect(creation).toContain('toggleEldritchInvocation(item)');
     expect(management).toContain('onPressItem={(item) => toggle(item.id)}');
     expect(levelUp).toContain('onPressItem={toggleInvocation}');

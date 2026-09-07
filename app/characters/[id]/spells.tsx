@@ -13,18 +13,19 @@ import { VirtualizedScreen } from '../../../src/components/VirtualizedScreen';
 import {
   annotateLatestSpellWithClass,
   countCharacterSpellsForClass,
-  getClassSpellcastingProfile,
+  getActiveSubclassItemForClass,
+  getClassOrSubclassSpellcastingProfile,
   isSpellItemEligibleForProfile,
+  spellCountsAgainstNormalClassLimit,
   spellItemLevel
 } from '../../../src/characters/spellcastingRules';
 import type { StoredCompendiumItem } from '../../../src/compendium/types';
 import { manualSource } from '../../../src/data/mockData';
 import { parseDamageFormula } from '../../../src/rules-engine/dice/parser';
 import { isSpellSlotLevel, toSpellSlotLevel } from '../../../src/rules-engine/resources/spellSlotManager';
-import { applyCharacterChoice } from '../../../src/catalog/characterChoiceApplication';
+import { applyCharacterChoice, characterChoiceMatchesLink } from '../../../src/catalog/characterChoiceApplication';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
-import { useCompendiumStore } from '../../../src/store/compendiumStore';
 import { useAppTheme } from '../../../src/theme';
 import type { Character, Spell, SpellScalingRule } from '../../../src/types';
 import { getCharacterDisplayName } from '../../../src/ui/characterIdentity';
@@ -38,10 +39,24 @@ import {
   removeSpellbookSpell,
   unprepareSpellbookSpell
 } from '../../../src/characters/spellbookRules';
+import {
+  getWizardSpellbookFeatureCandidates,
+  getWizardSpellbookFeatureRequirements,
+  spellbookFeatureChoiceForRequirement,
+  toggleWizardSpellbookFeatureChoiceSpell
+} from '../../../src/characters/wizardSpellbookRules';
+import {
+  getMysticArcanumCandidates,
+  getMysticArcanumRequirements,
+  mysticArcanumChoiceForRequirement,
+  setMysticArcanumChoice,
+  type MysticArcanumChoiceContext
+} from '../../../src/characters/warlockMysticArcanumRules';
 import { appendSpellChangeTransaction } from '../../../src/characters/spellChangeAudit';
 import { getSpellListAdditionRules, getSpellReplacementRules } from '../../../src/characters/customRuleEffects';
 import { spendResources } from '../../../src/rules-engine/resources/resourceManager';
 import { getCharacterSubclassSpellListReferences } from '../../../src/characters/subclassChoiceRules';
+import { getCharacterFeatSpellListReferences, getCharacterSpeciesSpellListReferences, getClassSpellListReferences } from '../../../src/characters/spellListRules';
 
 const getId = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
 const DAMAGE_TYPES = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'] as const;
@@ -74,7 +89,6 @@ export default function SpellsScreen() {
   const updateCharacter = progressionSession.updateCharacter;
   const bridge = useCharacterChoiceBridge();
   const { items: compendiumItems, enabledSourceIds, choiceForItemId } = bridge;
-  const updateItemsReview = useCompendiumStore((state) => state.updateItemsReview);
 
   const [search, setSearch] = useState('');
   const [compendiumSearch, setCompendiumSearch] = useState('');
@@ -113,12 +127,9 @@ export default function SpellsScreen() {
   const isItemLinked = (item: StoredCompendiumItem): boolean => {
     const choice = choiceForItemId(item.id);
     if (!choice || !character) return false;
-    return (character.compendiumLinks ?? []).some((link) => link.status === 'active' && (
-      link.choiceId === choice.choiceId ||
-      link.catalogEntityId === choice.catalogEntityId ||
-      link.itemId === item.id ||
-      choice.provenance.legacyItemIds.includes(link.itemId)
-    ));
+    return (character.compendiumLinks ?? []).some((link) =>
+      link.status === 'active' && characterChoiceMatchesLink(link, choice)
+    );
   };
 
 
@@ -129,7 +140,10 @@ export default function SpellsScreen() {
         (entry) => entry.appliedAs === 'class' && entry.appliedEntityId === classEntity.id && entry.status === 'active'
       );
       const classItem = itemForReference(link?.choiceId ?? link?.itemId);
-      const profile = classItem ? getClassSpellcastingProfile(classItem, classEntity.level) : undefined;
+      const subclassItem = getActiveSubclassItemForClass(character, classEntity.id, compendiumItems);
+      const profile = classItem
+        ? getClassOrSubclassSpellcastingProfile(classItem, classEntity.level, subclassItem, compendiumItems)
+        : undefined;
       return profile ? [{ ...profile, classEntityId: classEntity.id }] : [];
     });
   }, [character, compendiumItems]);
@@ -155,24 +169,62 @@ export default function SpellsScreen() {
     ? getSpellReplacementRules(character, activeProfile.className)
     : [];
   const activeCustomReplacementRule = customReplacementRules.find((entry) => entry.available);
-  const customSpellListReferences = useMemo(() => {
+  const additionalSpellListReferences = useMemo(() => {
     if (!character || !activeProfile) return [];
+    const classItem = compendiumItems.find((item) => item.id === activeProfile.classItemId);
     return Array.from(new Set([
+      ...getClassSpellListReferences(classItem, compendiumItems, activeProfile.classLevel),
       ...getSpellListAdditionRules(character, activeProfile.className).flatMap((entry) => entry.rule.spellItemIds),
-      ...getCharacterSubclassSpellListReferences(character, compendiumItems, activeProfile.classEntityId)
+      ...getCharacterFeatSpellListReferences(character, compendiumItems),
+      ...getCharacterSubclassSpellListReferences(character, compendiumItems, activeProfile.classEntityId),
+      ...getCharacterSpeciesSpellListReferences(character, compendiumItems, activeProfile.className)
     ]));
-  }, [character, activeProfile?.className, activeProfile?.classEntityId, compendiumItems]);
+  }, [character, activeProfile?.classItemId, activeProfile?.className, activeProfile?.classEntityId, activeProfile?.classLevel, compendiumItems]);
   const activeReplacementChoice = (character?.pendingChoices ?? []).find(
     (choice) => choice.kind === 'spellReplacement' && choice.status === 'pending' && choice.sourceEntityId === activeClassEntityId
   );
   const activeSelectionChoice = (character?.pendingChoices ?? []).find(
     (choice) => choice.kind === 'spellSelection' && choice.status === 'pending' && choice.sourceEntityId === activeClassEntityId
   );
+  const activeMysticArcanumReplacementChoice = (character?.pendingChoices ?? []).find(
+    (choice) => choice.kind === 'mysticArcanumReplacement' && choice.status === 'pending' && choice.sourceEntityId === activeClassEntityId
+  );
   const activeSpellbookEntries = character && activeClassEntityId
     ? getSpellbookEntriesForClass(character, activeClassEntityId)
     : [];
+  const activeWizardSpellbookRequirements = useMemo(() => {
+    if (!character || !activeProfile || activeProfile.preparationMode !== 'spellbook') return [];
+    const classItem = compendiumItems.find((item) => item.id === activeProfile.classItemId);
+    if (!classItem) return [];
+    const subclassItem = getActiveSubclassItemForClass(character, activeProfile.classEntityId, compendiumItems);
+    return getWizardSpellbookFeatureRequirements({
+      classItem,
+      classLevel: activeProfile.classLevel,
+      subclassItem,
+      items: compendiumItems
+    });
+  }, [character, activeProfile?.classItemId, activeProfile?.classEntityId, activeProfile?.classLevel, activeProfile?.preparationMode, compendiumItems]);
+  const activeMysticArcanumContexts = useMemo<MysticArcanumChoiceContext[]>(() => {
+    if (!character || !activeProfile) return [];
+    const classItem = compendiumItems.find((item) => item.id === activeProfile.classItemId && item.type === 'class');
+    if (!classItem) return [];
+    const subclassItem = getActiveSubclassItemForClass(character, activeProfile.classEntityId, compendiumItems);
+    return getMysticArcanumRequirements({ classItem, classLevel: activeProfile.classLevel, items: compendiumItems }).map((requirement) => ({
+      requirement,
+      classItem,
+      classLevel: activeProfile.classLevel,
+      subclassItem,
+      subclassChoices: character.buildChoices?.subclassChoices,
+      classFeatureChoices: character.buildChoices?.classFeatureChoices
+    }));
+  }, [character, activeProfile?.classItemId, activeProfile?.classEntityId, activeProfile?.classLevel, compendiumItems]);
+
+  const activeWizardSpellbookAvailableIds = useMemo(
+    () => new Set(activeSpellbookEntries.map((entry) => entry.spellItemId)),
+    [activeSpellbookEntries.map((entry) => entry.spellItemId).join('|')]
+  );
   const replaceableClassSpells = (character?.spells ?? []).filter(
-    (spell) => spell.spellcastingClassId === activeClassEntityId
+    (spell) => spell.spellcastingClassId === activeClassEntityId && spellCountsAgainstNormalClassLimit(spell)
   );
   const selectableCompendiumSpells = useMemo(
     () => getSelectableSpellCandidates(compendiumItems, enabledSourceIds),
@@ -183,13 +235,13 @@ export default function SpellsScreen() {
     const query = compendiumSearch.trim().toLowerCase();
     return selectableCompendiumSpells
       .filter((item) => {
-        const customEligible = customSpellListReferences.some((reference) => itemReferenceMatches(item, reference));
-        const profileEligible = isSpellItemEligibleForProfile(item, activeProfile, customSpellListReferences);
-        const pendingEligible = !pendingResolution || pendingCandidateIds.has(item.id) || customEligible;
+        const additionalListEligible = additionalSpellListReferences.some((reference) => itemReferenceMatches(item, reference));
+        const profileEligible = isSpellItemEligibleForProfile(item, activeProfile, additionalSpellListReferences);
+        const pendingEligible = !pendingResolution || pendingCandidateIds.has(item.id) || additionalListEligible;
         return profileEligible && pendingEligible;
       })
       .filter((item) => !query || item.name.toLowerCase().includes(query));
-  }, [activeProfile, compendiumSearch, selectableCompendiumSpells, customSpellListReferences, pendingCandidateIds, pendingResolution]);
+  }, [activeProfile, compendiumSearch, selectableCompendiumSpells, additionalSpellListReferences, pendingCandidateIds, pendingResolution]);
   const availableCantrips = availableCompendiumSpells.filter((item) => spellItemLevel(item) === 0);
   const availableSlottedSpells = availableCompendiumSpells.filter((item) => spellItemLevel(item) > 0);
   const focusedCompendiumSpell = focusedCompendiumSpellId
@@ -296,32 +348,84 @@ export default function SpellsScreen() {
     reset();
   };
 
+  const validateExplicitSpellChoice = async (item: StoredCompendiumItem, _reason: string): Promise<boolean> => {
+    const choice = choiceForItemId(item.id);
+    if (!choice || !choice.available) {
+      Alert.alert('Magia indisponível', choice?.blockedReasons.map((entry) => entry.message).join('\n') ?? 'A magia não foi resolvida pela ponte do catálogo.');
+      return false;
+    }
+    return true;
+  };
+
+  const toggleWizardSpellbookFeatureSpell = async (requirement: (typeof activeWizardSpellbookRequirements)[number], item: StoredCompendiumItem) => {
+    const selected = spellbookFeatureChoiceForRequirement(character.buildChoices?.spellbookFeatureChoices ?? [], requirement)?.spellItemIds ?? [];
+    if (!selected.includes(item.id)) {
+      const ok = await validateExplicitSpellChoice(item, 'Escolha explícita em regra especial do spellbook');
+      if (!ok) return;
+    }
+    const nextChoices = toggleWizardSpellbookFeatureChoiceSpell(
+      character.buildChoices?.spellbookFeatureChoices ?? [],
+      requirement,
+      item.id
+    );
+    const updated: Character = {
+      ...character,
+      buildChoices: {
+        ...(character.buildChoices ?? {
+          speciesChoices: [], classSkillChoices: [], classToolChoices: [], expertiseSkills: [], languages: [],
+          spellAssignments: {}, spellbookAssignments: {}, equipmentSelections: []
+        }),
+        spellbookFeatureChoices: nextChoices
+      }
+    };
+    updateCharacter(id, () => reconcileCharacterBuild(updated, compendiumItems).character);
+  };
+
+  const chooseMysticArcanumSpell = async (context: MysticArcanumChoiceContext, item: StoredCompendiumItem) => {
+    const current = mysticArcanumChoiceForRequirement(character.buildChoices?.mysticArcanumChoices, context.requirement);
+    const replacingExisting = Boolean(current && current.spellItemId !== item.id);
+    if (replacingExisting && !activeMysticArcanumReplacementChoice) {
+      Alert.alert(
+        'Troca de Mystic Arcanum indisponível',
+        'Um Mystic Arcanum já escolhido só pode ser substituído quando existir uma troca de Arcanum liberada ao ganhar um nível de Warlock.'
+      );
+      return;
+    }
+    if (current?.spellItemId !== item.id) {
+      const ok = await validateExplicitSpellChoice(item, 'Escolha explícita de Mystic Arcanum');
+      if (!ok) return;
+    }
+    let updated: Character = {
+      ...character,
+      buildChoices: {
+        ...(character.buildChoices ?? {
+          speciesChoices: [], classSkillChoices: [], classToolChoices: [], expertiseSkills: [], languages: [],
+          spellAssignments: {}, spellbookAssignments: {}, equipmentSelections: []
+        }),
+        mysticArcanumChoices: setMysticArcanumChoice(
+          character.buildChoices?.mysticArcanumChoices,
+          context.requirement,
+          item.id
+        )
+      }
+    };
+    if (replacingExisting && activeMysticArcanumReplacementChoice) {
+      updated = {
+        ...updated,
+        pendingChoices: (updated.pendingChoices ?? []).filter((choice) => choice.id !== activeMysticArcanumReplacementChoice.id)
+      };
+    }
+    updateCharacter(id, () => reconcileCharacterBuild(updated, compendiumItems).character);
+  };
+
   const addImportedSpell = async (item: StoredCompendiumItem) => {
     if (!activeProfile) return;
     const choice = choiceForItemId(item.id);
     if (!choice || !choice.available) {
-      Alert.alert('Magia indisponível', choice?.blockedReasons.map((reason) => reason.message).join('\n') ?? 'A magia não foi resolvida pela ponte do catálogo.');
+      Alert.alert('Magia indisponível', choice?.blockedReasons.map((entry) => entry.message).join('\n') ?? 'A magia não foi resolvida pela ponte do catálogo.');
       return;
     }
-    if (item.status !== 'validated') {
-      if (choice.origin !== 'compendium' || !choice.compendiumItemId) {
-        Alert.alert('Revisão editorial', 'Conteúdo oficial com revisão pendente pode ser usado, mas não altera o compêndio local.');
-      } else {
-        const review = await updateItemsReview([{
-          itemId: choice.compendiumItemId,
-          update: {
-            status: 'validated',
-            reviewDecision: 'approved',
-            reviewedBy: 'Escolha explícita na tela de magias',
-            reviewNotes: 'Aprovado ao ser escolhido explicitamente para a ficha.'
-          }
-        }]);
-        if (!review.ok) {
-          Alert.alert('Não foi possível validar a magia', review.issues.map((issue) => issue.message).join('\n'));
-          return;
-        }
-      }
-    }
+    if (!await validateExplicitSpellChoice(item, 'Escolha explícita na tela de magias')) return;
     const levelValue = spellItemLevel(item);
     if (activeProfile.preparationMode === 'spellbook' && levelValue > 0) {
       const alreadyLearned = activeSpellbookEntries.some((entry) => entry.spellItemId === item.id);
@@ -519,7 +623,7 @@ export default function SpellsScreen() {
                   </Card>
                 ) : null}
                 <Field label="Buscar no compêndio" value={compendiumSearch} onChangeText={setCompendiumSearch} />
-                {focusedCompendiumSpell && isSpellItemEligibleForProfile(focusedCompendiumSpell, activeProfile, customSpellListReferences) ? (
+                {focusedCompendiumSpell && isSpellItemEligibleForProfile(focusedCompendiumSpell, activeProfile, additionalSpellListReferences) ? (
                   <SpellChoiceDetails
                     item={focusedCompendiumSpell}
                     selected={
@@ -572,13 +676,105 @@ export default function SpellsScreen() {
             ) : <Text style={{ color: colors.onSurfaceVariant }}>Nenhuma classe conjuradora importada foi encontrada.</Text>}
           </Card>
 
-          {activeProfile?.preparationMode === 'spellbook' ? (
-            <Card variant="hero" title={`Spellbook de ${activeProfile.className}`} subtitle={`Preparadas: ${activeSpellbookEntries.filter((entry) => entry.prepared).length}/${activeProfile.preparedSpellLimit} · Registradas: ${activeSpellbookEntries.length}. Os registros aparecem primeiro na lista virtualizada.`} />
+          {activeMysticArcanumContexts.length ? (
+            <>
+              {activeMysticArcanumContexts.map((context) => {
+                const requirement = context.requirement;
+                const selectedChoice = mysticArcanumChoiceForRequirement(character.buildChoices?.mysticArcanumChoices, requirement);
+                const candidates = getMysticArcanumCandidates({ ...context, items: compendiumItems })
+                  .filter((item) => !compendiumSearch.trim() || item.name.toLowerCase().includes(compendiumSearch.trim().toLowerCase()));
+                const canReplace = Boolean(activeMysticArcanumReplacementChoice);
+                return (
+                  <Card
+                    key={requirement.id}
+                    variant="filled"
+                    title={`${requirement.featureName} · ${requirement.spellLevel}º círculo`}
+                    subtitle={selectedChoice
+                      ? canReplace
+                        ? 'Troca de nível disponível: você pode substituir um Mystic Arcanum por outra magia de Warlock do mesmo círculo. A troca é opcional e única.'
+                        : 'Este Arcanum é separado de Pact Magic e pode ser conjurado 1 vez por Descanso Longo sem slot. A troca só fica disponível ao ganhar um nível de Warlock.'
+                      : 'Escolha 1 magia de Warlock deste círculo. Expanded Spell Lists ativas também contam para Mystic Arcanum.'}
+                  >
+                    <PaginatedChipList
+                      items={candidates}
+                      keyExtractor={(item) => `mystic-arcanum-${requirement.id}-${item.id}`}
+                      labelForItem={(item) => item.name}
+                      isSelected={(item) => selectedChoice?.spellItemId === item.id}
+                      descriptionForSelectedItem={getSpellChoiceInlineDescription}
+                      isDisabled={(item) => Boolean(selectedChoice && !canReplace && selectedChoice.spellItemId !== item.id)}
+                      onPressItem={(item) => { void chooseMysticArcanumSpell(context, item); }}
+                      pageSize={18}
+                      resetKey={`mystic-arcanum:${requirement.id}:${compendiumSearch}:${selectedChoice?.spellItemId ?? ''}:${canReplace ? 'replace' : 'locked'}`}
+                      emptyText={`Nenhuma magia de ${requirement.spellLevel}º círculo disponível para este Mystic Arcanum.`}
+                    />
+                  </Card>
+                );
+              })}
+            </>
           ) : null}
 
-          {(character.pendingChoices ?? []).filter((entry) => entry.kind === 'spellReplacement' || entry.kind === 'spellSelection').length ? (
+          {activeProfile?.preparationMode === 'spellbook' ? (
+            <Card variant="hero" title={`Spellbook de ${activeProfile.className}`} subtitle={`Preparadas normais: ${activeCounts.prepared}/${activeProfile.preparedSpellLimit} · Sempre preparadas por feature: ${activeSpellbookEntries.filter((entry) => entry.prepared && activeWizardSpellbookRequirements.some((requirement) => (requirement.kind === 'spellMastery' || requirement.kind === 'signatureSpells') && (spellbookFeatureChoiceForRequirement(character.buildChoices?.spellbookFeatureChoices ?? [], requirement)?.spellItemIds ?? []).includes(entry.spellItemId))).length} · Registradas: ${activeSpellbookEntries.length}.`} />
+          ) : null}
+
+          {activeProfile?.preparationMode === 'spellbook' && activeWizardSpellbookRequirements.length ? (
+            <>
+              {activeWizardSpellbookRequirements.map((requirement) => {
+                const allChoices = character.buildChoices?.spellbookFeatureChoices ?? [];
+                const selected = spellbookFeatureChoiceForRequirement(allChoices, requirement)?.spellItemIds ?? [];
+                const isSavant = requirement.kind === 'savantInitial' || requirement.kind === 'savantNewSlotLevel';
+                const usedByOtherSavant = new Set(
+                  allChoices
+                    .filter((choice) => choice.classItemId === requirement.classItemId && choice.requirementId !== requirement.id)
+                    .filter((choice) => {
+                      const other = activeWizardSpellbookRequirements.find((entry) => entry.id === choice.requirementId);
+                      return other?.kind === 'savantInitial' || other?.kind === 'savantNewSlotLevel';
+                    })
+                    .flatMap((choice) => choice.spellItemIds)
+                );
+                const candidates = getWizardSpellbookFeatureCandidates({
+                  requirement,
+                  profile: activeProfile,
+                  spellItems: selectableCompendiumSpells,
+                  availableSpellbookItemIds: activeWizardSpellbookAvailableIds
+                })
+                  .filter((item) => !isSavant || !activeWizardSpellbookAvailableIds.has(item.id) || selected.includes(item.id))
+                  .filter((item) => !isSavant || !usedByOtherSavant.has(item.id) || selected.includes(item.id))
+                  .filter((item) => !compendiumSearch.trim() || item.name.toLowerCase().includes(compendiumSearch.trim().toLowerCase()));
+                const title = requirement.kind === 'savantInitial'
+                  ? `${requirement.featureName} · magias gratuitas (${selected.length}/${requirement.count})`
+                  : requirement.kind === 'savantNewSlotLevel'
+                    ? `${requirement.featureName} · novo nível de slot ${requirement.maximumSpellLevel} (${selected.length}/${requirement.count})`
+                    : requirement.kind === 'spellMastery'
+                      ? `${requirement.featureName} · nível ${requirement.exactSpellLevel} (${selected.length}/${requirement.count})`
+                      : `${requirement.featureName} · nível 3 (${selected.length}/${requirement.count})`;
+                const subtitle = isSavant
+                  ? `Magias gratuitas de ${requirement.school ?? 'escola da subclass'} para o spellbook; não substituem as magias normais ganhas por nível.`
+                  : requirement.kind === 'spellMastery'
+                    ? 'Escolha no spellbook uma magia com tempo de conjuração de 1 Ação. Fica sempre preparada e pode ser conjurada sem slot no menor nível.'
+                    : 'Escolha duas magias de 3º círculo do spellbook. Ficam sempre preparadas e cada uma recebe 1 uso gratuito, recarregado em Descanso Curto ou Longo.';
+                return (
+                  <Card key={requirement.id} variant="filled" title={title} subtitle={subtitle}>
+                    <PaginatedChipList
+                      items={candidates}
+                      keyExtractor={(item) => `wizard-feature-${requirement.id}-${item.id}`}
+                      labelForItem={(item) => `${item.name} · nv ${spellItemLevel(item)}`}
+                      isSelected={(item) => selected.includes(item.id)}
+                      descriptionForSelectedItem={getSpellChoiceInlineDescription}
+                      onPressItem={(item) => { void toggleWizardSpellbookFeatureSpell(requirement, item); }}
+                      pageSize={18}
+                      resetKey={`wizard-feature:${requirement.id}:${compendiumSearch}:${selected.join(',')}`}
+                      emptyText={`Nenhuma magia elegível para ${requirement.featureName}.`}
+                    />
+                  </Card>
+                );
+              })}
+            </>
+          ) : null}
+
+          {(character.pendingChoices ?? []).filter((entry) => entry.kind === 'spellReplacement' || entry.kind === 'spellSelection' || entry.kind === 'spellbookFeature' || entry.kind === 'mysticArcanum' || entry.kind === 'mysticArcanumReplacement').length ? (
             <Card variant="filled" title="Escolhas de magia pendentes" subtitle="Remova e adicione magias nesta tela para concluir as trocas e seleções permitidas.">
-              {(character.pendingChoices ?? []).filter((entry) => entry.kind === 'spellReplacement' || entry.kind === 'spellSelection').map((entry) => <Text key={entry.id} style={{ color: colors.onSurfaceVariant }}>• {entry.title}: {entry.description}</Text>)}
+              {(character.pendingChoices ?? []).filter((entry) => entry.kind === 'spellReplacement' || entry.kind === 'spellSelection' || entry.kind === 'spellbookFeature' || entry.kind === 'mysticArcanum' || entry.kind === 'mysticArcanumReplacement').map((entry) => <Text key={entry.id} style={{ color: colors.onSurfaceVariant }}>• {entry.title}: {entry.description}</Text>)}
             </Card>
           ) : null}
 
@@ -591,27 +787,43 @@ export default function SpellsScreen() {
           const entry = row.entry;
           const spellItem = itemForReference(entry.spellItemId);
           if (!activeProfile) return null;
+          const specialRequirement = activeWizardSpellbookRequirements.find((requirement) =>
+            (requirement.kind === 'spellMastery' || requirement.kind === 'signatureSpells')
+            && (spellbookFeatureChoiceForRequirement(character.buildChoices?.spellbookFeatureChoices ?? [], requirement)?.spellItemIds ?? []).includes(entry.spellItemId)
+          );
+          const featureOwnedEntry = entry.acquisition === 'savant' || entry.acquisition === 'feature';
           return (
             <Card variant="outlined" title={entry.spellName} subtitle={`Spellbook · nível ${entry.spellLevel} · ${entry.acquisition} · ${entry.prepared ? 'preparada' : 'não preparada'}`}>
               <View style={styles.actions}>
                 <View style={styles.flex}>
-                  <Button label={entry.prepared ? 'Despreparar' : 'Preparar'} variant="outlined" onPress={() => {
-                    let next = character;
-                    if (entry.prepared) {
-                      next = unprepareSpellbookSpell({ character: next, spellItemId: entry.spellItemId, classEntityId: activeProfile.classEntityId, className: activeProfile.className, classLevel: activeProfile.classLevel, source: 'manual' });
-                    } else {
-                      if (activeSpellbookEntries.filter((candidate) => candidate.prepared).length >= activeProfile.preparedSpellLimit) {
-                        Alert.alert('Limite de preparação', `Desprepare uma magia antes de preparar ${entry.spellName}.`);
-                        return;
+                  {specialRequirement ? (
+                    <Text style={{ color: colors.primary, fontWeight: '800' }}>Sempre preparada por {specialRequirement.featureName}</Text>
+                  ) : (
+                    <Button label={entry.prepared ? 'Despreparar' : 'Preparar'} variant="outlined" onPress={() => {
+                      let next = character;
+                      if (entry.prepared) {
+                        next = unprepareSpellbookSpell({ character: next, spellItemId: entry.spellItemId, classEntityId: activeProfile.classEntityId, className: activeProfile.className, classLevel: activeProfile.classLevel, source: 'manual' });
+                      } else {
+                        if (activeSpellbookEntries.filter((candidate) => candidate.prepared && !activeWizardSpellbookRequirements.some((requirement) =>
+                          (requirement.kind === 'spellMastery' || requirement.kind === 'signatureSpells')
+                          && (spellbookFeatureChoiceForRequirement(character.buildChoices?.spellbookFeatureChoices ?? [], requirement)?.spellItemIds ?? []).includes(candidate.spellItemId)
+                        )).length >= activeProfile.preparedSpellLimit) {
+                          Alert.alert('Limite de preparação', `Desprepare uma magia antes de preparar ${entry.spellName}.`);
+                          return;
+                        }
+                        if (!spellItem) return;
+                        next = prepareSpellbookSpell({ character: next, spellItem, profile: activeProfile, classEntityId: activeProfile.classEntityId, source: 'manual' });
                       }
-                      if (!spellItem) return;
-                      next = prepareSpellbookSpell({ character: next, spellItem, profile: activeProfile, classEntityId: activeProfile.classEntityId, source: 'manual' });
-                    }
-                    updateCharacter(id, () => reconcileCharacterBuild(next, compendiumItems).character);
-                  }} />
+                      updateCharacter(id, () => reconcileCharacterBuild(next, compendiumItems).character);
+                    }} />
+                  )}
                 </View>
                 <View style={styles.flex}>
-                  <Button label="Remover do spellbook" variant="text" onPress={() => Alert.alert('Remover do spellbook?', entry.spellName, [{ text: 'Cancelar', style: 'cancel' }, { text: 'Remover', style: 'destructive', onPress: () => updateCharacter(id, () => reconcileCharacterBuild(removeSpellbookSpell(character, entry.id), compendiumItems).character) }])} />
+                  {featureOwnedEntry || specialRequirement ? (
+                    <Text style={{ color: colors.onSurfaceVariant }}>Gerenciada pela feature.</Text>
+                  ) : (
+                    <Button label="Remover do spellbook" variant="text" onPress={() => Alert.alert('Remover do spellbook?', entry.spellName, [{ text: 'Cancelar', style: 'cancel' }, { text: 'Remover', style: 'destructive', onPress: () => updateCharacter(id, () => reconcileCharacterBuild(removeSpellbookSpell(character, entry.id), compendiumItems).character) }])} />
+                  )}
                 </View>
               </View>
             </Card>
@@ -624,10 +836,14 @@ export default function SpellsScreen() {
             <Text style={{ color: colors.primary, fontWeight: '900' }}>{spell.damage?.raw ?? 'Sem dano direto'}</Text>
             <Text style={{ color: colors.onSurfaceVariant }}>{spell.range ?? 'alcance não definido'} · {spell.targeting?.area || `${spell.targeting?.targets ?? 1} alvo(s)`} · {spell.duration ?? 'duração não definida'}</Text>
             {spell.description ? <Text>{spell.description}</Text> : null}
-            <View style={styles.actions}>
-              <View style={styles.flex}><Button label="Editar" variant="outlined" onPress={() => edit(spell)} /></View>
-              <View style={styles.flex}><Button label="Remover" variant="text" onPress={() => remove(spell)} /></View>
-            </View>
+            {spell.mysticArcanumChoiceId ? (
+              <Text style={{ color: colors.primary, fontWeight: '800' }}>Gerenciada por Mystic Arcanum · não usa Pact Magic slot.</Text>
+            ) : (
+              <View style={styles.actions}>
+                <View style={styles.flex}><Button label="Editar" variant="outlined" onPress={() => edit(spell)} /></View>
+                <View style={styles.flex}><Button label="Remover" variant="text" onPress={() => remove(spell)} /></View>
+              </View>
+            )}
           </Card>
         );
       }}

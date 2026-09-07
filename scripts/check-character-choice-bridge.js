@@ -49,16 +49,32 @@ const contracts = [
     'CATALOG_EDITORIAL_REVIEW_REQUIRED'
   ]],
   ['src/storage/characterMigrations.ts', [
-    'CHARACTER_STORE_VERSION = 24',
+    'CHARACTER_STORE_VERSION = 25',
     'normalizeCharacterChoiceReference'
   ]],
   ['src/characters/creationDraft.ts', [
     'export const CHARACTER_CREATION_DRAFT_VERSION =',
     'normalizeCharacterChoiceReference'
   ]],
+  ['src/characters/classSelectionRules.ts', [
+    'hitDie',
+    'isSidekickClassItem',
+    'isPlayerCharacterClassItem'
+  ]],
+  ['src/characters/characterChoiceCandidates.ts', [
+    'prefer2024FirstCharacterChoices',
+    '2024-first'
+  ]],
+  ['src/characters/speciesChoiceRules.ts', [
+    'optionFeatureIds',
+    'getSpeciesChoiceOptionFeatureItem',
+    "kind: 'subrace'"
+  ]],
   ['app/characters/new.tsx', [
     'useCharacterChoiceBridge',
     'catalogSnapshotId',
+    'prefer2024FirstCharacterChoices',
+    'selectSpeciesChoiceOption',
     'Preparando criação',
     'A criação foi bloqueada'
   ]],
@@ -145,6 +161,6 @@ console.log(`carrierItems=${coverage.carrierItems}`);
 console.log(`carrierByKind=${JSON.stringify(coverage.carrierByKind)}`);
 console.log(`directIdCarriers=${coverage.directIdCarriers}`);
 console.log(`directByKind=${JSON.stringify(coverage.directByKind)}`);
-console.log('characterStoreVersion=24');
+console.log('characterStoreVersion=25');
 const creationDraftVersion = read('src/characters/creationDraft.ts').match(/CHARACTER_CREATION_DRAFT_VERSION = (\d+)/)?.[1] ?? 'unknown';
 console.log(`creationDraftVersion=${creationDraftVersion}`);

@@ -6,6 +6,8 @@ import { Button } from '../../../src/components/Button';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
 import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
 import { describeCustomModifier } from '../../../src/characters/customModifierRules';
+import { getSelectedSpeciesFeatureChoice } from '../../../src/characters/speciesChoiceRules';
+import { getCharacterMetamagicSources } from '../../../src/characters/metamagicRules';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import { useAppTheme } from '../../../src/theme';
 import type { Character, Feature } from '../../../src/types';
@@ -19,6 +21,7 @@ export default function FeaturesScreen() {
   const character = progressionSession.character;
   const updateCharacter = progressionSession.updateCharacter;
   const { items } = useCharacterChoiceBridge();
+  const metamagicSources = character ? getCharacterMetamagicSources(character, items) : [];
   if (!character || !id) return <Screen title="Não encontrado"><Button label="Voltar" onPress={() => router.back()} /></Screen>;
 
   const removeCustomFeature = (feature: Feature) => Alert.alert(
@@ -31,17 +34,10 @@ export default function FeaturesScreen() {
         style: 'destructive',
         onPress: () => updateCharacter(id, (current) => {
           const resourceIds = new Set((feature.customRules?.spellReplacement ?? []).map((rule) => rule.resourceId));
-          const grantedSpellIds = new Set(current.spells.filter((spell) => spell.grantedByFeatureEntityId === feature.id).map((spell) => spell.id));
           const next: Character = {
             ...current,
             features: current.features.filter((entry) => entry.id !== feature.id),
-            spells: current.spells.filter((spell) => spell.grantedByFeatureEntityId !== feature.id),
-            resources: current.resources.filter((resource) => !resourceIds.has(resource.id)),
-            compendiumLinks: (current.compendiumLinks ?? []).map((link) =>
-              link.appliedAs === 'spell' && grantedSpellIds.has(link.appliedEntityId) && link.status === 'active'
-                ? { ...link, status: 'removed' as const }
-                : link
-            )
+            resources: current.resources.filter((resource) => !resourceIds.has(resource.id))
           };
           return reconcileCharacterBuild(next, items).character;
         })
@@ -62,10 +58,17 @@ export default function FeaturesScreen() {
         const replacementRules = feature.customRules?.spellReplacement ?? [];
         const listAdditionRules = feature.customRules?.spellListAdditions ?? [];
         const structuredModifiers = feature.customRules?.modifiers ?? [];
-        const grantedSpells = character.spells.filter((spell) => spell.grantedByFeatureEntityId === feature.id);
+        const grantedSpells = character.spells.filter((spell) => spell.grantedByFeatureEntityId === feature.id || (spell.externalSpellGrantSources ?? []).some((source) => source.kind === 'feature' && source.sourceEntityId === feature.id));
+        const selectedSpeciesChoice = getSelectedSpeciesFeatureChoice(character, items, feature.id);
+        const metamagicSource = metamagicSources.find((source) => source.kind === 'sorcerer' && source.featureEntityId === feature.id);
         return (
           <Card key={feature.id} title={feature.name} subtitle={`${feature.custom ? 'Personalizada' : feature.source?.book ?? feature.sourceType} · ${feature.summary ?? 'Feature sem resumo.'}`}>
             <Text style={{ color: colors.onSurfaceVariant }}>Custo: {feature.actionCost ?? 'passivo/configurável'} · Fonte: {feature.sourceType}</Text>
+            {selectedSpeciesChoice ? <Text style={{ color: colors.primary, fontWeight: '800' }}>Escolha ativa: {selectedSpeciesChoice.option.label}</Text> : null}
+            {selectedSpeciesChoice?.description ? <Text style={{ color: colors.onSurfaceVariant }}>{selectedSpeciesChoice.description}</Text> : null}
+            {selectedSpeciesChoice ? <Button label={`Alterar escolha de ${feature.name}`} variant="outlined" onPress={() => router.push(`/characters/${character.id}/identity`)} /> : null}
+            {metamagicSource ? <Text style={{ color: colors.primary, fontWeight: '800' }}>Metamagic selecionado: {metamagicSource.selectedOptionIds.length}/{metamagicSource.optionLimit}</Text> : null}
+            {metamagicSource ? <Button label="Configurar Metamagic do Sorcerer" variant="outlined" onPress={() => router.push(`/characters/${character.id}/metamagic`)} /> : null}
             {damageRules.map((rule) => <Text key={rule.id} style={{ color: colors.onSurfaceVariant }}>• Dano {rule.damageType}: ×{rule.multiplier}</Text>)}
             {triggerRules.map((rule) => <Text key={rule.id} style={{ color: colors.onSurfaceVariant }}>• Ao causar {rule.triggerDamageType}: {rule.triggerRoll.count}d{rule.triggerRoll.sides}, dispara em {rule.triggerValues.join('/')} {rule.radiusFeet ? `· raio ${rule.radiusFeet} ft` : ''} {rule.saveAbility ? `· save ${rule.saveAbility}` : ''}</Text>)}
             {replacementRules.map((rule) => {

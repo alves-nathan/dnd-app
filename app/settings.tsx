@@ -23,22 +23,8 @@ export default function SettingsScreen() {
       )}
     >
       <Card variant="hero" title="Dados locais e offline" subtitle="Fichas e compêndio permanecem neste dispositivo até você criar um backup." />
-      <Card variant="outlined" title="Conteúdo e regras" subtitle="Conteúdos são cadastrados ou importados pelo usuário com fonte e página. Regras ambíguas geram avisos em vez de suposições silenciosas.">
-        <Button label="Gerenciar compêndio" icon="library-outline" onPress={() => router.push('/compendium')} />
-        <Button label="Gerenciar livros e regras" icon="options-outline" variant="outlined" onPress={() => router.push('/content-management')} />
-        <Button label="Histórico das regras" icon="time-outline" variant="outlined" onPress={() => router.push('/catalog-history')} />
-        <Button label="Atualizar catálogo" icon="cloud-download-outline" variant="outlined" onPress={() => router.push('/catalog-update')} />
-        <Button label="Publicadores confiáveis" icon="shield-checkmark-outline" variant="outlined" onPress={() => router.push('/catalog-trust')} />
-        <Button label="Transparência e distribuição" icon="git-network-outline" variant="outlined" onPress={() => router.push('/catalog-transparency')} />
-        <Button label="Canais e rollout do catálogo" icon="git-branch-outline" variant="outlined" onPress={() => router.push('/catalog-publication')} />
-        <Button label="Saúde e promoção do rollout" icon="pulse-outline" variant="outlined" onPress={() => router.push('/catalog-rollout-health')} />
-        <Button label="Agregação e decisão em quórum" icon="people-circle-outline" variant="outlined" onPress={() => router.push('/catalog-rollout-aggregation')} />
-        <Button label="Autorização operacional" icon="shield-checkmark-outline" variant="outlined" onPress={() => router.push('/catalog-operational-authorization')} />
-        <Button label="Diário operacional" icon="document-lock-outline" variant="outlined" onPress={() => router.push('/catalog-operational-journal')} />
-        <Button label="Auditoria operacional externa" icon="search-outline" variant="outlined" onPress={() => router.push('/catalog-operational-audit')} />
-        <Button label="Federação de auditoria" icon="people-circle-outline" variant="outlined" onPress={() => router.push('/catalog-operational-federation')} />
-        <Button label="Distribuição offline do catálogo" icon="download-outline" variant="outlined" onPress={() => router.push('/catalog-distribution')} />
-        <Button label="Manifestos por personagem" icon="shield-checkmark-outline" variant="outlined" onPress={() => router.push('/character-compatibility')} />
+      <Card variant="outlined" title="Conteúdo e regras" subtitle="Importação, revisão, compatibilidade e manutenção de regras ficam concentradas no fluxo do Compêndio.">
+        <Button label="Abrir Compêndio" icon="library-outline" onPress={() => router.push('/compendium')} />
       </Card>
       <Card variant="outlined" title="Proteção dos dados" subtitle="Crie cópias antes de trocar de dispositivo ou fazer alterações grandes.">
         <Button label="Backup e restauração" icon="cloud-download-outline" variant="outlined" onPress={() => router.push('/backup')} />

@@ -7,14 +7,13 @@ import { Card } from '../../../src/components/Card';
 import { Chip } from '../../../src/components/Chip';
 import { Field } from '../../../src/components/Field';
 import { VirtualizedScreen } from '../../../src/components/VirtualizedScreen';
-import { isFeatRepeatable, validateFeatPrerequisites, validateMulticlassPrerequisites } from '../../../src/characters/characterBuildRules';
+import { getFeatCategory, isFeatRepeatable, validateFeatPrerequisites, validateMulticlassPrerequisites } from '../../../src/characters/characterBuildRules';
 import { isOriginFeatItem } from '../../../src/characters/creationData';
 import { applyAutomaticClassProgression, getCompendiumClassReference, getSubclassUnlockLevel } from '../../../src/compendium/classProgression';
 import { CompendiumItemType, StoredCompendiumItem } from '../../../src/compendium/types';
-import { applyCharacterChoice } from '../../../src/catalog/characterChoiceApplication';
+import { applyCharacterChoice, characterChoiceMatchesLink } from '../../../src/catalog/characterChoiceApplication';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
-import { useCompendiumStore } from '../../../src/store/compendiumStore';
 import { useAppTheme } from '../../../src/theme';
 import { getCharacterDisplayName } from '../../../src/ui/characterIdentity';
 import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
@@ -50,11 +49,8 @@ export default function CharacterCompendiumScreen() {
   const updateCharacter = progressionSession.updateCharacter;
   const bridge = useCharacterChoiceBridge();
   const { items, searchItems, choiceForItemId } = bridge;
-  const setItemStatus = useCompendiumStore((state) => state.setItemStatus);
-  const isSaving = useCompendiumStore((state) => state.isSaving);
   const [search, setSearch] = useState('');
   const [activeType, setActiveType] = useState<CompendiumItemType | 'all'>(requestedType ?? 'all');
-  const [showNeedsReview, setShowNeedsReview] = useState(false);
   const [showLinked, setShowLinked] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [lastAppliedItemId, setLastAppliedItemId] = useState<string>();
@@ -72,7 +68,10 @@ export default function CharacterCompendiumScreen() {
     const direct = items.find((candidate) => candidate.id === reference);
     if (direct) return direct;
     const choice = choiceForItemId(reference);
-    return choice ? items.find((candidate) => candidate.id === choice.choiceId) : undefined;
+    if (!choice) return undefined;
+    return items.find((candidate) => candidate.id === choice.compendiumItemId)
+      ?? items.find((candidate) => candidate.id === choice.choiceId)
+      ?? items.find((candidate) => choice.provenance.legacyItemIds.includes(candidate.id));
   };
   const searchableItems = useMemo(
     () => searchItems(search, {
@@ -82,9 +81,10 @@ export default function CharacterCompendiumScreen() {
       const choice = choiceForItemId(item.id);
       if (!choice) return false;
       if (pendingResolution && !pendingCandidateIds.has(choice.choiceId)) return false;
-      return showNeedsReview ? true : choice.available;
+      if (pendingChoice?.kind === 'feat' && pendingChoice.featCategory && item.type === 'feat' && getFeatCategory(item) !== pendingChoice.featCategory) return false;
+      return choice.available;
     }),
-    [activeType, choiceForItemId, pendingCandidateIds, pendingResolution, search, searchItems, showNeedsReview]
+    [activeType, choiceForItemId, pendingCandidateIds, pendingChoice?.featCategory, pendingChoice?.kind, pendingResolution, search, searchItems]
   );
 
   if (!character || !id) return <VirtualizedScreen title="Personagem não encontrado" onBack={() => router.back()} data={[]} renderItem={() => null} />;
@@ -126,7 +126,9 @@ export default function CharacterCompendiumScreen() {
     }
 
     if (item.type === 'feat') {
-      const currentCopies = (character.compendiumLinks ?? []).filter((link) => link.appliedAs === 'feat' && link.status === 'active' && (link.choiceId === choice.choiceId || link.catalogEntityId === choice.catalogEntityId || link.itemId === item.id || choice.provenance.legacyItemIds.includes(link.itemId))).length;
+      const currentCopies = (character.compendiumLinks ?? []).filter((link) =>
+        link.appliedAs === 'feat' && link.status === 'active' && characterChoiceMatchesLink(link, choice)
+      ).length;
       const prerequisiteIssues = validateFeatPrerequisites({
         featItem: item,
         totalLevel: character.level,
@@ -177,7 +179,7 @@ export default function CharacterCompendiumScreen() {
       next = applyAutomaticSpeciesProgression(next, items).character;
     }
     next = reconcileCharacterBuild(next, items).character;
-    if (pendingId) {
+    if (pendingId && pendingChoice?.kind !== 'feat') {
       next = { ...next, pendingChoices: (next.pendingChoices ?? []).filter((entry) => entry.id !== pendingId) };
     }
     updateCharacter(character.id, () => next);
@@ -211,17 +213,15 @@ export default function CharacterCompendiumScreen() {
           </View>
           <View style={styles.statusRow}>
             <Text style={[styles.resultCount, { color: colors.onSurfaceVariant }]}>{bridge.status === 'loading' ? 'Carregando catálogo e compêndio...' : `${searchableItems.length} resultado(s) virtualizados`}</Text>
-            <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: showNeedsReview }} accessibilityLabel="Mostrar itens pendentes de revisão" focusable onPress={() => setShowNeedsReview((current) => !current)} style={styles.reviewToggle}>
-              <Ionicons name={showNeedsReview ? 'checkbox' : 'square-outline'} size={21} color={colors.primary} />
-              <Text style={[styles.toggleLabel, { color: colors.primary }]}>Mostrar pendentes</Text>
-            </Pressable>
           </View>
         </>
       )}
       renderItem={({ item }) => {
         const choice = choiceForItemId(item.id);
         if (!choice) return null;
-        const activeLinkCount = (character.compendiumLinks ?? []).filter((link) => link.status === 'active' && (link.choiceId === choice.choiceId || link.catalogEntityId === choice.catalogEntityId || link.itemId === item.id || choice.provenance.legacyItemIds.includes(link.itemId))).length;
+        const activeLinkCount = (character.compendiumLinks ?? []).filter((link) =>
+          link.status === 'active' && characterChoiceMatchesLink(link, choice)
+        ).length;
         const alreadyLinked = activeLinkCount > 0;
         const repeatable = item.type === 'feat' && isFeatRepeatable(item);
         const canApply = choice.available && (!alreadyLinked || repeatable);
@@ -234,21 +234,9 @@ export default function CharacterCompendiumScreen() {
               </View>
               {lastAppliedItemId === item.id || alreadyLinked ? <Text style={[styles.applied, { color: colors.success }]}>✓ Adicionado à ficha{activeLinkCount > 1 ? ` ×${activeLinkCount}` : ''}</Text> : null}
             </View>
-            {choice.origin === 'compendium' && item.status === 'needsReview' && choice.compendiumItemId ? (
-              <Button
-                label="Revisar e validar item"
-                icon="checkmark-circle-outline"
-                variant="outlined"
-                disabled={isSaving}
-                onPress={async () => {
-                  const result = await setItemStatus(choice.compendiumItemId!, 'validated');
-                  if (!result.ok) Alert.alert('Item não validado', result.issues.map((entry) => entry.message).join('\n'));
-                }}
-              />
-            ) : null}
             <View style={styles.actions}>
               <View style={styles.flex}><Button label="Detalhes" icon="information-circle-outline" variant="text" onPress={() => choice.origin === 'compendium' && choice.compendiumItemId ? router.push({ pathname: '/compendium/[itemId]', params: { itemId: choice.compendiumItemId } }) : Alert.alert(choice.name, [choice.summary, `Fonte: ${choice.sourceLabel}`, choice.manualReviewRequired ? 'Revisão editorial pendente.' : undefined].filter(Boolean).join('\n\n'))} /></View>
-              <View style={styles.flex}><Button label={alreadyLinked && !repeatable ? 'Já adicionado' : repeatable && alreadyLinked ? 'Adicionar outra vez' : 'Adicionar'} icon="add" disabled={!canApply || isSaving || bridge.status !== 'ready'} onPress={() => applyItem(item)} /></View>
+              <View style={styles.flex}><Button label={alreadyLinked && !repeatable ? 'Já adicionado' : repeatable && alreadyLinked ? 'Adicionar outra vez' : 'Adicionar'} icon="add" disabled={!canApply || bridge.status !== 'ready'} onPress={() => applyItem(item)} /></View>
             </View>
           </Card>
         );
@@ -304,8 +292,6 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   statusRow: { minHeight: 44, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   resultCount: { fontSize: 13, lineHeight: 19, fontWeight: '700' },
-  reviewToggle: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7 },
-  toggleLabel: { fontSize: 13, lineHeight: 18, fontWeight: '800' },
   summary: { fontSize: 14, lineHeight: 21 },
   itemMeta: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10 },
   badge: { paddingHorizontal: 10, paddingVertical: 6 },

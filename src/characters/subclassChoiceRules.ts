@@ -4,6 +4,8 @@ import {
   findCompendiumItemByReference,
   getProgressionFeatureReferences
 } from '../compendium/classProgression';
+import { getExplicitSpellListAdditionReferences } from './spellListRules';
+import { getPhb2024ConditionalSubclassSpellListOptions } from './phb2024SubclassSpellGrantBridge';
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -129,6 +131,38 @@ const genieRequirement = (
   };
 };
 
+
+const landLabels: Record<string, string> = {
+  arid: 'Árido',
+  polar: 'Polar',
+  temperate: 'Temperado',
+  tropical: 'Tropical'
+};
+
+const landSpellRequirement = (
+  subclassItem: StoredCompendiumItem,
+  features: StoredCompendiumItem[],
+  items: StoredCompendiumItem[]
+): SubclassChoiceRequirement | undefined => {
+  const feature = features.find((candidate) => asString(asRecord(candidate.normalizedJson).spellListMode) === 'landChoice');
+  if (!feature) return undefined;
+  const options = getPhb2024ConditionalSubclassSpellListOptions(subclassItem.importItemId, 'landChoice');
+  if (!options.length) return undefined;
+  return {
+    subclassItemId: subclassItem.id,
+    featureItemId: feature.id,
+    choiceId: 'land-spell-list',
+    title: 'Terreno de Circle of the Land',
+    description: 'Escolha qual tabela de Circle Spells está ativa. Apenas a tabela selecionada é sempre preparada.',
+    mutable: true,
+    options: options.map((option) => ({
+      id: option.optionId,
+      label: landLabels[option.optionId] ?? titleCase(option.optionId),
+      summary: `Magias da tabela: ${spellNames(option.spellReferences, items).join(', ')}`
+    }))
+  };
+};
+
 const armorerRequirement = (
   subclassItem: StoredCompendiumItem,
   features: StoredCompendiumItem[]
@@ -208,6 +242,7 @@ export const getSubclassChoiceRequirements = (
   const activeFeatures = featureItemsForSubclass(subclassItem, items, classLevel);
   const requirements = [
     genieRequirement(subclassItem, features, items),
+    landSpellRequirement(subclassItem, activeFeatures, items),
     armorerRequirement(subclassItem, features),
     ...refreshableFeatureRequirements(subclassItem, activeFeatures, classLevel)
   ].filter((requirement): requirement is SubclassChoiceRequirement => Boolean(requirement));
@@ -301,7 +336,7 @@ export const getSubclassSpellListReferences = (
 
   for (const feature of features) {
     const mechanics = asRecord(asRecord(feature.normalizedJson).mechanics);
-    references.push(...spellReferencesFromLevelMap(mechanics.addedToWarlockSpellListBySpellLevel));
+    references.push(...getExplicitSpellListAdditionReferences(feature.normalizedJson));
     references.push(...spellReferencesFromLevelMap(mechanics.commonBySpellLevel));
 
     const byKind = asRecord(mechanics.byKind);

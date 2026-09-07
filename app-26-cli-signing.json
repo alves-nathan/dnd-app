@@ -1,7 +1,0 @@
-{
-  "status": "PASS",
-  "output": "/tmp/app26-cli-report.json",
-  "reportId": "catalog-operational-audit-report-672ec7f071da192f",
-  "auditStatus": "approved",
-  "packageChecksum": "c2a126b318ea67fca1bf73efe60198831266b57e98b934d63c847f51eae273f3"
-}

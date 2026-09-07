@@ -1,4 +1,4 @@
-import type { RuleValidationIssue } from '../types';
+import type { Character, CharacterEldritchInvocationChoice, RuleValidationIssue } from '../types';
 import type { StoredCompendiumItem } from '../compendium/types';
 import { findCompendiumItemByReference } from '../compendium/classProgression';
 import { withBuiltinEldritchInvocations } from './eldritchInvocationCatalog';
@@ -140,6 +140,80 @@ export const getEligibleEldritchInvocations = (
       allInvocations
     ).length === 0
   );
+};
+
+/**
+ * Reconcile a resumed invocation selection with the current Warlock level.
+ * Level reductions or a class switch must not leave invisible invocations in
+ * the draft that keep the progression step blocked. Still-available choices
+ * are retained in insertion order up to the current invocation limit.
+ */
+export const pruneEldritchInvocationCounts = (
+  selectedCounts: Record<string, number>,
+  candidates: StoredCompendiumItem[],
+  limit: number
+): Record<string, number> => {
+  const available = new Map(candidates.map((item) => [item.id, item]));
+  let remaining = Math.max(0, Math.floor(limit));
+  const next: Record<string, number> = {};
+
+  for (const [itemId, rawCount] of Object.entries(selectedCounts)) {
+    if (remaining <= 0) break;
+    const item = available.get(itemId);
+    if (!item) continue;
+    const count = Math.max(0, Math.floor(rawCount));
+    if (!count) continue;
+    const allowed = isEldritchInvocationRepeatable(item) ? count : Math.min(1, count);
+    const kept = Math.min(allowed, remaining);
+    if (kept > 0) {
+      next[itemId] = kept;
+      remaining -= kept;
+    }
+  }
+
+  const currentEntries = Object.entries(selectedCounts).filter(([, value]) => Math.max(0, Math.floor(value)) > 0);
+  const nextEntries = Object.entries(next);
+  const unchanged = currentEntries.length === nextEntries.length
+    && currentEntries.every(([itemId, value]) => next[itemId] === Math.max(0, Math.floor(value)));
+  return unchanged ? selectedCounts : next;
+};
+
+
+export const getEffectiveEldritchInvocationCounts = (
+  character: Pick<Character, 'buildChoices' | 'featChoices'>
+): Record<string, number> => {
+  const counts = Object.fromEntries(
+    Object.entries(character.buildChoices?.eldritchInvocationCounts ?? {})
+      .map(([itemId, count]) => [itemId, Math.max(0, Math.floor(count))])
+      .filter(([, count]) => Number(count) > 0)
+  ) as Record<string, number>;
+  for (const featChoice of character.featChoices ?? []) {
+    const itemId = featChoice.eldritchInvocationItemId;
+    if (!itemId) continue;
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return counts;
+};
+
+export const getEffectiveEldritchInvocationChoices = (
+  character: Pick<Character, 'buildChoices' | 'featChoices'>
+): CharacterEldritchInvocationChoice[] => {
+  const result = [...(character.buildChoices?.eldritchInvocationChoices ?? [])];
+  const offsets = { ...getEffectiveEldritchInvocationCounts({ buildChoices: character.buildChoices, featChoices: [] }) };
+  for (const featChoice of character.featChoices ?? []) {
+    const itemId = featChoice.eldritchInvocationItemId;
+    if (!itemId) continue;
+    const instanceIndex = offsets[itemId] ?? 0;
+    offsets[itemId] = instanceIndex + 1;
+    if (featChoice.eldritchInvocationChoice) {
+      result.push({
+        ...featChoice.eldritchInvocationChoice,
+        invocationItemId: itemId,
+        instanceIndex
+      });
+    }
+  }
+  return result;
 };
 
 export const findEldritchInvocationById = (

@@ -13,14 +13,18 @@ const contracts = [
   ['src/characters/useCharacterCompatibility.ts', ['useCharacterChoiceBridge', 'buildCharacterCompatibilityReport']],
   ['app/characters/[id]/compatibility.tsx', ['Manifesto de regras', 'Abrir ficha mesmo assim', 'Manifesto de conteúdo', 'Referências registradas']],
   ['app/character-compatibility.tsx', ['Planos e manifestos', 'buildCompatibilityRemediationBatchOverview', 'Abrir manifesto']],
-  ['app/characters/[id]/index.tsx', ['useCharacterCompatibility', 'compatibilityReviewed', 'Verificando ficha', 'Abrir manifesto da ficha']],
+  ['app/compendium/maintenance.tsx', ['Manutenção de regras e catálogo', 'Manifestos por personagem', "router.push('/character-compatibility')"]],
   ['app/_layout.tsx', ['characters/[id]/compatibility', 'character-compatibility']],
   ['src/tests/characterCompatibility.test.ts', ['APP-08 character rules compatibility', 'read-only manifest']],
-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24']]
+  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 25']]
 ];
 for (const [file, snippets] of contracts) {
   const content = read(file);
   for (const snippet of snippets) if (content && !content.includes(snippet)) errors.push(`${file}: contrato ausente (${snippet})`);
+}
+const characterSheet = read('app/characters/[id]/index.tsx');
+for (const forbidden of ['useCharacterCompatibility', 'compatibilityReviewed', 'Verificando ficha', 'Abrir manifesto da ficha']) {
+  if (characterSheet.includes(forbidden)) errors.push(`app/characters/[id]/index.tsx: manutenção de compatibilidade vazou para a ficha (${forbidden})`);
 }
 const packageJson = JSON.parse(read('package.json') || '{}');
 for (const script of ['catalog:character-compatibility:check', 'catalog:character-compatibility:harness', 'app08:smoke']) {
@@ -33,4 +37,4 @@ if (errors.length) {
 }
 console.log('[catalog:character-compatibility:check] PASS');
 console.log('manifestSchema=dnd-character-rules-manifest.v1');
-console.log('characterStoreVersion=24');
+console.log('characterStoreVersion=25');

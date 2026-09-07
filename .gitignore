@@ -8,3 +8,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .validation/
+
+# Generated root-level evidence/history. Keep the project root source-oriented.
+/APP*_REPORT.md
+!/APP28_INTEGRAL_GATE_REPORT.md
+!/APP29_RELEASE_CANDIDATE_HARDENING_REPORT.md
+/FIX_*.md
+/app-*.json
+/app-*.md
+/BETA_NATIVE_EXECUTION_STATUS_PHASE*.json
+/*.patch
+/dnd-content-extraction-*
+/phase7-programmatic-import.js
+/phase7-programmatic-import.js.sha256

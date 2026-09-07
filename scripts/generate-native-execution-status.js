@@ -59,7 +59,7 @@ const output = {
   evidence: evidence.map((entry) => ({ platform: entry.platform, file: entry.file, schemaVersion: entry.schemaVersion, generatedAt: entry.generatedAt, status: entry.status })),
   externalBlockers: blockers
 };
-const target = path.join(root, 'BETA_NATIVE_EXECUTION_STATUS_PHASE5H.json');
+const target = path.join(root, 'artifacts', 'BETA_NATIVE_EXECUTION_STATUS_PHASE5H.json');
 writeJson(target, output);
 console.log(`${output.status}: ${path.relative(root, target)}`);
 blockers.forEach((blocker) => console.log(`- ${blocker}`));

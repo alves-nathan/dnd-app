@@ -1,5 +1,5 @@
 import { buildPersistedCompendiumImport } from '../compendium/importer';
-import { buildProficiencySelection, getClassProficiencyRequirement } from '../characters/proficiencyRules';
+import { buildProficiencySelection, getClassProficiencyRequirement, reconcileClassSkillChoices } from '../characters/proficiencyRules';
 
 const source = { id: 'prof-source', book: 'Rules', version: '2024', status: 'active' as const, confidence: 'exact' as const };
 const persisted = buildPersistedCompendiumImport({
@@ -21,7 +21,10 @@ const persisted = buildPersistedCompendiumImport({
     { id: 'bard', kind: 'class', name: 'Bard', source, payload: { skillProficienciesChoice: ['Acrobatics', 'Arcana', 'Performance'], savingThrowProficiencies: ['DEX', 'CHA'], weaponProficiencies: ['simple'], armorTraining: ['light'], toolProficiencies: ['musicalInstrument:3'] } },
     { id: 'artisan', kind: 'background', name: 'Artisan', source, payload: { skillProficiencies: ['Investigation', 'Persuasion'], toolProficiencies: ["one Artisan's Tools"] } },
     { id: 'ranger', kind: 'class', name: 'Ranger', source, payload: { skillProficienciesChoice: ['Athletics', 'Nature', 'Perception'], savingThrowProficiencies: ['STR', 'DEX'], weaponProficiencies: ['simple', 'martial'], armorTraining: ['light', 'medium', 'shields'], toolProficiencies: [], progression: [{ level: 2, featureIds: ['deft-explorer'] }] } },
-    { id: 'deft-explorer', kind: 'feature', name: 'Deft Explorer', source, payload: { sourceType: 'classFeature', classId: 'ranger', levelGained: 2, expertiseSkillChoices: 1, languageChoices: 2 } }
+    { id: 'deft-explorer', kind: 'feature', name: 'Deft Explorer', source, payload: { sourceType: 'classFeature', classId: 'ranger', levelGained: 2, expertiseSkillChoices: 1, languageChoices: 2 } },
+    { id: 'wizard-2024', kind: 'class', name: 'Wizard', source, payload: { hitDie: 6, skillProficienciesChoice: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'], savingThrowProficiencies: ['INT', 'WIS'], weaponProficiencies: ['simple'], armorTraining: [], toolProficiencies: [] } },
+    { id: 'wizard-legacy-carrier', kind: 'class', name: 'Wizard', source: { ...source, id: 'legacy-prof-source', version: '2014' }, payload: { hitDie: 6 } },
+    { id: 'sage', kind: 'background', name: 'Sage', source, payload: { skillProficiencies: ['Arcana', 'History'], toolProficiencies: ["Calligrapher's Supplies"] } }
   ]
 });
 const item = (id: string) => persisted.items.find((entry) => entry.importItemId === id)!;
@@ -69,6 +72,41 @@ describe('proficiency rules', () => {
     expect(result.issues.some((issue) => issue.code === 'CLASS_SKILL_CHOICE_COUNT')).toBe(true);
   });
 
+
+
+  it('reconciles resumed class-skill choices against skills already granted by origin', () => {
+    const requirement = getClassProficiencyRequirement(item('wizard-2024'), 1, persisted.items);
+    const reconciled = reconcileClassSkillChoices({
+      currentChoices: ['Arcana', 'History', 'Investigation'],
+      requirement,
+      unavailableSkills: ['Arcana', 'History']
+    });
+
+    expect(reconciled).toEqual(['Investigation']);
+
+    const result = buildProficiencySelection({
+      startingClassItem: item('wizard-2024'),
+      startingClassLevel: 1,
+      backgroundItem: item('sage'),
+      allItems: persisted.items,
+      classSkillChoices: ['Investigation', 'Medicine'],
+      classToolChoices: [],
+      expertiseSkills: []
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.proficiencies.skills).toEqual(expect.arrayContaining(['Arcana', 'History', 'Investigation', 'Medicine']));
+  });
+
+  it('falls back to the current same-named class chassis when a legacy class carrier omits proficiencies', () => {
+    const requirement = getClassProficiencyRequirement(item('wizard-legacy-carrier'), 1, persisted.items);
+
+    expect(requirement.className).toBe('Wizard');
+    expect(requirement.skillChoiceCount).toBe(2);
+    expect(requirement.skillOptions).toEqual(expect.arrayContaining(['Arcana', 'History', 'Investigation', 'Medicine']));
+    expect(requirement.savingThrows).toEqual(['INT', 'WIS']);
+    expect(requirement.weapons).toEqual(['simple']);
+  });
 
   it('requires explicit selections for class and background tool families', () => {
     const result = buildProficiencySelection({

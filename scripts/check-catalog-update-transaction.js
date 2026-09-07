@@ -50,8 +50,7 @@ mustContain('app/catalog-update.tsx', [
   'catalog-update-rollback',
   'Impacto preventivo'
 ]);
-mustContain('app/settings.tsx', ['Atualizar catálogo']);
-mustContain('app/index.tsx', ['open-catalog-update-session']);
+mustContain('app/compendium/maintenance.tsx', ['Atualizar catálogo', 'open-catalog-update-session']);
 mustContain('app/_layout.tsx', ['catalog-update']);
 mustContain('app/e2e-seed.tsx', ['e2e-seed-catalog-update', 'prepareCatalogUpdateScenario']);
 mustContain('scripts/run-app17-runtime-harness.js', ['app-17-runtime-harness.json', '5841', '5842', '43']);

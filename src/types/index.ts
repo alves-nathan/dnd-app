@@ -182,6 +182,7 @@ export interface Feat {
   custom?: boolean;
   features?: Feature[];
   grantedByInvocationItemId?: string;
+  grantedByFeatEntityId?: string;
 }
 
 export interface CharacterWeaponMastery {
@@ -214,6 +215,12 @@ export interface CharacterFeatChoice {
   weaponItemIds?: string[];
   weaponMasterySelections?: CharacterWeaponMastery[];
   fightingStyleItemId?: string;
+  eldritchInvocationItemId?: string;
+  eldritchInvocationChoice?: CharacterEldritchInvocationChoice;
+  /** Stable internal option ids from the current Sorcerer Metamagic catalog. */
+  metamagicOptionIds?: string[];
+  /** Stable internal option ids from the Battle Master maneuver catalog. */
+  maneuverOptionIds?: string[];
   creatureType?: string;
   notes?: string;
 }
@@ -344,6 +351,7 @@ export interface CharacterCompanion {
   customName?: boolean;
   sourceCreatureItemId: string;
   grantedByInvocationItemId: string;
+  grantedByFeatEntityId?: string;
   variant: PactChainFamiliarVariant;
   size?: string;
   creatureType?: string;
@@ -374,10 +382,17 @@ export interface CharacterCompanion {
   updatedAt: string;
 }
 
+export type CharacterHitPointMethod = 'rolled' | 'fixed' | 'maximum' | 'manual';
+
 export interface CharacterHitPointState {
   current: number;
   max: number;
   temporary: number;
+  method?: CharacterHitPointMethod;
+  /** Manual maximum when method=manual. */
+  manualMax?: number;
+  /** Raw Hit Die results for levels above 1, keyed by local character-class entity id. */
+  rolledByClass?: Record<string, number[]>;
 }
 
 export interface CharacterHitDiePool {
@@ -460,11 +475,15 @@ export interface CharacterHigherLevelStartingBenefits {
 export interface CharacterSpeciesChoice {
   speciesItemId: string;
   featureItemId: string;
-  choiceKind: 'ancestry' | 'lineage' | 'legacy' | 'revelation' | 'option' | 'size' | 'variableTrait' | 'language';
+  choiceKind: 'ancestry' | 'lineage' | 'legacy' | 'revelation' | 'option' | 'subrace' | 'size' | 'variableTrait' | 'language' | 'spell';
   optionId: string;
   spellcastingAbility?: AbilityScore;
   skill?: string;
   language?: string;
+  /** Optional replacement selected under a species rule that permits changing a granted spell after a rest. */
+  replacementSpellItemId?: string;
+  /** Timestamp of the Long-Rest-gated replacement most recently consumed for this species feature. */
+  replacementUsedAt?: string;
 }
 
 export interface CharacterBackgroundChoice {
@@ -477,6 +496,42 @@ export interface CharacterSubclassChoice {
   subclassItemId: string;
   choiceId: string;
   optionId: string;
+}
+
+export interface CharacterClassFeatureChoice {
+  classItemId: string;
+  featureItemId: string;
+  optionId: string;
+}
+
+export interface CharacterClassMetamagicChoice {
+  classEntityId: string;
+  featureEntityId: string;
+  classItemId: string;
+  featureItemId: string;
+  optionIds: string[];
+}
+
+export interface CharacterBonusSpellChoice {
+  requirementId: string;
+  classItemId: string;
+  featureItemId: string;
+  spellItemIds: string[];
+}
+
+export interface CharacterSpellbookFeatureChoice {
+  requirementId: string;
+  classItemId: string;
+  featureItemId: string;
+  spellItemIds: string[];
+}
+
+export interface CharacterMysticArcanumChoice {
+  requirementId: string;
+  classItemId: string;
+  featureItemId: string;
+  spellItemId: string;
+  spellLevel: number;
 }
 
 export interface CharacterEquipmentLoadout {
@@ -501,6 +556,11 @@ export interface CharacterBuildChoices {
   speciesFeatItemId?: string;
   backgroundChoices?: CharacterBackgroundChoice[];
   subclassChoices?: CharacterSubclassChoice[];
+  classFeatureChoices?: CharacterClassFeatureChoice[];
+  classMetamagicChoices?: CharacterClassMetamagicChoice[];
+  bonusSpellChoices?: CharacterBonusSpellChoice[];
+  spellbookFeatureChoices?: CharacterSpellbookFeatureChoice[];
+  mysticArcanumChoices?: CharacterMysticArcanumChoice[];
   classSkillChoices: string[];
   classToolChoices: string[];
   backgroundToolChoices?: string[];
@@ -527,8 +587,12 @@ export type CharacterPendingChoiceKind =
   | 'subclassOptions'
   | 'feat'
   | 'featOptions'
+  | 'metamagic'
   | 'proficiency'
   | 'spellSelection'
+  | 'spellbookFeature'
+  | 'mysticArcanum'
+  | 'mysticArcanumReplacement'
   | 'spellReplacement'
   | 'equipment'
   | 'speciesOption'
@@ -546,6 +610,7 @@ export interface CharacterPendingChoice {
   sourceEntityId?: string;
   requiredCount?: number;
   currentCount?: number;
+  featCategory?: 'general' | 'fightingStyle' | 'epicBoon';
   status: 'pending' | 'resolved';
   createdAt: string;
 }
@@ -683,6 +748,11 @@ export interface Feature {
   requiresReview?: boolean;
 }
 
+export interface ResourceRestRecoveryRule {
+  trigger: 'shortRest' | 'longRest';
+  amount: number | 'all';
+}
+
 export interface ResourcePool {
   id: string;
   name: string;
@@ -691,7 +761,43 @@ export interface ResourcePool {
   recharge: ResourceRecharge;
   source?: RuleSource;
   sourceInvocationItemId?: string;
+  sourceFeatEntityId?: string;
   notes?: string;
+  /** Declarative partial/full recovery that is more precise than the simple recharge field. */
+  recoveryRules?: ResourceRestRecoveryRule[];
+  /** Stable external spell-grant id used to reconcile generated resources. */
+  sourceSpellGrantId?: string;
+}
+
+export interface AbilityUseResourceChange {
+  resourceId: string;
+  resourceName: string;
+  before: number;
+  after: number;
+}
+
+export interface AbilityUseSpellSlotChange {
+  poolId?: string;
+  poolKind?: SpellSlotPoolKind;
+  sourceClassId?: string;
+  slotLevel: SpellSlotLevel;
+  before: number;
+  after: number;
+}
+
+export interface AbilityUseTransaction {
+  id: string;
+  characterId: string;
+  abilityId: string;
+  abilityName: string;
+  sourceItemId?: string;
+  sourceEntityId?: string;
+  actionCost?: ActionCost;
+  status: 'applied' | 'undone';
+  resourceChanges: AbilityUseResourceChange[];
+  spellSlotChanges: AbilityUseSpellSlotChange[];
+  createdAt: string;
+  undoneAt?: string;
 }
 
 export interface ResourceTransaction {
@@ -945,7 +1051,7 @@ export interface SpellScalingRule {
 }
 
 
-export type SpellbookAcquisition = 'starting' | 'levelUp' | 'copied' | 'manual' | 'feat';
+export type SpellbookAcquisition = 'starting' | 'levelUp' | 'copied' | 'manual' | 'feat' | 'savant' | 'feature';
 
 export interface CharacterSpellbookEntry {
   id: string;
@@ -960,6 +1066,8 @@ export interface CharacterSpellbookEntry {
   prepared: boolean;
   createdAt: string;
   notes?: string;
+  grantedByFeatureItemId?: string;
+  spellbookFeatureChoiceId?: string;
 }
 
 export type SpellChangeTransactionKind =
@@ -984,6 +1092,44 @@ export interface SpellChangeTransaction {
   characterLevel: number;
   classLevel?: number;
   createdAt: string;
+  notes?: string;
+}
+
+export interface AutomaticSpellAccessSource {
+  kind: 'alwaysPrepared' | 'granted';
+  sourceItemId: string;
+  sourceName?: string;
+}
+
+export interface ExternalSpellGrantSource {
+  kind: 'species' | 'feat' | 'feature' | 'background';
+  sourceItemId: string;
+  sourceEntityId?: string;
+  sourceName?: string;
+  spellcastingAbility?: AbilityScore;
+  canUseSpellSlots?: boolean;
+  /** Levelled grant can be cast without slots/resources whenever its source permits at-will casting. */
+  atWill?: boolean;
+  /** This source-specific casting mode waives all spell components. */
+  noComponents?: boolean;
+  /** This source-specific casting mode waives only the Material component. */
+  ignoreMaterialComponent?: boolean;
+  /** Source-native restrictions preserved for display/audit when the combat engine cannot enforce them directly. */
+  ruleNotes?: string[];
+}
+
+export interface SpellFreeCastGrant {
+  id: string;
+  sourceKind: ExternalSpellGrantSource['kind'];
+  sourceItemId: string;
+  sourceEntityId?: string;
+  sourceName?: string;
+  resourceId: string;
+  castAtSpellLevel?: number;
+  spellcastingAbility?: AbilityScore;
+  noComponents?: boolean;
+  /** Suppress only the Material component while preserving Verbal/Somatic components. */
+  ignoreMaterialComponent?: boolean;
   notes?: string;
 }
 
@@ -1020,6 +1166,35 @@ export interface Spell {
   grantedByFeatEntityId?: string;
   grantedByFeatureEntityId?: string;
   grantedByInvocationItemId?: string;
+  bonusSpellChoiceId?: string;
+  /** Spellbook-special choice currently keeping this spell always prepared / specially castable. */
+  spellbookSpecialChoiceId?: string;
+  spellbookSpecialKind?: 'spellMastery' | 'signatureSpells';
+  /** True when the spell was prepared only because the active spellbook-special choice requires it. */
+  spellbookSpecialPreparedOnly?: boolean;
+  /** Signature Spells gets a separate no-slot action backed by a Short-Rest resource (also restored by Long Rest). */
+  signatureSpellFreeCastResourceId?: string;
+  /** Mystic Arcanum selection backing this spell. */
+  mysticArcanumChoiceId?: string;
+  mysticArcanumSpellLevel?: number;
+  /** One-use Long-Rest resource used by the no-slot Mystic Arcanum action. */
+  mysticArcanumFreeCastResourceId?: string;
+  /** True when this spell entity exists only because of the active Mystic Arcanum choice. */
+  mysticArcanumOnly?: boolean;
+  /** Automatic class/subclass access sources currently keeping this spell on the sheet. */
+  automaticSpellAccessSources?: AutomaticSpellAccessSource[];
+  /** True when the spell entity was created only because of automatic spell access. */
+  automaticSpellAccessOnly?: boolean;
+  /** True when ritual-only casting was added by an automatic feature grant and should be reverted with that source. */
+  automaticSpellRitualOnly?: boolean;
+  /** Species/feat/custom sources that grant access without consuming a normal class spell limit. */
+  externalSpellGrantSources?: ExternalSpellGrantSource[];
+  /** True when this spell entity exists only because of external grant sources. */
+  externalSpellGrantOnly?: boolean;
+  /** True when the spell became prepared only because an external grant required it. */
+  externalSpellGrantPreparedOnly?: boolean;
+  /** Additional no-slot casts granted by species, feats, or custom features. */
+  freeCastGrants?: SpellFreeCastGrant[];
   ritualOnly?: boolean;
   prepared?: boolean;
   freeCast?: boolean;
@@ -1143,11 +1318,44 @@ export interface TurnAction {
   movement?: TacticalMovement;
 }
 
+export type TurnFeatureActivationKind = 'extraAction' | 'actionModifier';
+export type TurnActionModifierKind = 'quickenedSpell' | 'distantSpell' | 'subtleSpell' | 'giantAncestryFiresBurn';
+
+export interface TurnFeatureDamageBonus {
+  formula: string;
+  damageType?: string;
+  sourceType?: DamageSourceType;
+  trigger: 'onHit';
+}
+
+/**
+ * A non-damage rule explicitly selected for a rotation. Activations stay
+ * separate from CharacterAction so attack/spell math keeps its stable union
+ * while turn-level mechanics can grant economy or transform an action.
+ */
+export interface TurnFeatureActivation {
+  id: string;
+  kind: TurnFeatureActivationKind;
+  name: string;
+  sourceFeatureId?: string;
+  sourceFeatEntityId?: string;
+  sourceItemId?: string;
+  actionCost?: ActionCost;
+  consumes?: ResourceCost[];
+  targetActionId?: string;
+  extraActionCount?: number;
+  prohibitsMagicAction?: boolean;
+  modifier?: TurnActionModifierKind;
+  damageBonus?: TurnFeatureDamageBonus;
+  notes?: string[];
+}
+
 export interface TurnRotation {
   id: string;
   characterId: string;
   name: string;
   actions: TurnAction[];
+  activations?: TurnFeatureActivation[];
   favorite?: boolean;
   notes?: string;
 }
@@ -1711,6 +1919,7 @@ export interface Character {
   rotations: TurnRotation[];
   compendiumLinks?: CharacterCompendiumLink[];
   resourceTransactions?: ResourceTransaction[];
+  abilityUseTransactions?: AbilityUseTransaction[];
   spellSlotTransactions?: SpellSlotTransaction[];
   spellChangeTransactions?: SpellChangeTransaction[];
   activeEffectTransactions?: ActiveEffectTransaction[];
@@ -1718,5 +1927,7 @@ export interface Character {
   healingTransactions?: CharacterHealingTransaction[];
   protectionTransactions?: CharacterProtectionTransaction[];
   progressionTransactions?: CharacterProgressionAuditEntry[];
+  /** Last completed Long Rest; used by rules that unlock optional reconfiguration after resting. */
+  lastLongRestAt?: string;
   notes?: string;
 }

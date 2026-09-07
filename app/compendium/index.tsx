@@ -321,6 +321,11 @@ export default function CompendiumScreen() {
             <Button label="Gerenciar livros e regras" secondary onPress={() => router.push('/content-management')} disabled={busy} />
           </Card>
 
+          <Card title="Manutenção de regras e catálogo" subtitle="Compatibilidade, atualizações, confiança, distribuição, publicação e auditoria ficam reunidas fora do fluxo das fichas.">
+            <Text style={styles.muted}>Abra esta central somente quando quiser revisar ou manter o conteúdo instalado.</Text>
+            <Button label="Abrir manutenção do Compêndio" secondary onPress={() => router.push('/compendium/maintenance')} disabled={busy} />
+          </Card>
+
           <Card title="Dados para criação e progressão" subtitle="Libere classes, subclasses, espécies, backgrounds, feats, magias e features vinculadas.">
             <Text style={styles.muted}>{coreContentSummary.total} item(ns) encontrado(s) · {coreContentSummary.validated} validado(s) · {coreContentSummary.pending} pendente(s)</Text>
             <Text style={styles.muted}>{coreContentSummary.enabledSourceCount} de {coreContentSummary.sourceCount} fonte(s) ativa(s).</Text>

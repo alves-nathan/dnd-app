@@ -8,6 +8,7 @@ import type {
 } from '../types';
 import { getActiveLoadout, getEquippedArmorAccessories, isShieldArmor, weaponHandsRequired } from './equipmentLoadoutRules';
 import { validateSpellComponents, type SpellHandState } from './spellComponentRules';
+import { turnExtraActionAllowance } from '../rules-engine/turns/turnFeatureActivations';
 
 const normalize = (value: string): string => value
   .normalize('NFD')
@@ -204,7 +205,8 @@ export const validateRotationInteractionEconomy = (
 ): RuleValidationIssue[] => {
   const issues: RuleValidationIssue[] = [];
   const state = initialHandState(character);
-  const attackCapacity = attackActionCapacity(character);
+  const baseAttackCapacity = attackActionCapacity(character);
+  const attackCapacity = baseAttackCapacity * (1 + turnExtraActionAllowance(rotation));
   let weaponAttackCount = 0;
   let generalInteractions = 0;
   let nickUsed = false;
@@ -264,7 +266,9 @@ export const validateRotationInteractionEconomy = (
   if (weaponAttackCount > attackCapacity) issues.push({
     severity: 'error',
     code: 'ATTACK_ACTION_CAPACITY_EXCEEDED',
-    message: `A rotação usa ${weaponAttackCount} ataques na Ação de Ataque, mas a build permite ${attackCapacity}.`
+    message: turnExtraActionAllowance(rotation) > 0
+      ? `A rotação usa ${weaponAttackCount} ataques, mas ${1 + turnExtraActionAllowance(rotation)} Ações de Ataque permitem no máximo ${attackCapacity} ataque(s) nesta build.`
+      : `A rotação usa ${weaponAttackCount} ataques na Ação de Ataque, mas a build permite ${attackCapacity}.`
   });
 
   return issues;

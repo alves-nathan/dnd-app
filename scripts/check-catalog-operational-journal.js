@@ -19,8 +19,8 @@ if (!issues.length) {
   for (const token of ['recoverInterruptedSessions','resumeInterruptedExecution','reconcileReceipt','closeOperation','executeRecovery','archiveJournal','status: \'interrupted\'']) if (!store.includes(token)) issues.push(`Integração APP-25 ausente: ${token}`);
   const ui = read('app/catalog-operational-journal.tsx');
   for (const token of ['Diário operacional','Reconciliar estado','Encerrar e gerar evidência','Autorização de correção ou rollback','operational-journal-archive']) if (!ui.includes(token)) issues.push(`Contrato de UI APP-25 ausente: ${token}`);
-  const settings = read('app/settings.tsx');
-  if (!settings.includes('/catalog-operational-journal')) issues.push('Ajustes não expõem o diário operacional.');
+  const maintenance = read('app/compendium/maintenance.tsx');
+  if (!maintenance.includes('/catalog-operational-journal')) issues.push('A manutenção do Compêndio não expõe o diário operacional.');
   const packageJson = JSON.parse(read('package.json'));
   for (const script of ['catalog:operation:journal:check','catalog:operation:journal:harness','app25:linear']) if (!packageJson.scripts?.[script]) issues.push(`Script APP-25 ausente: ${script}`);
   const flows = fs.readdirSync(path.join(root, '.maestro/flows')).filter((name) => /^7[1-4]-/.test(name));

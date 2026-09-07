@@ -11,6 +11,7 @@ import { StatRow } from '../../../src/components/StatRow';
 import { useCharacterStore } from '../../../src/store/characterStore';
 import { useCombatScenarioStore } from '../../../src/store/combatScenarioStore';
 import { useCompendiumStore } from '../../../src/store/compendiumStore';
+import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import { useAppTheme } from '../../../src/theme';
 import { analyzeTurnRotation } from '../../../src/rules-engine/turns/analyzeTurn';
 import { buildAvailableActions } from '../../../src/rules-engine/actions/buildActions';
@@ -44,6 +45,10 @@ import {
 } from '../../../src/rules-engine/turns/turnCycle';
 import { eligibleTacticalCreatureStatBlocks, projectCreatureStatBlockToTacticalTarget, statBlockActionDamageRange } from '../../../src/characters/tacticalStatBlockRules';
 import { getArmorClass } from '../../../src/rules-engine/characters/derivedStats';
+import { attackActionCapacity } from '../../../src/characters/interactionEconomyRules';
+import { buildTurnFeatureActivationOptions, instantiateTurnFeatureActivation, type TurnFeatureActivationOption } from '../../../src/characters/turnFeatureActivationRules';
+import { getCharacterMetamagicSources } from '../../../src/characters/metamagicRules';
+import { turnExtraActionAllowance } from '../../../src/rules-engine/turns/turnFeatureActivations';
 import { createId } from '../../../src/utils/id';
 import {
   describeTacticalAreaTemplate,
@@ -67,11 +72,21 @@ import type {
   TacticalDiagonalRule,
   TacticalTerrainRegion,
   SpellSlotLevel,
-  TacticalActionResolution
+  TacticalActionResolution,
+  TurnFeatureActivation
 } from '../../../src/types';
 
 const getId = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 const slots: SpellSlotLevel[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const normalize = (value: string): string => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+const activationExclusiveGroup = (activation: TurnFeatureActivation): string => {
+  if (activation.modifier === 'quickenedSpell' || activation.modifier === 'distantSpell' || activation.modifier === 'subtleSpell') return 'metamagic';
+  return activation.modifier ?? activation.kind;
+};
+
+const isGiantAncestryFiresBurnActivation = (activation: TurnFeatureActivation): boolean =>
+  activation.modifier === 'giantAncestryFiresBurn';
 
 const actionDescription = (action?: CharacterAction): string => {
   if (!action) return '';
@@ -93,6 +108,8 @@ export default function TacticalCombatScreen() {
   const updateTarget = useCombatScenarioStore((state) => state.updateTarget);
   const removeTarget = useCombatScenarioStore((state) => state.removeTarget);
   const compendiumItems = useCompendiumStore((state) => state.items);
+  const characterChoiceBridge = useCharacterChoiceBridge();
+  const characterRuleItems = characterChoiceBridge.items.length ? characterChoiceBridge.items : compendiumItems;
   const enabledSourceIds = useCompendiumStore((state) => state.enabledSourceIds);
   const scenarios = useMemo(() => allScenarios.filter((scenario) => scenario.characterId === id).map(normalizeCombatScenario), [allScenarios, id]);
   const tacticalCreatureCandidates = useMemo(
@@ -135,6 +152,8 @@ export default function TacticalCombatScreen() {
   const [newTerrainWidth, setNewTerrainWidth] = useState('10');
   const [newTerrainHeight, setNewTerrainHeight] = useState('10');
   const [newTerrainRadius, setNewTerrainRadius] = useState('10');
+  const [activationOverridesByRotation, setActivationOverridesByRotation] = useState<Record<string, TurnFeatureActivation[]>>({});
+  const [attackCountOverridesByRotation, setAttackCountOverridesByRotation] = useState<Record<string, Record<string, string>>>({});
 
   useEffect(() => {
     if (!id) return;
@@ -151,7 +170,26 @@ export default function TacticalCombatScreen() {
 
   const storedScenario = scenarios.find((entry) => entry.id === selectedScenarioId) ?? scenarios[0];
   const scenario = storedScenario ? ensureTacticalParticipants(storedScenario, character.name) : undefined;
-  const rotation = character.rotations.find((entry) => entry.id === selectedRotationId) ?? character.rotations[0];
+  const storedRotation = character.rotations.find((entry) => entry.id === selectedRotationId) ?? character.rotations[0];
+  const selectedActivations = storedRotation
+    ? (activationOverridesByRotation[storedRotation.id] ?? storedRotation.activations ?? [])
+    : [];
+  const attackOverrides = storedRotation ? (attackCountOverridesByRotation[storedRotation.id] ?? {}) : {};
+  const rotation = storedRotation ? {
+    ...storedRotation,
+    activations: selectedActivations,
+    actions: storedRotation.actions.map((entry) => {
+      const draft = attackOverrides[entry.id];
+      if (entry.action.type !== 'attack' || draft === undefined) return entry;
+      const parsed = Number(draft);
+      return Number.isFinite(parsed) ? { ...entry, attackCountOverride: Math.max(1, Math.floor(parsed)) } : entry;
+    })
+  } : undefined;
+  const rotationActivationOptions = storedRotation
+    ? buildTurnFeatureActivationOptions(character, characterRuleItems, storedRotation.actions.map((entry) => entry.action))
+    : [];
+  const maxTacticalAttackCount = attackActionCapacity(character) * (1 + (rotation ? turnExtraActionAllowance(rotation) : 0));
+  const metamagicSources = getCharacterMetamagicSources(character, characterRuleItems);
   const analysis = scenario && rotation ? analyzeTurnRotation(rotation, character, scenario) : undefined;
   const allIssues = analysis ? [
     ...analysis.validation.issues,
@@ -188,6 +226,33 @@ export default function TacticalCombatScreen() {
       .map((pool) => `${pool.level}º ${pool.current}/${pool.max}`)
       .join(' · ')
     : 'Nenhum';
+
+  const toggleTacticalActivation = (option: TurnFeatureActivationOption, targetActionId?: string) => {
+    if (!storedRotation) return;
+    const activation = instantiateTurnFeatureActivation(option, targetActionId);
+    setActivationOverridesByRotation((currentMap) => {
+      const current = currentMap[storedRotation.id] ?? storedRotation.activations ?? [];
+      const alreadySelected = current.some((entry) => entry.id === activation.id);
+      if (alreadySelected) {
+        return { ...currentMap, [storedRotation.id]: current.filter((entry) => entry.id !== activation.id) };
+      }
+      if (option.targetMode === 'action' && targetActionId) {
+        const group = activationExclusiveGroup(activation);
+        return {
+          ...currentMap,
+          [storedRotation.id]: [
+            ...current.filter((entry) => !(
+              entry.kind === 'actionModifier'
+              && entry.targetActionId === targetActionId
+              && activationExclusiveGroup(entry) === group
+            )),
+            activation
+          ]
+        };
+      }
+      return { ...currentMap, [storedRotation.id]: [...current, activation] };
+    });
+  };
 
   const persistTurnResult = (result: { scenario: typeof scenario; character: typeof character; issues: Array<{ severity: string; message: string }> }) => {
     if (!scenario || !result.scenario) return;
@@ -403,14 +468,41 @@ export default function TacticalCombatScreen() {
         }))
       };
     });
+    const fireWithoutHit = selectedActivations.find((activation) => {
+      if (!isGiantAncestryFiresBurnActivation(activation) || !activation.targetActionId) return false;
+      const targetEntry = rotation.actions.find((entry) => entry.action.id === activation.targetActionId || entry.id === activation.targetActionId);
+      if (!targetEntry) return false;
+      const resolution = resolutions.find((entry) => entry.actionId === targetEntry.id);
+      if (!resolution) return true;
+      const totalHits = resolution.targetResults?.length
+        ? resolution.targetResults.reduce((sum, entry) => sum + Math.max(0, entry.confirmedHits ?? 0), 0)
+        : Math.max(0, resolution.confirmedHits ?? 0);
+      return totalHits <= 0;
+    });
+    if (fireWithoutHit) {
+      Alert.alert('Giant Ancestry · Fire\'s Burn', 'Fire\'s Burn só pode ser usado depois de pelo menos um acerto confirmado que cause dano. Confirme o acerto ou desative a feature nesta ação.');
+      return;
+    }
     const result = resolveTacticalRotation({ character, rotation, scenario, resolutions });
     if (result.issues.some((issue) => issue.severity === 'error')) {
       Alert.alert('Movimento inválido', result.issues.map((issue) => issue.message).join('\n'));
       return;
     }
-    spendRotationResources(character.id, rotation.id);
+    spendRotationResources(character.id, rotation.id, rotation);
     updateCharacter(character.id, (current) => spendRotationThrownWeapons(current, rotation));
     updateScenario(scenario.id, () => result.scenario);
+    if (storedRotation) {
+      setActivationOverridesByRotation((current) => {
+        const next = { ...current };
+        delete next[storedRotation.id];
+        return next;
+      });
+      setAttackCountOverridesByRotation((current) => {
+        const next = { ...current };
+        delete next[storedRotation.id];
+        return next;
+      });
+    }
     Alert.alert('Turno aplicado', `Movimento: ${result.movement.movementSpentFeet}/${result.movement.speedFeet} pés.\n${result.effects.filter((event) => event.applied).length} efeito(s) tático(s) aplicado(s).`);
   };
 
@@ -760,6 +852,30 @@ export default function TacticalCombatScreen() {
             {character.rotations.map((entry) => <Chip key={entry.id} label={entry.name} selected={entry.id === rotation?.id} onPress={() => setSelectedRotationId(entry.id)} />)}
           </View>
         ) : <Text>Nenhuma rotação criada.</Text>}
+        {rotation && rotationActivationOptions.some((option) => option.targetMode === 'turn') ? (
+          <Card variant="outlined" title="Ativações desta resolução" subtitle="Ative recursos de turno sem precisar recriar a rotação salva.">
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {rotationActivationOptions.filter((option) => option.targetMode === 'turn').map((option) => {
+                const activation = instantiateTurnFeatureActivation(option);
+                const selected = selectedActivations.some((entry) => entry.id === activation.id);
+                return <Chip key={option.id} label={option.name} selected={selected} onPress={() => toggleTacticalActivation(option)} />;
+              })}
+            </View>
+            {rotationActivationOptions.filter((option) => option.targetMode === 'turn').map((option) => (
+              <Text key={`${option.id}:summary`} style={{ color: colors.onSurfaceVariant }}>• {option.name}: {option.summary}</Text>
+            ))}
+          </Card>
+        ) : null}
+        {metamagicSources.length ? (
+          <Card variant="outlined" title="Metamagic" subtitle="As ativações abaixo são limitadas às opções selecionadas em cada fonte do personagem.">
+            {metamagicSources.map((source) => (
+              <Text key={source.id} style={{ color: colors.onSurfaceVariant }}>
+                {source.label}: {source.selectedOptionIds.length}/{source.optionLimit} selecionada(s)
+              </Text>
+            ))}
+            <Button label="Configurar Metamagic" variant="outlined" onPress={() => router.push(`/characters/${character.id}/metamagic`)} />
+          </Card>
+        ) : null}
         {rotation && scenario ? rotation.actions.map((entry, index) => {
           const targetId = targetsByAction[entry.id] ?? entry.targetId ?? scenario.targets?.[0]?.id;
           const hasTopple = entry.action.type === 'attack' && entry.action.mastery?.property === 'topple';
@@ -773,8 +889,33 @@ export default function TacticalCombatScreen() {
             ? tacticalTargetsInsideArea(scenario, entry.action.area, targetId)
             : undefined;
           const tracksHits = entry.action.type === 'attack' || (entry.action.type === 'spell' && ((entry.action.attacksCount ?? 0) > 0 || entry.action.forcedMovementFt));
+          const actionActivationOptions = rotationActivationOptions.filter((option) => option.targetMode === 'action' && option.eligibleActionIds.includes(entry.action.id));
           return (
             <Card key={entry.id} variant="outlined" title={`${index + 1}. ${entry.name}`} subtitle={`${entry.action.type} · ${supportsMultipleTargets ? 'múltiplos alvos' : 'alvo único'} · resultado real`}>
+              {entry.action.type === 'attack' ? (
+                <Field
+                  label={`Ataques nesta resolução (máximo com ativações atuais: ${maxTacticalAttackCount})`}
+                  value={attackOverrides[entry.id] ?? String(entry.attackCountOverride ?? entry.action.attacksCount ?? 1)}
+                  onChangeText={(text) => storedRotation && setAttackCountOverridesByRotation((current) => ({
+                    ...current,
+                    [storedRotation.id]: { ...(current[storedRotation.id] ?? {}), [entry.id]: text }
+                  }))}
+                  keyboardType="number-pad"
+                />
+              ) : null}
+              {actionActivationOptions.length ? (
+                <View style={{ gap: 6 }}>
+                  <Text style={{ fontWeight: '800' }}>Ativações desta ação</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {actionActivationOptions.map((option) => {
+                      const activation = instantiateTurnFeatureActivation(option, entry.action.id);
+                      const selected = selectedActivations.some((candidate) => candidate.id === activation.id);
+                      return <Chip key={option.id} label={option.name} selected={selected} onPress={() => toggleTacticalActivation(option, entry.action.id)} />;
+                    })}
+                  </View>
+                  {actionActivationOptions.map((option) => <Text key={`${entry.id}:${option.id}:summary`} style={{ color: colors.onSurfaceVariant }}>• {option.name}: {option.summary}</Text>)}
+                </View>
+              ) : null}
               {areaDescription ? <Text style={{ fontWeight: '800' }}>Área: {areaDescription}</Text> : null}
               {entry.action.type === 'spell' && entry.action.targetDescription ? <Text>{entry.action.targetDescription}</Text> : null}
               <Text style={{ fontWeight: '800' }}>{supportsMultipleTargets ? 'Alvo de referência' : 'Alvo'}</Text>

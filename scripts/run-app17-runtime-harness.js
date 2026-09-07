@@ -287,7 +287,6 @@ const output = {
 };
 fs.mkdirSync(path.join(root, 'reports'), { recursive: true });
 fs.writeFileSync(path.join(root, 'reports/app-17-runtime-harness.json'), `${JSON.stringify(output, null, 2)}\n`);
-fs.writeFileSync(path.join(root, 'app-17-runtime-harness.json'), `${JSON.stringify(output, null, 2)}\n`);
 console.log(JSON.stringify(output, null, 2));
 
 })().catch((error) => { console.error(error); process.exit(1); });

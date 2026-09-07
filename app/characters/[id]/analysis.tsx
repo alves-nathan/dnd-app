@@ -141,6 +141,7 @@ export default function AnalysisScreen() {
               <MetricTile label="Máximo" value={formatNumber(result.total.max)} />
               <MetricTile label="Ataques" value={result.attackCount} />
             </View>
+            {rotation.activations?.length ? <Text style={[styles.detail, { color: colors.primary }]}>Ativações: {rotation.activations.map((activation) => activation.name).join(', ')}</Text> : null}
             {issues.length ? <IssueList issues={issues.slice(0, expanded ? undefined : 2)} /> : null}
             <Button label={expanded ? 'Ocultar detalhamento' : 'Ver dano por ação'} icon={expanded ? 'chevron-up' : 'chevron-down'} variant="outlined" onPress={() => setExpandedRotationId(expanded ? undefined : rotation.id)} />
             {expanded ? result.actions.map((action) => (

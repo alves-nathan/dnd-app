@@ -30,11 +30,55 @@ describe('character creation draft', () => {
     backgroundChoices: [],
     selectedSubclassByClass: { fighter: 'champion' },
     subclassChoices: [{ subclassItemId: 'champion', choiceId: 'stance', optionId: 'guard' }],
+    classFeatureChoices: [{ classItemId: 'cleric', featureItemId: 'divine-order', optionId: 'thaumaturge' }],
+    bonusSpellChoices: [{ requirementId: 'divine-order:option:thaumaturge', classItemId: 'cleric', featureItemId: 'divine-order', spellItemIds: ['guidance'] }],
+    spellbookFeatureChoices: [{ requirementId: 'evocation-savant:initial', classItemId: 'wizard', featureItemId: 'evocation-savant', spellItemIds: ['shield', 'mage-armor'] }],
+    mysticArcanumChoices: [{ requirementId: 'mystic-arcanum:6', classItemId: 'warlock', featureItemId: 'mystic-arcanum', spellItemId: 'arcane-gate', spellLevel: 6 }],
     selectedOriginFeatId: 'skilled',
     selectedFeatCounts: { 'ability-score-improvement': 1 },
     selectedInvocationCounts: { 'agonizing-blast': 1 },
     eldritchInvocationChoices: [{ id: 'choice-agonizing', invocationItemId: 'agonizing-blast', instanceIndex: 0, targetCantripItemId: 'eldritch-blast', originFeatItemId: 'lucky', familiarCreatureItemId: 'imp', familiarVariant: 'special', lifedrinkerDamageType: 'radiant' }],
-    featChoiceDrafts: {},
+    featChoiceDrafts: {
+      'tcoe-2020-feat-eldritch-adept::0': {
+        id: 'feat-choice-eldritch',
+        featEntityId: 'draft-eldritch-adept',
+        featItemId: 'tcoe-2020-feat-eldritch-adept',
+        instanceIndex: 0,
+        eldritchInvocationItemId: 'phb-2024-feature-warlock-pact-of-the-chain',
+        eldritchInvocationChoice: {
+          id: 'feat-invocation-choice',
+          invocationItemId: 'phb-2024-feature-warlock-pact-of-the-chain',
+          instanceIndex: 0,
+          cantripItemIds: [],
+          ritualSpellItemIds: [],
+          familiarCreatureItemId: 'phb-2024-creature-imp',
+          familiarVariant: 'special'
+        },
+        spellcastingAbility: 'INT'
+      },
+      'tcoe-2020-feat-metamagic-adept::0': {
+        id: 'feat-choice-metamagic',
+        featEntityId: 'draft-metamagic-adept',
+        featItemId: 'tcoe-2020-feat-metamagic-adept',
+        instanceIndex: 0,
+        metamagicOptionIds: [
+          'feat-option-phb2024-metamagic-careful-spell',
+          'feat-option-phb2024-metamagic-careful-spell',
+          'feat-option-phb2024-metamagic-distant-spell'
+        ]
+      },
+      'phb-2014-feat-martial-adept::0': {
+        id: 'feat-choice-martial',
+        featEntityId: 'draft-martial-adept',
+        featItemId: 'phb-2014-feat-martial-adept',
+        instanceIndex: 0,
+        maneuverOptionIds: [
+          'feat-option-tcoe2020-maneuver-brace',
+          'feat-option-tcoe2020-maneuver-brace',
+          'feat-option-phb2024-maneuver-trip-attack'
+        ]
+      }
+    },
     equipmentSelections: [],
     higherLevelStartingBenefits: {
       startingLevel: 5,
@@ -84,7 +128,27 @@ describe('character creation draft', () => {
     expect(sanitized?.bonusAbilities).toEqual(['STR']);
     expect(sanitized?.speciesChoices).toHaveLength(1);
     expect(sanitized?.subclassChoices).toEqual([{ subclassItemId: 'champion', choiceId: 'stance', optionId: 'guard' }]);
+    expect(sanitized?.classFeatureChoices).toEqual([{ classItemId: 'cleric', featureItemId: 'divine-order', optionId: 'thaumaturge' }]);
+    expect(sanitized?.bonusSpellChoices).toEqual([{ requirementId: 'divine-order:option:thaumaturge', classItemId: 'cleric', featureItemId: 'divine-order', spellItemIds: ['guidance'] }]);
+    expect(sanitized?.mysticArcanumChoices).toEqual([{ requirementId: 'mystic-arcanum:6', classItemId: 'warlock', featureItemId: 'mystic-arcanum', spellItemId: 'arcane-gate', spellLevel: 6 }]);
     expect(sanitized?.eldritchInvocationChoices[0]).toEqual(expect.objectContaining({ targetCantripItemId: 'eldritch-blast', originFeatItemId: 'lucky', familiarCreatureItemId: 'imp', familiarVariant: 'special', lifedrinkerDamageType: 'radiant' }));
+    expect(sanitized?.featChoiceDrafts['tcoe-2020-feat-eldritch-adept::0']).toEqual(expect.objectContaining({
+      eldritchInvocationItemId: 'catalog:phb-2024-feature-warlock-pact-of-the-chain',
+      spellcastingAbility: 'INT',
+      eldritchInvocationChoice: expect.objectContaining({
+        invocationItemId: 'catalog:phb-2024-feature-warlock-pact-of-the-chain',
+        familiarCreatureItemId: 'catalog:phb-2024-creature-imp',
+        familiarVariant: 'special'
+      })
+    }));
+    expect(sanitized?.featChoiceDrafts['tcoe-2020-feat-metamagic-adept::0']?.metamagicOptionIds).toEqual([
+      'feat-option-phb2024-metamagic-careful-spell',
+      'feat-option-phb2024-metamagic-distant-spell'
+    ]);
+    expect(sanitized?.featChoiceDrafts['phb-2014-feat-martial-adept::0']?.maneuverOptionIds).toEqual([
+      'feat-option-tcoe2020-maneuver-brace',
+      'feat-option-phb2024-maneuver-trip-attack'
+    ]);
   });
   it('persists and sanitizes a custom background definition', () => {
     const sanitized = sanitizeCharacterCreationDraft({
@@ -103,6 +167,28 @@ describe('character creation draft', () => {
       skillProficiencies: ['Survival', 'Perception'],
       toolProficiency: "Navigator's Tools"
     });
+  });
+
+  it('persists species spell choices introduced by external spell grants', () => {
+    const sanitized = sanitizeCharacterCreationDraft({
+      ...draft,
+      speciesChoices: [{
+        speciesItemId: 'astral-elf',
+        featureItemId: 'astral-fire',
+        choiceKind: 'spell',
+        optionId: 'sacred-flame',
+        spellcastingAbility: 'WIS'
+      }]
+    });
+    expect(sanitized?.speciesChoices).toEqual([{
+      speciesItemId: 'astral-elf',
+      featureItemId: 'astral-fire',
+      choiceKind: 'spell',
+      optionId: 'sacred-flame',
+      spellcastingAbility: 'WIS',
+      skill: undefined,
+      language: undefined
+    }]);
   });
 
 });

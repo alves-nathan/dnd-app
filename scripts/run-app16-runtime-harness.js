@@ -142,5 +142,4 @@ const report = {
 };
 fs.mkdirSync(path.join(root, 'reports'), { recursive: true });
 fs.writeFileSync(path.join(root, 'reports/app-16-runtime-harness.json'), `${JSON.stringify(report, null, 2)}\n`);
-fs.writeFileSync(path.join(root, 'app-16-runtime-harness.json'), `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));

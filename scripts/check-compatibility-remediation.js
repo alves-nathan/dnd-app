@@ -13,7 +13,7 @@ const contracts = [
   ['src/characters/characterCompatibility.ts', ['linkId?: string', 'appliedAs?: CharacterCompendiumLink', 'appliedEntityId?: string']],
   ['src/store/characterStore.ts', ['compatibilityRemediationPlans', 'commitCompatibilityRemediationPlan', "kind: 'compatibilityRemediation'"]],
   ['src/types/index.ts', ["'compatibilityRemediation'"]],
-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'compatibilityRemediationPlans']],
+  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 25', 'compatibilityRemediationPlans']],
   ['app/characters/[id]/compatibility.tsx', ['Criar plano de remediação', 'Confirmar em uma única transação', 'Descartar plano', 'Substituir por']],
   ['src/tests/characterCompatibilityRemediation.test.ts', ['APP-09 compatibility remediation', 'commits atomically with rollback']],
   ['scripts/run-app09-runtime-harness.js', ['compatibilityRemediation', 'rollbackProgressionAudit', 'afterReport.blockingIssueCount']]
@@ -33,4 +33,4 @@ if (errors.length) {
 }
 console.log('[catalog:compatibility-remediation:check] PASS');
 console.log('remediationSchema=dnd-character-compatibility-remediation.v1');
-console.log('characterStoreVersion=24');
+console.log('characterStoreVersion=25');

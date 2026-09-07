@@ -21,11 +21,10 @@ import {
   validateMulticlassPrerequisites,
   type ProgressionFeatChoiceCategory
 } from '../../../src/characters/characterBuildRules';
-import { reconcileCharacterProgression } from '../../../src/characters/progressionReconciliation';
-import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
-import { applyAutomaticSpeciesProgression } from '../../../src/characters/speciesChoiceRules';
+import { reconcileCharacterSnapshot } from '../../../src/characters/characterReconciliation';
+import { canOfferMysticArcanumReplacement } from '../../../src/characters/warlockMysticArcanumRules';
 import { progressionOperation } from '../../../src/characters/progressionTransaction';
-import { getClassSpellcastingProfile, getSpellLevelUpChangePlan } from '../../../src/characters/spellcastingRules';
+import { getActiveSubclassItemForClass, getClassOrSubclassSpellcastingProfile, getSpellLevelUpChangePlan } from '../../../src/characters/spellcastingRules';
 import { createId } from '../../../src/utils/id';
 import { Card } from '../../../src/components/Card';
 import { EldritchInvocationChoiceEditor } from '../../../src/components/EldritchInvocationChoiceEditor';
@@ -701,17 +700,18 @@ export default function LevelUpScreen() {
       next = applyEldritchInvocationChoices(next, eldritchInvocationChoices, items).character;
     }
 
-    const reconciliation = reconcileCharacterProgression(next, items);
+    const reconciliation = reconcileCharacterSnapshot(next, items);
     next = reconciliation.character;
-    next = applyAutomaticSpeciesProgression(next, items).character;
-    const buildReconciliation = reconcileCharacterBuild(next, items);
-    next = buildReconciliation.character;
 
+    const beforeSubclassItem = selectedExisting
+      ? getActiveSubclassItemForClass(character, selectedExisting.id, items)
+      : undefined;
+    const afterSubclassItem = selectedSubclassItem ?? beforeSubclassItem;
     const beforeProfile = selectedExistingClassItem && selectedExisting
-      ? getClassSpellcastingProfile(selectedExistingClassItem, selectedExisting.level)
+      ? getClassOrSubclassSpellcastingProfile(selectedExistingClassItem, selectedExisting.level, beforeSubclassItem, items)
       : undefined;
     const afterProfile = targetClassItem
-      ? getClassSpellcastingProfile(targetClassItem, targetClassLevel)
+      ? getClassOrSubclassSpellcastingProfile(targetClassItem, targetClassLevel, afterSubclassItem, items)
       : undefined;
     const spellPlan = getSpellLevelUpChangePlan(beforeProfile, afterProfile);
     if (spellPlan && spellPlan.replacementsAllowed > 0) {
@@ -727,6 +727,42 @@ export default function LevelUpScreen() {
             sourceItemId: spellPlan.classItemId,
             sourceEntityId: selectedExisting?.id,
             requiredCount: spellPlan.replacementsAllowed,
+            currentCount: 0,
+            status: 'pending' as const,
+            createdAt: new Date().toISOString()
+          }
+        ]
+      };
+    }
+
+    const priorArcanumChoices = character.buildChoices?.mysticArcanumChoices ?? [];
+    const priorArcanumForClass = selectedExistingClassItem
+      ? priorArcanumChoices.filter((choice) => choice.classItemId === selectedExistingClassItem.id)
+      : [];
+    if (
+      targetIsWarlock &&
+      selectedExisting &&
+      selectedExistingClassItem &&
+      canOfferMysticArcanumReplacement({
+        classItem: selectedExistingClassItem,
+        beforeClassLevel: selectedExisting.level,
+        afterClassLevel: targetClassLevel,
+        choices: priorArcanumForClass
+      })
+    ) {
+      const sourceFeatureItemId = priorArcanumForClass[0]?.featureItemId;
+      next = {
+        ...next,
+        pendingChoices: [
+          ...(next.pendingChoices ?? []),
+          {
+            id: createId('pendingChoice'),
+            kind: 'mysticArcanumReplacement' as const,
+            title: 'Troca opcional de Mystic Arcanum',
+            description: 'Ao ganhar este nível de Warlock, você pode substituir um de seus Mystic Arcanum por outra magia de Warlock do mesmo círculo.',
+            sourceItemId: sourceFeatureItemId,
+            sourceEntityId: selectedExisting.id,
+            requiredCount: 1,
             currentCount: 0,
             status: 'pending' as const,
             createdAt: new Date().toISOString()
@@ -751,8 +787,8 @@ export default function LevelUpScreen() {
       }),
       progressionOperation('reconciliation', 'Reconciliação automática de features, recursos e escolhas', {
         metadata: {
-          appliedFeatures: reconciliation.appliedFeatureCount,
-          removedFeatures: reconciliation.removedFeatureCount,
+          appliedFeatures: reconciliation.summary.appliedFeatureCount,
+          removedFeatures: reconciliation.summary.removedFeatureCount,
           pendingChoices: (next.pendingChoices ?? []).length
         }
       }),
@@ -786,11 +822,11 @@ export default function LevelUpScreen() {
 
     const details = [
       `${getCharacterDisplayName(character)} ficará no nível ${getTotalLevel(next)} após o commit.`,
-      reconciliation.appliedFeatureCount
-        ? `${reconciliation.appliedFeatureCount} feature(s) adicionada(s) automaticamente.`
+      reconciliation.summary.appliedFeatureCount
+        ? `${reconciliation.summary.appliedFeatureCount} feature(s) adicionada(s) automaticamente.`
         : undefined,
-      reconciliation.removedFeatureCount
-        ? `${reconciliation.removedFeatureCount} feature(s) removida(s) pela reconciliação.`
+      reconciliation.summary.removedFeatureCount
+        ? `${reconciliation.summary.removedFeatureCount} feature(s) removida(s) pela reconciliação.`
         : undefined,
       (next.pendingChoices ?? []).length ? `${next.pendingChoices?.length} escolha(s) pendente(s) registrada(s) para conclusão posterior.` : undefined,
       projectedClassEntries.some(({ item }) => {

@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "generatedAt": "2026-08-20T23:21:19.994Z",
+  "scope": {
+    "bundledItems": 1997,
+    "classes": 16,
+    "subclasses": 78,
+    "runtimeSubclassSpellGrants": 35,
+    "runtimeGrantSpellReferences": 222
+  },
+  "reconciliation": {
+    "catalogReconciliations": 10,
+    "explicitReferences": 61,
+    "rawCompendiumRuntimeDifferences": 161,
+    "bridgeBackedDifferences": 161,
+    "uncoveredReferences": 0
+  },
+  "external": {
+    "unknownShapes": 0,
+    "unresolvedReferences": 0,
+    "speciesReplacementTimingDetected": 2,
+    "speciesReplacementTimingSupported": 2,
+    "speciesReplacementTimingUnsupported": 0
+  },
+  "genieKinds": [
+    "dao",
+    "djinni",
+    "efreeti",
+    "marid"
+  ],
+  "pendingShapeCounts": {
+    "catalogReconciliationRequired": 0,
+    "subclassSpellcasting": 0,
+    "mysticArcanum": 0,
+    "spellbookBonusChoice": 0,
+    "spellbookGrant": 0,
+    "spellbookSpecialChoice": 0,
+    "ritualGrant": 0,
+    "directSpellReference": 0,
+    "grantedCantrip": 0,
+    "conditionalList": 0
+  },
+  "failures": []
+}

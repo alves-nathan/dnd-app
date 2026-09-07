@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../../src/components/Button';
 import { Card } from '../../../src/components/Card';
@@ -18,6 +18,14 @@ import {
   validateSpeciesChoices
 } from '../../../src/characters/speciesChoiceRules';
 import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
+import {
+  getSpeciesSpellReplacementRequirements,
+  markSpeciesSpellReplacementsUsed,
+  normalizeSpeciesSpellReplacementChoices,
+  setSpeciesSpellReplacement,
+  speciesSpellReplacementAvailable,
+  validateSpeciesSpellReplacementEdits
+} from '../../../src/characters/speciesSpellReplacementRules';
 import { manualSource } from '../../../src/data/mockData';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
@@ -60,6 +68,31 @@ export default function IdentityScreen() {
     () => validateSpeciesChoices(speciesRequirements, speciesChoices),
     [speciesRequirements, speciesChoices]
   );
+  useEffect(() => {
+    setSpeciesChoices((current) => normalizeSpeciesSpellReplacementChoices(
+      speciesItem,
+      items,
+      character?.level ?? 1,
+      current
+    ));
+  }, [speciesItem?.id, items, character?.level]);
+
+  const speciesReplacementRequirements = useMemo(
+    () => getSpeciesSpellReplacementRequirements(speciesItem, items, character?.level ?? 1, speciesChoices),
+    [speciesItem?.id, items, character?.level, speciesChoices]
+  );
+  const speciesReplacementIssues = useMemo(
+    () => character
+      ? validateSpeciesSpellReplacementEdits(
+          character,
+          speciesReplacementRequirements,
+          character.buildChoices?.speciesChoices ?? [],
+          speciesChoices
+        )
+      : [],
+    [character, speciesReplacementRequirements, speciesChoices]
+  );
+  const allSpeciesIssues = [...speciesIssues, ...speciesReplacementIssues];
 
   if (!character || !id) return <Screen title="Personagem não encontrado" onBack={() => router.back()} />;
 
@@ -67,6 +100,15 @@ export default function IdentityScreen() {
     updateCharacter(character.id, (current) => {
       const speciesChanged = Boolean(species.trim() && species.trim() !== current.species?.name);
       const backgroundChanged = Boolean(background.trim() && background.trim() !== current.background?.name);
+      const originalSpeciesChoices = current.buildChoices?.speciesChoices ?? [];
+      const persistedSpeciesChoices = speciesChanged
+        ? []
+        : markSpeciesSpellReplacementsUsed(
+            current,
+            speciesReplacementRequirements,
+            originalSpeciesChoices,
+            speciesChoices
+          );
       let next: Character = {
         ...current,
         name: name.trim(),
@@ -87,7 +129,7 @@ export default function IdentityScreen() {
             spellbookAssignments: {},
             equipmentSelections: []
           }),
-          speciesChoices: speciesChanged ? [] : speciesChoices
+          speciesChoices: persistedSpeciesChoices
         },
         compendiumLinks: (current.compendiumLinks ?? []).map((link) =>
           ((link.appliedAs === 'species' && speciesChanged) || (link.appliedAs === 'background' && backgroundChanged))
@@ -167,7 +209,39 @@ export default function IdentityScreen() {
           </Card>
         );
       })}
-      {speciesIssues.length ? <IssueList issues={speciesIssues} /> : null}
+      {speciesReplacementRequirements.map((requirement) => {
+        const currentChoice = speciesChoices.find((choice) => choice.featureItemId === requirement.featureItemId);
+        const selectedSpellItemId = currentChoice?.replacementSpellItemId ?? requirement.initialSpellItemId;
+        const available = speciesSpellReplacementAvailable(
+          character,
+          character.buildChoices?.speciesChoices ?? [],
+          requirement
+        );
+        const selectedSpell = requirement.candidateSpells.find((spell) => spell.id === selectedSpellItemId);
+        return (
+          <Card
+            key={`species-spell-replacement-${requirement.id}`}
+            variant="outlined"
+            title={`${requirement.featureName} · troca após Descanso Longo`}
+            subtitle={available
+              ? `Troca disponível. Atual: ${selectedSpell?.name ?? 'magia concedida'}. Salvar uma nova opção consome esta oportunidade até o próximo Descanso Longo.`
+              : `Atual: ${selectedSpell?.name ?? 'magia concedida'}. Conclua um novo Descanso Longo para liberar outra troca.`}
+          >
+            <View style={styles.chips}>
+              {requirement.candidateSpells.map((spell) => (
+                <Chip
+                  key={`${requirement.id}-${spell.id}`}
+                  label={spell.name}
+                  selected={selectedSpellItemId === spell.id}
+                  disabled={!available}
+                  onPress={() => setSpeciesChoices((current) => setSpeciesSpellReplacement(current, requirement, spell.id))}
+                />
+              ))}
+            </View>
+          </Card>
+        );
+      })}
+      {allSpeciesIssues.length ? <IssueList issues={allSpeciesIssues} /> : null}
 
       <Card variant="hero" title="Escolher do compêndio">
         <Button label="Procurar espécies" onPress={() => router.push(`/characters/${character.id}/compendium?type=species${pendingId ? `&pendingId=${encodeURIComponent(pendingId)}` : ''}`)} />
@@ -183,7 +257,7 @@ export default function IdentityScreen() {
         </Card>
       ) : null}
 
-      <Button label="Salvar alterações" icon="checkmark" disabled={speciesIssues.length > 0} onPress={save} />
+      <Button label="Salvar alterações" icon="checkmark" disabled={allSpeciesIssues.length > 0} onPress={save} />
     </Screen>
   );
 }

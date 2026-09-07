@@ -58,7 +58,7 @@ const candidateKindsForPendingChoice = (kind: CharacterPendingChoice['kind']): C
   if (kind === 'subclassOptions') return ['feature'];
   if (kind === 'feat') return ['feat'];
   if (kind === 'featOptions') return ['spell', 'equipment', 'weapon', 'feature'];
-  if (kind === 'spellSelection' || kind === 'spellReplacement') return ['spell'];
+  if (kind === 'spellSelection' || kind === 'spellReplacement' || kind === 'spellbookFeature' || kind === 'mysticArcanum' || kind === 'mysticArcanumReplacement') return ['spell'];
   if (kind === 'equipment') return ['equipment', 'weapon', 'armor', 'magicItem'];
   if (kind === 'speciesOption') return ['feature', 'spell'];
   if (kind === 'eldritchInvocation' || kind === 'eldritchInvocationOptions') return ['feature', 'spell'];
@@ -102,7 +102,7 @@ const resolveCatalogEntityId = (
 };
 
 const defaultLinkKinds = (kind: CharacterPendingChoice['kind']): Set<string> => {
-  if (kind === 'subclass' || kind === 'subclassOptions' || kind === 'spellSelection' || kind === 'spellReplacement' || kind === 'eldritchInvocation' || kind === 'eldritchInvocationOptions' || kind === 'pactWeapon' || kind === 'warlockSpecial') {
+  if (kind === 'subclass' || kind === 'subclassOptions' || kind === 'spellSelection' || kind === 'spellReplacement' || kind === 'spellbookFeature' || kind === 'mysticArcanum' || kind === 'mysticArcanumReplacement' || kind === 'eldritchInvocation' || kind === 'eldritchInvocationOptions' || kind === 'pactWeapon' || kind === 'warlockSpecial') {
     return new Set(['class', 'subclass']);
   }
   if (kind === 'feat' || kind === 'featOptions') return new Set(['feat']);
@@ -214,6 +214,24 @@ const sortChoices = (choices: readonly CharacterChoiceItem[]): CharacterChoiceIt
   left.choiceId.localeCompare(right.choiceId)
 );
 
+const normalizedFeatCategory = (value: unknown): string =>
+  typeof value === 'string'
+    ? value.replace(/[^a-z0-9]/gi, '').toLowerCase()
+    : '';
+
+const matchesPendingFeatCategory = (
+  choice: CharacterChoiceItem,
+  featCategory: CharacterPendingChoice['featCategory']
+): boolean => {
+  if (!featCategory || choice.kind !== 'feat') return choice.kind === 'feat';
+  const rawCategory = choice.payload.category ?? choice.payload.featCategory ?? choice.payload.type;
+  const category = normalizedFeatCategory(rawCategory);
+  if (featCategory === 'general') return category === 'general';
+  if (featCategory === 'fightingStyle') return category === 'fightingstyle';
+  if (featCategory === 'epicBoon') return category === 'epicboon';
+  return false;
+};
+
 export const resolveCharacterPendingChoice = (
   input: CharacterPendingChoiceResolutionInput
 ): CharacterPendingChoiceResolution => {
@@ -226,8 +244,17 @@ export const resolveCharacterPendingChoice = (
   const sourceCatalogEntityIds = collectSourceCatalogEntityIds(input, choicesByReference);
   const desiredKinds = new Set(candidateKindsForPendingChoice(input.pendingChoice.kind));
   const dependency = dependencyCandidates(sourceCatalogEntityIds, choicesByCatalogEntityId, input.snapshot, desiredKinds);
-  let mode: PendingChoiceResolutionMode = 'dependency';
-  let candidates = dependency.choices;
+  const isOpenProgressionFeatSlot = input.pendingChoice.kind === 'feat' && Boolean(input.pendingChoice.featCategory);
+  // A class ASI/feat slot is an open rules choice, not a dependency-owned
+  // catalog choice. Restricting it to edges reachable from the class hid
+  // compatible legacy feats (for example Tasha's Metamagic Adept and Fighting
+  // Initiate) even when their source was active. Use the complete enabled feat
+  // universe for these generated progression slots and let category/prerequisite
+  // validation narrow the final selection.
+  let mode: PendingChoiceResolutionMode = isOpenProgressionFeatSlot ? 'kindFallback' : 'dependency';
+  let candidates = isOpenProgressionFeatSlot
+    ? input.choices.filter((choice) => matchesPendingFeatCategory(choice, input.pendingChoice.featCategory))
+    : dependency.choices;
 
   if (!candidates.length && sourceCatalogEntityIds.length) {
     candidates = input.choices.filter((choice) =>

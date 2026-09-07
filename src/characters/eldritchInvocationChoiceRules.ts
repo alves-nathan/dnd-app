@@ -1,4 +1,5 @@
 import type {
+  AbilityScore,
   Character,
   CharacterEldritchInvocationChoice,
   ChainMasterDamageType,
@@ -310,20 +311,20 @@ export const validateEldritchInvocationChoices = (
   return issues;
 };
 
-const approvedItem = (item: StoredCompendiumItem): StoredCompendiumItem => item.status === 'validated'
+const applicableItem = (item: StoredCompendiumItem): StoredCompendiumItem => item.status === 'validated'
   ? item
-  : { ...item, status: 'validated', reviewDecision: 'approved', reviewedBy: 'Escolha explícita concedida por Eldritch Invocation', reviewedAt: new Date().toISOString() };
+  : { ...item, status: 'validated' };
 
 const warlockClass = (character: Character) => character.classes.find((entry) => normalize(entry.name) === 'warlock');
 
 const removePreviousInvocationGrants = (character: Character): Character => {
-  const removedSpellIds = new Set(character.spells.filter((spell) => Boolean(spell.grantedByInvocationItemId)).map((spell) => spell.id));
-  const removedFeatIds = new Set(character.feats.filter((feat) => Boolean(feat.grantedByInvocationItemId)).map((feat) => feat.id));
+  const removedSpellIds = new Set(character.spells.filter((spell) => Boolean(spell.grantedByInvocationItemId && !spell.grantedByFeatEntityId)).map((spell) => spell.id));
+  const removedFeatIds = new Set(character.feats.filter((feat) => Boolean(feat.grantedByInvocationItemId && !feat.grantedByFeatEntityId)).map((feat) => feat.id));
   return {
     ...character,
     spells: character.spells.filter((spell) => !removedSpellIds.has(spell.id)),
     feats: character.feats.filter((feat) => !removedFeatIds.has(feat.id)),
-    resources: character.resources.filter((resource) => !resource.sourceInvocationItemId),
+    resources: character.resources.filter((resource) => !resource.sourceInvocationItemId || Boolean(resource.sourceFeatEntityId)),
     featChoices: (character.featChoices ?? []).filter((choice) => !removedFeatIds.has(choice.featEntityId)),
     compendiumLinks: (character.compendiumLinks ?? []).map((link) =>
       ((removedSpellIds.has(link.appliedEntityId) && link.appliedAs === 'spell') || (removedFeatIds.has(link.appliedEntityId) && link.appliedAs === 'feat')) && link.status === 'active'
@@ -341,44 +342,64 @@ export interface ApplyEldritchInvocationChoicesResult {
   missingFeatItemIds: string[];
 }
 
-export const applyEldritchInvocationChoices = (
+export interface ApplyEldritchInvocationChoiceGrantSetOptions {
+  spellcastingClassId?: string;
+  spellcastingClassName?: string;
+  spellcastingAbility?: AbilityScore;
+  grantedByFeatEntityId?: string;
+  linkNote?: string;
+  resourceIdPrefix?: string;
+}
+
+const withLinkNote = (character: Character, linkId: string | undefined, note: string | undefined): Character =>
+  !linkId || !note
+    ? character
+    : {
+        ...character,
+        compendiumLinks: (character.compendiumLinks ?? []).map((link) =>
+          link.id === linkId ? { ...link, notes: [link.notes, note].filter(Boolean).join(' · ') } : link
+        )
+      };
+
+const safeResourceToken = (value: string): string => value.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+/**
+ * Applies the mechanical grants for an already-selected invocation set without
+ * owning the Warlock progression state. This is shared by normal Warlock
+ * invocations and feat-granted invocations such as Eldritch Adept.
+ */
+export const applyEldritchInvocationChoiceGrantSet = (
   character: Character,
   choices: CharacterEldritchInvocationChoice[],
-  items: StoredCompendiumItem[]
+  selectedCounts: Record<string, number>,
+  items: StoredCompendiumItem[],
+  options: ApplyEldritchInvocationChoiceGrantSetOptions = {}
 ): ApplyEldritchInvocationChoicesResult => {
-  let next = removePreviousInvocationGrants(character);
-  const currentCounts = next.buildChoices?.eldritchInvocationCounts ?? {};
   const activeChoices = choices.filter((choice) => {
     const invocation = findEldritchInvocationById(items, choice.invocationItemId);
-    return (currentCounts[choice.invocationItemId] ?? 0) > choice.instanceIndex && invocationNeedsInternalChoice(invocation);
+    return (selectedCounts[choice.invocationItemId] ?? 0) > choice.instanceIndex && invocationNeedsInternalChoice(invocation);
   });
-
-  next = {
-    ...next,
-    buildChoices: {
-      ...(next.buildChoices ?? {
-        speciesChoices: [], classSkillChoices: [], classToolChoices: [], expertiseSkills: [], languages: [], spellAssignments: {}, spellbookAssignments: {}, equipmentSelections: []
-      }),
-      eldritchInvocationChoices: activeChoices
-    }
-  };
-
-  const warlock = warlockClass(next);
+  const warlock = warlockClass(character);
+  let next = character;
   let appliedSpellCount = 0;
   let appliedFeatCount = 0;
   const missingSpellItemIds: string[] = [];
   const missingFeatItemIds: string[] = [];
+
+  const resourceIdFor = (invocationItemId: string): string => options.resourceIdPrefix
+    ? `${options.resourceIdPrefix}_${safeResourceToken(invocationItemId)}`
+    : invocationSpellResourceId(invocationItemId);
 
   const applyInvocationSpell = (
     spellItemId: string,
     invocationItemId: string,
     ritualOnly: boolean,
     freeCast = false,
-    options: { selfOnly?: boolean; usage?: 'atWill' | 'oncePerLongRest'; notes?: string } = {}
+    grantOptions: { selfOnly?: boolean; usage?: 'atWill' | 'oncePerLongRest'; notes?: string } = {}
   ) => {
     const spellItem = items.find((item) => item.id === spellItemId && item.type === 'spell');
     if (!spellItem) { missingSpellItemIds.push(spellItemId); return; }
-    const resourceId = options.usage === 'oncePerLongRest' ? invocationSpellResourceId(invocationItemId) : undefined;
+    const resourceId = grantOptions.usage === 'oncePerLongRest' ? resourceIdFor(invocationItemId) : undefined;
     if (resourceId && !next.resources.some((resource) => resource.id === resourceId)) {
       next = {
         ...next,
@@ -390,14 +411,15 @@ export const applyEldritchInvocationChoices = (
           recharge: 'longRest',
           source: spellItem.rawJson.source,
           sourceInvocationItemId: invocationItemId,
-          notes: options.notes
+          sourceFeatEntityId: options.grantedByFeatEntityId,
+          notes: grantOptions.notes
         }]
       };
     }
     const beforeSpellIds = new Set(next.spells.map((spell) => spell.id));
-    const result = applyCompendiumItemToCharacter(next, approvedItem(spellItem));
+    const result = applyCompendiumItemToCharacter(next, applicableItem(spellItem));
     if (!result.ok) return;
-    next = result.character;
+    next = withLinkNote(result.character, result.link?.id, options.linkNote);
     const added = next.spells.find((spell) => !beforeSpellIds.has(spell.id));
     if (!added) return;
     next = {
@@ -405,15 +427,17 @@ export const applyEldritchInvocationChoices = (
       spells: next.spells.map((spell) => spell.id === added.id
         ? {
             ...spell,
-            spellcastingClassId: warlock?.id,
-            spellcastingClassName: warlock?.name ?? 'Warlock',
+            spellcastingClassId: options.spellcastingClassId ?? warlock?.id,
+            spellcastingClassName: options.spellcastingClassName ?? warlock?.name ?? (options.grantedByFeatEntityId ? 'Eldritch Adept' : 'Warlock'),
+            spellcastingAbility: options.spellcastingAbility ?? spell.spellcastingAbility,
             grantedByInvocationItemId: invocationItemId,
+            grantedByFeatEntityId: options.grantedByFeatEntityId ?? spell.grantedByFeatEntityId,
             ritualOnly,
             freeCast,
-            invocationSelfOnly: options.selfOnly,
-            invocationUsage: options.usage,
+            invocationSelfOnly: grantOptions.selfOnly,
+            invocationUsage: grantOptions.usage,
             consumes: resourceId ? [{ resourceId, amount: 1, label: `${spellItem.name} · uso da invocation` }] : spell.consumes,
-            description: [spell.description, options.notes].filter(Boolean).join(' '),
+            description: [spell.description, grantOptions.notes].filter(Boolean).join(' '),
             prepared: true
           }
         : spell)
@@ -439,20 +463,24 @@ export const applyEldritchInvocationChoices = (
       const featItem = items.find((item) => item.id === choice.originFeatItemId && item.type === 'feat');
       if (!featItem) { missingFeatItemIds.push(choice.originFeatItemId); continue; }
       const beforeFeatIds = new Set(next.feats.map((feat) => feat.id));
-      const result = applyCompendiumItemToCharacter(next, approvedItem(featItem));
+      const result = applyCompendiumItemToCharacter(next, applicableItem(featItem));
       if (!result.ok) continue;
-      next = result.character;
+      next = withLinkNote(result.character, result.link?.id, options.linkNote);
       const added = next.feats.find((feat) => !beforeFeatIds.has(feat.id));
       if (!added) continue;
       next = {
         ...next,
-        feats: next.feats.map((feat) => feat.id === added.id ? { ...feat, grantedByInvocationItemId: choice.invocationItemId } : feat)
+        feats: next.feats.map((feat) => feat.id === added.id ? {
+          ...feat,
+          grantedByInvocationItemId: choice.invocationItemId,
+          grantedByFeatEntityId: options.grantedByFeatEntityId
+        } : feat)
       };
       appliedFeatCount += 1;
     }
   }
 
-  for (const [invocationItemId, count] of Object.entries(currentCounts)) {
+  for (const [invocationItemId, count] of Object.entries(selectedCounts)) {
     if (count <= 0) continue;
     const invocation = findEldritchInvocationById(items, invocationItemId);
     const grant = getInvocationSpellGrant(invocation);
@@ -469,8 +497,33 @@ export const applyEldritchInvocationChoices = (
     });
   }
 
-  next = reconcilePactChainCompanion(next, activeChoices, currentCounts, items);
+  next = reconcilePactChainCompanion(next, activeChoices, selectedCounts, items, options.grantedByFeatEntityId);
   next = reconcileWarlockSpecializedInvocations(next, items);
 
   return { character: next, appliedSpellCount, appliedFeatCount, missingSpellItemIds, missingFeatItemIds };
+};
+
+export const applyEldritchInvocationChoices = (
+  character: Character,
+  choices: CharacterEldritchInvocationChoice[],
+  items: StoredCompendiumItem[]
+): ApplyEldritchInvocationChoicesResult => {
+  let next = removePreviousInvocationGrants(character);
+  const currentCounts = next.buildChoices?.eldritchInvocationCounts ?? {};
+  const activeChoices = choices.filter((choice) => {
+    const invocation = findEldritchInvocationById(items, choice.invocationItemId);
+    return (currentCounts[choice.invocationItemId] ?? 0) > choice.instanceIndex && invocationNeedsInternalChoice(invocation);
+  });
+
+  next = {
+    ...next,
+    buildChoices: {
+      ...(next.buildChoices ?? {
+        speciesChoices: [], classSkillChoices: [], classToolChoices: [], expertiseSkills: [], languages: [], spellAssignments: {}, spellbookAssignments: {}, equipmentSelections: []
+      }),
+      eldritchInvocationChoices: activeChoices
+    }
+  };
+
+  return applyEldritchInvocationChoiceGrantSet(next, activeChoices, currentCounts, items);
 };

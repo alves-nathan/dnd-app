@@ -1,5 +1,6 @@
 import type { AbilityScore, Character, RuleValidationIssue, Spell } from '../types';
 import type { StoredCompendiumItem } from '../compendium/types';
+import { findCompendiumItemForCharacterLink } from '../compendium/characterLinkIdentity';
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -40,6 +41,12 @@ export interface ClassSpellcastingProfile {
   spellbookMinimumSpellCount: number;
   spellbookSpellsGainedPerLevel: number;
   maxSpellLevel: number;
+  /** Spell-list owners used for eligibility. Usually the class itself; subclass casters can borrow another class list. */
+  spellListClassNames: string[];
+  /** Slot row for this exact class level, used when the class gains spellcasting from a subclass. */
+  slotCounts: Record<string, number>;
+  sourceSubclassItemId?: string;
+  sourceFeatureItemId?: string;
 }
 
 const valueAtClassLevel = (value: unknown, classLevel: number): number => {
@@ -96,8 +103,130 @@ export const getClassSpellcastingProfile = (
     preparedSpellLimit: valueAtClassLevel(spellcasting.preparedSpellsByLevel, classLevel),
     spellbookMinimumSpellCount: preparationMode === 'spellbook' ? 6 + Math.max(0, classLevel - 1) * 2 : 0,
     spellbookSpellsGainedPerLevel: preparationMode === 'spellbook' ? 2 : 0,
-    maxSpellLevel
+    maxSpellLevel,
+    spellListClassNames: [classItem.name],
+    slotCounts: Object.fromEntries(Object.entries(asRecord(classSlots)).flatMap(([level, count]) => {
+      const amount = asNumber(count) ?? 0;
+      return amount > 0 ? [[level, amount]] : [];
+    }))
   };
+};
+
+
+const THIRD_CASTER_PREPARED_BY_LEVEL = [
+  0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 13
+] as const;
+
+const THIRD_CASTER_CANTRIPS_BY_LEVEL = [
+  0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+] as const;
+
+const THIRD_CASTER_SLOTS_BY_LEVEL: Record<number, Record<string, number>> = {
+  3: { '1': 2 },
+  4: { '1': 3 },
+  5: { '1': 3 },
+  6: { '1': 3 },
+  7: { '1': 4, '2': 2 },
+  8: { '1': 4, '2': 2 },
+  9: { '1': 4, '2': 2 },
+  10: { '1': 4, '2': 3 },
+  11: { '1': 4, '2': 3 },
+  12: { '1': 4, '2': 3 },
+  13: { '1': 4, '2': 3, '3': 2 },
+  14: { '1': 4, '2': 3, '3': 2 },
+  15: { '1': 4, '2': 3, '3': 2 },
+  16: { '1': 4, '2': 3, '3': 3 },
+  17: { '1': 4, '2': 3, '3': 3 },
+  18: { '1': 4, '2': 3, '3': 3 },
+  19: { '1': 4, '2': 3, '3': 3, '4': 1 },
+  20: { '1': 4, '2': 3, '3': 3, '4': 1 }
+};
+
+const subclassFeatureItems = (
+  subclassItem: StoredCompendiumItem | undefined,
+  items: StoredCompendiumItem[],
+  classLevel: number
+): StoredCompendiumItem[] => {
+  if (!subclassItem) return [];
+  const payload = asRecord(subclassItem.normalizedJson);
+  const progression = Array.isArray(payload.progression) ? payload.progression : [];
+  const activeRefs = new Set<string>();
+  for (const rowValue of progression) {
+    const row = asRecord(rowValue);
+    const level = asNumber(row.level) ?? 1;
+    if (level > classLevel) continue;
+    for (const reference of asStringArray(row.featureIds)) activeRefs.add(reference);
+  }
+  if (!activeRefs.size) {
+    for (const reference of asStringArray(payload.featureIds)) activeRefs.add(reference);
+  }
+  return items.filter((item) => item.type === 'feature' && (activeRefs.has(item.id) || activeRefs.has(item.importItemId)));
+};
+
+const thirdCasterProfile = (
+  classItem: StoredCompendiumItem,
+  classLevel: number,
+  subclassItem: StoredCompendiumItem,
+  featureItem: StoredCompendiumItem,
+  spellcasting: Record<string, unknown>
+): ClassSpellcastingProfile | undefined => {
+  if (classLevel < 3) return undefined;
+  const rawProgression = asString(spellcasting.progression);
+  if (rawProgression !== 'eldritchKnightThirdCaster' && rawProgression !== 'arcaneTricksterThirdCaster') return undefined;
+  const slotCounts = { ...(THIRD_CASTER_SLOTS_BY_LEVEL[Math.max(3, Math.min(20, classLevel))] ?? {}) };
+  return {
+    classItemId: classItem.id,
+    classImportItemId: classItem.importItemId,
+    className: classItem.name,
+    classLevel,
+    ability: asString(spellcasting.ability) ?? 'INT',
+    progression: 'thirdCaster',
+    preparationMode: 'known',
+    replacementLimitOnLevelUp: 1,
+    cantripLimit: THIRD_CASTER_CANTRIPS_BY_LEVEL[Math.max(0, Math.min(20, classLevel)) - 1] ?? 0,
+    preparedSpellLimit: THIRD_CASTER_PREPARED_BY_LEVEL[Math.max(0, Math.min(20, classLevel)) - 1] ?? 0,
+    spellbookMinimumSpellCount: 0,
+    spellbookSpellsGainedPerLevel: 0,
+    maxSpellLevel: maxSlotFromRecord(slotCounts),
+    spellListClassNames: ['Wizard'],
+    slotCounts,
+    sourceSubclassItemId: subclassItem.id,
+    sourceFeatureItemId: featureItem.id
+  };
+};
+
+/** Resolves normal class spellcasting first, then spellcasting granted by an active subclass feature. */
+export const getClassOrSubclassSpellcastingProfile = (
+  classItem: StoredCompendiumItem,
+  classLevel: number,
+  subclassItem: StoredCompendiumItem | undefined,
+  items: StoredCompendiumItem[]
+): ClassSpellcastingProfile | undefined => {
+  const base = getClassSpellcastingProfile(classItem, classLevel);
+  if (base) return base;
+  for (const featureItem of subclassFeatureItems(subclassItem, items, classLevel)) {
+    const spellcasting = asRecord(asRecord(featureItem.normalizedJson).spellcasting);
+    if (!Object.keys(spellcasting).length) continue;
+    const profile = subclassItem ? thirdCasterProfile(classItem, classLevel, subclassItem, featureItem, spellcasting) : undefined;
+    if (profile) return profile;
+  }
+  return undefined;
+};
+
+export const getActiveSubclassItemForClass = (
+  character: Character,
+  classEntityId: string,
+  items: StoredCompendiumItem[]
+): StoredCompendiumItem | undefined => {
+  const subclassEntity = character.subclasses.find((entry) => entry.classId === classEntityId);
+  if (!subclassEntity) return undefined;
+  const link = (character.compendiumLinks ?? []).find((entry) =>
+    entry.appliedAs === 'subclass' && entry.appliedEntityId === subclassEntity.id && entry.status === 'active'
+  );
+  const item = link
+    ? findCompendiumItemForCharacterLink(items, link)
+    : undefined;
+  return item?.type === 'subclass' ? item : undefined;
 };
 
 export const spellItemLevel = (spellItem: StoredCompendiumItem): number =>
@@ -119,17 +248,19 @@ export const isSpellItemEligibleForProfile = (
   if (spellItem.type !== 'spell') return false;
   const spellLevel = spellItemLevel(spellItem);
   const classNames = spellItemClasses(spellItem).map(normalize);
-  const onClassList = classNames.includes(normalize(profile.className));
+  const eligibleListNames = profile.spellListClassNames.length ? profile.spellListClassNames : [profile.className];
+  const onClassList = eligibleListNames.some((className) => classNames.includes(normalize(className)));
   const onAdditionalList = additionalSpellReferences.some((reference) => spellReferenceMatches(spellItem, reference));
   if (!onClassList && !onAdditionalList) return false;
   return spellLevel === 0 ? profile.cantripLimit > 0 : spellLevel <= profile.maxSpellLevel;
 };
 
 export const getSpellcastingProfiles = (
-  classEntries: Array<{ item: StoredCompendiumItem; level: number }>
+  classEntries: Array<{ item: StoredCompendiumItem; level: number; subclassItem?: StoredCompendiumItem }>,
+  items: StoredCompendiumItem[] = []
 ): ClassSpellcastingProfile[] =>
   classEntries
-    .map(({ item, level }) => getClassSpellcastingProfile(item, level))
+    .map(({ item, level, subclassItem }) => getClassOrSubclassSpellcastingProfile(item, level, subclassItem, items))
     .filter((profile): profile is ClassSpellcastingProfile => Boolean(profile));
 
 export interface SpellAssignmentValidationInput {
@@ -278,13 +409,23 @@ export const annotateLatestSpellWithClass = (
   };
 };
 
+export const spellCountsAgainstNormalClassLimit = (spell: Spell): boolean =>
+  !spell.grantedByFeatEntityId &&
+  !spell.grantedByFeatureEntityId &&
+  !spell.grantedByInvocationItemId &&
+  !spell.bonusSpellChoiceId &&
+  !spell.spellbookSpecialChoiceId &&
+  !spell.mysticArcanumChoiceId &&
+  !(spell.automaticSpellAccessSources?.length) &&
+  !(spell.externalSpellGrantSources?.length);
+
 export const countCharacterSpellsForClass = (
   spells: Spell[],
   classEntityId: string
 ): { cantrips: number; prepared: number } =>
   spells.reduce(
     (counts, spell) => {
-      if (spell.spellcastingClassId !== classEntityId) return counts;
+      if (spell.spellcastingClassId !== classEntityId || !spellCountsAgainstNormalClassLimit(spell)) return counts;
       if (spell.level === 0) counts.cantrips += 1;
       else counts.prepared += 1;
       return counts;

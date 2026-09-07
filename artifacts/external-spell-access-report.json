@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "files": 6,
+  "items": 1997,
+  "speciesMagicFeatures": 7,
+  "speciesChoiceFeatures": 2,
+  "speciesReplacementTimingFeatures": 2,
+  "speciesReplacementTimingSupported": 2,
+  "speciesReplacementTimingUnsupported": 0,
+  "unsupportedReplacementTiming": [],
+  "featMagicItems": 26,
+  "featGrantItems": 16,
+  "featExpandedListItems": 12,
+  "featRitualItems": 1,
+  "dragonmarkCantripGrantRefs": 4,
+  "directGrantRefs": 54,
+  "expandedListRefs": 108,
+  "unknownShapes": [],
+  "unresolvedRefs": []
+}

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../../src/components/Button';
 import { Card } from '../../../src/components/Card';
@@ -9,6 +9,7 @@ import { Screen } from '../../../src/components/Screen';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import type { CharacterPendingChoiceResolution } from '../../../src/catalog/characterDependencyResolver';
 import { progressionOperation, validateProgressionDraft } from '../../../src/characters/progressionTransaction';
+import { buildPendingCharacterChoices } from '../../../src/characters/buildReconciliation';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
 import { useCharacterStore } from '../../../src/store/characterStore';
 import { useAppTheme } from '../../../src/theme';
@@ -19,7 +20,8 @@ const getId = (value: string | string[] | undefined) => Array.isArray(value) ? v
 const pendingChoiceRoute = (characterId: string, kind: string, pendingId: string): string => {
   const suffix = `?pendingId=${encodeURIComponent(pendingId)}`;
   if (kind === 'feat' || kind === 'featOptions') return `/characters/${characterId}/feats${suffix}`;
-  if (kind === 'spellSelection' || kind === 'spellReplacement') return `/characters/${characterId}/spells${suffix}`;
+  if (kind === 'metamagic') return `/characters/${characterId}/metamagic${suffix}`;
+  if (kind === 'spellSelection' || kind === 'spellReplacement' || kind === 'spellbookFeature' || kind === 'mysticArcanum' || kind === 'mysticArcanumReplacement') return `/characters/${characterId}/spells${suffix}`;
   if (kind === 'proficiency') return `/characters/${characterId}/proficiencies${suffix}`;
   if (kind === 'equipment') return `/characters/${characterId}/equipment${suffix}`;
   if (kind === 'subclass' || kind === 'subclassOptions') return `/characters/${characterId}/classes${suffix}`;
@@ -71,7 +73,21 @@ export default function CharacterProgressionScreen() {
   const acknowledgeProgressionRecovery = useCharacterStore((state) => state.acknowledgeProgressionRecovery);
   const rollbackProgressionTransaction = useCharacterStore((state) => state.rollbackProgressionTransaction);
   const bridge = useCharacterChoiceBridge();
-  const pending = character?.pendingChoices ?? [];
+  const refreshedPending = useMemo(
+    () => character ? buildPendingCharacterChoices(character, bridge.items) : [],
+    [bridge.items, character]
+  );
+  const pendingRefreshSignature = JSON.stringify(refreshedPending);
+  const currentPendingSignature = JSON.stringify(character?.pendingChoices ?? []);
+  useEffect(() => {
+    if (!character || pendingRefreshSignature === currentPendingSignature) return;
+    session.updateCharacter(
+      character.id,
+      (current) => ({ ...current, pendingChoices: buildPendingCharacterChoices(current, bridge.items) }),
+      progressionOperation('reconciliation', 'Atualizar escolhas pendentes da progressão')
+    );
+  }, [bridge.items, character?.id, currentPendingSignature, pendingRefreshSignature, session.updateCharacter]);
+  const pending = character?.pendingChoices ?? refreshedPending;
   const pendingResolutions = useMemo<Map<string, CharacterPendingChoiceResolution | undefined>>(() => new Map(
     character
       ? pending.map((choice) => [choice.id, bridge.resolvePendingChoice(character, choice)] as const)

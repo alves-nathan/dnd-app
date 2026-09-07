@@ -13,6 +13,7 @@ import {
   TurnRotation
 } from '../../types';
 import { createId } from '../../utils/id';
+import { turnActivationResourceCosts } from '../turns/turnFeatureActivations';
 
 const issue = (severity: RuleValidationIssue['severity'], code: string, message: string): RuleValidationIssue => ({
   severity,
@@ -103,7 +104,7 @@ const makeCompanionTransaction = (params: {
 });
 
 export const costsFromRotation = (rotation: TurnRotation): ResourceCost[] => {
-  const costs: ResourceCost[] = [];
+  const costs: ResourceCost[] = [...turnActivationResourceCosts(rotation)];
 
   for (const turnAction of rotation.actions) {
     costs.push(...(turnAction.action.consumes ?? []));
@@ -329,13 +330,20 @@ const restoredByRest = (resource: ResourcePool, restType: RestType): boolean => 
   return false;
 };
 
+const resourceAfterRest = (resource: ResourcePool, restType: RestType): number | undefined => {
+  const rule = (resource.recoveryRules ?? []).find((candidate) => candidate.trigger === restType);
+  if (rule) return rule.amount === 'all' ? resource.max : Math.min(resource.max, resource.current + Math.max(0, rule.amount));
+  return restoredByRest(resource, restType) ? resource.max : undefined;
+};
+
 export const applyRest = (character: Character, restType: RestType): RestApplicationResult => {
   const transactions: ResourceTransaction[] = [];
   const reason = restType === 'turnStart' ? 'Início do turno' : restType === 'shortRest' ? 'Descanso curto' : 'Descanso longo';
   const resources = character.resources.map((resource) => {
-    if (!restoredByRest(resource, restType) || resource.current >= resource.max) return resource;
+    const recovered = resourceAfterRest(resource, restType);
+    if (recovered === undefined || recovered <= resource.current) return resource;
     const before = resource.current;
-    const after = resource.max;
+    const after = recovered;
     transactions.push(makeTransaction({
       characterId: character.id,
       resource,
@@ -351,9 +359,10 @@ export const applyRest = (character: Character, restType: RestType): RestApplica
     const companionTransactions: CharacterCompanionTransaction[] = [];
     const companionResources = companion.resources.map((resource) => {
       const pool = companionResourceAsPool(resource, companion);
-      if (!restoredByRest(pool, restType) || resource.current >= resource.max) return resource;
+      const recovered = resourceAfterRest(pool, restType);
+      if (recovered === undefined || recovered <= resource.current) return resource;
       const before = resource.current;
-      const after = resource.max;
+      const after = recovered;
       transactions.push(makeTransaction({
         characterId: character.id,
         resource: pool,

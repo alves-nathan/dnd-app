@@ -7,16 +7,22 @@ import type {
   CharacterChoiceApplicationResult
 } from './characterChoiceTypes';
 
+export const characterChoiceMatchesLink = (
+  link: CharacterCompendiumLink,
+  choice: CharacterChoiceApplicationInput['choice']
+): boolean =>
+  link.choiceId === choice.choiceId ||
+  link.itemId === choice.choiceId ||
+  Boolean(choice.catalogEntityId && link.catalogEntityId === choice.catalogEntityId) ||
+  Boolean(choice.compendiumItemId && link.itemId === choice.compendiumItemId) ||
+  choice.provenance.legacyItemIds.includes(link.itemId) ||
+  choice.provenance.legacyItemIds.includes(link.importItemId);
+
 const canonicalLinkMatches = (
   link: CharacterCompendiumLink,
-  choiceId: string,
-  catalogEntityId?: string
+  choice: CharacterChoiceApplicationInput['choice']
 ): boolean =>
-  link.status === 'active' && (
-    link.choiceId === choiceId ||
-    link.itemId === choiceId ||
-    Boolean(catalogEntityId && link.catalogEntityId === catalogEntityId)
-  );
+  link.status === 'active' && characterChoiceMatchesLink(link, choice);
 
 const blockedIssues = (input: CharacterChoiceApplicationInput): RuleValidationIssue[] =>
   input.choice.blockedReasons.map((reason) => ({
@@ -29,7 +35,7 @@ export const previewCharacterChoiceApplication = (
   input: CharacterChoiceApplicationInput
 ): CharacterChoiceApplicationPreview => {
   const alreadyApplied = (input.character.compendiumLinks ?? []).some((link) =>
-    canonicalLinkMatches(link, input.choice.choiceId, input.choice.catalogEntityId)
+    canonicalLinkMatches(link, input.choice)
   );
   const issues = blockedIssues(input);
   if (alreadyApplied) {

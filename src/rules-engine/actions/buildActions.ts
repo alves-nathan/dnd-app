@@ -1,4 +1,5 @@
 import {
+  AbilityScore,
   ActionBuildResult,
   AttackAction,
   Character,
@@ -15,6 +16,7 @@ import { resolveCustomNumericModifiers } from '../../characters/customModifierRu
 import { resolveSpellDamageFormula } from './spellScaling';
 import { buildPactChainCompanionAttackActions } from '../../characters/pactChainCompanionRules';
 import { gazeCastingOriginIssues } from '../../characters/warlockSpecializedInvocations';
+import { getEffectiveEldritchInvocationChoices } from '../../characters/eldritchInvocationRules';
 import { getEquippedWeapons, weaponHandsRequired } from '../../characters/equipmentLoadoutRules';
 import { masteryRuleNotes, weaponMasteryApplication } from '../../characters/weaponMasteryRules';
 import { normalizeTacticalAreaTemplate, spellSaveSuccessDamage } from '../targeting/areaTemplates';
@@ -46,7 +48,7 @@ const invocationNameForItemId = (character: Character, itemId: string): string |
 };
 
 const invocationChoicesForName = (character: Character, name: string) =>
-  (character.buildChoices?.eldritchInvocationChoices ?? []).filter((choice) =>
+  getEffectiveEldritchInvocationChoices(character).filter((choice) =>
     normalizeName(invocationNameForItemId(character, choice.invocationItemId) ?? '') === normalizeName(name)
   );
 
@@ -258,7 +260,7 @@ export const buildWeaponAttackAction = (character: Character, weaponId: string, 
   };
 };
 
-export const buildSpellAction = (character: Character, spellId: string): SpellAction | undefined => {
+export const buildSpellAction = (character: Character, spellId: string, spellcastingAbilityOverride?: AbilityScore): SpellAction | undefined => {
   const spell = character.spells.find((candidate) => candidate.id === spellId);
   if (!spell) return undefined;
   const link = linkForEntity(character, spell.id);
@@ -282,7 +284,7 @@ export const buildSpellAction = (character: Character, spellId: string): SpellAc
     : spell.range;
   const gaze = character.buildChoices?.gazeOfTwoMinds;
   const gazeAvailable = gaze?.active === true && gazeCastingOriginIssues(character, 'gazeTarget').length === 0;
-  const spellcastingAbility = spell.spellcastingAbility;
+  const spellcastingAbility = spellcastingAbilityOverride ?? spell.spellcastingAbility;
   const spellAttackBonus = spell.requiresAttackRoll && spellcastingAbility
     ? getProficiencyBonus(character) + getAbilityModifier(character.abilities, spellcastingAbility)
     : undefined;
@@ -360,7 +362,9 @@ export const buildSpellAction = (character: Character, spellId: string): SpellAc
       Boolean(spell.scaling?.requiresReview),
     ruleNotes: [
       ...resolved.notes,
-      ...(spell.ritualOnly ? ['Magia concedida por Pact of the Tome: pode ser conjurada somente como ritual e não consome spell slot.'] : []),
+      ...(spell.ritualOnly ? [spell.automaticSpellRitualOnly
+        ? 'Magia concedida por feature: pode ser conjurada somente como ritual e não consome spell slot.'
+        : 'Magia disponível somente como ritual; essa conjuração não consome spell slot.'] : []),
       ...(spell.freeCast ? ['Magia concedida por invocation: esta cópia não consome spell slot.'] : []),
       ...(spell.invocationSelfOnly ? ['Esta concessão da invocation só pode ter o próprio Warlock como alvo.'] : []),
       ...(spell.invocationUsage === 'atWill' ? ['Uso à vontade enquanto a invocation permanecer ativa.'] : []),
@@ -422,8 +426,135 @@ export const buildAvailableActionsResult = (character: Character, options: Build
     }];
   });
   const spellActions = character.spells
+    .filter((spell) => !spell.mysticArcanumChoiceId && !spell.externalSpellGrantOnly)
     .map((spell) => buildSpellAction(character, spell.id))
     .filter((action): action is SpellAction => Boolean(action));
+  const externalGrantActions = character.spells.flatMap((spell): SpellAction[] =>
+    (spell.externalSpellGrantSources ?? []).flatMap((source, sourceIndex): SpellAction[] => {
+      if (spell.level > 0 && !source.canUseSpellSlots && !source.atWill) return [];
+      const base = buildSpellAction(character, spell.id, source.spellcastingAbility);
+      if (!base) return [];
+      const atWill = source.atWill === true;
+      return [{
+        ...base,
+        id: `${base.id}_external_${source.kind}_${sourceIndex}`,
+        name: `${base.name} · ${source.sourceName ?? source.kind}`,
+        consumesSpellSlot: spell.level > 0 && !atWill,
+        components: source.noComponents
+          ? undefined
+          : source.ignoreMaterialComponent
+            ? {
+                verbal: base.components?.verbal ?? true,
+                somatic: base.components?.somatic ?? true,
+                material: false
+              }
+            : base.components,
+        materialDescription: source.noComponents || source.ignoreMaterialComponent ? undefined : base.materialDescription,
+        tags: [...(base.tags ?? []), 'external-spell-grant', ...(atWill ? ['at-will'] : []), `grant:${source.kind}`],
+        ruleNotes: [
+          ...(base.ruleNotes ?? []),
+          `Magia concedida por ${source.sourceName ?? source.kind}; não consome o limite normal de magias da classe.${spell.level > 0 && !atWill ? ' Esta ação usa spell slot normalmente.' : atWill ? ' Esta fonte permite conjurá-la à vontade sem spell slot.' : ''}`,
+          ...(source.ruleNotes ?? []),
+          ...(source.noComponents ? ['Esta forma de conjuração concedida não exige componentes.'] : []),
+          ...(source.ignoreMaterialComponent ? ['Esta forma de conjuração concedida ignora apenas o componente Material; componentes Verbal/Somático continuam valendo.'] : [])
+        ]
+      }];
+    })
+  );
+  const externalFreeCastActions = character.spells.flatMap((spell): SpellAction[] =>
+    (spell.freeCastGrants ?? []).flatMap((grant): SpellAction[] => {
+      const base = buildSpellAction(character, spell.id, grant.spellcastingAbility);
+      if (!base) return [];
+      return [{
+        ...base,
+        id: `${base.id}_external_free_${grant.id.replace(/[^a-zA-Z0-9_-]/g, '_')}`,
+        name: `${base.name} · ${grant.sourceName ?? 'conjuração concedida'}`,
+        castAtSlotLevel: toSpellSlotLevel(grant.castAtSpellLevel ?? spell.level),
+        minimumSlotLevel: toSpellSlotLevel(grant.castAtSpellLevel ?? spell.level),
+        consumesSpellSlot: false,
+        consumes: [
+          ...(base.consumes ?? []),
+          { resourceId: grant.resourceId, amount: 1, label: `${spell.name} · uso concedido` }
+        ],
+        components: grant.noComponents
+          ? undefined
+          : grant.ignoreMaterialComponent
+            ? {
+                verbal: base.components?.verbal ?? true,
+                somatic: base.components?.somatic ?? true,
+                material: false
+              }
+            : base.components,
+        materialDescription: grant.noComponents || grant.ignoreMaterialComponent ? undefined : base.materialDescription,
+        tags: [...(base.tags ?? []), 'external-spell-grant', 'free-cast', `grant:${grant.sourceKind}`],
+        ruleNotes: [
+          ...(base.ruleNotes ?? []),
+          grant.notes ?? `Conjuração concedida por ${grant.sourceName ?? grant.sourceKind} sem gastar spell slot.`,
+          ...(grant.noComponents ? ['Esta conjuração concedida não exige componentes.'] : []),
+          ...(grant.ignoreMaterialComponent ? ['Esta conjuração concedida ignora apenas o componente Material; componentes Verbal/Somático continuam valendo.'] : [])
+        ]
+      }];
+    })
+  );
+  const spellMasteryActions = character.spells.flatMap((spell): SpellAction[] => {
+    if (spell.spellbookSpecialKind !== 'spellMastery') return [];
+    const base = buildSpellAction(character, spell.id);
+    if (!base) return [];
+    return [{
+      ...base,
+      id: `${base.id}_spell_mastery`,
+      name: `${base.name} · Spell Mastery`,
+      castAtSlotLevel: toSpellSlotLevel(spell.level),
+      consumesSpellSlot: false,
+      tags: [...(base.tags ?? []), 'spell-mastery', 'free-cast'],
+      ruleNotes: [
+        ...(base.ruleNotes ?? []),
+        'Spell Mastery permite esta conjuração no menor nível sem gastar spell slot; a ação normal permanece disponível para conjurações com slot.'
+      ]
+    }];
+  });
+  const signatureSpellActions = character.spells.flatMap((spell): SpellAction[] => {
+    if (!spell.signatureSpellFreeCastResourceId) return [];
+    const base = buildSpellAction(character, spell.id);
+    if (!base) return [];
+    return [{
+      ...base,
+      id: `${base.id}_signature_free`,
+      name: `${base.name} · Signature Spell`,
+      consumesSpellSlot: false,
+      consumes: [
+        ...(base.consumes ?? []),
+        { resourceId: spell.signatureSpellFreeCastResourceId, amount: 1, label: `${spell.name} · uso gratuito` }
+      ],
+      tags: [...(base.tags ?? []), 'signature-spell', 'free-cast'],
+      ruleNotes: [
+        ...(base.ruleNotes ?? []),
+        'Signature Spells permite esta conjuração sem gastar spell slot uma vez; o uso recarrega em Descanso Curto ou Longo. A ação normal da magia continua disponível usando slot.'
+      ]
+    }];
+  });
+  const mysticArcanumActions = character.spells.flatMap((spell): SpellAction[] => {
+    if (!spell.mysticArcanumChoiceId || !spell.mysticArcanumFreeCastResourceId) return [];
+    const base = buildSpellAction(character, spell.id);
+    if (!base) return [];
+    return [{
+      ...base,
+      id: `${base.id}_mystic_arcanum`,
+      name: `${base.name} · Mystic Arcanum`,
+      castAtSlotLevel: toSpellSlotLevel(spell.mysticArcanumSpellLevel ?? spell.level),
+      minimumSlotLevel: toSpellSlotLevel(spell.mysticArcanumSpellLevel ?? spell.level),
+      consumesSpellSlot: false,
+      consumes: [
+        ...(base.consumes ?? []),
+        { resourceId: spell.mysticArcanumFreeCastResourceId, amount: 1, label: `${spell.name} · Mystic Arcanum` }
+      ],
+      tags: [...(base.tags ?? []), 'mystic-arcanum', 'free-cast'],
+      ruleNotes: [
+        ...(base.ruleNotes ?? []),
+        `Mystic Arcanum conjura esta magia de ${spell.mysticArcanumSpellLevel ?? spell.level}º círculo sem gastar Pact Magic slot; este Arcanum recupera o uso em Descanso Longo.`
+      ]
+    }];
+  });
   const companionActions = (character.companions ?? []).flatMap(buildPactChainCompanionAttackActions);
   const featureActions = character.features.flatMap((feature) => {
     const granted = feature.grantsActions ?? [];
@@ -438,7 +569,7 @@ export const buildAvailableActionsResult = (character: Character, options: Build
     }));
   });
 
-  const actions: CharacterAction[] = [...weaponActions, ...lightExtraActions, ...nickActions, ...spellActions, ...companionActions, ...featureActions];
+  const actions: CharacterAction[] = [...weaponActions, ...lightExtraActions, ...nickActions, ...spellActions, ...externalGrantActions, ...externalFreeCastActions, ...spellMasteryActions, ...signatureSpellActions, ...mysticArcanumActions, ...companionActions, ...featureActions];
   for (const action of actions) {
     if (action.requiresReview) {
       issues.push(actionIssue('warning', 'ACTION_REQUIRES_REVIEW', `Ação "${action.name}" vem de uma regra que precisa de revisão antes de ser usada como cálculo definitivo.`, action.source));

@@ -10,6 +10,7 @@ import { buildWeaponFromCompendiumItem } from '../compendium/mapper';
 import { createId } from '../utils/id';
 import {
   findEldritchInvocationById,
+  getEffectiveEldritchInvocationCounts,
   isEldritchInvocationItem
 } from './eldritchInvocationRules';
 
@@ -43,7 +44,7 @@ const issue = (code: string, message: string): RuleValidationIssue => ({
 export const hasPactOfTheBlade = (
   character: Character,
   items: StoredCompendiumItem[]
-): boolean => Object.entries(character.buildChoices?.eldritchInvocationCounts ?? {})
+): boolean => Object.entries(getEffectiveEldritchInvocationCounts(character))
   .some(([itemId, count]) => {
     if (count <= 0) return false;
     const item = findEldritchInvocationById(items, itemId);

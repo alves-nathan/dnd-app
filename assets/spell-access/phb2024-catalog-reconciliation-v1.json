@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "dnd-spell-access-catalog-reconciliation.v1",
+  "sourceCatalogVersion": "4.8.0",
+  "rulesEra": "2024",
+  "entries": [
+    {
+      "featureId": "phb-2024-feature-druid-circle-of-the-moon-circle-of-the-moon-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-druid-moon",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-druid-circle-of-the-sea-circle-of-the-sea-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-druid-sea",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-paladin-oath-of-devotion-oath-of-devotion-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-paladin-devotion",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-paladin-oath-of-glory-oath-of-glory-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-paladin-glory",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-paladin-oath-of-the-ancients-oath-of-the-ancients-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-paladin-ancients",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-paladin-oath-of-vengeance-oath-of-vengeance-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-paladin-vengeance",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-ranger-fey-wanderer-fey-wanderer-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-ranger-fey-wanderer",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-ranger-gloom-stalker-gloom-stalker-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-ranger-gloom-stalker",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-sorcerer-clockwork-sorcery-clockwork-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-sorcerer-clockwork",
+      "mode": "alwaysPrepared"
+    },
+    {
+      "featureId": "phb-2024-feature-sorcerer-draconic-sorcery-draconic-spells",
+      "bridgeId": "phb-2024-subclass-spell-grant-sorcerer-draconic",
+      "mode": "alwaysPrepared"
+    }
+  ]
+}

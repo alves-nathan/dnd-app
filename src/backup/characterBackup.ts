@@ -182,6 +182,7 @@ const normalizeCharacter = (character: Character): Character => ({
   subclasses: character.subclasses ?? [],
   compendiumLinks: character.compendiumLinks ?? [],
   resourceTransactions: character.resourceTransactions ?? [],
+  abilityUseTransactions: character.abilityUseTransactions ?? [],
   spellSlotTransactions: character.spellSlotTransactions ?? [],
   activeEffectTransactions: character.activeEffectTransactions ?? []
 });

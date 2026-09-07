@@ -4,6 +4,16 @@ import type {
 } from '../types';
 import type { StoredCompendiumItem } from './types';
 import { applyCompendiumItemToCharacter } from './mapper';
+import { prepareAutomaticFeatureForCharacter, reconcileAutomaticFeatureResourceUpdates } from './automaticFeatureApplication';
+import {
+  characterLinkMatchesCompendiumItem,
+  findCompendiumItemByReference,
+  findCompendiumItemForCharacterLink,
+  sameLogicalCompendiumItem,
+  uniqueLogicalCompendiumItems
+} from './characterLinkIdentity';
+
+export { findCompendiumItemByReference } from './characterLinkIdentity';
 
 const asRecord = (
   value: unknown
@@ -54,17 +64,6 @@ const rawImportId = (
   item: StoredCompendiumItem
 ): string | undefined =>
   asString(asRecord(item.rawJson).id);
-
-export const findCompendiumItemByReference = (
-  items: StoredCompendiumItem[],
-  reference: string
-): StoredCompendiumItem | undefined =>
-  items.find(
-    (item) =>
-      item.id === reference ||
-      item.importItemId === reference ||
-      rawImportId(item) === reference
-  );
 
 export const getCompendiumClassReference = (
   item: StoredCompendiumItem
@@ -259,6 +258,267 @@ const activeLinksByType = (
       link.status === 'active'
   );
 
+export interface InferredSubclassProgressionBinding {
+  subclassEntityId: string;
+  classEntityId: string;
+  subclassItem: StoredCompendiumItem;
+  classLevel: number;
+}
+
+/**
+ * Older character snapshots can retain subclass state in more than one
+ * partially migrated shape. Recover only when the stored identity and the
+ * owning base class make the selection unambiguous.
+ */
+export const getInferredSubclassProgressionBindings = (
+  character: Character,
+  items: StoredCompendiumItem[]
+): InferredSubclassProgressionBinding[] => {
+  const classLinks = activeLinksByType(character, 'class');
+  const activeSubclassLinks = activeLinksByType(character, 'subclass');
+  const allSubclassLinks = (character.compendiumLinks ?? []).filter(
+    (link) => link.appliedAs === 'subclass'
+  );
+
+  const classBindings = classLinks.flatMap((link) => {
+    const classEntity = character.classes.find(
+      (entry) => entry.id === link.appliedEntityId
+    );
+    const classItem = findCompendiumItemForCharacterLink(items, link);
+
+    return classEntity && classItem
+      ? [{ classEntity, classItem }]
+      : [];
+  });
+
+  const findOwningClassBinding = (
+    subclassItem: StoredCompendiumItem
+  ) => {
+    const classReference =
+      getCompendiumClassReference(subclassItem);
+    const ownerClassItem = classReference
+      ? findCompendiumItemByReference(items, classReference)
+      : undefined;
+
+    if (ownerClassItem) {
+      const exact = classBindings.find(({ classItem }) =>
+        sameLogicalCompendiumItem(
+          classItem,
+          ownerClassItem
+        )
+      );
+      if (exact) return exact;
+    }
+
+    return !classReference && classBindings.length === 1
+      ? classBindings[0]
+      : undefined;
+  };
+
+  const inferredFromEntities = character.subclasses.flatMap((subclassEntity) => {
+    const classEntity =
+      character.classes.find(
+        (entry) => entry.id === subclassEntity.classId
+      ) ??
+      (character.classes.length === 1
+        ? character.classes[0]
+        : undefined);
+    if (!classEntity) return [];
+
+    const classBinding = classBindings.find(
+      ({ classEntity: candidate }) =>
+        candidate.id === classEntity.id
+    );
+    const classItem = classBinding?.classItem;
+
+    const activeLink = activeSubclassLinks.find(
+      (link) => link.appliedEntityId === subclassEntity.id
+    );
+    if (activeLink) {
+      const linkedSubclassItem = findCompendiumItemForCharacterLink(
+        items,
+        activeLink
+      );
+      const linkedOwner = linkedSubclassItem
+        ? findOwningClassBinding(linkedSubclassItem)
+        : undefined;
+
+      // An active link is authoritative only when it still resolves to the
+      // same subclass identity and owning class. Old persisted item IDs can
+      // become stale across import/catalog migrations.
+      if (
+        linkedSubclassItem &&
+        linkedSubclassItem.type === 'subclass' &&
+        linkedSubclassItem.status !== 'disabled' &&
+        normalizeName(linkedSubclassItem.name) ===
+          normalizeName(subclassEntity.name) &&
+        linkedOwner?.classEntity.id === classEntity.id
+      ) {
+        return [];
+      }
+    }
+
+    const candidates = uniqueLogicalCompendiumItems(
+      items.filter((item) => {
+        if (
+          item.type !== 'subclass' ||
+          item.status === 'disabled'
+        ) return false;
+        if (
+          normalizeName(item.name) !==
+          normalizeName(subclassEntity.name)
+        ) return false;
+
+        const classReference =
+          getCompendiumClassReference(item);
+        if (!classReference || !classItem) {
+          return character.classes.length === 1;
+        }
+        const owner =
+          findCompendiumItemByReference(
+            items,
+            classReference
+          );
+        return Boolean(
+          owner &&
+          sameLogicalCompendiumItem(
+            owner,
+            classItem
+          )
+        );
+      })
+    );
+
+    if (candidates.length !== 1) return [];
+    const subclassItem = candidates[0]!;
+    if (
+      classEntity.level <
+      getSubclassUnlockLevel(subclassItem)
+    ) return [];
+
+    return [{
+      subclassEntityId: subclassEntity.id,
+      classEntityId: classEntity.id,
+      subclassItem,
+      classLevel: classEntity.level
+    }];
+  });
+
+  const entityBoundClassIds = new Set(
+    character.subclasses.map(
+      (entry) => entry.classId
+    )
+  );
+
+  const orphanLinkCandidates = allSubclassLinks.flatMap((link) => {
+    if (
+      link.status !== 'active' &&
+      link.status !== 'removed'
+    ) return [];
+    if (character.subclasses.some(
+      (entry) => entry.id === link.appliedEntityId
+    )) return [];
+
+    let subclassItem = findCompendiumItemForCharacterLink(items, link);
+
+    // Some older links persisted only an obsolete carrier ID. If the human
+    // identity survived, recover by exact subclass name plus owning class.
+    if (
+      (!subclassItem || subclassItem.type !== 'subclass') &&
+      link.appliedEntityName
+    ) {
+      const namedCandidates = uniqueLogicalCompendiumItems(
+        items.filter((item) =>
+          item.type === 'subclass' &&
+          item.status !== 'disabled' &&
+          normalizeName(item.name) ===
+            normalizeName(link.appliedEntityName) &&
+          Boolean(findOwningClassBinding(item))
+        )
+      );
+      if (namedCandidates.length === 1) {
+        subclassItem = namedCandidates[0];
+      }
+    }
+
+    if (
+      !subclassItem ||
+      subclassItem.type !== 'subclass' ||
+      subclassItem.status === 'disabled'
+    ) return [];
+
+    const classBinding =
+      findOwningClassBinding(subclassItem);
+    if (!classBinding) return [];
+    if (entityBoundClassIds.has(
+      classBinding.classEntity.id
+    )) return [];
+    if (
+      classBinding.classEntity.level <
+      getSubclassUnlockLevel(subclassItem)
+    ) return [];
+
+    return [{
+      status: link.status,
+      binding: {
+        subclassEntityId: link.appliedEntityId,
+        classEntityId: classBinding.classEntity.id,
+        subclassItem,
+        classLevel: classBinding.classEntity.level
+      } satisfies InferredSubclassProgressionBinding
+    }];
+  });
+
+  const inferredFromOrphanLinks: InferredSubclassProgressionBinding[] = [];
+  for (const classBinding of classBindings) {
+    const forClass = orphanLinkCandidates.filter(
+      ({ binding }) =>
+        binding.classEntityId ===
+        classBinding.classEntity.id
+    );
+    const active = forClass.filter(
+      ({ status }) => status === 'active'
+    );
+    const preferred = active.length ? active : forClass;
+    const candidates = uniqueLogicalCompendiumItems(
+      preferred.map(
+        ({ binding }) => binding.subclassItem
+      )
+    );
+
+    // Do not guess if history contains genuinely different subclass
+    // selections for the same class.
+    if (candidates.length !== 1) continue;
+    const subclassItem = candidates[0]!;
+    const match = preferred.find(
+      ({ binding }) =>
+        sameLogicalCompendiumItem(
+          binding.subclassItem,
+          subclassItem
+        )
+    );
+    if (match) {
+      inferredFromOrphanLinks.push(match.binding);
+    }
+  }
+
+  const entityRecoveredClassIds = new Set(
+    inferredFromEntities.map(
+      (binding) => binding.classEntityId
+    )
+  );
+
+  return [
+    ...inferredFromEntities,
+    ...inferredFromOrphanLinks.filter(
+      (binding) =>
+        !entityRecoveredClassIds.has(
+          binding.classEntityId
+        )
+    )
+  ];
+};
+
 export const applyAutomaticClassProgression = (
   character: Character,
   items: StoredCompendiumItem[]
@@ -274,9 +534,7 @@ export const applyAutomaticClassProgression = (
   );
 
   for (const link of classLinks) {
-    const classItem = items.find(
-      (item) => item.id === link.itemId
-    );
+    const classItem = findCompendiumItemForCharacterLink(items, link);
 
     const characterClass = next.classes.find(
       (entry) =>
@@ -307,9 +565,7 @@ export const applyAutomaticClassProgression = (
   );
 
   for (const link of subclassLinks) {
-    const subclassItem = items.find(
-      (item) => item.id === link.itemId
-    );
+    const subclassItem = findCompendiumItemForCharacterLink(items, link);
 
     if (!subclassItem) {
       issues.push(
@@ -324,11 +580,22 @@ export const applyAutomaticClassProgression = (
     const classReference =
       getCompendiumClassReference(subclassItem);
 
-    const matchingClassLink = classLinks.find(
-      (classLink) =>
+    const referencedClassItem = classReference
+      ? findCompendiumItemByReference(items, classReference)
+      : undefined;
+    const matchingClassLink = classLinks.find((classLink) => {
+      const linkedClassItem = findCompendiumItemForCharacterLink(items, classLink);
+      if (referencedClassItem && linkedClassItem) {
+        return sameLogicalCompendiumItem(
+          linkedClassItem,
+          referencedClassItem
+        );
+      }
+      return (
         classLink.itemId === classReference ||
         classLink.importItemId === classReference
-    );
+      );
+    });
 
     const matchingClass =
       matchingClassLink
@@ -355,6 +622,100 @@ export const applyAutomaticClassProgression = (
       ...getProgressionFeatureReferences(
         subclassItem,
         matchingClass.level
+      )
+    );
+  }
+
+  for (const binding of getInferredSubclassProgressionBindings(next, items)) {
+    const links = next.compendiumLinks ?? [];
+    const historicalLinkIndex =
+      links.findIndex(
+        (link) =>
+          link.appliedAs === 'subclass' &&
+          link.appliedEntityId ===
+            binding.subclassEntityId
+      );
+
+    const recoveredLink = {
+      id: `recovered-subclass-link:${binding.subclassEntityId}:${binding.subclassItem.id}`,
+      characterId: next.id,
+      itemId: binding.subclassItem.id,
+      importItemId: binding.subclassItem.importItemId,
+      packId: binding.subclassItem.packId,
+      sourceId: binding.subclassItem.sourceId,
+      itemType: 'subclass' as const,
+      appliedAs: 'subclass' as const,
+      appliedEntityId: binding.subclassEntityId,
+      appliedEntityName: binding.subclassItem.name,
+      status: 'active' as const,
+      addedAt: new Date().toISOString(),
+      origin: 'compendium' as const,
+      choiceId: binding.subclassItem.id,
+      manualReviewRequired:
+        binding.subclassItem.status !== 'validated',
+      notes: 'recovered-subclass-link'
+    };
+
+    const compendiumLinks =
+      historicalLinkIndex >= 0
+        ? links.map((link, index) =>
+            index === historicalLinkIndex
+              ? {
+                  ...link,
+                  itemId: binding.subclassItem.id,
+                  importItemId:
+                    binding.subclassItem.importItemId,
+                  packId: binding.subclassItem.packId,
+                  sourceId: binding.subclassItem.sourceId,
+                  itemType: 'subclass' as const,
+                  appliedAs: 'subclass' as const,
+                  appliedEntityId:
+                    binding.subclassEntityId,
+                  appliedEntityName:
+                    binding.subclassItem.name,
+                  status: 'active' as const,
+                  origin: 'compendium' as const,
+                  choiceId: binding.subclassItem.id,
+                  manualReviewRequired:
+                    binding.subclassItem.status !==
+                    'validated',
+                  notes: [
+                    link.notes,
+                    'recovered-subclass-link'
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
+                }
+              : link
+          )
+        : [...links, recoveredLink];
+
+    const hasSubclassEntity =
+      next.subclasses.some(
+        (entry) =>
+          entry.id === binding.subclassEntityId
+      );
+
+    next = {
+      ...next,
+      subclasses: hasSubclassEntity
+        ? next.subclasses
+        : [
+            ...next.subclasses,
+            {
+              id: binding.subclassEntityId,
+              classId: binding.classEntityId,
+              name: binding.subclassItem.name,
+              source: binding.subclassItem.rawJson.source
+            }
+          ],
+      compendiumLinks
+    };
+
+    requestedReferences.push(
+      ...getProgressionFeatureReferences(
+        binding.subclassItem,
+        binding.classLevel
       )
     );
   }
@@ -396,13 +757,15 @@ export const applyAutomaticClassProgression = (
 
     const alreadyLinked = (
       next.compendiumLinks ?? []
-    ).some(
-      (link) =>
-        link.itemId === featureItem.id &&
-        link.status === 'active'
+    ).some((link) =>
+      link.status === 'active' &&
+      characterLinkMatchesCompendiumItem(items, link, featureItem)
     );
 
-    if (alreadyLinked) continue;
+    if (alreadyLinked) {
+      next = reconcileAutomaticFeatureResourceUpdates(next, featureItem);
+      continue;
+    }
 
     if (isChoiceProgressionFeature(featureItem)) {
       const key = normalizeName(featureItem.name);
@@ -417,11 +780,11 @@ export const applyAutomaticClassProgression = (
       continue;
     }
 
-    if (featureItem.status !== 'validated') {
+    if (featureItem.status === 'disabled') {
       issues.push(
         warning(
-          'PROGRESSION_FEATURE_NOT_VALIDATED',
-          `A feature "${featureItem.name}" ainda está como ${featureItem.status}.`
+          'PROGRESSION_FEATURE_DISABLED',
+          `A feature automática "${featureItem.name}" está desabilitada no Compêndio.`
         )
       );
       continue;
@@ -430,11 +793,11 @@ export const applyAutomaticClassProgression = (
     const result =
       applyCompendiumItemToCharacter(
         next,
-        featureItem
+        prepareAutomaticFeatureForCharacter(featureItem)
       );
 
     if (result.ok) {
-      next = result.character;
+      next = reconcileAutomaticFeatureResourceUpdates(result.character, featureItem);
       appliedItems.push(featureItem);
     } else {
       issues.push(...result.issues);

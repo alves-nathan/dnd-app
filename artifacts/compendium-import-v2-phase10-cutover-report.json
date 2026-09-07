@@ -1,7 +1,7 @@
 {
   "phase": 10,
   "title": "Controlled bundled PHB V2 cutover",
-  "generatedAt": "2026-08-14T13:05:06.546Z",
+  "generatedAt": "2026-08-20T23:21:35.062Z",
   "bundled": {
     "file": "assets/compendium/phb-2024-full-consolidated-import-pack-v2-canonical.json",
     "templateVersion": "dnd-combat-import.v2",

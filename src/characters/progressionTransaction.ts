@@ -229,7 +229,7 @@ export const validateProgressionDraft = (
   const unresolvedRequired = draft.kind === 'compatibilityRemediation'
     ? []
     : (working.pendingChoices ?? []).filter(
-        (choice) => choice.status === 'pending' && choice.kind !== 'spellReplacement'
+        (choice) => choice.status === 'pending' && choice.kind !== 'spellReplacement' && choice.kind !== 'mysticArcanumReplacement'
       );
   if (unresolvedRequired.length) {
     issues.push(issue(
@@ -239,10 +239,10 @@ export const validateProgressionDraft = (
     ));
   }
   const optionalPending = (working.pendingChoices ?? []).filter(
-    (choice) => choice.status === 'pending' && choice.kind === 'spellReplacement'
+    (choice) => choice.status === 'pending' && (choice.kind === 'spellReplacement' || choice.kind === 'mysticArcanumReplacement')
   );
   if (optionalPending.length) {
-    issues.push(issue('warning', 'PROGRESSION_TRANSACTION_OPTIONAL_PENDING', `${optionalPending.length} troca(s) opcional(is) de magia permanecerá(ão) disponível(is) depois do commit.`));
+    issues.push(issue('warning', 'PROGRESSION_TRANSACTION_OPTIONAL_PENDING', `${optionalPending.length} troca(s) opcional(is) de magia/Arcanum permanecerá(ão) disponível(is) depois do commit.`));
   }
 
   const collections: Array<[string, Array<{ id?: string }>]> = [

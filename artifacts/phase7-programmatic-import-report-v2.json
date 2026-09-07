@@ -1,0 +1,490 @@
+{
+  "schemaVersion": "dnd-combat-math.phase7-programmatic-import-report.v2",
+  "generatedAt": "2026-08-14T16:19:41.772Z",
+  "validationBoundary": "parseAndPreviewImportPack -> createCompendiumImportV2UpsertPlan -> applyCompendiumImportV2PlanToSnapshot",
+  "baselineItemCount": 1997,
+  "phase7Files": 14,
+  "finalItemCount": 3609,
+  "expectedBaselineItemCount": 1997,
+  "expectedFinalItemCount": 3609,
+  "baselineMatchesExpected": true,
+  "finalMatchesExpected": true,
+  "allExecutable": true,
+  "schemaRepairReport": "artifacts/phase7-schema-repair-report-v1.json",
+  "entries": [
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/phb-2024-full-consolidated-import-pack-v2-canonical.json",
+      "packId": "phb-2024-full-consolidated-import-pack-v5-complete-invocations",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 1284,
+      "created": 1284,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "previewValid": true,
+      "itemCountAfter": 1284
+    },
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/mm-2024-runtime-dependency-delta-v2-canonical.json",
+      "packId": "mm-2024-runtime-dependency-delta-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 2,
+      "created": 2,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 1286
+    },
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/forge-artificer-2025-full-consolidated-import-pack-v2-canonical.json",
+      "packId": "forge-artificer-2025-full-consolidated-import-pack-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 200,
+      "created": 200,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 10,
+        "info": 4
+      },
+      "previewValid": true,
+      "itemCountAfter": 1486
+    },
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/spelljammer-2022-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "spelljammer-2022-full-consolidated-import-pack-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 182,
+      "created": 182,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 7,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 12,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 1668
+    },
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/tcoe-2020-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "tcoe-2020-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 273,
+      "created": 273,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 42,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 104,
+        "info": 6
+      },
+      "previewValid": true,
+      "itemCountAfter": 1941
+    },
+    {
+      "stage": "baseline",
+      "file": "assets/compendium/phb-2014-2024-compatible-delta-v2-canonical.json",
+      "packId": "phb-2014-2024-compatible-delta-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 56,
+      "created": 56,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 1997
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/xgte-2017-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/xgte-2017-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "xgte-2017-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 415,
+      "created": 415,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 209,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 258,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 2412
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/mtof-2018-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/mtof-2018-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "mtof-2018-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 312,
+      "created": 312,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 8,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 2724
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/eberron-rising-2019-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/eberron-rising-2019-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "eberron-rising-2019-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 213,
+      "created": 213,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 28,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 2937
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/egtw-2020-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/egtw-2020-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "egtw-2020-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 277,
+      "created": 277,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 15,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 78,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3214
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/one-grung-above-2017-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/one-grung-above-2017-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "one-grung-above-2017-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 7,
+      "created": 7,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3221
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/hold-back-the-dead-2025-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/hold-back-the-dead-2025-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "hold-back-the-dead-2025-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 24,
+      "created": 24,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 8,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3245
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/malady-of-minarrh-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/malady-of-minarrh-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "malady-of-minarrh-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 22,
+      "created": 22,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3267
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/spelljammer-academy-2022-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/spelljammer-academy-2022-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "spelljammer-academy-2022-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 44,
+      "created": 44,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3311
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/welcome-to-hellfire-club-2025-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/welcome-to-hellfire-club-2025-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "welcome-to-hellfire-club-2025-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 56,
+      "created": 56,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3367
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/bomt-2023-2024-compatible-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/packs-v2/bomt-2023-2024-compatible-import-pack-v2-canonical.json",
+      "packId": "bomt-2023-2024-compatible-import-pack-v2",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 173,
+      "created": 173,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 11,
+        "info": 17
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 71,
+        "info": 17
+      },
+      "previewValid": true,
+      "itemCountAfter": 3540
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/deltas-v2/spelljammer-2022-giff-shipmate-canonical-correction-import-pack-v2-canonical.json",
+      "originalFile": ".validation/phase7b/deltas-v2/spelljammer-2022-giff-shipmate-canonical-correction-import-pack-v2-canonical.json",
+      "packId": "spelljammer-2022-giff-shipmate-canonical-correction-import-pack-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 1,
+      "created": 0,
+      "updated": 1,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3540
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/mm-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "originalFile": ".validation/phase7c/packs-v2/mm-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "packId": "mm-2014-phase7c-runtime-dependency-delta-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 55,
+      "created": 55,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3595
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/dmg-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "originalFile": ".validation/phase7c/packs-v2/dmg-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "packId": "dmg-2014-phase7c-runtime-dependency-delta-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 10,
+      "created": 10,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 8,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3605
+    },
+    {
+      "stage": "phase7",
+      "file": ".validation/phase7-fixed/packs-v2/phb-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "originalFile": ".validation/phase7c/packs-v2/phb-2014-phase7c-runtime-dependency-delta-v2-canonical.json",
+      "packId": "phb-2014-phase7c-runtime-dependency-delta-v1",
+      "detectedVersion": "dnd-combat-import.v2",
+      "incomingItems": 4,
+      "created": 4,
+      "updated": 0,
+      "unchanged": 0,
+      "conflicts": 0,
+      "parseIssues": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "previewIssues": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "previewValid": true,
+      "itemCountAfter": 3609
+    }
+  ]
+}

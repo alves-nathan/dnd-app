@@ -6,9 +6,13 @@ import type {
   CharacterEldritchInvocationChoice,
   CharacterEquipmentSelection,
   CharacterBackgroundChoice,
+  CharacterBonusSpellChoice,
+  CharacterClassFeatureChoice,
   CharacterCustomBackgroundChoice,
   CharacterFeatChoice,
   CharacterHigherLevelStartingBenefits,
+  CharacterMysticArcanumChoice,
+  CharacterSpellbookFeatureChoice,
   CharacterSpeciesChoice,
   CharacterSubclassChoice
 } from '../types';
@@ -18,7 +22,7 @@ import { STANDARD_ARRAY } from './abilityGeneration';
 import { sanitizeCustomBackgroundChoice } from './customBackgroundRules';
 
 export const CHARACTER_CREATION_DRAFT_KEY = 'dnd-combat-math-character-creation-draft';
-export const CHARACTER_CREATION_DRAFT_VERSION = 13;
+export const CHARACTER_CREATION_DRAFT_VERSION = 17;
 
 export interface CharacterCreationDraft {
   version: typeof CHARACTER_CREATION_DRAFT_VERSION;
@@ -37,6 +41,10 @@ export interface CharacterCreationDraft {
   customBackground?: CharacterCustomBackgroundChoice;
   selectedSubclassByClass: Record<string, string>;
   subclassChoices: CharacterSubclassChoice[];
+  classFeatureChoices: CharacterClassFeatureChoice[];
+  bonusSpellChoices: CharacterBonusSpellChoice[];
+  spellbookFeatureChoices: CharacterSpellbookFeatureChoice[];
+  mysticArcanumChoices: CharacterMysticArcanumChoice[];
   selectedOriginFeatId?: string;
   selectedFeatCounts: Record<string, number>;
   selectedInvocationCounts: Record<string, number>;
@@ -117,6 +125,55 @@ const asSubclassChoices = (value: unknown): CharacterSubclassChoice[] =>
       })
     : [];
 
+
+const asClassFeatureChoices = (value: unknown): CharacterClassFeatureChoice[] =>
+  Array.isArray(value) ? value.flatMap((raw): CharacterClassFeatureChoice[] => {
+    if (!isRecord(raw)) return [];
+    const classItemId = normalizeOptionalChoiceReference(raw.classItemId);
+    const featureItemId = normalizeOptionalChoiceReference(raw.featureItemId);
+    const optionId = asOptionalString(raw.optionId);
+    return classItemId && featureItemId && optionId ? [{ classItemId, featureItemId, optionId }] : [];
+  }) : [];
+
+const asBonusSpellChoices = (value: unknown): CharacterBonusSpellChoice[] =>
+  Array.isArray(value) ? value.flatMap((raw): CharacterBonusSpellChoice[] => {
+    if (!isRecord(raw)) return [];
+    const requirementId = asOptionalString(raw.requirementId);
+    const classItemId = normalizeOptionalChoiceReference(raw.classItemId);
+    const featureItemId = normalizeOptionalChoiceReference(raw.featureItemId);
+    const spellItemIds = asStringArray(raw.spellItemIds).map(normalizeCharacterChoiceReference);
+    return requirementId && classItemId && featureItemId
+      ? [{ requirementId, classItemId, featureItemId, spellItemIds }]
+      : [];
+  }) : [];
+
+
+const asSpellbookFeatureChoices = (value: unknown): CharacterSpellbookFeatureChoice[] =>
+  Array.isArray(value) ? value.flatMap((raw): CharacterSpellbookFeatureChoice[] => {
+    if (!isRecord(raw)) return [];
+    const requirementId = asOptionalString(raw.requirementId);
+    const classItemId = normalizeOptionalChoiceReference(raw.classItemId);
+    const featureItemId = normalizeOptionalChoiceReference(raw.featureItemId);
+    const spellItemIds = asStringArray(raw.spellItemIds).map(normalizeCharacterChoiceReference);
+    return requirementId && classItemId && featureItemId
+      ? [{ requirementId, classItemId, featureItemId, spellItemIds }]
+      : [];
+  }) : [];
+
+
+const asMysticArcanumChoices = (value: unknown): CharacterMysticArcanumChoice[] =>
+  Array.isArray(value) ? value.flatMap((raw): CharacterMysticArcanumChoice[] => {
+    if (!isRecord(raw)) return [];
+    const requirementId = asOptionalString(raw.requirementId);
+    const classItemId = normalizeOptionalChoiceReference(raw.classItemId);
+    const featureItemId = normalizeOptionalChoiceReference(raw.featureItemId);
+    const spellItemId = normalizeOptionalChoiceReference(raw.spellItemId);
+    const spellLevel = typeof raw.spellLevel === 'number' ? Math.floor(raw.spellLevel) : Number(raw.spellLevel);
+    return requirementId && classItemId && featureItemId && spellItemId && Number.isFinite(spellLevel) && spellLevel >= 6 && spellLevel <= 9
+      ? [{ requirementId, classItemId, featureItemId, spellItemId, spellLevel }]
+      : [];
+  }) : [];
+
 const normalizeFeatChoiceDraftKey = (key: string): string => {
   const match = key.match(/^((?:origin|species)::)?(.+)::(\d+)$/);
   if (!match) return normalizeCharacterChoiceReference(key);
@@ -137,6 +194,20 @@ const asFeatChoiceDrafts = (value: unknown): Record<string, CharacterFeatChoice>
         spellItemIds: asStringArray(raw.spellItemIds).map(normalizeCharacterChoiceReference),
         weaponItemIds: asStringArray(raw.weaponItemIds).map(normalizeCharacterChoiceReference),
         fightingStyleItemId: normalizeOptionalChoiceReference(raw.fightingStyleItemId),
+        eldritchInvocationItemId: normalizeOptionalChoiceReference(raw.eldritchInvocationItemId),
+        metamagicOptionIds: Array.from(new Set(asStringArray(raw.metamagicOptionIds))),
+        maneuverOptionIds: Array.from(new Set(asStringArray(raw.maneuverOptionIds))),
+        eldritchInvocationChoice: isRecord(raw.eldritchInvocationChoice) ? {
+          ...(raw.eldritchInvocationChoice as unknown as CharacterFeatChoice['eldritchInvocationChoice']),
+          id: asOptionalString(raw.eldritchInvocationChoice.id) ?? `feat-invocation-choice-${featItemId}`,
+          invocationItemId: normalizeCharacterChoiceReference(String(raw.eldritchInvocationChoice.invocationItemId ?? raw.eldritchInvocationItemId ?? '')),
+          instanceIndex: Number(raw.eldritchInvocationChoice.instanceIndex) || 0,
+          cantripItemIds: asStringArray(raw.eldritchInvocationChoice.cantripItemIds).map(normalizeCharacterChoiceReference),
+          ritualSpellItemIds: asStringArray(raw.eldritchInvocationChoice.ritualSpellItemIds).map(normalizeCharacterChoiceReference),
+          targetCantripItemId: normalizeOptionalChoiceReference(raw.eldritchInvocationChoice.targetCantripItemId),
+          originFeatItemId: normalizeOptionalChoiceReference(raw.eldritchInvocationChoice.originFeatItemId),
+          familiarCreatureItemId: normalizeOptionalChoiceReference(raw.eldritchInvocationChoice.familiarCreatureItemId)
+        } as CharacterFeatChoice['eldritchInvocationChoice'] : undefined,
         weaponMasterySelections: Array.isArray(raw.weaponMasterySelections)
           ? (raw.weaponMasterySelections as NonNullable<CharacterFeatChoice['weaponMasterySelections']>).map((selection) => ({
               ...selection,
@@ -189,9 +260,11 @@ const asSpeciesChoices = (value: unknown): CharacterSpeciesChoice[] => {
       choiceKind !== 'legacy' &&
       choiceKind !== 'revelation' &&
       choiceKind !== 'option' &&
+      choiceKind !== 'subrace' &&
       choiceKind !== 'size' &&
       choiceKind !== 'variableTrait' &&
-      choiceKind !== 'language'
+      choiceKind !== 'language' &&
+      choiceKind !== 'spell'
     ) continue;
     const speciesItemId = normalizeOptionalChoiceReference(rawEntry.speciesItemId);
     const featureItemId = normalizeOptionalChoiceReference(rawEntry.featureItemId);
@@ -204,7 +277,9 @@ const asSpeciesChoices = (value: unknown): CharacterSpeciesChoice[] => {
       choiceKind,
       optionId,
       skill: asOptionalString(rawEntry.skill),
-      language: asOptionalString(rawEntry.language)
+      language: asOptionalString(rawEntry.language),
+      replacementSpellItemId: normalizeOptionalChoiceReference(rawEntry.replacementSpellItemId),
+      replacementUsedAt: asOptionalString(rawEntry.replacementUsedAt)
     };
     if (ability && ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].includes(ability)) {
       entry.spellcastingAbility = ability as AbilityScore;
@@ -324,6 +399,10 @@ export const sanitizeCharacterCreationDraft = (value: unknown): CharacterCreatio
     customBackground: sanitizeCustomBackgroundChoice(value.customBackground),
     selectedSubclassByClass: asStringRecord(value.selectedSubclassByClass),
     subclassChoices: asSubclassChoices(value.subclassChoices),
+    classFeatureChoices: asClassFeatureChoices(value.classFeatureChoices),
+    bonusSpellChoices: asBonusSpellChoices(value.bonusSpellChoices),
+    spellbookFeatureChoices: asSpellbookFeatureChoices(value.spellbookFeatureChoices),
+    mysticArcanumChoices: asMysticArcanumChoices(value.mysticArcanumChoices),
     selectedOriginFeatId: normalizeOptionalChoiceReference(value.selectedOriginFeatId),
     selectedFeatCounts: asNumberRecord(value.selectedFeatCounts),
     selectedInvocationCounts: asNumberRecord(value.selectedInvocationCounts),

@@ -219,14 +219,21 @@ export const reconcilePactChainCompanion = (
   character: Character,
   choices: CharacterEldritchInvocationChoice[],
   selectedCounts: Record<string, number>,
-  items: StoredCompendiumItem[]
+  items: StoredCompendiumItem[],
+  grantedByFeatEntityId?: string
 ): Character => {
   const pactChoice = choices.find((choice) => {
     const invocation = findEldritchInvocationById(items, choice.invocationItemId);
     return isNamedInvocation(invocation, 'warlock.pact-of-the-chain', 'Pact of the Chain');
   });
+  const belongsToScope = (entry: CharacterCompanion): boolean => grantedByFeatEntityId
+    ? entry.grantedByFeatEntityId === grantedByFeatEntityId
+    : !entry.grantedByFeatEntityId;
   if (!pactChoice?.familiarCreatureItemId || !pactChoice.familiarVariant) {
-    return { ...character, companions: (character.companions ?? []).filter((entry) => entry.grantedByInvocationItemId !== pactChoice?.invocationItemId) };
+    return {
+      ...character,
+      companions: (character.companions ?? []).filter((entry) => !belongsToScope(entry) || !entry.grantedByInvocationItemId)
+    };
   }
   const creatureItem = items.find((item) => item.id === pactChoice.familiarCreatureItemId && item.type === 'creatureStatBlock');
   if (!creatureItem) return character;
@@ -237,8 +244,9 @@ export const reconcilePactChainCompanion = (
   const investmentChoice = investmentEntry
     ? choices.find((choice) => choice.invocationItemId === investmentEntry[0] && choice.instanceIndex === 0)
     : undefined;
-  const existing = (character.companions ?? []).find((entry) => entry.grantedByInvocationItemId === pactChoice.invocationItemId)
-    ?? (character.companions ?? [])[0];
+  const existing = (character.companions ?? []).find((entry) =>
+    belongsToScope(entry) && entry.grantedByInvocationItemId === pactChoice.invocationItemId
+  );
   const companion = buildPactChainCompanion({
     character,
     creatureItem,
@@ -249,11 +257,15 @@ export const reconcilePactChainCompanion = (
     movementMode: investmentChoice?.chainMasterMovementMode,
     damageType: investmentChoice?.chainMasterDamageType
   });
+  const scopedCompanion = grantedByFeatEntityId ? { ...companion, grantedByFeatEntityId } : companion;
   return {
     ...character,
     companions: [
-      ...(character.companions ?? []).filter((entry) => entry.id !== existing?.id && entry.grantedByInvocationItemId !== pactChoice.invocationItemId),
-      companion
+      ...(character.companions ?? []).filter((entry) =>
+        entry.id !== existing?.id
+        && !(belongsToScope(entry) && entry.grantedByInvocationItemId === pactChoice.invocationItemId)
+      ),
+      scopedCompanion
     ]
   };
 };

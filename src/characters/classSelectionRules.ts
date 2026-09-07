@@ -5,6 +5,12 @@ const asRecord = (value: unknown): Record<string, unknown> | undefined =>
     ? value as Record<string, unknown>
     : undefined;
 
+const asNumber = (value: unknown): number | undefined =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+
+const asString = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.trim() ? value.trim() : undefined;
+
 export const isSidekickClassItem = (item: StoredCompendiumItem): boolean => {
   if (item.type !== 'class') return false;
   const mechanics = asRecord(item.normalizedJson.mechanics);
@@ -16,5 +22,29 @@ export const isSidekickClassItem = (item: StoredCompendiumItem): boolean => {
     item.importItemId.includes('-class-sidekick-');
 };
 
-export const isPlayerCharacterClassItem = (item: StoredCompendiumItem): boolean =>
-  item.type === 'class' && !isSidekickClassItem(item);
+/**
+ * Player-character base classes must carry a real class chassis.  A few legacy
+ * books legitimately contain sidekick classes and imported rule/options can
+ * also be mis-typed as `class`; requiring a Hit Die prevents those records
+ * from leaking into the base-class selector while keeping PHB 2024 and the
+ * Forge 2025 Artificer available.
+ */
+export const isPlayerCharacterClassItem = (item: StoredCompendiumItem): boolean => {
+  if (item.type !== 'class' || isSidekickClassItem(item)) return false;
+  const payload = asRecord(item.normalizedJson) ?? {};
+  const hitDie = asNumber(payload.hitDie);
+  if (!hitDie || hitDie < 4 || hitDie > 20) return false;
+
+  // Subclasses/variants/options should never masquerade as a base class even
+  // when an upstream import accidentally assigns kind=class.
+  if (
+    asString(payload.classId) ||
+    asString(payload.classRef) ||
+    asString(payload.baseClassId) ||
+    asString(payload.subclassId) ||
+    asString(payload.ownerClassId) ||
+    asString(payload.ownerSubclassId)
+  ) return false;
+
+  return true;
+};

@@ -31,6 +31,7 @@ import {
   tacticalMovementCostBetweenPoints,
   targetMapPoint
 } from '../targeting/spatialMap';
+import { resolveTurnFeatureActivations } from './turnFeatureActivations';
 
 const now = (): string => new Date().toISOString();
 
@@ -364,7 +365,9 @@ export const resolveTacticalRotation = (params: {
   resolutions?: TacticalActionResolution[];
 }): ResolveTacticalRotationResult => {
   let scenario = normalizeCombatScenario(params.scenario);
-  const issues: RuleValidationIssue[] = [];
+  const activationResolution = resolveTurnFeatureActivations(params.rotation);
+  const resolvedRotation = activationResolution.rotation;
+  const issues: RuleValidationIssue[] = [...activationResolution.issues];
   const events: TacticalEffectEvent[] = [];
   const resolutions = params.resolutions ?? [];
   let actorPosition = scenario.actorPositionFeet ?? 0;
@@ -374,7 +377,7 @@ export const resolveTacticalRotation = (params: {
   let targets = scenario.targets!.map((target) => ({ ...target, effects: [...target.effects], conditions: [...target.conditions] }));
   let log = [...(scenario.tacticalLog ?? [])];
 
-  for (const turnAction of params.rotation.actions) {
+  for (const turnAction of resolvedRotation.actions) {
     const actionResolution = resolutionForAction(resolutions, turnAction);
     const fallbackTargetId = actionResolution.targetId ?? turnAction.targetId ?? targets[0].id;
     const targetResults = targetResultsForAction(actionResolution, fallbackTargetId);
@@ -414,20 +417,20 @@ export const resolveTacticalRotation = (params: {
     if (hits > 0 && turnAction.action.type === 'attack' && turnAction.action.mastery) {
       const mastery = turnAction.action.mastery;
       if (mastery.property === 'sap') {
-        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: params.rotation.id, actionId: turnAction.id, kind: 'sap', label: 'Sap', expiry: 'startOfSourceTurn', remainingUses: 1 }));
+        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: resolvedRotation.id, actionId: turnAction.id, kind: 'sap', label: 'Sap', expiry: 'startOfSourceTurn', remainingUses: 1 }));
         events.push({ id: createId('tacticalEvent'), actionId: turnAction.id, targetId: primaryTarget.id, kind: 'sap', label: 'Sap', description: 'Desvantagem no próximo ataque do alvo.', applied: true });
       }
       if (mastery.property === 'slow') {
-        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: params.rotation.id, actionId: turnAction.id, kind: 'slow', label: 'Slow', expiry: 'startOfSourceTurn', speedPenaltyFeet: 10 }));
+        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: resolvedRotation.id, actionId: turnAction.id, kind: 'slow', label: 'Slow', expiry: 'startOfSourceTurn', speedPenaltyFeet: 10 }));
         events.push({ id: createId('tacticalEvent'), actionId: turnAction.id, targetId: primaryTarget.id, kind: 'slow', label: 'Slow', description: 'Speed reduzida em 10 pés, sem acumular.', applied: true });
       }
       if (mastery.property === 'vex') {
-        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: params.rotation.id, actionId: turnAction.id, kind: 'vex', label: 'Vex', expiry: 'endOfSourceTurn', remainingUses: 1 }));
+        primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: resolvedRotation.id, actionId: turnAction.id, kind: 'vex', label: 'Vex', expiry: 'endOfSourceTurn', remainingUses: 1 }));
         events.push({ id: createId('tacticalEvent'), actionId: turnAction.id, targetId: primaryTarget.id, kind: 'vex', label: 'Vex', description: 'Vantagem no próximo ataque contra este alvo.', applied: true });
       }
       if (mastery.property === 'topple') {
         if (actionResolution.toppleSave === 'failure') {
-          primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: params.rotation.id, actionId: turnAction.id, kind: 'prone', label: 'Prone', expiry: 'manual', notes: `Falhou na salvaguarda de CON CD ${mastery.saveDC ?? '?'}.` }));
+          primaryTarget = replaceEffect(primaryTarget, effect({ scenario, characterId: params.character.id, rotationId: resolvedRotation.id, actionId: turnAction.id, kind: 'prone', label: 'Prone', expiry: 'manual', notes: `Falhou na salvaguarda de CON CD ${mastery.saveDC ?? '?'}.` }));
           if (!primaryTarget.conditions.includes('prone')) primaryTarget = { ...primaryTarget, conditions: [...primaryTarget.conditions, 'prone'] };
           events.push({ id: createId('tacticalEvent'), actionId: turnAction.id, targetId: primaryTarget.id, kind: 'prone', label: 'Topple', description: 'O alvo falhou na salvaguarda e ficou Prone.', applied: true });
         } else {
@@ -526,8 +529,8 @@ export const resolveTacticalRotation = (params: {
   }
 
   const newBattlefieldItems = [
-    ...ammunitionBattlefieldItems(params.rotation, scenario.round ?? 1),
-    ...thrownWeaponBattlefieldItems(params.rotation, params.character, scenario.round ?? 1)
+    ...ammunitionBattlefieldItems(resolvedRotation, scenario.round ?? 1),
+    ...thrownWeaponBattlefieldItems(resolvedRotation, params.character, scenario.round ?? 1)
   ];
   scenario = {
     ...scenario,
@@ -535,7 +538,7 @@ export const resolveTacticalRotation = (params: {
     actorMapPosition: scenario.spatialMode === 'map2d' ? actorMapPosition : scenario.actorMapPosition,
     targets,
     battlefieldItems: [...(scenario.battlefieldItems ?? []), ...newBattlefieldItems],
-    tacticalLog: [...log, logEntry(scenario, 'turn', `Rotação ${params.rotation.name} resolvida no round ${scenario.round ?? 1}.`)],
+    tacticalLog: [...log, logEntry(scenario, 'turn', `Rotação ${resolvedRotation.name} resolvida no round ${scenario.round ?? 1}.`)],
     updatedAt: now()
   };
 

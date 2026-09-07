@@ -83,6 +83,13 @@ describe('APP-05 atomic progression transaction', () => {
           description: 'Opcional.',
           status: 'pending',
           createdAt: '2026-08-03T00:00:00.000Z'
+        }, {
+          id: 'pending-mystic-arcanum-replacement',
+          kind: 'mysticArcanumReplacement',
+          title: 'Troca opcional de Mystic Arcanum',
+          description: 'Opcional.',
+          status: 'pending',
+          createdAt: '2026-08-03T00:00:00.000Z'
         }]
       },
       operations: [progressionOperation('levelUp', 'Wizard 1 → 2')]

@@ -8,10 +8,11 @@ import { ChoiceChipSelector } from '../../../src/components/ChoiceChipSelector';
 import { Field } from '../../../src/components/Field';
 import { PaginatedChipList } from '../../../src/components/PaginatedChipList';
 import { Screen } from '../../../src/components/Screen';
-import { applyCharacterChoice } from '../../../src/catalog/characterChoiceApplication';
+import { applyCharacterChoice, characterChoiceMatchesLink } from '../../../src/catalog/characterChoiceApplication';
 import { useCharacterChoiceBridge } from '../../../src/catalog/useCharacterChoiceBridge';
 import { useCharacterProgressionSession } from '../../../src/characters/useCharacterProgressionSession';
 import { customRuleSource } from '../../../src/characters/customRuleEffects';
+import { reconcileCharacterBuild } from '../../../src/characters/buildReconciliation';
 import { applyCustomProficiencyModifiers, describeCustomModifier } from '../../../src/characters/customModifierRules';
 import { SKILLS } from '../../../src/characters/proficiencies';
 import { ALL_LANGUAGE_OPTIONS, ALL_TOOL_OPTIONS } from '../../../src/characters/choiceOptions';
@@ -283,9 +284,9 @@ export default function CustomRuleScreen() {
     for (const spellItemId of spellAccessMode === 'grant' ? grantedSpellItemIds : []) {
       const choice = bridge.choiceForItemId(spellItemId);
       if (!choice?.available) continue;
-      const alreadyApplied = (next.compendiumLinks ?? []).some((link) => link.status === 'active' && (
-        link.choiceId === choice.choiceId || link.catalogEntityId === choice.catalogEntityId || link.itemId === spellItemId
-      ));
+      const alreadyApplied = (next.compendiumLinks ?? []).some((link) =>
+        link.status !== 'removed' && characterChoiceMatchesLink(link, choice)
+      );
       if (alreadyApplied) continue;
       const applied = applyCharacterChoice({ character: next, choice });
       if (!applied.ok || !applied.link) continue;
@@ -300,6 +301,7 @@ export default function CustomRuleScreen() {
     }
 
     next = applyCustomProficiencyModifiers(next);
+    next = reconcileCharacterBuild(next, bridge.items).character;
     updateCharacter(character.id, () => next);
     router.replace(kind === 'feat' ? `/characters/${character.id}/feats` : `/characters/${character.id}/features`);
   };

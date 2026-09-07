@@ -12,7 +12,7 @@ const contracts = [
   ['src/characters/compatibilityRemediationRecovery.ts', ['COMPATIBILITY_PLAN_RECOVERED', 'COMPATIBILITY_PLAN_CONFLICT', 'COMPATIBILITY_PLAN_CATALOG_STALE', 'reconcileCompatibilityRemediationRecovery', 'acknowledgeCompatibilityRemediationRecovery']],
   ['src/characters/compatibilityRemediationBatch.ts', ['buildCompatibilityRemediationBatchOverview', 'activePlans', 'readyPlans', 'activePlanCount']],
   ['src/store/characterStore.ts', ['compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine', 'acknowledgeCompatibilityRemediationPlan', 'dismissCompatibilityRemediationQuarantine']],
-  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 24', 'compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine']],
+  ['src/storage/characterMigrations.ts', ['CHARACTER_STORE_VERSION = 25', 'compatibilityRemediationRecovery', 'compatibilityRemediationQuarantine']],
   ['app/character-compatibility.tsx', ['Resumo agregado', 'Recuperação de planos', 'Ocorrências compartilhadas', 'Confirmar somente este personagem', 'Planos em quarentena']],
   ['app/characters/[id]/compatibility.tsx', ['Plano recuperado', 'Retomar com segurança', 'planEditable']],
   ['app/e2e-seed.tsx', ['prepareCompatibilityScenario', 'e2e-seed-remediation-create', 'e2e-seed-remediation-rollback']],
@@ -37,5 +37,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log('[catalog:compatibility-remediation-recovery:check] PASS');
-console.log('storeVersion=24');
+console.log('storeVersion=25');
 console.log('maestroFlows=4');

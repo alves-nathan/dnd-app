@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { ActiveEffect, Character, CharacterProgressionAuditEntry, CharacterProgressionOperation, CharacterProgressionTransactionKind, ResourcePool, RestType, SpellSlotLevel, SpellSlotPool, TurnRotation } from '../types';
+import { ActiveEffect, Character, CharacterProgressionAuditEntry, CharacterProgressionOperation, CharacterProgressionTransactionKind, ResourcePool, RestType, RuleValidationIssue, SpellSlotLevel, SpellSlotPool, TurnRotation } from '../types';
 import { createEmptyCharacter } from '../data/mockData';
 import { characterStorage } from '../storage/characterStorage';
 import { CHARACTER_STORE_VERSION, ensureCharacterCollections, migrateCharacterStoreState } from '../storage/characterMigrations';
@@ -19,6 +19,7 @@ import {
   spellSlotPoolKey,
   spendRotationSpellSlots
 } from '../rules-engine/resources/spellSlotManager';
+import { AbilityUseDefinition, AbilityUseExecutionResult, applyAbilityUse, undoAbilityUse } from '../rules-engine/abilities/abilityUseTransactions';
 import { restoreHitDiceOnRest } from '../characters/hitDiceRules';
 import { checkRotationAmmunition, spendRotationAmmunition } from '../characters/ammunitionRules';
 import {
@@ -50,6 +51,16 @@ import {
   type CompatibilityRemediationQuarantineEntry,
   type CompatibilityRemediationRecoverySummary
 } from '../characters/compatibilityRemediationRecovery';
+import type { StoredCompendiumItem } from '../compendium/types';
+import {
+  CHARACTER_CATALOG_RECONCILIATION_VERSION,
+  emptyCharacterCatalogReconciliationState,
+  type CharacterCatalogReconciliationState
+} from '../storage/characterCatalogReconciliationState';
+import {
+  createCharacterLinkCatalogFingerprint,
+  reconcileCharactersAgainstCurrentCatalog
+} from '../characters/catalogAwareCharacterReconciliation';
 import {
   addActiveEffectToCharacter,
   advanceActiveEffects,
@@ -58,6 +69,14 @@ import {
   removeActiveEffectFromCharacter
 } from '../rules-engine/effects/activeEffects';
 
+export interface CatalogAwareCharacterStoreReconciliationResult {
+  skipped: boolean;
+  changedCharacterIds: string[];
+  repairedLinkCount: number;
+  unresolvedLinkCount: number;
+  issues: RuleValidationIssue[];
+}
+
 export interface CharacterStore {
   characters: Character[];
   progressionDrafts: Record<string, CharacterProgressionDraft>;
@@ -65,6 +84,7 @@ export interface CharacterStore {
   compatibilityRemediationPlans: Record<string, CharacterCompatibilityRemediationPlan>;
   compatibilityRemediationRecovery: CompatibilityRemediationRecoverySummary;
   compatibilityRemediationQuarantine: Record<string, CompatibilityRemediationQuarantineEntry>;
+  catalogAwareReconciliation: CharacterCatalogReconciliationState;
   addCharacter: (name?: string) => Character;
   updateCharacter: (id: string, updater: (character: Character) => Character) => void;
   beginProgressionTransaction: (characterId: string, workingCharacter: Character, options?: {
@@ -90,17 +110,20 @@ export interface CharacterStore {
   removeCharacter: (id: string) => void;
   addRotation: (characterId: string, rotation: TurnRotation) => void;
   setCharacters: (characters: Character[]) => void;
+  reconcileCatalogAwareCharacters: (items: StoredCompendiumItem[]) => CatalogAwareCharacterStoreReconciliationResult;
   addResource: (characterId: string, resource: ResourcePool) => void;
   updateResource: (characterId: string, resourceId: string, updater: (resource: ResourcePool) => ResourcePool) => void;
   removeResource: (characterId: string, resourceId: string) => void;
   spendResource: (characterId: string, resourceId: string, amount?: number, reason?: string) => void;
   recoverResource: (characterId: string, resourceId: string, amount?: number, reason?: string) => void;
+  useAbility: (characterId: string, definition: AbilityUseDefinition) => AbilityUseExecutionResult | undefined;
+  undoAbilityUse: (characterId: string, transactionId?: string) => AbilityUseExecutionResult | undefined;
   addOrUpdateSpellSlot: (characterId: string, slot: SpellSlotPool) => void;
   updateSpellSlot: (characterId: string, slotLevel: SpellSlotLevel, updater: (slot: SpellSlotPool) => SpellSlotPool, selector?: Pick<SpellSlotPool, 'poolKind' | 'sourceClassId'>) => void;
   removeSpellSlot: (characterId: string, slotLevel: SpellSlotLevel, selector?: Pick<SpellSlotPool, 'poolKind' | 'sourceClassId'>) => void;
   spendSpellSlot: (characterId: string, slotLevel: SpellSlotLevel, amount?: number, reason?: string, selector?: Pick<SpellSlotPool, 'poolKind' | 'sourceClassId'>) => void;
   recoverSpellSlot: (characterId: string, slotLevel: SpellSlotLevel, amount?: number, reason?: string, selector?: Pick<SpellSlotPool, 'poolKind' | 'sourceClassId'>) => void;
-  spendRotationResources: (characterId: string, rotationId: string) => void;
+  spendRotationResources: (characterId: string, rotationId: string, rotationOverride?: TurnRotation) => void;
   addActiveEffect: (characterId: string, effect: ActiveEffect) => void;
   updateActiveEffect: (characterId: string, effectId: string, updater: (effect: ActiveEffect) => ActiveEffect) => void;
   removeActiveEffect: (characterId: string, effectId: string, reason?: string) => void;
@@ -119,6 +142,7 @@ export const useCharacterStore = create<CharacterStore>()(
       compatibilityRemediationPlans: {},
       compatibilityRemediationRecovery: emptyCompatibilityRemediationRecoverySummary(),
       compatibilityRemediationQuarantine: {},
+      catalogAwareReconciliation: emptyCharacterCatalogReconciliationState(),
       addCharacter: (name?: string) => {
         const character = ensureCharacterCollections(createEmptyCharacter(name));
         set({ characters: [...get().characters, character] });
@@ -394,8 +418,49 @@ export const useCharacterStore = create<CharacterStore>()(
           compatibilityRemediationPlans: remediationRecovery.plans,
           compatibilityRemediationRecovery: remediationRecovery.summary,
           compatibilityRemediationQuarantine: remediationRecovery.quarantine,
-          progressionRecovery: recovery.summary
+          progressionRecovery: recovery.summary,
+          // Bulk replacement may restore legacy snapshots. Force the next
+          // catalog-aware pass to evaluate the new collection explicitly.
+          catalogAwareReconciliation: emptyCharacterCatalogReconciliationState()
         });
+      },
+      reconcileCatalogAwareCharacters: (items) => {
+        const fingerprint = createCharacterLinkCatalogFingerprint(items);
+        const previous = get().catalogAwareReconciliation;
+        if (
+          previous.version >= CHARACTER_CATALOG_RECONCILIATION_VERSION &&
+          previous.catalogFingerprint === fingerprint &&
+          previous.unresolvedLinkCount === 0
+        ) {
+          return {
+            skipped: true,
+            changedCharacterIds: [],
+            repairedLinkCount: 0,
+            unresolvedLinkCount: previous.unresolvedLinkCount,
+            issues: []
+          };
+        }
+
+        const result = reconcileCharactersAgainstCurrentCatalog(get().characters, items);
+        const catalogAwareReconciliation: CharacterCatalogReconciliationState = {
+          version: CHARACTER_CATALOG_RECONCILIATION_VERSION,
+          catalogFingerprint: fingerprint,
+          completedAt: new Date().toISOString(),
+          changedCharacterIds: result.changedCharacterIds,
+          repairedLinkCount: result.repairedLinkCount,
+          unresolvedLinkCount: result.unresolvedLinkCount
+        };
+        set({
+          characters: result.characters.map(ensureCharacterCollections),
+          catalogAwareReconciliation
+        });
+        return {
+          skipped: false,
+          changedCharacterIds: result.changedCharacterIds,
+          repairedLinkCount: result.repairedLinkCount,
+          unresolvedLinkCount: result.unresolvedLinkCount,
+          issues: result.issues
+        };
       },
       addResource: (characterId, resource) => {
         get().updateCharacter(characterId, (character) => ({
@@ -420,6 +485,22 @@ export const useCharacterStore = create<CharacterStore>()(
       },
       recoverResource: (characterId, resourceId, amount = 1, reason = 'Recuperação manual') => {
         get().updateCharacter(characterId, (character) => adjustResource({ character, resourceId, delta: Math.abs(amount), reason }).character);
+      },
+      useAbility: (characterId, definition) => {
+        let output: AbilityUseExecutionResult | undefined;
+        get().updateCharacter(characterId, (character) => {
+          output = applyAbilityUse(character, definition);
+          return output.character;
+        });
+        return output;
+      },
+      undoAbilityUse: (characterId, transactionId) => {
+        let output: AbilityUseExecutionResult | undefined;
+        get().updateCharacter(characterId, (character) => {
+          output = undoAbilityUse(character, transactionId);
+          return output.character;
+        });
+        return output;
       },
       addOrUpdateSpellSlot: (characterId, slot) => {
         get().updateCharacter(characterId, (character) => {
@@ -468,9 +549,10 @@ export const useCharacterStore = create<CharacterStore>()(
       recoverSpellSlot: (characterId, slotLevel, amount = 1, reason = 'Recuperação manual de slot', selector) => {
         get().updateCharacter(characterId, (character) => adjustSpellSlot({ character, slotLevel, delta: Math.abs(amount), reason, poolKind: selector?.poolKind, sourceClassId: selector?.sourceClassId }).character);
       },
-      spendRotationResources: (characterId, rotationId) => {
+      spendRotationResources: (characterId, rotationId, rotationOverride) => {
         get().updateCharacter(characterId, (character) => {
-          const rotation = character.rotations.find((item) => item.id === rotationId);
+          const storedRotation = character.rotations.find((item) => item.id === rotationId);
+          const rotation = rotationOverride?.id === rotationId ? rotationOverride : storedRotation;
           if (!rotation) return character;
           const resourceAvailability = checkRotationResources(rotation, character);
           const slotAvailability = checkRotationSpellSlots(rotation, character);
@@ -507,7 +589,10 @@ export const useCharacterStore = create<CharacterStore>()(
           const afterSlots = applySpellSlotRest(afterResources, restType).character;
           const afterHitDice = restoreHitDiceOnRest(afterSlots, restType);
           const afterEffects = advanceActiveEffects(afterHitDice, restType);
-          return restType === 'turnStart' ? advanceGazeOfTwoMindsTurn(afterEffects) : afterEffects;
+          const afterRestMarker = restType === 'longRest'
+            ? { ...afterEffects, lastLongRestAt: new Date().toISOString() }
+            : afterEffects;
+          return restType === 'turnStart' ? advanceGazeOfTwoMindsTurn(afterRestMarker) : afterRestMarker;
         });
       }
     }),

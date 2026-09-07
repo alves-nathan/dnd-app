@@ -11,14 +11,17 @@ const checks = [
     'previewCategoryState',
     'previewEntityState',
     'hardDependencyBreaks',
-    'accessibilityLabel='
+    'accessibilityLabel=',
+    'buildImportedCompendiumSourceRows',
+    'Fontes instaladas localmente',
+    'compendium-imported-source-toggle-'
   ]],
   ['app/_layout.tsx', [
     'useCatalogStore',
     'initializeCatalog',
     '<Stack.Screen name="content-management" />'
   ]],
-  ['app/settings.tsx', [
+  ['app/compendium/maintenance.tsx', [
     'Gerenciar livros e regras',
     "router.push('/content-management')"
   ]],

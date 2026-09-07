@@ -114,5 +114,4 @@ const report = {
   verification: { passed: passed.status, failed: failed.status, warning: warning.status }, receiptChecksum: receipt.checksum, evidenceChecksum: evidence.checksum
 };
 fs.writeFileSync(path.join(root, 'reports/app-15-runtime-harness.json'), `${JSON.stringify(report, null, 2)}\n`);
-fs.writeFileSync(path.join(root, 'app-15-runtime-harness.json'), `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));

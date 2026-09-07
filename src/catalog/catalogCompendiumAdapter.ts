@@ -88,7 +88,7 @@ export const characterChoiceToMapperItem = (
       ? 'Entidade oficial disponível com revisão editorial preservada pelo catálogo.'
       : 'Entidade oficial materializada transitoriamente pelo catálogo; não persistir no compêndio local.'
   };
-  const rawJson: CompendiumItemInput = {
+  const rawJson: CompendiumItemInput | StoredCompendiumItem['rawJson'] = originalItem?.rawJson ?? {
     id: choice.entityId,
     kind: choice.kind,
     name: choice.name,
@@ -96,6 +96,23 @@ export const characterChoiceToMapperItem = (
     source,
     payload: { ...choice.payload }
   };
+  const normalizedJson = originalItem
+    ? {
+        ...originalItem.normalizedJson,
+        __characterChoice: catalogMetadata(choice),
+        originalCompendiumItemId: originalItem.id
+      }
+    : {
+        ...choice.payload,
+        id: choice.entityId,
+        name: choice.name,
+        type: choice.kind,
+        sourceId: source.id,
+        sourceStatus: 'active',
+        sourceConfidence: 'exact',
+        requiresReview: choice.manualReviewRequired,
+        __characterChoice: catalogMetadata(choice)
+      };
   const now = new Date(0).toISOString();
   return {
     id: choice.choiceId,
@@ -107,17 +124,7 @@ export const characterChoiceToMapperItem = (
     summary: choice.summary,
     version: choice.provenance.catalogVersion,
     rawJson,
-    normalizedJson: {
-      ...choice.payload,
-      id: choice.entityId,
-      name: choice.name,
-      type: choice.kind,
-      sourceId: source.id,
-      sourceStatus: 'active',
-      sourceConfidence: 'exact',
-      requiresReview: choice.manualReviewRequired,
-      __characterChoice: catalogMetadata(choice)
-    },
+    normalizedJson,
     tags: Array.from(new Set([
       choice.kind,
       choice.name.toLowerCase(),

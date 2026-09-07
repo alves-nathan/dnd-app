@@ -5,10 +5,15 @@ import {
   findCompendiumItemByReference,
   getCompendiumClassReference,
   getProgressionFeatureReferences,
+  getInferredSubclassProgressionBindings,
   getSubclassUnlockLevel,
   isChoiceProgressionFeature,
   isProgressionOwnedFeatureItem
 } from '../compendium/classProgression';
+import {
+  findCompendiumItemForCharacterLink,
+  sameLogicalCompendiumItem
+} from '../compendium/characterLinkIdentity';
 
 export interface ProgressionReconciliationResult {
   character: Character;
@@ -34,7 +39,7 @@ export const reconcileCharacterProgression = (
   const classBindings = classLinks
     .map((link) => ({
       link,
-      item: items.find((item) => item.id === link.itemId),
+      item: findCompendiumItemForCharacterLink(items, link),
       entity: next.classes.find((entry) => entry.id === link.appliedEntityId)
     }))
     .filter((entry) => Boolean(entry.item && entry.entity));
@@ -51,17 +56,22 @@ export const reconcileCharacterProgression = (
 
   const invalidSubclassEntityIds = new Set<string>();
   const validSubclassLinks = activeLinks(next, 'subclass').filter((link) => {
-    const subclassItem = items.find((item) => item.id === link.itemId);
+    const subclassItem = findCompendiumItemForCharacterLink(items, link);
     const subclassEntity = next.subclasses.find((entry) => entry.id === link.appliedEntityId);
     if (!subclassItem || !subclassEntity) {
       invalidSubclassEntityIds.add(link.appliedEntityId);
       return false;
     }
     const classReference = getCompendiumClassReference(subclassItem);
-    const classBinding = classBindings.find(({ link: classLink, item: classItem }) =>
-      classLink.itemId === classReference ||
-      classLink.importItemId === classReference ||
-      classItem?.importItemId === classReference
+    const referencedClassItem = classReference
+      ? findCompendiumItemByReference(items, classReference)
+      : undefined;
+    const classBinding = classBindings.find(({ item: classItem }) =>
+      Boolean(
+        classItem &&
+        referencedClassItem &&
+        sameLogicalCompendiumItem(classItem, referencedClassItem)
+      )
     );
     if (!classBinding?.entity || classBinding.entity.level < getSubclassUnlockLevel(subclassItem)) {
       invalidSubclassEntityIds.add(subclassEntity.id);
@@ -76,6 +86,15 @@ export const reconcileCharacterProgression = (
     return true;
   });
 
+  for (const binding of getInferredSubclassProgressionBindings(next, items)) {
+    for (const reference of getProgressionFeatureReferences(binding.subclassItem, binding.classLevel)) {
+      const feature = findCompendiumItemByReference(items, reference);
+      if (feature && feature.type === 'feature' && !isChoiceProgressionFeature(feature)) {
+        allowedFeatureItemIds.add(feature.id);
+      }
+    }
+  }
+
   if (invalidSubclassEntityIds.size) {
     next = {
       ...next,
@@ -89,7 +108,7 @@ export const reconcileCharacterProgression = (
   }
 
   const featureLinksToRemove = activeLinks(next, 'feature').filter((link) => {
-    const item = items.find((candidate) => candidate.id === link.itemId);
+    const item = findCompendiumItemForCharacterLink(items, link);
     return Boolean(item && isProgressionOwnedFeatureItem(item, items) && !allowedFeatureItemIds.has(item.id));
   });
   const removedFeatureEntityIds = new Set(featureLinksToRemove.map((link) => link.appliedEntityId));

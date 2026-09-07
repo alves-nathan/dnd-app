@@ -18,7 +18,7 @@ import {
   addActiveEffectToCharacter,
   removeActiveEffectFromCharacter
 } from '../rules-engine/effects/activeEffects';
-import { findEldritchInvocationById } from './eldritchInvocationRules';
+import { findEldritchInvocationById, getEffectiveEldritchInvocationCounts } from './eldritchInvocationRules';
 
 const normalize = (value: string): string => value
   .normalize('NFD')
@@ -36,7 +36,7 @@ const engineKey = (item?: StoredCompendiumItem): string => {
 const selectedInvocationItems = (
   character: Character,
   items: StoredCompendiumItem[]
-): StoredCompendiumItem[] => Object.entries(character.buildChoices?.eldritchInvocationCounts ?? {})
+): StoredCompendiumItem[] => Object.entries(getEffectiveEldritchInvocationCounts(character))
   .filter(([, count]) => count > 0)
   .map(([itemId]) => findEldritchInvocationById(items, itemId))
   .filter((item): item is StoredCompendiumItem => Boolean(item));
