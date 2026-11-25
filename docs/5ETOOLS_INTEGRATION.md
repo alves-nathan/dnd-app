@@ -78,3 +78,7 @@ Ver [5ETOOLS_V3_CONTRACT.md](5ETOOLS_V3_CONTRACT.md). Schema discriminado V3 e v
 ## Fase 5.1 — conversão piloto de magias
 
 Ver [5ETOOLS_SPELL_CONVERSION.md](5ETOOLS_SPELL_CONVERSION.md). Conversão em staging dos quatro códigos piloto com acesso de classes via lookup gerado, campos mecânicos básicos, preservação das estruturas de origem e auditoria agregada via CI. Corrigidas fixtures a4 que declaravam classes vazias. Nenhuma alteração de runtime ou assets.
+
+## Fase 5.2 — conversão piloto de criaturas
+
+Ver [5ETOOLS_CREATURE_CONVERSION.md](5ETOOLS_CREATURE_CONVERSION.md). Conversor conservador, métricas de ações e bloqueios, validação real em CI. Magias: 854/854 registros validados em staging no piloto a5.1, zero dano promovido. O runtime e os assets seguem inalterados.
