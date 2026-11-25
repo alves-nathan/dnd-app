@@ -13,3 +13,5 @@ Testes: npx jest src/tests/upstream5etoolsFeatureConverter.test.ts --runInBand
 Auditoria real: DND_UPSTREAM_FEATURE_SNAPSHOT=../5etools-src npx jest src/tests/upstream5etoolsFeatureConverter.test.ts --runInBand
 
 CI somente agregados; não publicar packs. Homebrew, variantes e efeitos complexos não convertidos; runtime intacto. Próxima subfase a5.6 espécies e backgrounds.
+
+Mapeamentos conferidos em js/parser.js do upstream: DG=Dark Gift, D=Dragonmark, FS:P/FS:R=Fighting Style Replacement de Paladin/Ranger; RN=Rune Knight Rune, RP=Renown Perk. Não tratar substituição como talento Fighting Style comum.

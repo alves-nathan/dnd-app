@@ -46,6 +46,16 @@ describe('5etools feat and optional feature pilot',()=>{
     expect(o.metadata.reviewCodes).toEqual(expect.arrayContaining(['resourceConsumptionPending','classLevelReferencePending','compoundPrerequisitePending']));
     expect(stageImportV3(r.packs[0]).ok).toBe(true);
   });
+  test('keeps Dark Gift, Dragonmark, fighting style replacements and rune/renown families distinct',()=>{
+    const r=buildPilot(fixture([feat({name:'Gift',category:'DG'}),feat({name:'Mark',category:'D'}),feat({name:'Replacement',category:'FS:P'})],
+      [feature({name:'Rune',featureType:['RN']}),feature({name:'Renown',featureType:['RP']})]),['XPHB']);
+    const p=new Map(r.packs[0].items.map((x:any)=>[x.name,x.payload]));
+    expect(p.get('Gift')).toMatchObject({category:'darkGift'});
+    expect(p.get('Mark')).toMatchObject({category:'dragonmark'});
+    expect(p.get('Replacement')).toMatchObject({category:'fightingStyleReplacementPaladin'});
+    expect(p.get('Rune')).toMatchObject({sourceType:'runeKnightRune'});
+    expect(p.get('Renown')).toMatchObject({sourceType:'renownPerk'});
+  });
   test('blocks unresolved variants and duplicate identities, retains source distinctions',()=>{
     const r=buildPilot(fixture([feat(),feat(),feat({name:'Variant',_versions:[{}]})]),['XPHB']);
     expect(r.counts.XPHB.feat).toEqual({total:3,converted:0,blocked:3});
