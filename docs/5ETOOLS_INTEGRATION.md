@@ -43,3 +43,17 @@ O relatório registra fontes em namespaces independentes (`main:AU`, `homebrew:A
 - Não altera runtime, assets, armazenamento, políticas de confiança ou CI de publicação. Não usa chaves privadas.
 - Testes: `npx jest src/tests/upstream5etoolsInventory.test.ts --runInBand` (inclui fixture Git local).
 - O baseline V3 consolidado atualizado não foi incorporado a esta fase. Solicitar ou localizar antes do benchmark.
+
+## Fase 2 — resolução conservadora e descoberta por entidade
+
+`scripts/5etools/resolver.js` lê snapshots Git e identifica entidades nos arquivos compartilhados, classes, magias, bestiário e coleções indexadas de homebrew. Registra identidades com discriminadores de classe/subclasse/nível e namespace. Resolve cadeias simples de _copy, _preserve e operações appendArr, prependArr, insertArr, replaceArr e replaceOrAppendArr. Referências estruturadas de classFeatures/subclassFeatures e owner de subclasses são verificadas. Ausência, ambiguidade, ciclo ou modo não implementado bloqueiam a entidade; não há payload parcialmente convertido. O relatório é apenas staging/diagnóstico; não representa cobertura mecânica integral nem resolução de todas as referências transitivas.
+
+```bash
+node scripts/5etools/resolver.js ../5etools-src ../5etools-homebrew dist/upstream/resolution.json
+# Opcional: acrescentar os dois SHAs do inventário ao comando.
+npx jest src/tests/upstream5etoolsResolver.test.ts --runInBand
+```
+
+Código 2: relatório produzido com bloqueios para investigação. Ainda faltam templates, variantes, replaceTxt, outros modos _mod, tags inline, dependências de _meta, redirecionamentos, defaults e normalização de UIDs adicionais. A resolução de heranças não equivale a conversão para V3. O relatório pode conter nomes e IDs derivados do upstream; mantenha-o em dist/ local.
+
+Diretriz de descontinuação dos importadores V1/V2 e gates: [5ETOOLS_LEGACY_CUTOVER.md](5ETOOLS_LEGACY_CUTOVER.md). Esta decisão atualiza o alvo V2 descrito na fase 1: V3 será o novo contrato, com migração deliberada do runtime atual.
