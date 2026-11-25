@@ -86,3 +86,7 @@ Ver [5ETOOLS_CREATURE_CONVERSION.md](5ETOOLS_CREATURE_CONVERSION.md). Conversor 
 ## Fase 5.3 — equipamentos não mágicos
 
 Ver [5ETOOLS_EQUIPMENT_CONVERSION.md](5ETOOLS_EQUIPMENT_CONVERSION.md). Piloto de weapon/armor/equipment, propriedades, masteries, custos e referências preservadas. Auditoria a5.2: 1099/1149 criaturas validadas em staging, 50 bloqueadas, 656 ataques simples. Manutenção de CI hosted Node24 separada; ver [GITHUB_ACTIONS_NODE24.md](GITHUB_ACTIONS_NODE24.md). Próximo: itens mágicos/variantes. Sem alterações no runtime.
+
+## Fase 5.4 — itens mágicos e variantes
+
+Ver [5ETOOLS_MAGIC_ITEM_CONVERSION.md](5ETOOLS_MAGIC_ITEM_CONVERSION.md). Piloto de itens concretos e expansão conservadora de templates com fonte aninhada, _copy e seletores. Reutilização de normalização de equipamento. Efeitos, progressões, expressões e referências pendentes. Equipamentos a5.3: 824/826 validados em staging. Próximo: talentos e features opcionais.
