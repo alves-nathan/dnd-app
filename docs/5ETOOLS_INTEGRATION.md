@@ -70,3 +70,7 @@ node scripts/5etools/audit-summary.js ../5etools-src ../5etools-homebrew
 npx jest src/tests/upstream5etoolsInventory.test.ts src/tests/upstream5etoolsResolver.test.ts src/tests/upstream5etoolsCoverage.test.ts --runInBand
 ```
 A saída resumida contém somente commits, contagens agregadas, códigos de diagnóstico e fontes piloto conhecidas. Não imprime nomes, IDs de entidades, payloads ou detalhes de erro. Não publicar o relatório detalhado. A cobertura integral deve ser medida em clones reais; amostra de arquivos via GitHub não substitui essa execução. Os gates V1/V2 continuam válidos.
+
+## Fase 4 — contrato canônico V3 (a4)
+
+Ver [5ETOOLS_V3_CONTRACT.md](5ETOOLS_V3_CONTRACT.md). Schema discriminado V3 e validação em staging com projeção V2, sem alterar o runtime. O importador V3 histórico exige migração explícita. A auditoria real a3 foi concluída; as lacunas de identidade e resolução continuam no backlog antes do cutover.

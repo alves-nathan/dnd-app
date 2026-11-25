@@ -9,3 +9,6 @@ export const IMPORT_TEMPLATE_VERSION_V2 = 'dnd-combat-import.v2' as const;
  * or IMPORT_TEMPLATE_VERSION_V2 for the canonical format.
  */
 export const STANDARD_IMPORT_TEMPLATE_VERSION = LEGACY_IMPORT_TEMPLATE_VERSION_V1;
+
+/** Staging contract only until the V3 persistence cutover. */
+export const IMPORT_TEMPLATE_VERSION_V3 = 'dnd-combat-import.v3' as const;
