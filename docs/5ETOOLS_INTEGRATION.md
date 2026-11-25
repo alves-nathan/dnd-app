@@ -82,3 +82,7 @@ Ver [5ETOOLS_SPELL_CONVERSION.md](5ETOOLS_SPELL_CONVERSION.md). Conversão em st
 ## Fase 5.2 — conversão piloto de criaturas
 
 Ver [5ETOOLS_CREATURE_CONVERSION.md](5ETOOLS_CREATURE_CONVERSION.md). Conversor conservador, métricas de ações e bloqueios, validação real em CI. Magias: 854/854 registros validados em staging no piloto a5.1, zero dano promovido. O runtime e os assets seguem inalterados.
+
+## Fase 5.3 — equipamentos não mágicos
+
+Ver [5ETOOLS_EQUIPMENT_CONVERSION.md](5ETOOLS_EQUIPMENT_CONVERSION.md). Piloto de weapon/armor/equipment, propriedades, masteries, custos e referências preservadas. Auditoria a5.2: 1099/1149 criaturas validadas em staging, 50 bloqueadas, 656 ataques simples. Manutenção de CI hosted Node24 separada; ver [GITHUB_ACTIONS_NODE24.md](GITHUB_ACTIONS_NODE24.md). Próximo: itens mágicos/variantes. Sem alterações no runtime.
