@@ -1,0 +1,38 @@
+name: Upstream structural audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/5etools-integration
+    paths:
+      - 'scripts/5etools/**'
+      - '.github/workflows/upstream-structural-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GIT_TERMINAL_PROMPT: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch upstream snapshots (no upstream code execution)
+        run: |
+          git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/5etools-mirror-3/5etools-src.git "$RUNNER_TEMP/5etools-main"
+          git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/TheGiddyLimit/homebrew.git "$RUNNER_TEMP/5etools-homebrew"
+      - name: Aggregate coverage only
+        run: |
+          node scripts/5etools/audit-summary.js "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
+      - name: Remove upstream snapshots
+        if: always()
+        run: |
+          rm -rf -- "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
