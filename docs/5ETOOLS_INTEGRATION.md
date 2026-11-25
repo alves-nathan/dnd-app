@@ -57,3 +57,16 @@ npx jest src/tests/upstream5etoolsResolver.test.ts --runInBand
 Código 2: relatório produzido com bloqueios para investigação. Ainda faltam templates, variantes, replaceTxt, outros modos _mod, tags inline, dependências de _meta, redirecionamentos, defaults e normalização de UIDs adicionais. A resolução de heranças não equivale a conversão para V3. O relatório pode conter nomes e IDs derivados do upstream; mantenha-o em dist/ local.
 
 Diretriz de descontinuação dos importadores V1/V2 e gates: [5ETOOLS_LEGACY_CUTOVER.md](5ETOOLS_LEGACY_CUTOVER.md). Esta decisão atualiza o alvo V2 descrito na fase 1: V3 será o novo contrato, com migração deliberada do runtime atual.
+
+## Fase 3 — cobertura estrutural (a3)
+
+O resolvedor usa a identidade curta de subclasses, corrige defaults de UID e aceita display text sem confundi-lo com identidade. Suporta paths aninhados seguros e setProp, remove, removeArr e appendIfNotExistsArr. Mutações de identidade, paths perigosos, regex, texto dinâmico, templates e versões não expandidas continuam bloqueados. Uma dependência estrutural bloqueada propaga o bloqueio para consumidores.
+
+O relatório `dnd-upstream-resolution-audit.v2` inclui totais por origem/fonte/kind, edição declarada (ou unspecified), quantidade de variantes e reprints observadas, tags inline e chaves _meta ainda não resolvidas, e diagnósticos agrupados. Não interpreta tags nem reprints como vínculos validados. Não expande variantes e não prova paridade mecânica. Registros sem identidade válida aparecem em diagnósticos, não nos denominadores das entidades indexadas.
+
+Execução completa local: comando resolver.js da fase 2. Para CI ou logs compartilháveis:
+```bash
+node scripts/5etools/audit-summary.js ../5etools-src ../5etools-homebrew
+npx jest src/tests/upstream5etoolsInventory.test.ts src/tests/upstream5etoolsResolver.test.ts src/tests/upstream5etoolsCoverage.test.ts --runInBand
+```
+A saída resumida contém somente commits, contagens agregadas, códigos de diagnóstico e fontes piloto conhecidas. Não imprime nomes, IDs de entidades, payloads ou detalhes de erro. Não publicar o relatório detalhado. A cobertura integral deve ser medida em clones reais; amostra de arquivos via GitHub não substitui essa execução. Os gates V1/V2 continuam válidos.

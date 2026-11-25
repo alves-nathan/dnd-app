@@ -3,6 +3,7 @@
 // Conservative, offline staging resolver. Unsupported operations never emit a partial entity.
 const { openSnapshot } = require('./inventory');
 const fs = require('node:fs');
+const { isDeepStrictEqual } = require('node:util');
 const path = require('node:path');
 const kinds = new Set(['class','subclass','classFeature','subclassFeature','race','subrace','background','feat','spell','monster','item','baseitem','itemGroup','magicvariant','optionalfeature','condition','disease','status','action','variantrule','legendaryGroup','reward','vehicle','trap','hazard','object','psionic','charoption','facility','itemProperty','itemType','itemMastery','language','skill','sense','table','tableGroup','deck','card','deity','cult','boon']);
 const isRecord = x => x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -12,16 +13,15 @@ const bad = new Set(['__proto__','prototype','constructor']);
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 function fail(code, detail) { const e = new Error(detail); e.code = code; throw e; }
 function identity(kind, e) {
-  const name = norm(e.name ?? e.abbreviation);
+  const name = norm(kind === 'subclass' ? (e.shortName ?? e.name) : (e.name ?? e.abbreviation));
   const source = norm(e.source);
   if (!name || !source) fail('invalidIdentity', kind + ': missing name or source');
   const parts = [kind, name, source];
   if (['subclass','classFeature','subclassFeature'].includes(kind)) parts.push(norm(e.className),norm(e.classSource));
-  if (kind === 'subclass') parts.push(norm(e.shortName ?? e.name));
   if (kind === 'subclassFeature') parts.push(norm(e.subclassShortName),norm(e.subclassSource));
   if (['classFeature','subclassFeature'].includes(kind)) {
-    if (!Number.isInteger(Number(e.level)) || Number(e.level) < 1) fail('invalidIdentity',kind + ': invalid level');
-    parts.push(String(e.level));
+    if (!Number.isInteger(Number(e.level)) || Number(e.level) < 1 || Number(e.level) > 20) fail('invalidIdentity',kind + ': invalid level');
+    parts.push(String(Number(e.level)));
   }
   if (kind === 'subrace') parts.push(norm(e.raceName),norm(e.raceSource));
   if (parts.some(x => !x)) fail('invalidIdentity',kind + ': missing owner discriminator');
@@ -51,7 +51,8 @@ function collect(main, homebrew) {
           try {
             if (!isRecord(entity)) fail('invalidEntity','Expected object');
             const key = identity(kind,entity);
-            records.push({id:JSON.stringify([origin,key]),key,kind,origin,path:p,index,blob:snapshot.files.get(p),entity});
+            records.push({id:JSON.stringify([origin,key]),key,kind,origin,path:p,index,blob:snapshot.files.get(p),entity,
+              metaKeys:Object.keys(json._meta || {})});
           } catch (e) { diagnostics.push({code:e.code || 'invalidEntity',origin,path:p,kind,index,detail:e.message}); }
         }
       }
@@ -74,20 +75,53 @@ function merge(kind,base,child) {
   delete out._copy;
   return out;
 }
+function safePath(value) {
+  if (typeof value !== 'string') fail('unsupportedModPath',String(value));
+  const parts = value.split('.');
+  if (parts.some(p => !p || bad.has(p) || p === '*' || p === '_' || /^\d+$/.test(p))) fail('unsupportedModPath',value);
+  return parts;
+}
+function getParent(root, parts, create) {
+  let parent = root;
+  for (const p of parts.slice(0,-1)) {
+    if (!own(parent,p)) {
+      if (!create) return null;
+      parent[p] = {};
+    }
+    if (!isRecord(parent[p])) fail('invalidModTarget',parts.join('.'));
+    parent = parent[p];
+  }
+  return parent;
+}
 function applyMods(entity, mods) {
   if (!isRecord(mods)) fail('unsupportedMod','Expected modification object');
   for (const [prop, ops] of Object.entries(mods)) {
-    if (bad.has(prop) || prop === '*' || prop === '_' || prop.includes('.')) fail('unsupportedModPath',prop);
+    const parts = safePath(prop);
     for (const m of Array.isArray(ops) ? ops : [ops]) {
+      if (m === 'remove') {
+        const parent = getParent(entity,parts,false);
+        if (parent) delete parent[parts.at(-1)];
+        continue;
+      }
       if (!isRecord(m) || typeof m.mode !== 'string') fail('unsupportedMod',prop);
-      // Dynamic text, regex and other modifier families require a dedicated implementation.
       if (JSON.stringify(m).includes('<$')) fail('unsupportedDynamicMod',prop);
-      const arr = entity[prop];
+      const fullPath = m.mode === 'setProp' && m.prop !== undefined ? [...parts,...safePath(m.prop)] : parts;
+      const parent = getParent(entity,fullPath,['appendArr','prependArr','appendIfNotExistsArr','setProp','replaceOrAppendArr'].includes(m.mode));
+      if (!parent) fail('invalidModTarget',prop);
+      const key = fullPath.at(-1);
+      if (m.mode === 'setProp') {
+        if (!own(m,'value')) fail('invalidModTarget',prop);
+        parent[key] = copy(m.value);
+        continue;
+      }
+      const arr = own(parent,key) ? parent[key] : undefined;
       const items = own(m,'items') ? (Array.isArray(m.items) ? copy(m.items) : [copy(m.items)]) : null;
       const name = x => isRecord(x) ? x.name : x;
-      if (m.mode === 'appendArr' || m.mode === 'prependArr') {
+      if (['appendArr','prependArr','appendIfNotExistsArr'].includes(m.mode)) {
         if (!items || (arr !== undefined && !Array.isArray(arr))) fail('invalidModTarget',prop);
-        entity[prop] = m.mode === 'appendArr' ? [...(arr || []),...items] : [...items,...(arr || [])];
+        const old = arr || [];
+        parent[key] = m.mode === 'prependArr' ? [...items,...old] :
+          [...old,...(m.mode === 'appendIfNotExistsArr' ? items.filter(it => !old.some(x => isDeepStrictEqual(it,x))) : items)];
       } else if (m.mode === 'insertArr') {
         if (!items || !Array.isArray(arr) || !Number.isInteger(m.index) || m.index < -1 || m.index > arr.length) fail('invalidModTarget',prop);
         arr.splice(m.index === -1 ? arr.length : m.index,0,...items);
@@ -96,8 +130,18 @@ function applyMods(entity, mods) {
         if (!(typeof m.replace === 'string' || (isRecord(m.replace) && Number.isInteger(m.replace.index) && !own(m.replace,'regex')))) fail('unsupportedModSelector',prop);
         const index = typeof m.replace === 'string' ? (arr || []).findIndex(x => name(x) === m.replace) : m.replace.index;
         if (index >= 0 && index < (arr || []).length) arr.splice(index,1,...items);
-        else if (m.mode === 'replaceOrAppendArr') entity[prop] = [...(arr || []),...items];
+        else if (m.mode === 'replaceOrAppendArr') parent[key] = [...(arr || []),...items];
         else fail('missingModTarget',prop);
+      } else if (m.mode === 'removeArr') {
+        if (!Array.isArray(arr) || (own(m,'names') === own(m,'items'))) fail('invalidModTarget',prop);
+        const byName = own(m,'names');
+        const targets = byName ? (Array.isArray(m.names) ? m.names : [m.names]) : items;
+        for (const target of targets) {
+          if (typeof target !== 'string' && (byName || typeof target !== 'number')) fail('unsupportedModSelector',prop);
+          const index = arr.findIndex(x => byName ? isRecord(x) && x.name === target : x === target);
+          if (index >= 0) arr.splice(index,1);
+          else if (!(byName && m.force === true)) fail('missingModTarget',prop);
+        }
       } else fail('unsupportedModMode',m.mode + ':' + prop);
     }
   }
@@ -132,15 +176,16 @@ function makeResolver(records) {
       lineage = [base.id,...parent.lineage];
     }
     if (entity._mod || entity._templates || entity._versions) fail('unsupportedVariantOrTemplate',r.id);
+    if (identity(r.kind,entity) !== r.key) fail('identityChangedByMod',r.id);
     const value = {entity,lineage};
     memo.set(r.id,copy(value));
     return value;
   }
   function featureTarget(kind, uid) {
     if (typeof uid !== 'string') fail('invalidFeatureUid',kind);
-    const p = uid.split('|');
-    if (kind === 'classFeature' && p.length >= 4 && p.length <= 5) return {name:p[0],className:p[1],classSource:p[2] || 'PHB',level:Number(p[3]),source:p[4] || p[2] || 'PHB'};
-    if (kind === 'subclassFeature' && p.length >= 6 && p.length <= 7) return {name:p[0],className:p[1],classSource:p[2] || 'PHB',subclassShortName:p[3],subclassSource:p[4] || p[2] || 'PHB',level:Number(p[5]),source:p[6] || p[4] || p[2] || 'PHB'};
+    const p = uid.split('|').map(x => x.trim());
+    if (kind === 'classFeature' && p.length >= 4 && p.length <= 6) return {name:p[0],className:p[1],classSource:p[2] || 'PHB',level:Number(p[3]),source:p[4] || p[2] || 'PHB'};
+    if (kind === 'subclassFeature' && p.length >= 6 && p.length <= 8) return {name:p[0],className:p[1],classSource:p[2] || 'PHB',subclassShortName:p[3],subclassSource:p[4] || 'PHB',level:Number(p[5]),source:p[6] || p[4] || 'PHB'};
     fail('invalidFeatureUid',uid);
   }
   function references(r, entity) {
@@ -157,28 +202,75 @@ function makeResolver(records) {
     }
     return result;
   }
-  return {resolve,lookup,references};
+  return {resolve,lookup,references,featureTarget};
 }
 function audit(main,homebrew) {
   const {records,diagnostics} = collect(main,homebrew);
   const resolver = makeResolver(records);
-  const counts = {}, entities = [];
+  const counts = Object.create(null), bySource = Object.create(null), entities = [];
+  const issues = Object.create(null);
+  const totals = () => ({total:0,resolvedSubset:0,blocked:0});
+  const bump = (obj,key) => obj[key] = (obj[key] || 0) + 1;
+  const sourceFor = r => {
+    const key = r.origin + ':' + r.entity.source;
+    return bySource[key] ||= { ...totals(), kinds:Object.create(null), editions:Object.create(null), variants:0, reprints:0, inlineTags:Object.create(null), deferredMeta:Object.create(null) };
+  };
+  const valid = new Map(), blocked = new Set();
+  const addBlocked = (r,code,detail) => {
+    blocked.add(r.id);
+    diagnostics.push({code,id:r.id,origin:r.origin,path:r.path,index:r.index,detail});
+  };
+  const observed = e => ({
+    edition: typeof e.edition === 'string' ? e.edition : 'unspecified',
+    variants: Array.isArray(e._versions) ? e._versions.length : 0,
+    reprints: Array.isArray(e.reprintedAs) ? e.reprintedAs.length : 0
+  });
   for (const r of records) {
-    const key = r.origin + ':' + r.kind;
-    const c = counts[key] ||= {total:0,resolvedSubset:0,blocked:0};
-    c.total++;
+    const c = sourceFor(r);
+    const o = observed(r.entity);
+    c.variants += o.variants; c.reprints += o.reprints;
+    bump(c.editions,o.edition);
+    for (const key of r.metaKeys || []) if (key !== 'internalCopies') bump(c.deferredMeta,key);
     try {
       const resolved = resolver.resolve(r);
       const refs = resolver.references(r,resolved.entity);
-      c.resolvedSubset++;
-      entities.push({id:r.id,kind:r.kind,origin:r.origin,path:r.path,index:r.index,blob:r.blob,
-        source:r.entity.source,lineage:resolved.lineage,references:refs,status:'review-required'});
-    } catch(e) {
-      c.blocked++;
-      diagnostics.push({code:e.code || 'resolutionError',id:r.id,origin:r.origin,path:r.path,index:r.index,detail:e.message});
+      // Tags are inventoried, not treated as resolved references.
+      for (const m of JSON.stringify(resolved.entity).matchAll(/\{@([A-Za-z][A-Za-z0-9]*)\s/g)) bump(c.inlineTags,m[1]);
+      valid.set(r.id,{r,resolved,refs});
+    } catch(e) { addBlocked(r,e.code || 'resolutionError',e.message); }
+  }
+  // A resolved structure cannot depend on a structurally blocked record.
+  // Propagate using reverse adjacency, including copy lineage.
+  const reverse = new Map();
+  for (const [id,{resolved,refs}] of valid) {
+    for (const dep of new Set([...resolved.lineage,...refs.map(x => x.target)])) {
+      const consumers = reverse.get(dep) || []; consumers.push(id); reverse.set(dep,consumers);
     }
   }
-  return {schemaVersion:'dnd-upstream-resolution-audit.v1',commits:{main:main.commit,homebrew:homebrew.commit},counts,entities,diagnostics,activation:'review-required'};
+  const queue = [...blocked];
+  for (let i=0;i<queue.length;i++) {
+    const dep = queue[i];
+    for (const id of reverse.get(dep) || []) {
+      if (blocked.has(id)) continue;
+      addBlocked(valid.get(id).r,'blockedDependency',dep); queue.push(id);
+    }
+  }
+  for (const r of records) {
+    const c = counts[r.origin + ':' + r.kind] ||= totals();
+    const b = sourceFor(r), k = b.kinds[r.kind] ||= totals();
+    for (const counter of [c,b,k]) {
+      counter.total++;
+      counter[blocked.has(r.id) ? 'blocked' : 'resolvedSubset']++;
+    }
+    if (blocked.has(r.id)) continue;
+    const {resolved,refs} = valid.get(r.id);
+    entities.push({id:r.id,kind:r.kind,origin:r.origin,path:r.path,index:r.index,blob:r.blob,
+      source:r.entity.source,lineage:resolved.lineage,references:refs,status:'review-required'});
+  }
+  for (const d of diagnostics) bump(issues,d.code);
+  return {schemaVersion:'dnd-upstream-resolution-audit.v2',commits:{main:main.commit,homebrew:homebrew.commit},
+    counts,bySource,issueCounts:issues,entities,diagnostics,activation:'review-required',
+    scope:'structural-subset-only; variants, inline tags, external metadata and mechanical mapping not validated'};
 }
 module.exports = {identity,collect,makeResolver,applyMods,audit};
 if (require.main === module) {
