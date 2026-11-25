@@ -63,11 +63,12 @@ describe('5etools class and progression pilot',()=>{
     expect(bad.pactSlotsByLevel).toBeUndefined();
   });
   test('preserves OR primary abilities and never derives multiclass or resource rules',()=>{
-    const c=cls('XPHB',{primaryAbility:[{str:true},{dex:true}],multiclassing:{requirements:{or:[{str:13},{dex:13}]}},optionalfeatureProgression:[{name:'Choice'}],classTableGroups:[{colLabels:['Resource'],rows:[[1]]}]});
+    const multiclassing={requirements:{or:[{str:13},{dex:13}]}};
+    const c=cls('XPHB',{primaryAbility:[{str:true},{dex:true}],multiclassing,optionalfeatureProgression:[{name:'Choice'}],classTableGroups:[{colLabels:['Resource'],rows:[[1]]}]});
     const r=buildPilot(fixture({class:[c],classFeature:[cf()]}),['XPHB']);
     const p=r.packs[0].items.find((i:any)=>i.kind==='class').payload;
     expect(p.primaryAbilities).toBeUndefined();expect(p.resources).toBeUndefined();
-    expect(p.mechanics.upstreamClassRecord.multiclassing).toEqual(c.multiclassing);
+    expect(p.mechanics.upstreamClassRecord.multiclassing).toEqual(multiclassing);
     expect(combined(r).ok).toBe(true);
   });
 });
