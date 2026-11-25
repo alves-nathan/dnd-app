@@ -94,3 +94,7 @@ Ver [5ETOOLS_MAGIC_ITEM_CONVERSION.md](5ETOOLS_MAGIC_ITEM_CONVERSION.md). Piloto
 ## Fase 5.5 — feats e optional features
 
 Ver [5ETOOLS_FEATURE_CONVERSION.md](5ETOOLS_FEATURE_CONVERSION.md). Pré-requisitos em árvore lógica, projeção simples conservadora, alternativas ASI e famílias de escolha. a5.4 validou 3276 itens em staging e bloqueou 298 variantes. Efeitos, referências, elegibilidade composta e replacement pendentes. Próximo: espécies e backgrounds.
+
+## Fase 5.6 — espécies e backgrounds
+
+Ver [5ETOOLS_ORIGIN_CONVERSION.md](5ETOOLS_ORIGIN_CONVERSION.md). Herança conservadora de subraces, templates de linhagem preservados, ASI de background 2024, proficiências simples, referências candidatas de talentos e grupos de equipamento. a5.5 validou 450/451 em staging. Próximo: classes, subclasses e progressões. Nenhuma alteração de runtime.
