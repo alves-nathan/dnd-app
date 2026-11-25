@@ -13,7 +13,7 @@ const makeItem = (id='spell-a') => ({
   precedence:{relation:'original',supersedes:[],reprints:[],coexistsWith:[],basis:'fixture'},
   provenance:{origin:'5etools',repository:'fixture/repo',commit:'a'.repeat(40),blob:'b'.repeat(40),path:'data/spells/test.json',
     sourceCode:'Fixture',entityKey:'spell:fixture',index:0,resolverVersion:'a3',lineage:[]},
-  payload:{level:0,classes:[],castingTime:{kind:'action',actionCost:'action'},damageFormula:'1d6',damageType:'fire'}
+  payload:{level:0,classes:['Wizard'],castingTime:{kind:'action',actionCost:'action'},damageFormula:'1d6',damageType:'fire'}
 });
 const pack = (items:unknown[] = [makeItem()]) => ({
   templateVersion:IMPORT_TEMPLATE_VERSION_V3,contractRevision:IMPORT_V3_CONTRACT_REVISION,id:'fixture-pack',source,items
@@ -36,6 +36,10 @@ describe('canonical V3 staging', () => {
     expect(stageImportV3({...pack(),source:{...source,publication:{...source.publication,date:'2024-02-30'}}}).ok).toBe(false);
     expect(stageImportV3({...pack(),source:{...source,publication:{...source.publication,year:2025}}}).ok).toBe(false);
     expect(detectCompendiumImportVersion(pack())).toBe('unknown');
+  });
+  test('does not waive the runtime requirement for class access', () => {
+    expect(stageImportV3(pack([{...makeItem(),payload:{...makeItem().payload,classes:[]}}])).issues).toEqual(
+      expect.arrayContaining([expect.objectContaining({code:'IMPORT_V2_SPELL_CLASSES_EMPTY'})]));
   });
   test('rejects invalid provenance and reserved metadata', () => {
     expect(stageImportV3(pack([{...makeItem(),provenance:{...makeItem().provenance,commit:'main'}}])).ok).toBe(false);
