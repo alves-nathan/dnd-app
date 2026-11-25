@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Download app binary
         env:
           APP_URL: ${{ inputs.app_url }}
@@ -46,7 +46,7 @@ jobs:
           echo "Status: ${{ steps.maestro.outputs.MAESTRO_CLOUD_UPLOAD_STATUS }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Console: ${{ steps.maestro.outputs.MAESTRO_CLOUD_CONSOLE_URL }}" >> "$GITHUB_STEP_SUMMARY"
           echo '${{ steps.maestro.outputs.MAESTRO_CLOUD_FLOW_RESULTS }}' > artifacts/maestro-cloud-results.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: maestro-cloud-${{ inputs.platform }}-${{ github.run_id }}
