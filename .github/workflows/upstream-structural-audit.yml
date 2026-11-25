@@ -58,6 +58,10 @@ jobs:
         env:
           DND_UPSTREAM_ORIGIN_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsOriginConverter.test.ts --runInBand
+      - name: Validate class graph pilot (aggregate only)
+        env:
+          DND_UPSTREAM_CLASS_SNAPSHOT: ${{ runner.temp }}/5etools-main
+        run: npx jest src/tests/upstream5etoolsClassConverter.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

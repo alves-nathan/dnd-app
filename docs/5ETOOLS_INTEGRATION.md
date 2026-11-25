@@ -98,3 +98,7 @@ Ver [5ETOOLS_FEATURE_CONVERSION.md](5ETOOLS_FEATURE_CONVERSION.md). Pré-requisi
 ## Fase 5.6 — espécies e backgrounds
 
 Ver [5ETOOLS_ORIGIN_CONVERSION.md](5ETOOLS_ORIGIN_CONVERSION.md). Herança conservadora de subraces, templates de linhagem preservados, ASI de background 2024, proficiências simples, referências candidatas de talentos e grupos de equipamento. a5.5 validou 450/451 em staging. Próximo: classes, subclasses e progressões. Nenhuma alteração de runtime.
+
+## Fase 5.7 — classes, subclasses e progressões
+
+Ver [5ETOOLS_CLASS_CONVERSION.md](5ETOOLS_CLASS_CONVERSION.md). Grafo piloto fechado por owner e nível, projeção conservadora de proficiências e tabelas de magia/pacto, flags e escolhas preservadas. Aliases cross-owner e dependências fora do piloto são bloqueados; não há ativação nem mudança no runtime. Próximo: conditions e fechamento dos conversores.
