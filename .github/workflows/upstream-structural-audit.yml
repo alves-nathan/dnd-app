@@ -50,6 +50,10 @@ jobs:
         env:
           DND_UPSTREAM_MAGIC_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsMagicItemConverter.test.ts --runInBand
+      - name: Validate feat and optional feature pilot (aggregate only)
+        env:
+          DND_UPSTREAM_FEATURE_SNAPSHOT: ${{ runner.temp }}/5etools-main
+        run: npx jest src/tests/upstream5etoolsFeatureConverter.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

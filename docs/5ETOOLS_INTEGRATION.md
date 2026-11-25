@@ -90,3 +90,7 @@ Ver [5ETOOLS_EQUIPMENT_CONVERSION.md](5ETOOLS_EQUIPMENT_CONVERSION.md). Piloto d
 ## Fase 5.4 — itens mágicos e variantes
 
 Ver [5ETOOLS_MAGIC_ITEM_CONVERSION.md](5ETOOLS_MAGIC_ITEM_CONVERSION.md). Piloto de itens concretos e expansão conservadora de templates com fonte aninhada, _copy e seletores. Reutilização de normalização de equipamento. Efeitos, progressões, expressões e referências pendentes. Equipamentos a5.3: 824/826 validados em staging. Próximo: talentos e features opcionais.
+
+## Fase 5.5 — feats e optional features
+
+Ver [5ETOOLS_FEATURE_CONVERSION.md](5ETOOLS_FEATURE_CONVERSION.md). Pré-requisitos em árvore lógica, projeção simples conservadora, alternativas ASI e famílias de escolha. a5.4 validou 3276 itens em staging e bloqueou 298 variantes. Efeitos, referências, elegibilidade composta e replacement pendentes. Próximo: espécies e backgrounds.
