@@ -202,3 +202,7 @@ Ver [5ETOOLS_EQUIPMENT_MECHANICS.md](5ETOOLS_EQUIPMENT_MECHANICS.md). Referênci
 ## Fase a8.5.3 — correções isoladas do motor de equipamentos
 
 Ver [5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md](5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md). FIX01 da a8.5.2 aprovado. AC heavy padrão e placeholder STR_OR_DEX em Versatile corrigidos; configurações customizadas preservadas. Sem ativação V3. Próxima a8.5.4: revisão de condições por edição.
+
+## Fase a8.5.4 — preview mecânico de Exhaustion por edição
+
+Ver [5ETOOLS_CONDITION_MECHANICS.md](5ETOOLS_CONDITION_MECHANICS.md). Modelo isolado vinculado às definições PHB/XPHB, transições explícitas e auditoria das 30 ocorrências. Sem ativação, efeitos automáticos ou alteração de fichas. a8.5.3 aprovada. Próxima a8.5.5: matriz de capacidades de condições.
