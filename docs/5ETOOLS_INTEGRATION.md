@@ -226,3 +226,7 @@ Ver [5ETOOLS_CLASS_PROGRESSION_EVIDENCE.md](5ETOOLS_CLASS_PROGRESSION_EVIDENCE.m
 ## Fase a8.6.2 — chassis e tabelas de spellcasting
 
 Ver [5ETOOLS_CLASS_MECHANICS_EVIDENCE.md](5ETOOLS_CLASS_MECHANICS_EVIDENCE.md). FIX01 a8.6.1 aprovado. Comparação granular por ocorrência e tabela completa, provas sintéticas de contrato do runtime, sem ativação. Próxima a8.6.3: preview de projeção mecânica qualificada.
+
+## Fase a8.6.3 — projeção qualificada de classes e spellcasting
+
+Ver [5ETOOLS_CLASS_PROJECTION_PREVIEW.md](5ETOOLS_CLASS_PROJECTION_PREVIEW.md). a8.6.2 aprovada. Preview de chassis e slots com ownership, edição e políticas explícitas; sem instalação. Próxima a8.6.4: recursos, grants e escolhas de features.

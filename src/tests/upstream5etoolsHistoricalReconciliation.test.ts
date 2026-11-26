@@ -1,3 +1,4 @@
+const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
@@ -88,6 +89,12 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(mechanics.mechanicalParityEstablished).toBe(0);
       expect(mechanics.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       console.log(JSON.stringify(classMechanicsSummary(mechanics)));
+      const projection=buildClassProjection(input.items,input.reconciliation.commits.main);
+      expect(projection.byKind.class).toMatchObject({total:27,'profile:tableCandidate':17,'profile:noDeclaredProgression':9,'profile:indeterminate':1,'progression:pactMagic':2});
+      expect(projection.byKind.subclass).toMatchObject({total:146,'profile:tableCandidate':4,'profile:noDeclaredProgression':142});
+      expect(projection.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(projection.mechanicalParityEstablished).toBe(0);
+      console.log(JSON.stringify(classProjectionSummary(projection)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
