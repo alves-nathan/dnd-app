@@ -1,3 +1,4 @@
+const {buildFeatureResourceEvidence,publicSummary:featureResourceSummary}=require('../../scripts/5etools/feature-resource-evidence');
 const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
@@ -95,6 +96,16 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(projection.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(projection.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(classProjectionSummary(projection)));
+      const featureResources=buildFeatureResourceEvidence(input);
+      expect(featureResources.byScope.class).toMatchObject({items:27,grants:{directContextCandidate:474,grantOptionsPending:99}});
+      expect(featureResources.byScope.subclass).toMatchObject({items:146,grants:{directContextCandidate:623}});
+      expect(featureResources.byScope.classFeature.items).toBe(605);
+      expect(featureResources.byScope.subclassFeature.items).toBe(1031);
+      expect(featureResources.byScope.optionalFeature.items).toBe(233);
+      expect(featureResources.historical.feature).toMatchObject({occurrences:3192,identityCandidates:1170,identityPending:2022});
+      expect(featureResources.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(featureResources.mechanicalParityEstablished).toBe(0);
+      console.log(JSON.stringify(featureResourceSummary(featureResources)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

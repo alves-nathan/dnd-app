@@ -230,3 +230,7 @@ Ver [5ETOOLS_CLASS_MECHANICS_EVIDENCE.md](5ETOOLS_CLASS_MECHANICS_EVIDENCE.md). 
 ## Fase a8.6.3 — projeção qualificada de classes e spellcasting
 
 Ver [5ETOOLS_CLASS_PROJECTION_PREVIEW.md](5ETOOLS_CLASS_PROJECTION_PREVIEW.md). a8.6.2 aprovada. Preview de chassis e slots com ownership, edição e políticas explícitas; sem instalação. Próxima a8.6.4: recursos, grants e escolhas de features.
+
+## Fase a8.6.4 — recursos, grants e escolhas de features
+
+Ver [5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md](5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md). a8.6.3 aprovada. Evidência por coluna e ocorrência, custos explícitos, checkpoints de escolhas, sem inferência de recuperação ou grant. Próxima a8.6.5: candidatos qualificados de recursos, recuperação e substituições.
