@@ -40,8 +40,10 @@ function buildResourceProjection(input){
   const featureId=physicalId('classFeature',{name:d.featureName,source:d.source,className:d.className,classSource:d.source,level:d.min});
   const base={classId,featureId,rulesEra:d.source==='PHB'?'2014':'2024',...flags()};
   const cl=graph.index.get(classId),f=graph.index.get(featureId);
-  if(commit!==reviewedCommit||!sourceBound(cl,'class',d,commit)||!sourceBound(f,'classFeature',d,commit)||
-   f.payload.classId!==classId||f.payload.levelGained!==d.min)return {...base,status:'identityOrSnapshotPending'};
+  if(commit!==reviewedCommit)return {...base,status:'identityOrSnapshotPending',reason:'snapshotNotReviewed'};
+  if(!cl||!f)return {...base,status:'identityOrSnapshotPending',reason:!cl?'classNotEmitted':'featureNotEmitted'};
+  if(!sourceBound(cl,'class',d,commit)||!sourceBound(f,'classFeature',d,commit)||
+   f.payload.classId!==classId||f.payload.levelGained!==d.min)return {...base,status:'identityOrSnapshotPending',reason:'sourceOrOwnerBindingMismatch'};
   const raw=cl.payload.mechanics.upstreamClassRecord,feature=f.payload.mechanics.upstreamClassRecord;
   const links=cl.payload.mechanics.featureGrantReferences.filter(g=>g.featureId===featureId);
   if(links.length!==1||typeof links[0].raw!=='string'||links[0].level!==d.min||digest(feature.entries)!==d.entry)

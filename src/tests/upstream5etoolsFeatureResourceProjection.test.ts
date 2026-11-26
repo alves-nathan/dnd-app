@@ -31,6 +31,7 @@ describe('a8.6.5 feature resource and selection projection',()=>{
  test('unreviewed snapshots never inherit base resource policies',()=>{
   const f=fixture(),r=buildResourceProjection(f.input);
   expect(r.counts).toEqual({identityOrSnapshotPending:5});
+  expect(r.rows.every((x:any)=>x.reason==='snapshotNotReviewed')).toBe(true);
   expect(r.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized)).toBe(true);
   expect(publicSummary(r)).not.toHaveProperty('rows');
   expect(previewResourceEvent(f.input,{contextConfirmed:true,baseFeatureOnlyConfirmed:true,classInstanceId:'fixture',resourceId:'pool',level:1,current:0,projectionFingerprint:r.fingerprint,classId:'missing',featureId:'missing',rulesEra:'2024'}).reason).toBe('resourceIdentityPending');

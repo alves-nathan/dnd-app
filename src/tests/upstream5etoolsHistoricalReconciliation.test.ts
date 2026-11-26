@@ -110,7 +110,16 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(featureResources.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(featureResourceSummary(featureResources)));
       const resourceProjection=buildResourceProjection(input);
-      expect(resourceProjection.counts).toEqual({baseResourceCandidate:5});
+      // XPHB Barbarian is not emitted: its grant list includes a WoW feature,
+      // outside the class pilot sources. Preserve that closed-graph boundary.
+      const {physicalId:classPhysicalId}=require('../../scripts/5etools/class-converter');
+      const revisedRageClassId=classPhysicalId('class',{name:'Barbarian',source:'XPHB'});
+      const revisedRageFeatureId=classPhysicalId('classFeature',{name:'Rage',source:'XPHB',className:'Barbarian',classSource:'XPHB',level:1});
+      expect(input.items.some((i:any)=>i.id===revisedRageClassId||i.id===revisedRageFeatureId)).toBe(false);
+      expect(resourceProjection.counts).toEqual({baseResourceCandidate:4,identityOrSnapshotPending:1});
+      const revisedRage=resourceProjection.rows.find((x:any)=>x.classId===revisedRageClassId&&x.featureId===revisedRageFeatureId);
+      expect(revisedRage).toMatchObject({status:'identityOrSnapshotPending',reason:'classNotEmitted',rulesEra:'2024',runtimeEligible:false});
+      expect(resourceProjection.rows.filter((x:any)=>x.status==='baseResourceCandidate').map((x:any)=>x.name).sort()).toEqual(['Focus Points','Ki Points','Rages','Second Wind']);
       expect(resourceProjection.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(resourceProjection.mechanicalParityEstablished).toBe(0);
       // Use actual source-bound pools with the existing engine in disposable characters.
@@ -120,7 +129,6 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
         projectionFingerprint:resourceProjection.fingerprint,event:{confirmed:true,...event}});
       const fighter=resourceProjection.rows.find((x:any)=>x.name==='Second Wind');
       const legacyRage=resourceProjection.rows.find((x:any)=>x.name==='Rages'&&x.rulesEra==='2014');
-      const revisedRage=resourceProjection.rows.find((x:any)=>x.name==='Rages'&&x.rulesEra==='2024');
       const ki=resourceProjection.rows.find((x:any)=>x.name==='Ki Points');
       const focus=resourceProjection.rows.find((x:any)=>x.name==='Focus Points');
       const restore=(row:any,level:number,current:number,rest:'shortRest'|'longRest',expected:number,extra:Record<string,unknown>={})=>{
@@ -131,7 +139,8 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
         expect(character.resources[0]?.current).toBe(current);
       };
       restore(fighter,10,1,'shortRest',2);
-      restore(revisedRage,10,0,'longRest',4);
+      restore(fighter,10,0,'longRest',4);
+      expect(resourceEvent(revisedRage,10,0,{kind:'longRest'})).toMatchObject({status:'indeterminate',reason:'resourceIdentityPending',writeAuthorized:false});
       restore(legacyRage,10,0,'shortRest',0);
       restore(focus,5,0,'shortRest',5);
       restore(ki,5,0,'shortRest',5,{meditationConfirmed:true});
