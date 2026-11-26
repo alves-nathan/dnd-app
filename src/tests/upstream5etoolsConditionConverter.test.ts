@@ -18,6 +18,8 @@ describe('5etools condition pilot',()=>{
     expect(a.payload.conditionId).not.toBe(b.payload.conditionId);
     expect(a.payload).toMatchObject({officialCondition:true,mechanics:{runtimeConditionCandidate:'exhaustion',upstreamCondition:legacy}});
     expect(a.payload.effects).toBeUndefined();expect(a.payload.endConditions).toBeUndefined();
+    expect(a.payload.mechanics.conditionReviewCandidate).toEqual({rulesEra:'2014',stackPolicy:'editionSpecificPending',effectPolicy:'unreviewed',endPolicy:'unreviewed',runtimeAlias:'unapproved'});
+    expect(b.payload.mechanics.conditionReviewCandidate).toEqual({...a.payload.mechanics.conditionReviewCandidate,rulesEra:'2024'});
     expect(a.metadata.reviewCodes).toContain('stackedConditionEditionPolicyPending');
     expect(a.precedence.relation).toBe('unresolved');expect(a.metadata.upstreamReprintedAs).toEqual(['Exhaustion|XPHB']);
     expect(stageImportV3({...r.packs[0],items:[a,b]}).ok).toBe(true);
@@ -49,6 +51,11 @@ const snapshotPath=process.env.DND_UPSTREAM_CONDITION_SNAPSHOT;
   const ids=new Set(items.map((i:any)=>i.payload.conditionId));
   console.log(JSON.stringify({commit:r.commit,counts:r.counts,inventory:r.inventory,validation:{ok:v.ok,items:items.length,uniqueConditionIds:ids.size,codes},activation:r.activation}));
   expect(v.ok).toBe(true);expect(ids.size).toBe(items.length);
+  for(const i of items){
+    expect(i.payload.mechanics.conditionReviewCandidate).toMatchObject({rulesEra:i.source.rulesEra,effectPolicy:'unreviewed',endPolicy:'unreviewed',runtimeAlias:'unapproved'});
+    expect(i.payload.effects).toBeUndefined();
+    expect(i.payload.endConditions).toBeUndefined();
+  }
   expect(r.inventory.condition.total).toBe(r.inventory.condition.pilot+r.inventory.condition.deferred);
   for(const c of Object.values(r.counts) as {total:number;converted:number;blocked:number}[])expect(c.total).toBe(c.converted+c.blocked);
   expect(r.counts.PHB.converted).toBe(15);expect(r.counts.XPHB.converted).toBe(15);

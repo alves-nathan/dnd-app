@@ -5,6 +5,8 @@ import { getArmorClass } from '../rules-engine/characters/derivedStats';
 import { buildWeaponAttackAction } from '../rules-engine/actions/buildActions';
 import { analyzeActionDamage } from '../rules-engine/damage/calculateDamage';
 import { toggleArmorAccessory } from '../characters/equipmentLoadoutRules';
+import { checkRotationAmmunition, spendRotationAmmunition } from '../characters/ammunitionRules';
+import type { TurnRotation } from '../types';
 const {compareFields,buildEquipmentParityEvidence,publicSummary}=require('../../scripts/5etools/equipment-parity-evidence');
 const {digest}=require('../../scripts/5etools/integrated-review');
 const {buildPilot}=require('../../scripts/5etools/equipment-converter');
@@ -35,8 +37,11 @@ function pilot(){
     'data/items-base.json':{baseitem:[
       {name:'Fixture Weapon',source:'XPHB',edition:'one',type:'M|XPHB',rarity:'none',weaponCategory:'simple',dmg1:'1d4',dmgType:'P',property:['F|XPHB','T|XPHB','L|XPHB'],range:'20/60',value:200},
       {name:'Fixture Medium',source:'XPHB',type:'MA|XPHB',rarity:'none',ac:14},
+      {name:'Fixture Heavy',source:'XPHB',type:'HA|XPHB',rarity:'none',ac:16,strength:'13'},
+      {name:'Arrow',source:'XPHB',type:'A|XPHB',rarity:'none'},
+      {name:'Fixture Bow',source:'XPHB',type:'R|XPHB',rarity:'none',weaponCategory:'simple',dmg1:'1d6',dmgType:'P',property:['A|XPHB','2H|XPHB'],ammoType:'arrow|xphb',range:'80/320'},
       {name:'Fixture Shield',source:'XPHB',type:'S|XPHB',rarity:'none',ac:2}],
-      itemProperty:['F','T','L'].map(abbreviation=>({abbreviation,source:'XPHB'})),itemMastery:[],itemType:[]},
+      itemProperty:['F','T','L','A','2H'].map(abbreviation=>({abbreviation,source:'XPHB'})),itemMastery:[],itemType:[]},
     'data/items.json':{item:[]}
   };
   return buildPilot({commit:commits.main,files:new Map(Object.keys(data).map(p=>[p,'d'.repeat(40)])),readJson:(p:string)=>data[p]},['XPHB']).packs[0].items;
@@ -93,6 +98,34 @@ describe('a8.5.1 equipment mechanical evidence',()=>{
         expect(run(wb)).toEqual(run(wa));
       }
     }
+  });
+  test('qualified ammo candidate feeds the existing mapper and rotation inventory rules in disposable fixtures',()=>{
+    const bow=pilot().find((i:any)=>i.name==='Fixture Bow');
+    expect(bow.payload.ammunitionType).toBe('arrow');
+    const base=createEmptyCharacter('Fixture');
+    const w=buildWeaponFromCompendiumItem(base,stored('weapon',bow.payload),'bow').weapon;
+    expect(w.ammunitionType).toBe('arrow');
+    const character={...base,weapons:[{...w,equipped:true}],equipment:[{id:'ammo',name:'Fixture ammunition',quantity:1,ammunitionType:'arrow',tags:[]}]};
+    const action=buildWeaponAttackAction(character,w.id)!;
+    expect(action.ammunitionType).toBe('arrow');
+    const rotation:TurnRotation={id:'fixture',characterId:character.id,name:'Fixture',actions:[{id:'shot',name:'Fixture',actionCost:action.actionCost,action}]};
+    expect(checkRotationAmmunition(rotation,character).ok).toBe(true);
+    const spent=spendRotationAmmunition(character,rotation);
+    expect(spent.equipment[0].quantity).toBe(0);
+    expect(character.equipment[0].quantity).toBe(1);
+    expect(checkRotationAmmunition(rotation,spent).ok).toBe(false);
+  });
+  test('records the heavy armor negative Dexterity gap without changing existing runtime',()=>{
+    const item=pilot().find((i:any)=>i.name==='Fixture Heavy');
+    expect(item.payload.mechanics.armorClassCandidate).toMatchObject({dexterity:'ignoreModifier',baseAC:16});
+    expect(item.metadata.reviewCodes).toContain('heavyArmorNegativeDexRuntimeReview');
+    const base=createEmptyCharacter('Fixture'),character={...base,abilities:{...base.abilities,DEX:8}};
+    const mapped=applyCompendiumItemToCharacter(character,stored('armor',item.payload));
+    expect(mapped.ok).toBe(true);
+    // Character engine currently applies Math.min(-1,0). This is evidence
+    // of an unresolved discrepancy, NOT an approval of the legacy result.
+    expect(getArmorClass(mapped.character)).toBe(15);
+    expect(getArmorClass(mapped.character)).not.toBe(item.payload.baseAC);
   });
   test('synthetic armor and shield use actual mapper and AC engine; needsReview is still blocked',()=>{
     const items=pilot(),armor=items.find((i:any)=>i.name==='Fixture Medium'),shield=items.find((i:any)=>i.name==='Fixture Shield');

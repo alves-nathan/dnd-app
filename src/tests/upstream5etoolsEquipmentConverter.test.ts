@@ -10,7 +10,7 @@ const weapon=(overrides:Record<string,unknown>={})=>({
 function fixture(base:Record<string,unknown>[],items:Record<string,unknown>[]=[]){
   const data:Record<string,unknown>={
     'data/books.json':{book:[{source:'XPHB',name:'Fixture Book',published:'2024-09-17'}]},
-    'data/items-base.json':{baseitem:base,itemProperty:['F','T','L','2H','V','S'].map(abbreviation=>({abbreviation,source:'XPHB'})),
+    'data/items-base.json':{baseitem:base,itemProperty:['F','T','L','2H','V','S','A','AF','LD','BF','RLD'].map(abbreviation=>({abbreviation,source:'XPHB'})),
       itemMastery:[{name:'Nick',source:'XPHB'}],itemType:[{name:'Adventuring Gear',abbreviation:'G',source:'XPHB'}]},
     'data/items.json':{item:items}
   };
@@ -34,6 +34,33 @@ describe('5etools equipment pilot',()=>{
     expect(i.payload.mastery).toBeUndefined();
     expect(i.metadata.reviewCodes).toEqual(expect.arrayContaining(['conditionalWeaponProperty','masteryReferencePending']));
   });
+  test('maps only uniquely resolved qualified standard ammunition, keeping consumption pending',()=>{
+    const arrow={name:'Arrow',source:'XPHB',type:'A|XPHB',rarity:'none'};
+    const bow=weapon({name:'Fixture Bow',type:'R|XPHB',property:['A|XPHB','2H|XPHB'],ammoType:'arrow|xphb',mastery:undefined});
+    const r=buildPilot(fixture([arrow,bow]),['XPHB']);
+    const w=r.packs[0].items.find((i:any)=>i.kind==='weapon');
+    expect(w.payload).toMatchObject({ammunitionType:'arrow',mechanics:{ammunitionReference:{
+      uid:'arrow|xphb',targetName:'Arrow',targetSource:'XPHB',status:'qualifiedTypeCandidate'}}});
+    expect(w.metadata.reviewCodes).toContain('ammunitionConsumptionSemanticsPending');
+    expect(w.metadata.reviewCodes).not.toContain('ammunitionReferencePending');
+    expect(w.source.status).toBe('needsReview');
+    expect(stageImportV3(r.packs[0]).ok).toBe(true);
+    const variants=[
+      {ammoType:'arrow'}, {ammoType:'arrow|phb'}, {ammoType:'energy cell|xdmg'},
+      {property:[{uid:'A|XPHB',note:'conditional'}]}, {property:['AF|XPHB']}, {property:['A|XPHB','AF|XPHB']},
+      {property:['A|XPHB','BF|XPHB']}, {property:['A|XPHB','RLD|XPHB']},
+      {property:['A|XPHB','Unknown|XPHB']}, {reload:2}
+    ];
+    for(const extra of variants){
+      const blocked=buildPilot(fixture([arrow,{...bow,...extra}]),['XPHB']).packs[0].items.find((i:any)=>i.kind==='weapon');
+      expect(blocked.payload.ammunitionType).toBeUndefined();
+      expect(blocked.metadata.reviewCodes).toContain('ammunitionReferencePending');
+    }
+    for(const records of [[bow],[arrow,bow,{...arrow}],[{...arrow,rarity:'rare'},bow]]){
+      const blocked=buildPilot(fixture(records),['XPHB']).packs[0].items.find((i:any)=>i.kind==='weapon');
+      expect(blocked.payload.ammunitionType).toBeUndefined();
+    }
+  });
   test('maps shields as additive AC and armor dexterity caps',()=>{
     const a=(name:string,type:string,ac:number,extra:Record<string,unknown>={})=>({name,type,ac,source:'XPHB',rarity:'none',value:1000,...extra});
     const r=buildPilot(fixture([a('Fixture Shield','S|XPHB',2),a('Fixture Heavy','HA|XPHB',16,{strength:'13',stealth:true}),
@@ -43,6 +70,10 @@ describe('5etools equipment pilot',()=>{
     expect(byName.get('Fixture Heavy')).toMatchObject({armorCategory:'heavy',baseAC:16,dexCap:0,strengthRequirement:13,stealthDisadvantage:true});
     expect(byName.get('Fixture Medium')).toMatchObject({dexCap:2});
     expect(byName.get('Fixture Light')).toMatchObject({dexCap:null});
+    expect(byName.get('Fixture Heavy')).toMatchObject({mechanics:{armorClassCandidate:{dexterity:'ignoreModifier',baseAC:16,status:'review-required'}}});
+    expect(byName.get('Fixture Medium')).toMatchObject({mechanics:{armorClassCandidate:{dexterity:'capAtTwo'}}});
+    expect(byName.get('Fixture Light')).toMatchObject({mechanics:{armorClassCandidate:{dexterity:'fullModifier'}}});
+    expect(byName.get('Fixture Shield')).toMatchObject({mechanics:{armorClassCandidate:{dexterity:'additiveShield',acBonus:2}}});
     expect(stageImportV3(r.packs[0]).ok).toBe(true);
   });
   test('preserves equipment bundles, exact CP value and excludes magical records',()=>{
@@ -78,7 +109,19 @@ const snapshotPath=process.env.DND_UPSTREAM_EQUIPMENT_SNAPSHOT;
     }
     validated[code]=stats;
   }
-  console.log(JSON.stringify({commit:r.commit,counts:r.counts,validated,activation:'review-required'}));
+  const weapons=r.packs.flatMap((p:any)=>p.items).filter((i:any)=>i.kind==='weapon');
+  const ammo={qualified:0,pending:0,absent:0};
+  for(const w of weapons){
+    if(w.payload.ammunitionType){
+      ammo.qualified++;
+      expect(w.payload.mechanics.ammunitionReference.status).toBe('qualifiedTypeCandidate');
+      expect(w.metadata.reviewCodes).toContain('ammunitionConsumptionSemanticsPending');
+    }else if(w.payload.mechanics.upstreamItem.ammoType!==undefined)ammo.pending++;
+    else ammo.absent++;
+  }
+  expect(ammo.qualified).toBeGreaterThan(0);
+  expect(ammo.qualified+ammo.pending+ammo.absent).toBe(weapons.length);
+  console.log(JSON.stringify({commit:r.commit,counts:r.counts,validated,ammo,activation:'review-required'}));
   for(const code of Object.keys(r.counts)){
     const c=r.counts[code];
     expect(c.observed).toBe(c.eligible+c.excludedMagicOrUnclassified);

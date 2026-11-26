@@ -91,6 +91,38 @@ function masteries(e,defs,notes){
   if(refs[0].name)notes.add('masterySemanticsPending');
   return {refs,...(refs[0].name?{mastery:refs[0].name}:{})};
 }
+// Exact qualified references observed in the immutable Main item index.
+// Runtime tokens are existing ammunitionRules.ts types. No default edition,
+// fuzzy name, plural/bundle inference, magic ammunition or unqualified UID.
+const standardAmmo=Object.freeze({
+  'arrow|phb':'arrow','arrow|xphb':'arrow',
+  'crossbow bolt|phb':'bolt','bolt|xphb':'bolt',
+  'blowgun needle|phb':'needle','needle|xphb':'needle',
+  'sling bullet|phb':'sling-bullet','sling bullet|xphb':'sling-bullet',
+  'firearm bullet|xphb':'firearm-bullet'
+});
+function ammunitionCandidate(e,defs,props,refs,notes){
+  if(e.ammoType===undefined)return {};
+  // Require one unconditional, resolved standard Ammunition property.
+  // Burst/reload/AF and special modes remain manual review.
+  const standard=refs.filter(r=>r.resolved&&!r.condition&&typeof r.uid==='string'&&r.uid.split('|')[0]==='A');
+  if(typeof e.ammoType!=='string'||!defs.ammunition||standard.length!==1||
+      !props.includes('ammunition')||refs.some(r=>typeof r.uid==='string'&&['AF','BF','RLD','S'].includes(r.uid.split('|')[0]))||
+      props.some(p=>['burst fire','reload','special'].includes(p))||
+      e.reload!==undefined||notes.has('conditionalWeaponProperty')||notes.has('propertyReferencePending')){
+    notes.add('ammunitionReferencePending');return {};
+  }
+  const parts=e.ammoType.split('|');
+  const key=parts.length===2?parts.map(norm).join('|'):'';
+  const token=own(standardAmmo,key)?standardAmmo[key]:undefined;
+  const target=token?lookup(defs.ammunition,{key:parts[0],source:parts[1]}):null;
+  if(!target||target.rarity!=='none'||typeof target.type!=='string'||target.type.split('|')[0]!=='A'||
+      ['_copy','_versions','_mod','_preserve'].some(k=>own(target,k))){
+    notes.add('ammunitionReferencePending');return {};
+  }
+  notes.add('ammunitionConsumptionSemanticsPending');
+  return {ammunitionType:token,ammunitionReference:{uid:e.ammoType,targetName:target.name,targetSource:target.source,status:'qualifiedTypeCandidate'}};
+}
 function weapon(e,defs,notes){
   const type=uid(e.type,'PHB');
   if(!['M','R'].includes(type.key))fail('unsupportedWeaponType');
@@ -116,10 +148,11 @@ function weapon(e,defs,notes){
     if(r&&Number(r[1])>0&&(!r[2]||Number(r[2])>=Number(r[1])))out.range={normal:Number(r[1]),...(r[2]?{long:Number(r[2])}:{}),unit:'ft'};
     else notes.add('rangePending');
   }
-  if(e.ammoType!==undefined)notes.add('ammunitionReferencePending');
+  const {ammunitionType,ammunitionReference}=ammunitionCandidate(e,defs,props,refs,notes);
+  if(ammunitionType)out.ammunitionType=ammunitionType;
   if(e.reload!==undefined)notes.add('reloadMechanicsPending');
   if(record(e.property)||notes.has('conditionalWeaponProperty')||notes.has('propertyReferencePending'))notes.add('weaponUsageReviewRequired');
-  return {...out,mechanics:{propertyReferences:refs,masteryReferences:m.refs,upstreamItem:copy(e)}};
+  return {...out,mechanics:{propertyReferences:refs,masteryReferences:m.refs,...(ammunitionReference?{ammunitionReference}:{}),upstreamItem:copy(e)}};
 }
 function armor(e,notes){
   const type=uid(e.type,'PHB');
@@ -133,7 +166,13 @@ function armor(e,notes){
     if(/^\d+$/.test(String(e.strength)))out.strengthRequirement=Number(e.strength);
     else notes.add('strengthRequirementPending');
   }
-  return {...out,mechanics:{upstreamItem:copy(e)}};
+  // Keep the V2 dexCap projection unchanged; heavy armor's fixed AC
+  // cannot be expressed by Math.min(DEX,0) for negative modifiers.
+  if(category==='heavy')notes.add('heavyArmorNegativeDexRuntimeReview');
+  return {...out,mechanics:{upstreamItem:copy(e),armorClassCandidate:{
+    dexterity:shield?'additiveShield':category==='heavy'?'ignoreModifier':category==='medium'?'capAtTwo':'fullModifier',
+    baseAC:out.baseAC,...(shield?{acBonus:out.acBonus}:{}),status:'review-required'
+  }}};
 }
 function equipment(e,defs,notes){
   if(typeof e.type!=='string')fail('equipmentTypeUnresolved');
@@ -162,7 +201,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
   const base=snapshot.readJson('data/items-base.json'),items=snapshot.readJson('data/items.json');
   const books=snapshot.readJson('data/books.json').book;
   if(!Array.isArray(base.baseitem)||!Array.isArray(items.item)||!Array.isArray(books))fail('invalidItemIndex');
-  const defs={properties:definitionIndex(base.itemProperty,'abbreviation'),masteries:definitionIndex(base.itemMastery,'name'),types:definitionIndex(base.itemType,'abbreviation')};
+  const defs={properties:definitionIndex(base.itemProperty,'abbreviation'),masteries:definitionIndex(base.itemMastery,'name'),types:definitionIndex(base.itemType,'abbreviation'),ammunition:definitionIndex([...base.baseitem,...items.item],'name')};
   const records=[],diagnostics=[],counts=Object.create(null);
   for(const c of codes)counts[c]={observed:0,eligible:0,converted:0,blocked:0,excludedMagicOrUnclassified:0,kinds:{weapon:0,armor:0,equipment:0},reviewCodes:{},blockCodes:{}};
   function blocked(code,p,i,reason){

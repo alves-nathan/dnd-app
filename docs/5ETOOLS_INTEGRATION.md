@@ -194,3 +194,7 @@ Ver [5ETOOLS_CUTOVER_EVIDENCE.md](5ETOOLS_CUTOVER_EVIDENCE.md). Reutiliza cobert
 ## Fase a8.5.1 — evidência mecânica de armas e armaduras
 
 Ver [5ETOOLS_EQUIPMENT_PARITY.md](5ETOOLS_EQUIPMENT_PARITY.md). Comparação de campos históricos com candidatos de identidade e regressões sintéticas do motor; sem aprovação de paridade. a8.4 aprovada. Próxima a8.5.2: tratar lacunas específicas de equipamento/condições.
+
+## Fase a8.5.2 — munição qualificada e candidatos de revisão de armaduras/condições
+
+Ver [5ETOOLS_EQUIPMENT_MECHANICS.md](5ETOOLS_EQUIPMENT_MECHANICS.md). Referências explícitas de munição no staging, modelo de AC e revisão de condições por edição. a8.5.1 aprovada. Próxima a8.5.3: lacunas de AC/versatile e regressões isoladas, sem cutover.

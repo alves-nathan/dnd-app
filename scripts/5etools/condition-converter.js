@@ -65,7 +65,10 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
           identity:{canonicalKey:'condition:'+name,precedenceScope:source.precedenceScope},
           precedence:{relation:'unresolved',supersedes:[],reprints:[],coexistsWith:[],basis:'upstreamPendingGlobalResolution'},
           provenance:{origin:'5etools',repository:'5etools-mirror-3/5etools-src',commit:snapshot.commit,blob:r.blob,path:r.path,entityKey:r.key,index:r.index,sourceCode:e.source,resolverVersion:'a5.8',lineage:resolved.lineage},
-          payload:{conditionId:stagingConditionId(e),officialCondition:true,mechanics:{upstreamCondition:clone(e),runtimeConditionCandidate:name}},
+          payload:{conditionId:stagingConditionId(e),officialCondition:true,mechanics:{upstreamCondition:clone(e),runtimeConditionCandidate:name,conditionReviewCandidate:{
+          rulesEra:pilot[code],stackPolicy:name==='exhaustion'?'editionSpecificPending':'notAssessed',
+          effectPolicy:'unreviewed',endPolicy:'unreviewed',runtimeAlias:'unapproved'
+        }}},
           metadata:{reviewCodes:notes.sort(),upstreamReprintedAs:clone(e.reprintedAs||[])}};
         items.push(item);c.converted++;for(const n of notes)bump(c.reviewCodes,n);
       }catch(err){block(code,r.index,err.code||'conversionError');}
