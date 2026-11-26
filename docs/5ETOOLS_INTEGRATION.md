@@ -198,3 +198,7 @@ Ver [5ETOOLS_EQUIPMENT_PARITY.md](5ETOOLS_EQUIPMENT_PARITY.md). Comparação de 
 ## Fase a8.5.2 — munição qualificada e candidatos de revisão de armaduras/condições
 
 Ver [5ETOOLS_EQUIPMENT_MECHANICS.md](5ETOOLS_EQUIPMENT_MECHANICS.md). Referências explícitas de munição no staging, modelo de AC e revisão de condições por edição. a8.5.1 aprovada. Próxima a8.5.3: lacunas de AC/versatile e regressões isoladas, sem cutover.
+
+## Fase a8.5.3 — correções isoladas do motor de equipamentos
+
+Ver [5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md](5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md). FIX01 da a8.5.2 aprovado. AC heavy padrão e placeholder STR_OR_DEX em Versatile corrigidos; configurações customizadas preservadas. Sem ativação V3. Próxima a8.5.4: revisão de condições por edição.

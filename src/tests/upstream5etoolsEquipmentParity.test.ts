@@ -120,17 +120,39 @@ describe('a8.5.1 equipment mechanical evidence',()=>{
     expect(character.equipment[0].quantity).toBe(1);
     expect(checkRotationAmmunition(rotation,spent).ok).toBe(false);
   });
-  test('records the heavy armor negative Dexterity gap without changing existing runtime',()=>{
-    const item=pilot().find((i:any)=>i.name==='Fixture Heavy');
-    expect(item.payload.mechanics.armorClassCandidate).toMatchObject({dexterity:'ignoreModifier',baseAC:16});
-    expect(item.metadata.reviewCodes).toContain('heavyArmorNegativeDexRuntimeReview');
-    const base=createEmptyCharacter('Fixture'),character={...base,abilities:{...base.abilities,DEX:8}};
-    const mapped=applyCompendiumItemToCharacter(character,stored('armor',item.payload));
-    expect(mapped.ok).toBe(true);
-    // Character engine currently applies Math.min(-1,0). This is evidence
-    // of an unresolved discrepancy, NOT an approval of the legacy result.
-    expect(getArmorClass(mapped.character)).toBe(15);
-    expect(getArmorClass(mapped.character)).not.toBe(item.payload.baseAC);
+  test('standard heavy armor candidate matches fixed AC in the actual engine without approving V3',()=>{
+    const item=pilot().find((i:any)=>i.id===physicalId('XPHB','armor','Fixture Heavy'));
+    expect(item.payload.mechanics.armorClassCandidate).toMatchObject({dexterity:'ignoreModifier',baseAC:16,status:'review-required'});
+    for(const dex of [6,8,10,14,20]){
+      const base=createEmptyCharacter('Fixture'),character={...base,abilities:{...base.abilities,DEX:dex}};
+      const mapped=applyCompendiumItemToCharacter(character,stored('armor',item.payload));
+      expect(mapped.ok).toBe(true);
+      expect(getArmorClass(mapped.character)).toBe(16);
+      expect(applyCompendiumItemToCharacter(character,stored('armor',item.payload,'review',true)).ok).toBe(false);
+    }
+  });
+  test('both grips resolve synthetic flexible damage, retaining explicit ability and unrelated variables',()=>{
+    const payload={...oldWeapon,properties:['Finesse','Versatile'],versatileDamageFormula:'1d6 + STR_OR_DEX'};
+    for(const [str,dex,expected] of [[18,10,'STR'],[10,18,'DEX'],[14,14,'STR']] as const){
+      const base=createEmptyCharacter('Fixture'),character={...base,abilities:{...base.abilities,STR:str,DEX:dex}};
+      for(const p of [payload,{...payload,attackAbility:{kind:'choice',options:['STR','DEX']},damageAbility:{kind:'choice',options:['STR','DEX']}}]){
+        const w=buildWeaponFromCompendiumItem(character,stored('weapon',p),'same').weapon;
+        expect(w.attackAbility).toBe(expected);
+        expect(w.damageAbility).toBe(expected);
+        for(const grip of ['oneHanded','twoHanded'] as const){
+          const action=buildWeaponAttackAction({...character,weapons:[{...w,equipped:true}]},w.id,{weaponGrip:grip})!;
+          expect(action.damage.components.filter(c=>c.kind==='abilityModifier').map(c=>c.ability)).toEqual([expected]);
+          expect(action.damage.components.find(c=>c.kind==='dice')?.dice?.sides).toBe(grip==='twoHanded'?6:4);
+          expect(action.damage.components.some(c=>c.kind==='customVariable')).toBe(false);
+        }
+      }
+      const fixed=buildWeaponFromCompendiumItem(character,stored('weapon',{...payload,attackAbility:'STR',damageAbility:'STR',versatileDamageFormula:'1d6 + STR_OR_DEX + CUSTOM_BONUS'}),'fixed').weapon;
+      expect(fixed.damage.components.filter(c=>c.kind==='abilityModifier').map(c=>c.ability)).toEqual(['STR']);
+      expect(fixed.versatileDamage?.components.filter(c=>c.kind==='abilityModifier').map(c=>c.ability)).toEqual(['STR']);
+      expect(fixed.versatileDamage?.components.some(c=>c.kind==='customVariable'&&c.variableKey==='CUSTOM_BONUS')).toBe(true);
+      const explicit=buildWeaponFromCompendiumItem(character,stored('weapon',{...payload,versatileDamageFormula:'1d6 + CHA'})).weapon;
+      expect(explicit.versatileDamage?.components.filter(c=>c.kind==='abilityModifier').map(c=>c.ability)).toEqual(['CHA']);
+    }
   });
   test('synthetic armor and shield use actual mapper and AC engine; needsReview is still blocked',()=>{
     const items=pilot(),armor=items.find((i:any)=>i.name==='Fixture Medium'),shield=items.find((i:any)=>i.name==='Fixture Shield');
