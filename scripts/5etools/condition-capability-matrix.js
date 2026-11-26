@@ -41,7 +41,7 @@ const hooks={
  impliesIncapacitated:['primitiveOnly','activeEffectConditionIds'],
  impliesProne:['primitiveOnly','activeEffectConditionIds'],
  standEnds:['primitiveOnly','removeActiveEffectFromCharacter'],
- hitWithinFiveFeetCritical:['gap','criticalGuaranteedAlsoGuaranteesHit'],
+ hitWithinFiveFeetCritical:['primitiveOnly','calculateHitChance.criticalOnHit'],
  bonusActionCrossRuleReview:['crossRuleReview',''],
  standCostCrossRuleReview:['crossRuleReview','']
 };

@@ -191,6 +191,9 @@ describe('condition capabilities: observed runtime hooks, not activation',()=>{
     expect(calculateHitChance({...p,rollMode:'disadvantage'}).hitChance).toBeCloseTo(0.25);
     // Paralyzed and Unconscious require critical ON HIT, not automatic hits.
     expect(calculateHitChance({...p,rollMode:'normal',criticalGuaranteed:true})).toEqual({hitChance:1,critChance:1,normalHitChance:0});
+    const conditional=calculateHitChance({...p,rollMode:'normal',criticalOnHit:true});
+    expect(conditional.hitChance).toBeCloseTo(0.5);
+    expect(conditional.critChance).toBeCloseTo(0.5);
   });
   test('condition labels alone do not enforce speed locks, nested conditions or concentration ending',()=>{
     for(const condition of ['grappled','restrained','paralyzed','unconscious']){

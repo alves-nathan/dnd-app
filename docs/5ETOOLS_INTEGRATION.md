@@ -210,3 +210,7 @@ Ver [5ETOOLS_CONDITION_MECHANICS.md](5ETOOLS_CONDITION_MECHANICS.md). Modelo iso
 ## Fase a8.5.5 — matriz de capacidades de condições
 
 Ver [5ETOOLS_CONDITION_CAPABILITIES.md](5ETOOLS_CONDITION_CAPABILITIES.md). 28 definições vinculadas por edição, obrigações e hooks observados, sem ativação. a8.5.4 aprovada. Próxima a8.5.6: modelo explícito de estado e contexto de condições e semântica de crítico condicionado ao acerto.
+
+## Fase a8.5.6 — estado hipotético de condições e preview de ataque
+
+Ver [5ETOOLS_CONDITION_ATTACK_PREVIEW.md](5ETOOLS_CONDITION_ATTACK_PREVIEW.md). Contexto explícito por instância/edição, modificadores de ataque e crítico apenas no acerto; sem ligação ao runtime ativo ou autorização de migração. Próxima a8.5.7: ciclo de vida, movimento, saves e implicações.
