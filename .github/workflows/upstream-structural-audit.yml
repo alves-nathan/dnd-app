@@ -77,6 +77,11 @@ jobs:
           DND_UPSTREAM_BASELINE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_BASELINE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts --runInBand
+      - name: Audit source-qualified reference identities (aggregate only)
+        env:
+          DND_UPSTREAM_REFERENCE_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_REFERENCE_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsReferenceIndex.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

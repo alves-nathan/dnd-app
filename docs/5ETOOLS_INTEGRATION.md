@@ -110,3 +110,7 @@ Ver [5ETOOLS_CONDITION_CONVERSION.md](5ETOOLS_CONDITION_CONVERSION.md). PHB/XPHB
 ## Fase a6.1 — baseline integrado
 
 Ver [5ETOOLS_COVERAGE_BASELINE.md](5ETOOLS_COVERAGE_BASELINE.md). Cruza inventário, estrutura, elegibilidade, saídas e validação V3 por coordenada de origem, separando expansão de templates e revisão semântica. Bundle v4.8.0 somente leitura para priorização nominal; sem equivalência histórica. A5.8 aprovada: 8589 IDs únicos, 13 kinds, 30 conditions válidas. Próxima a6.2: referências entre entidades.
+
+## Fase a6.2 — referências entre entidades
+
+Ver [5ETOOLS_REFERENCE_INDEX.md](5ETOOLS_REFERENCE_INDEX.md). Sidecar de referências por identidade/namespace/proveniência, sem mutação de packs, elegibilidade ou runtime. Seletores e fontes ausentes permanecem pendentes; cross-era sinalizado. a6.1 validou 8589 saídas, zero erros de conciliação. Próxima a6.3: precedência e compatibilidade entre edições.
