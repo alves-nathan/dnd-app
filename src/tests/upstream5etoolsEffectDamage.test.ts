@@ -5,7 +5,7 @@ import { resolveSpellDamageFormula } from '../rules-engine/actions/spellScaling'
 import { addActiveEffectToCharacter, advanceActiveEffectsAtTurnBoundary, getActiveConcentrationEffect } from '../rules-engine/effects/activeEffects';
 import type { ActiveEffect, Spell } from '../types';
 const {openSnapshot}=require('../../scripts/5etools/inventory');
-const {parseFormula,toDamageFormula,compileScaling,bindScaling,compileDuration,compileDefenses,applyTypedDamage,resolveSaveDamage,effectTemplate,buildEffectReport,publicSummary}=require('../../scripts/5etools/effect-damage-preview');
+const {parseFormula,toDamageFormula,compileScaling,bindScaling,compileDuration,compileDefenses,applyTypedDamage,resolveSaveDamage,evaluateStack,effectTemplate,buildEffectReport,publicSummary}=require('../../scripts/5etools/effect-damage-preview');
 const spec={bindingId:'fixture',application:'onHit',criticalPolicy:'attack',sourceType:'spell'};
 describe('a6.5.3 effect and damage semantics',()=>{
   test('strict lexical parser rejects ambiguous expressions and negative dice',()=>{
@@ -51,6 +51,18 @@ describe('a6.5.3 effect and damage semantics',()=>{
     expect(resolveSaveDamage(9,'success','half').amount).toBe(4);
     expect(resolveSaveDamage(9,'failure','half').amount).toBe(9);
     expect(resolveSaveDamage(9,'unknown','half').status).toBe('indeterminate');
+  });
+  test('stack limit is evaluated by exact effect and recipient with complete inventory',()=>{
+    const spec={effectIdentity:'effect:PHB',recipientId:'target',inventoryComplete:true,policy:'uniqueConfirmed'};
+    const instances=[{instanceId:'a',effectIdentity:'effect:PHB',recipientId:'target',status:'active'},
+      {instanceId:'b',effectIdentity:'effect:XPHB',recipientId:'target',status:'active'},
+      {instanceId:'c',effectIdentity:'effect:PHB',recipientId:'other',status:'active'},
+      {instanceId:'d',effectIdentity:'effect:PHB',recipientId:'target',status:'expired'}];
+    expect(evaluateStack(spec,instances)).toMatchObject({status:'notSatisfied',existingCount:1,maxInstances:1});
+    expect(evaluateStack({...spec,policy:'boundedConfirmed',maxInstances:2},instances)).toMatchObject({status:'satisfied',existingCount:1});
+    expect(evaluateStack({...spec,inventoryComplete:false},instances).status).toBe('indeterminate');
+    expect(evaluateStack({...spec,policy:'strongestWins'},instances).status).toBe('indeterminate');
+    expect(evaluateStack(spec,[...instances,instances[0]]).status).toBe('indeterminate');
   });
   test('explicit effect bridge uses actual concentration and turn-boundary engine',()=>{
     const input={id:'fixture',name:'Fixture',kind:'spell',sourceType:'spell',concentration:true,conditionIds:['fixture-condition'],

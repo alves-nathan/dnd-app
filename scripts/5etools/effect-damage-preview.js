@@ -110,7 +110,7 @@ function compileScaling(item){
 }
 // Explicitly confirmed application policy supplied by reviewer; no promotion from mere table.
 function bindScaling(row,spec){
-  if(row?.status!=='scalingTableCandidate'||row.kind!=='characterLevel'||spec?.sameSingleDamageApplicationConfirmed!==true||
+  if(row?.status!=='scalingTableCandidate'||row.kind!=='characterLevel'||spec?.sameSingleDamageApplicationConfirmed!==true||!text(spec.bindingId)||
     !Array.isArray(row.steps)||row.steps.map(s=>s.minCharacterLevel).join(',')!=='1,5,11,17')return pending('scalingApplicationPending');
   const steps=[];
   for(const s of row.steps){
@@ -172,6 +172,20 @@ function resolveSaveDamage(amount,outcome,successPolicy){
   return result('damageEventCandidate',{amount:outcome==='failure'||successPolicy==='full'?amount:successPolicy==='half'?Math.floor(amount/2):0});
 }
 // Manual reviewed bridge into existing effect templates. No assumed timing/stack behavior.
+// Context is exact physical effect identity + recipient, with confirmed complete inventory.
+// No global rule derived from effect names, and no arbitrary choice of which instance wins.
+function evaluateStack(spec,instances){
+  if(!rec(spec)||!text(spec.effectIdentity)||!text(spec.recipientId)||spec.inventoryComplete!==true||
+    !['independentConfirmed','uniqueConfirmed','boundedConfirmed'].includes(spec.policy)||!Array.isArray(instances)||
+    instances.some(i=>!rec(i)||!text(i.instanceId)||!text(i.effectIdentity)||!text(i.recipientId)||!['active','expired','removed'].includes(i.status))||
+    new Set(instances.map(i=>i.instanceId)).size!==instances.length)return pending('stackContextPending');
+  const active=instances.filter(i=>i.status==='active'&&i.effectIdentity===spec.effectIdentity&&i.recipientId===spec.recipientId);
+  if(spec.policy==='independentConfirmed')return result('satisfied',{existingCount:active.length});
+  const max=spec.policy==='uniqueConfirmed'?1:spec.maxInstances;
+  if(!positive(max))return pending('stackLimitPending');
+  return result(active.length<max?'satisfied':'notSatisfied',{existingCount:active.length,maxInstances:max,
+    ...(active.length>=max?{reason:'stackLimitReached'}:{})});
+}
 function effectTemplate(spec){
   if(!rec(spec)||!text(spec.id)||!text(spec.name)||!['spell','condition','buff','debuff','feature','item','manual'].includes(spec.kind)||
     !sourceTypes.has(spec.sourceType)&&spec.sourceType!=='condition'||typeof spec.concentration!=='boolean'||
@@ -208,4 +222,4 @@ function buildEffectReport(main,homebrew){
     activation:'review-required',scope:'numeric and explicit-context semantic candidates; no implicit triggers, runtime effects, stacking or character writes'};
 }
 function publicSummary(r){return {schemaVersion:r.schemaVersion,commits:r.commits,items:r.items,summary:r.summary,activation:r.activation,scope:r.scope};}
-module.exports={parseFormula,toDamageFormula,formulaObservations,directDamage,compileScaling,bindScaling,compileDuration,compileConditionEvidence,compileDefenses,applyTypedDamage,resolveSaveDamage,effectTemplate,buildEffectReport,publicSummary};
+module.exports={parseFormula,toDamageFormula,formulaObservations,directDamage,compileScaling,bindScaling,compileDuration,compileConditionEvidence,compileDefenses,applyTypedDamage,resolveSaveDamage,evaluateStack,effectTemplate,buildEffectReport,publicSummary};
