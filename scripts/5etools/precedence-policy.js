@@ -91,6 +91,15 @@ function previewPrecedence(items,records,decisions=[]){
       declarations.push({...relation,status:'reprintProposed',crossEra:i.source.rulesEra!==target.source.rulesEra});
     }
   }
+  // Same logical key across known eras: retain both. No automatic same-era winner.
+  // Explicit reprints already retain both endpoints, so don't duplicate the same pair.
+  for(const group of groups.values()){
+    const legacy=group.filter(i=>i.source.rulesEra==='2014'),revised=group.filter(i=>i.source.rulesEra==='2024');
+    for(const a of legacy)for(const b of revised){
+      if(!sameIdentity(a,b)||directedPairs.has(pair(a.id,b.id)))continue;
+      add(a.id,b.id,'coexistsWith','crossEraPreservationPolicy');add(b.id,a.id,'coexistsWith','crossEraPreservationPolicy');
+    }
+  }
   // Optional editorial decisions: exact snapshot/physical endpoints, evidence and explicit approval.
   // None are supplied by default, and no declaration is treated as approval.
   for(const d of decisions){
@@ -100,7 +109,7 @@ function previewPrecedence(items,records,decisions=[]){
     else if(d.relation==='original'){
       if(d.targetId!==undefined)status='unexpectedTarget';
       else if(!known(from.source.rulesEra))status='unknownEraReviewRequired';
-      else if(proposed.get(from.id).reprints.size||proposed.get(from.id).supersedes.size)status='conflictingDecision';
+      else if(proposed.get(from.id).reprints.size||proposed.get(from.id).supersedes.size||proposed.get(from.id).coexistsWith.size)status='conflictingDecision';
       else{proposed.get(from.id).original=true;proposed.get(from.id).basis.add('editorialApproval');}
     }else if(d.relation==='supersedes'){
       if(!to||d.toCommit!==to.provenance.commit||d.toBlob!==to.provenance.blob)status='approvalOrEvidenceRequired';
@@ -115,15 +124,6 @@ function previewPrecedence(items,records,decisions=[]){
       }
     }else status='unsupportedDecision';
     decisionResults.push({fromId:d.fromId,targetId:d.targetId,relation:d.relation,status,evidence:d.evidence});
-  }
-  // Same logical key across known eras: retain both. No automatic same-era winner.
-  // Explicit reprints already retain both endpoints, so don't duplicate the same pair.
-  for(const group of groups.values()){
-    const legacy=group.filter(i=>i.source.rulesEra==='2014'),revised=group.filter(i=>i.source.rulesEra==='2024');
-    for(const a of legacy)for(const b of revised){
-      if(!sameIdentity(a,b)||directedPairs.has(pair(a.id,b.id)))continue;
-      add(a.id,b.id,'coexistsWith','crossEraPreservationPolicy');add(b.id,a.id,'coexistsWith','crossEraPreservationPolicy');
-    }
   }
   const precedenceById=new Map(),byRelation=dict(),edgeCounts={reprints:0,supersedes:0,coexistsWith:0};
   for(const i of items){

@@ -46,6 +46,12 @@ describe('precedence and edition policy',()=>{
     const legacy=fixture('l','Legacy','2014','2014-01-01');
     expect(preview([legacy,b],[approval(b,legacy)]).decisionsByStatus).toEqual({crossOrUnknownEraSupersedes:1});
   });
+  test('does not silently override an original decision with coexistence',()=>{
+    const a=fixture('a','PHB','2014','2014-08-19'),b=fixture('b','XPHB','2024','2024-09-17');
+    const decision={fromId:a.item.id,relation:'original',approved:true,evidence:'synthetic review',fromCommit:sha,fromBlob:blob};
+    expect(preview([a,b],[decision]).decisionsByStatus).toEqual({conflictingDecision:1});
+    expect(find(preview([a],[decision]),'a').relation).toBe('original');
+  });
   test('does not infer publication order from overlapping precision',()=>{
     const a=fixture('a','Old','2024','2024-01-01'),b=fixture('b','New','2024','2024-09-17');
     expect(chronology({...b.item,source:{...b.item.source,publication:{precision:'year',year:2024}}},a.item)).toBe('publicationOverlap');
