@@ -134,3 +134,7 @@ Ver [5ETOOLS_TAG_UID_PREVIEW.md](5ETOOLS_TAG_UID_PREVIEW.md). Scanner balanceado
 ## Fase a6.5.1 — elegibilidade e concessões contextuais
 
 Ver [5ETOOLS_SEMANTIC_ELIGIBILITY.md](5ETOOLS_SEMANTIC_ELIGIBILITY.md). IR de requisitos com avaliação trivalente, schedules e alocações, concessões contextuais preservando ownership; sem integração runtime. a6.4.3 aprovada: 5694 referências inline explícitas, 5162 candidatos de default. Próxima a6.5.2: recursos e spellcasting.
+
+## Fase a6.5.2 — recursos e spellcasting
+
+Ver [5ETOOLS_RESOURCE_SPELLCASTING.md](5ETOOLS_RESOURCE_SPELLCASTING.md). Perfis e pools candidatos, política explícita de multiclass, custos de magia e recursos, testes de compatibilidade com managers existentes e orçamento de ações simples. Sem ativação. a6.5.1 aprovada: 123 requisitos integralmente avaliáveis, 1097 grants diretos. Próxima a6.5.3: efeitos e fórmulas.
