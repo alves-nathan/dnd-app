@@ -234,3 +234,7 @@ Ver [5ETOOLS_CLASS_PROJECTION_PREVIEW.md](5ETOOLS_CLASS_PROJECTION_PREVIEW.md). 
 ## Fase a8.6.4 — recursos, grants e escolhas de features
 
 Ver [5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md](5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md). a8.6.3 aprovada. Evidência por coluna e ocorrência, custos explícitos, checkpoints de escolhas, sem inferência de recuperação ou grant. Próxima a8.6.5: candidatos qualificados de recursos, recuperação e substituições.
+
+## Fase a8.6.5 — projeção de recursos e substituição de escolhas
+
+Ver [5ETOOLS_FEATURE_RESOURCE_PROJECTION.md](5ETOOLS_FEATURE_RESOURCE_PROJECTION.md). a8.6.4 aprovada. Cinco políticas base vinculadas ao snapshot, eventos hipotéticos e seleção explícita, sem ativação. Próxima a8.6.6: consolidação e limites de transações de level-up.

@@ -1,3 +1,6 @@
+import {createEmptyCharacter} from '../data/mockData';
+import {applyRest,spendResources} from '../rules-engine/resources/resourceManager';
+const {buildResourceProjection,previewResourceEvent,publicSummary:baseResourceSummary}=require('../../scripts/5etools/feature-resource-projection');
 const {buildFeatureResourceEvidence,publicSummary:featureResourceSummary}=require('../../scripts/5etools/feature-resource-evidence');
 const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
@@ -106,6 +109,41 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(featureResources.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(featureResources.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(featureResourceSummary(featureResources)));
+      const resourceProjection=buildResourceProjection(input);
+      expect(resourceProjection.counts).toEqual({baseResourceCandidate:5});
+      expect(resourceProjection.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(resourceProjection.mechanicalParityEstablished).toBe(0);
+      // Use actual source-bound pools with the existing engine in disposable characters.
+      const resourceEvent=(row:any,level:number,current:number,event:Record<string,unknown>)=>previewResourceEvent(input,{
+        contextConfirmed:true,baseFeatureOnlyConfirmed:true,classInstanceId:'fixture',resourceId:'fixture-pool',
+        classId:row.classId,featureId:row.featureId,rulesEra:row.rulesEra,level,current,
+        projectionFingerprint:resourceProjection.fingerprint,event:{confirmed:true,...event}});
+      const fighter=resourceProjection.rows.find((x:any)=>x.name==='Second Wind');
+      const legacyRage=resourceProjection.rows.find((x:any)=>x.name==='Rages'&&x.rulesEra==='2014');
+      const revisedRage=resourceProjection.rows.find((x:any)=>x.name==='Rages'&&x.rulesEra==='2024');
+      const ki=resourceProjection.rows.find((x:any)=>x.name==='Ki Points');
+      const focus=resourceProjection.rows.find((x:any)=>x.name==='Focus Points');
+      const restore=(row:any,level:number,current:number,rest:'shortRest'|'longRest',expected:number,extra:Record<string,unknown>={})=>{
+        const event=resourceEvent(row,level,current,{kind:rest,...extra});
+        expect(event).toMatchObject({status:'resourceEventCandidate',writeAuthorized:false});
+        const character={...createEmptyCharacter('Fixture'),resources:[event.pool]};
+        expect(applyRest(character,rest).character.resources[0]?.current).toBe(expected);
+        expect(character.resources[0]?.current).toBe(current);
+      };
+      restore(fighter,10,1,'shortRest',2);
+      restore(revisedRage,10,0,'longRest',4);
+      restore(legacyRage,10,0,'shortRest',0);
+      restore(focus,5,0,'shortRest',5);
+      restore(ki,5,0,'shortRest',5,{meditationConfirmed:true});
+      expect(resourceEvent(ki,5,0,{kind:'shortRest'}).reason).toBe('meditationContextRequired');
+      expect(resourceEvent(legacyRage,20,0,{kind:'longRest'}).reason).toBe('finiteCapacityPending');
+      const spend=resourceEvent(fighter,10,2,{kind:'spend',consumerFeatureId:fighter.featureId});
+      expect(spend).toMatchObject({status:'resourceEventCandidate',cost:{amount:1}});
+      const character={...createEmptyCharacter('Fixture'),resources:[spend.pool]};
+      expect(spendResources({character,costs:[spend.cost]}).character.resources[0]?.current).toBe(1);
+      expect(character.resources[0]?.current).toBe(2);
+      expect(resourceEvent(fighter,10,0,{kind:'spend',consumerFeatureId:fighter.featureId}).reason).toBe('insufficientResource');
+      console.log(JSON.stringify(baseResourceSummary(resourceProjection)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
