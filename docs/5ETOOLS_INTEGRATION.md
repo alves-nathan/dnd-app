@@ -150,3 +150,7 @@ Ver [5ETOOLS_INTEGRATED_REVIEW.md](5ETOOLS_INTEGRATED_REVIEW.md). Consolidação
 ## Fase a6.6.1 — política Homebrew
 
 Ver [5ETOOLS_HOMEBREW_POLICY.md](5ETOOLS_HOMEBREW_POLICY.md). Inventário por fonte/arquivo, classificação e licença separadas da procedência, colisões, dependências e candidatos estruturais isolados; distribuição bloqueada, nenhuma emissão. a6.5.4 aprovada: 102474 evidências, 103 lacunas com candidatos, issues vazio. Próxima a6.6.2: conversão piloto isolada.
+
+## Fase a6.6.2 — conversão piloto Homebrew
+
+Ver [5ETOOLS_HOMEBREW_PILOT.md](5ETOOLS_HOMEBREW_PILOT.md). Probes Canonical V3 isolados, amostra limitada de spells/feats/equipment, ledger por entidade, classificação provisória não exportável. Main preservado. a6.6.1 aprovada: 117522 candidatos estruturais de 138511 registros. Próxima a6.7: validação global do grafo.

@@ -177,7 +177,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
   }
   return {commit:snapshot.commit,packs,counts,diagnostics,activation:'review-required'};
 }
-module.exports={buildPilot,prerequisite,flatPrerequisite,abilityPlan,simpleAbility,physicalId};
+module.exports={buildPilot,convert,prerequisite,flatPrerequisite,abilityPlan,simpleAbility,physicalId};
 if(require.main===module){
   try{
     const [root,out,ref]=process.argv.slice(2);if(!root||!out)fail('usage');

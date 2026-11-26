@@ -119,14 +119,14 @@ function makeSource(code,book,policy) {
     rulesEra:policy.era,contentType:'official',precedenceScope:'official-dnd',
     publication:{precision:'day',date,year:Number(date.slice(0,4)),evidence:'5etools:data/books.json'}};
 }
-function convertSpell(record,resolved,lookup,source,policy,commit) {
+function convertSpell(record,resolved,lookup,source,policy,commit,explicitAccess) {
   const e=resolved.entity;
   const notes=new Set(['effectSemanticsPending','precedencePending']);
   if(source.rulesEra==='unknown') notes.add('rulesEraPending');
   if(!Number.isInteger(e.level)||e.level<0||e.level>9) fail('invalidSpellLevel');
   if(!own(schools,e.school)) fail('unknownSchool');
   if(!Array.isArray(e.entries)) fail('invalidEntries');
-  const access=classAccess(e,lookup,policy,notes);
+  const access=explicitAccess??classAccess(e,lookup,policy,notes);
   const damage=inspectDamage(e,notes);
   const saves=array(e.savingThrow);
   const attacks=array(e.spellAttack);

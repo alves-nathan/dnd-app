@@ -205,7 +205,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
   }
   return {commit:snapshot.commit,packs,counts,diagnostics,activation:'review-required'};
 }
-module.exports={buildPilot,physicalId,pilot,classify,weapon,armor,equipment,definitionIndex,costWeight};
+module.exports={buildPilot,convertItem,physicalId,pilot,classify,weapon,armor,equipment,definitionIndex,costWeight};
 if(require.main===module){
   try{
     const [root,out,ref]=process.argv.slice(2);
