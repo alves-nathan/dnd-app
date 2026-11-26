@@ -162,3 +162,7 @@ Ver [5ETOOLS_GLOBAL_GRAPH.md](5ETOOLS_GLOBAL_GRAPH.md). Registro Main e probes H
 ## Fase a7.1 — inventário histórico
 
 Ver [5ETOOLS_HISTORICAL_BASELINE.md](5ETOOLS_HISTORICAL_BASELINE.md). Inventário imutável de packs V1/V2/históricos, bootstrap e runtime V4.8.0, hashes, identidade e cobertura nominal de fontes. Sem equivalência ou retirada de dados. a6.7 FIX01 aprovada: 8690 nós, 102735 evidências, issues vazio. Próxima a7.2: mapeamento e lacunas de migração.
+
+## Fase a7.2 — reconciliação histórica
+
+Ver [5ETOOLS_HISTORICAL_RECONCILIATION.md](5ETOOLS_HISTORICAL_RECONCILIATION.md). Candidatos de identidade por fonte/tipo/nome, owner/nível, fingerprints, obrigações de preservação de entidades e grafo runtime. Sem migração. a7.1 FIX01 aprovada: 6335 ocorrências/2199 IDs, bootstrap1997, runtime5841. CI: concurrency por workflow/evento/ref e cache npm upstream; cobertura intacta.

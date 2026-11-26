@@ -15,6 +15,10 @@ on:
       - 'src/compendium/importDomain.ts'
       - '.github/workflows/upstream-structural-audit.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -31,6 +35,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
       - name: Fetch upstream snapshots (no upstream code execution)
         run: |
           git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/5etools-mirror-3/5etools-src.git "$RUNNER_TEMP/5etools-main"
@@ -142,6 +147,11 @@ jobs:
           DND_UPSTREAM_HISTORY_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_HISTORY_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHistoricalBaseline.test.ts --runInBand
+      - name: Reconcile historical identities and preservation obligations (aggregate only)
+        env:
+          DND_UPSTREAM_RECONCILE_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_RECONCILE_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |
