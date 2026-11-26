@@ -1,3 +1,4 @@
+const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
 import * as fs from 'node:fs';
@@ -78,6 +79,15 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(classes.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(classes.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(classProgressionSummary(classes)));
+      const mechanics=buildClassMechanicsEvidence(input,classes);
+      expect(mechanics.historical.class).toMatchObject({occurrences:50,candidates:35,chassis:{hitDie:{exactValue:35},savingThrowProficiencies:{exactValue:35}}});
+      expect(mechanics.historical.subclass).toMatchObject({occurrences:251,candidates:143});
+      expect(mechanics.upstream.class.tableCandidate).toBeGreaterThan(0);
+      expect(mechanics.upstream.class['progression:pactMagic']).toBeGreaterThan(0);
+      expect(mechanics.contract.structuredSkillChoice).toBeGreaterThan(0);
+      expect(mechanics.mechanicalParityEstablished).toBe(0);
+      expect(mechanics.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      console.log(JSON.stringify(classMechanicsSummary(mechanics)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
