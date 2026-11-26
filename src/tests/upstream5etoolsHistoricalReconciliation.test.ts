@@ -1,3 +1,4 @@
+const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
 import { parseImportPack } from '../compendium/parseImportPack';
@@ -56,7 +57,15 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
   if(!mainPath||!brewPath)throw Error('missing snapshots');
   const r=buildReconciliation(openSnapshot(mainPath),openSnapshot(brewPath),openHistoricalSnapshot(process.cwd()),{
     bundled:BUNDLED_COMPENDIUM_PACKS,parse:parseImportPack,detect:detectCompendiumImportVersion,
-    loadRuntime:(b:RuntimeCatalogBundle)=>new CatalogLoader().initializeFromBundle(b)
+    loadRuntime:(b:RuntimeCatalogBundle)=>new CatalogLoader().initializeFromBundle(b),
+    onEvidenceInputs:(input:any)=>{
+      const report=buildEquipmentParityEvidence(input);
+      expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
+      expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});
+      expect(report.mechanicalParityEstablished).toBe(0);
+      expect(report.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      console.log(JSON.stringify(equipmentParitySummary(report)));
+    }
   });
   console.log(JSON.stringify(publicSummary(r)));
   expect(r.summary.issues).toEqual({});

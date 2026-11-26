@@ -133,12 +133,13 @@ function reconcile({historical,runtime,rawHistorical,rawRuntime,items,records,co
     historical:rows,runtime:runtimeRows,historicalGroups:groups,dependencies:deps,aliases,categories,legacyLinks,activation:'review-required',
     scope:'identity candidates only; preserve all historical occurrences, runtime contracts, edges and aliases; no mechanical equivalence or retirement'};
 }
-function buildReconciliation(main,homebrew,snapshot,{bundled,parse,detect,loadRuntime}){
+function buildReconciliation(main,homebrew,snapshot,{bundled,parse,detect,loadRuntime,onEvidenceInputs}){
   const historical=inspectPacks(snapshot,{bundled,parse,detect}),a=artifact(snapshot,runtimePath),runtime=inspectRuntime(a,loadRuntime);
   const rawHistorical=historical.files.flatMap(f=>artifact(snapshot,f.path).value.items.map((item,index)=>({path:f.path,index,item})));
   const records=collect(main,homebrew).records,items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
   const out=reconcile({historical,runtime,rawHistorical,rawRuntime:a.value.runtimeIndex.entries,items,records,commits:{application:snapshot.commit,main:main.commit,homebrew:homebrew.commit}});
   for(const [domain,s] of [['historical',historical.summary],['runtime',runtime.summary]])for(const [k,n] of Object.entries(s.issues))bump(out.summary.issues,domain+':'+k,n);
+  if(onEvidenceInputs)onEvidenceInputs({reconciliation:out,rawHistorical,items});
   return out;
 }
 function publicSummary(r){return {schemaVersion:r.schemaVersion,commits:r.commits,summary:r.summary,activation:r.activation,scope:r.scope};}

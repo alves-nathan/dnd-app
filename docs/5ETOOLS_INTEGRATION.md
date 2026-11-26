@@ -190,3 +190,7 @@ Ver [5ETOOLS_LOCAL_PRESERVATION_UI.md](5ETOOLS_LOCAL_PRESERVATION_UI.md). Verifi
 ## Fase a8.4 — matriz de evidências e lacunas
 
 Ver [5ETOOLS_CUTOVER_EVIDENCE.md](5ETOOLS_CUTOVER_EVIDENCE.md). Reutiliza cobertura, grafo e preview de migração no mesmo CI, agregados por 13 kinds, sem novos parses ou jobs. a8.3.2 aprovada. Próxima a8.5: revisão de paridade e evidências mecânicas priorizadas.
+
+## Fase a8.5.1 — evidência mecânica de armas e armaduras
+
+Ver [5ETOOLS_EQUIPMENT_PARITY.md](5ETOOLS_EQUIPMENT_PARITY.md). Comparação de campos históricos com candidatos de identidade e regressões sintéticas do motor; sem aprovação de paridade. a8.4 aprovada. Próxima a8.5.2: tratar lacunas específicas de equipamento/condições.

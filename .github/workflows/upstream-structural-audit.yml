@@ -155,7 +155,7 @@ jobs:
         env:
           DND_UPSTREAM_RECONCILE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RECONCILE_BREW: ${{ runner.temp }}/5etools-homebrew
-        run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts --runInBand
+        run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts src/tests/upstream5etoolsEquipmentParity.test.ts --runInBand
       - name: Validate read-only migration preview (aggregate only)
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
