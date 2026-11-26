@@ -33,7 +33,7 @@ describe('5etools conservative resolution', () => {
     expect(() => makeResolver([a]).resolve(a)).toThrow();
     expect(() => makeResolver([a,b]).resolve(a)).toThrow();
     expect(() => makeResolver([a,a]).resolve(a)).toThrow();
-    expect(() => applyMods({entries:[]},{entries:{mode:'replaceTxt',replace:'x',with:'y'}})).toThrow();
+    expect(() => applyMods({entries:[]},{entries:{mode:'replaceTxt',replace:'x.*',with:'y'}})).toThrow();
     expect(() => applyMods({entries:[]},{'__proto__.x':{mode:'appendArr',items:[]}})).toThrow();
   });
   test('array operations retain order and reject missing replacement', () => {

@@ -118,3 +118,7 @@ Ver [5ETOOLS_REFERENCE_INDEX.md](5ETOOLS_REFERENCE_INDEX.md). Sidecar de referê
 ## Fase a6.3 — precedência e compatibilidade
 
 Ver [5ETOOLS_PRECEDENCE_POLICY.md](5ETOOLS_PRECEDENCE_POLICY.md). Preview V3 global de reprints explícitos e preservação cross-era, supersedes somente com decisão editorial vinculada a snapshot; sem redirecionamento ou ativação. a6.2 aprovada: 13052/15571 referências resolvidas, 748 cross-era. Próxima a6.4: heranças, variantes, templates e tags.
+
+## Fase a6.4.1 — identidades e cópias
+
+Ver [5ETOOLS_RESOLVER_EXTENSIONS.md](5ETOOLS_RESOLVER_EXTENSIONS.md). Normalização exclusiva de source aninhado em magicvariant, operações root/literal wildcard e escalares conservadoras, sem regex arbitrária ou alteração de IDs anteriores. a6.3 aprovada: 1562 vínculos reprint, zero supersedes/erros. Próxima a6.4.2: templates, variantes e aliases.

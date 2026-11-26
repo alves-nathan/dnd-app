@@ -87,6 +87,11 @@ jobs:
           DND_UPSTREAM_PRECEDENCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_PRECEDENCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsPrecedencePolicy.test.ts --runInBand
+      - name: Audit resolver identity and copy extensions (aggregate only)
+        env:
+          DND_UPSTREAM_RESOLVER_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_RESOLVER_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsResolverExtensions.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

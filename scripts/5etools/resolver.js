@@ -12,7 +12,14 @@ const norm = x => typeof x === 'string' ? x.trim().toLowerCase() : '';
 const bad = new Set(['__proto__','prototype','constructor']);
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 function fail(code, detail) { const e = new Error(detail); e.code = code; throw e; }
+// A source nested in a magic template is its publication identity, not an alias.
+function normalizeIdentity(kind, entity) {
+  if (kind !== 'magicvariant' || !isRecord(entity) || own(entity,'source')) return entity;
+  if (!isRecord(entity.inherits) || !norm(entity.inherits.source)) return entity;
+  return {...entity,source:entity.inherits.source};
+}
 function identity(kind, e) {
+  e = normalizeIdentity(kind,e);
   const name = norm(kind === 'subclass' ? (e.shortName ?? e.name) : (e.name ?? e.abbreviation));
   const source = norm(e.source);
   if (!name || !source) fail('invalidIdentity', kind + ': missing name or source');
@@ -47,7 +54,8 @@ function collect(main, homebrew) {
       if (!isRecord(json)) continue;
       for (const [kind, entries] of Object.entries(json)) {
         if (!kinds.has(kind) || !Array.isArray(entries)) continue;
-        for (const [index,entity] of entries.entries()) {
+        for (const [index,raw] of entries.entries()) {
+          const entity=normalizeIdentity(kind,raw);
           try {
             if (!isRecord(entity)) fail('invalidEntity','Expected object');
             const key = identity(kind,entity);
@@ -93,25 +101,117 @@ function getParent(root, parts, create) {
   }
   return parent;
 }
+const copyEntryProps = ['action','bonus','reaction','trait','legendary','mythic','variant','spellcasting','actionHeader','bonusHeader','reactionHeader','legendaryHeader','mythicHeader'];
+// Literal, bounded pattern only: no arbitrary regex, replacement expansion or tag rewriting.
+function literalReplacement(m) {
+  if (typeof m.replace !== 'string' || !m.replace.trim() || m.replace.length > 160 ||
+      /[\\^$.*+?()[\]{}|]/.test(m.replace) || typeof m.with !== 'string' || m.with.length > 512 ||
+      /[$<>]/.test(m.with) || m.with.includes('{@') ||
+      ![undefined,'','i'].includes(m.flags) || (m.tagInsensitive !== undefined && m.tagInsensitive !== false) ||
+      Object.keys(m).some(k=>!['mode','replace','with','flags','tagInsensitive'].includes(k)))
+    fail('unsupportedTextReplacement','Nonliteral or unsupported replaceTxt');
+  const re = new RegExp(m.replace,m.flags === 'i' ? 'gi' : 'g');
+  // Preserve complete inline tags, including nested tags. Fail closed on unbalanced tags.
+  return text => {
+    let result='', start=0, i=0;
+    while(i<text.length){
+      if(!text.startsWith('{@',i)){i++;continue;}
+      result+=text.slice(start,i).replace(re,()=>m.with);
+      let depth=1,j=i+2;
+      for(;j<text.length&&depth;j++){
+        if(text[j]==='{')depth++;
+        else if(text[j]==='}')depth--;
+      }
+      if(depth)fail('unsupportedTextStructure','Unbalanced inline tag');
+      result+=text.slice(i,j);start=j;i=j;
+    }
+    return result+text.slice(start).replace(re,()=>m.with);
+  };
+}
+function replaceText(entity, parts, m) {
+  const replace=literalReplacement(m);
+  const parent=getParent(entity,parts,false),key=parts.at(-1);
+  if(!parent||!own(parent,key))return;
+  if(!Array.isArray(parent[key]))fail('invalidModTarget',parts.join('.'));
+  function walk(v){
+    if(typeof v==='string')return replace(v);
+    if(Array.isArray(v))return v.map(walk);
+    // Do not guess the upstream walker semantics on structured nested entries.
+    if(isRecord(v)){
+      function changes(x){
+        if(typeof x==='string')return replace(x)!==x;
+        if(Array.isArray(x))return x.some(changes);
+        return isRecord(x)&&Object.values(x).some(changes);
+      }
+      if(changes(v))fail('unsupportedTextStructure','Nested entry requires walker semantics');
+    }
+    return v;
+  }
+  parent[key]=parent[key].map(v=>{
+    if(typeof v==='string')return replace(v);
+    if(!isRecord(v))fail('unsupportedTextStructure','Unsupported entry');
+    const out=copy(v);
+    for(const field of ['entries','headerEntries','footerEntries'])if(own(out,field)){
+      if(!Array.isArray(out[field]))fail('unsupportedTextStructure','Expected entry array');
+      out[field]=walk(out[field]);
+    }
+    return out;
+  });
+}
 function applyMods(entity, mods) {
   if (!isRecord(mods)) fail('unsupportedMod','Expected modification object');
-  for (const [prop, ops] of Object.entries(mods)) {
-    const parts = safePath(prop);
+  // Upstream applies named paths first, then root operations, then entry wildcard.
+  const rank = p => p === '*' ? 2 : p === '_' ? 1 : 0;
+  for (const [prop, ops] of Object.entries(mods).sort(([a],[b])=>rank(a)-rank(b))) {
+    const parts = prop === '_' || prop === '*' ? null : safePath(prop);
     for (const m of Array.isArray(ops) ? ops : [ops]) {
       if (m === 'remove') {
+        if (!parts) fail('unsupportedModPath',prop);
         const parent = getParent(entity,parts,false);
         if (parent) delete parent[parts.at(-1)];
         continue;
       }
       if (!isRecord(m) || typeof m.mode !== 'string') fail('unsupportedMod',prop);
       if (JSON.stringify(m).includes('<$')) fail('unsupportedDynamicMod',prop);
-      const fullPath = m.mode === 'setProp' && m.prop !== undefined ? [...parts,...safePath(m.prop)] : parts;
-      const parent = getParent(entity,fullPath,['appendArr','prependArr','appendIfNotExistsArr','setProp','replaceOrAppendArr'].includes(m.mode));
+      if(prop==='*'){
+        if(m.mode!=='replaceTxt')fail('unsupportedModPath',prop);
+        // Validate even if no entry properties exist.
+        literalReplacement(m);
+        for(const field of copyEntryProps)replaceText(entity,[field],m);
+        continue;
+      }
+      if(prop==='_'&&(m.mode!=='setProp'||typeof m.prop!=='string'))fail('unsupportedModPath',prop);
+      if(m.mode==='replaceTxt'){replaceText(entity,parts,m);continue;}
+      const fullPath = m.mode === 'setProp' && m.prop !== undefined ? [...(parts||[]),...safePath(m.prop)] : parts;
+      const parent = getParent(entity,fullPath,['appendArr','prependArr','appendIfNotExistsArr','setProp','replaceOrAppendArr','appendStr'].includes(m.mode));
       if (!parent) fail('invalidModTarget',prop);
       const key = fullPath.at(-1);
       if (m.mode === 'setProp') {
         if (!own(m,'value')) fail('invalidModTarget',prop);
         parent[key] = copy(m.value);
+        continue;
+      }
+      if(m.mode==='appendStr'){
+        const current=own(parent,key)?parent[key]:undefined;
+        if(typeof m.str!=='string'||(m.joiner!==undefined&&typeof m.joiner!=='string')||
+          (current!==undefined&&typeof current!=='string')||Object.keys(m).some(k=>!['mode','str','joiner'].includes(k)))fail('invalidModTarget',prop);
+        parent[key]=current?current+(m.joiner||'')+m.str:m.str;continue;
+      }
+      if(m.mode==='scalarAddProp'||m.mode==='scalarMultProp'){
+        const target=own(parent,key)?parent[key]:undefined;
+        if(!isRecord(target)||!Number.isSafeInteger(m.scalar)||
+          (m.floor!==undefined&&typeof m.floor!=='boolean')||Object.keys(m).some(k=>!['mode','prop','scalar','floor'].includes(k)))fail('invalidModTarget',prop);
+        if(typeof m.prop!=='string'||(m.prop!=='*'&&safePath(m.prop).length!==1))fail('unsupportedModSelector',prop);
+        const keys=m.prop==='*'?Object.keys(target):[m.prop],updates=[];
+        for(const k of keys){
+          if(bad.has(k)||!own(target,k))fail('invalidModTarget',prop);
+          const v=target[k],n=typeof v==='string'&&/^[+-]?\d+$/.test(v)?Number(v):v;
+          if(!Number.isSafeInteger(n))fail('invalidModTarget',prop);
+          const out=m.mode==='scalarAddProp'?n+m.scalar:n*m.scalar;
+          if(!Number.isSafeInteger(out))fail('invalidModTarget',prop);
+          updates.push([k,typeof v==='string'?(out>=0?'+':'')+out:out]);
+        }
+        for(const [k,v] of updates)target[k]=v;
         continue;
       }
       const arr = own(parent,key) ? parent[key] : undefined;
@@ -164,7 +264,7 @@ function makeResolver(records) {
     if (stack.has(r.id)) fail('copyCycle',r.id);
     if (stack.size >= 100) fail('copyDepthExceeded',r.id);
     if (memo.has(r.id)) return copy(memo.get(r.id));
-    let entity = copy(r.entity), lineage = [];
+    let entity = copy(normalizeIdentity(r.kind,r.entity)), lineage = [];
     if (entity._copy) {
       const meta = entity._copy;
       if (!isRecord(meta)) fail('invalidCopy',r.id);
@@ -176,6 +276,7 @@ function makeResolver(records) {
       lineage = [base.id,...parent.lineage];
     }
     if (entity._mod || entity._templates || entity._versions) fail('unsupportedVariantOrTemplate',r.id);
+    if (r.kind==='magicvariant' && norm(entity.inherits?.source) && norm(entity.source)!==norm(entity.inherits.source)) fail('variantSourceMismatch',r.id);
     if (identity(r.kind,entity) !== r.key) fail('identityChangedByMod',r.id);
     const value = {entity,lineage};
     memo.set(r.id,copy(value));
@@ -272,7 +373,7 @@ function audit(main,homebrew,collection=collect(main,homebrew)) {
     counts,bySource,issueCounts:issues,entities,diagnostics,activation:'review-required',
     scope:'structural-subset-only; variants, inline tags, external metadata and mechanical mapping not validated'};
 }
-module.exports = {identity,collect,makeResolver,applyMods,audit};
+module.exports = {identity,normalizeIdentity,collect,makeResolver,applyMods,audit};
 if (require.main === module) {
   try {
     const args = process.argv.slice(2);
