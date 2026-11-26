@@ -114,13 +114,13 @@ function evidenceFor(item,index){
   add('formula',formulaObservations(item,index));
   return rows;
 }
-function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30,attemptLimitPerKind=600,asOf=new Date().toISOString().slice(0,10)}={}){
+function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30,attemptLimitPerKind=600,asOf=new Date().toISOString().slice(0,10),sharedContext,onProbe}={}){
   if(typeof validate!=='function')throw Error('stagingValidatorRequired');
   if(!Number.isSafeInteger(limitPerKind)||limitPerKind<1||limitPerKind>200||!Number.isSafeInteger(attemptLimitPerKind)||attemptLimitPerKind<limitPerKind||attemptLimitPerKind>5000)throw Error('invalidPilotLimits');
-  const collection=collect(main,homebrew),structural=audit(main,homebrew,collection),inventory=buildInventory(main,homebrew,asOf),manifest=readBrewManifest(homebrew);
+  const collection=sharedContext?.collection??collect(main,homebrew),structural=sharedContext?.structural??audit(main,homebrew,collection),inventory=buildInventory(main,homebrew,asOf),manifest=readBrewManifest(homebrew);
   const commits={main:main.commit,homebrew:homebrew.commit};
   const policy=createPolicy({manifest,collection,structural,inventory,commits,decisions});
-  const mainItems=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const mainItems=sharedContext?.items??converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
   const externalItems=mainItems.map(i=>({id:i.id,kind:i.kind,...(i.kind==='condition'?{conditionId:i.payload.conditionId}:{})}));
   const mainDigest=digest(mainItems.map(i=>[i.id,digest(i)]).sort((a,b)=>a[0].localeCompare(b[0])));
   const rawMap=new Map(collection.records.map(r=>[coord(r),r])),sourceMap=new Map(policy.sources.map(s=>[s.id,s]));
@@ -165,6 +165,7 @@ function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30
       probes.push({itemId:item.id,kind:item.kind,sourceId:s.id,coordinate:obs.coordinate,fingerprint:digest(item),evidenceIds:itemEvidence.map(e=>e.id),
         classificationProvisional:!reviewed,activation:'review-required',distribution:'blocked'});
       if(reviewed){exportPacks.push(pack);c.exportableLocal++;}
+      if(onProbe)onProbe(item);
     }catch(e){c.blocked++;obs.status='blocked';obs.reason=e.code||'conversionError';bump(c.blockCodes,obs.reason);}
     observations.push(obs);
   }

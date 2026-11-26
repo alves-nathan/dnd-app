@@ -154,3 +154,7 @@ Ver [5ETOOLS_HOMEBREW_POLICY.md](5ETOOLS_HOMEBREW_POLICY.md). Inventário por fo
 ## Fase a6.6.2 — conversão piloto Homebrew
 
 Ver [5ETOOLS_HOMEBREW_PILOT.md](5ETOOLS_HOMEBREW_PILOT.md). Probes Canonical V3 isolados, amostra limitada de spells/feats/equipment, ledger por entidade, classificação provisória não exportável. Main preservado. a6.6.1 aprovada: 117522 candidatos estruturais de 138511 registros. Próxima a6.7: validação global do grafo.
+
+## Fase a6.7 — validação global do grafo
+
+Ver [5ETOOLS_GLOBAL_GRAPH.md](5ETOOLS_GLOBAL_GRAPH.md). Registro Main e probes Homebrew isolados, fechamento físico, proveniência, precedência, evidências e staging global sem ativação. a6.6.2 aprovada: 90 probes válidos, zero exportações. Próxima a7: benchmark histórico e reconciliação Legacy.

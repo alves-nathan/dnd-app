@@ -132,6 +132,11 @@ jobs:
           DND_UPSTREAM_BREW_PILOT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_BREW_PILOT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHomebrewPilot.test.ts --runInBand
+      - name: Validate global staging dependency graph (aggregate only)
+        env:
+          DND_UPSTREAM_GRAPH_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_GRAPH_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsGlobalGraph.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

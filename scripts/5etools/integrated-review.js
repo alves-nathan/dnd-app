@@ -127,13 +127,13 @@ function summarize(ledger,decisionResults){
   return {upstreamRows:ledger.rows.size,emittedItems:ledger.items.size,evidenceOccurrences:ledger.evidence.size,rowStates,byDomain,byCompatibility,byReview,byDecision,
     bySourceKind:[...bySource.values()].sort((a,b)=>JSON.stringify([a.source,a.kind]).localeCompare(JSON.stringify([b.source,b.kind]))),issues:ledger.issues};
 }
-function buildIntegratedReport(main,homebrew,{decisions=[],includeDetails=false}={}){
-  const collection=collect(main,homebrew);
+function buildIntegratedReport(main,homebrew,{decisions=[],includeDetails=false,sharedContext}={}){
+  const collection=sharedContext?.collection??collect(main,homebrew);
   // Main only, same immutable inputs and converter products for every domain.
-  const structural=audit(main,homebrew,collection),commits={main:main.commit,homebrew:homebrew.commit};
-  const runs=converters.map(c=>({stage:c.stage,result:require('./'+c.module).buildPilot(main)}));
+  const structural=sharedContext?.structural??audit(main,homebrew,collection),commits={main:main.commit,homebrew:homebrew.commit};
+  const runs=sharedContext?.runs??converters.map(c=>({stage:c.stage,result:require('./'+c.module).buildPilot(main)}));
   const items=runs.flatMap(r=>r.result.packs.flatMap(p=>p.items)),records=collection.records;
-  const index=createReferenceIndex(records,items);
+  const index=sharedContext?.index??createReferenceIndex(records,items);
   const context={collection,records,items,index,runs};
   const indexed=folder=>new Set(Object.values(main.readJson('data/'+folder+'/index.json')).map(p=>'data/'+folder+'/'+p));
   const ledger=createLedger({collection,structural,runs,indexPaths:{spell:indexed('spells'),monster:indexed('bestiary')},commits,includeDetails});
@@ -142,7 +142,7 @@ function buildIntegratedReport(main,homebrew,{decisions=[],includeDetails=false}
     const refs=extractReferences(i,index);
     refs.forEach((e,n)=>ledger.add('reference',e,{itemId:i.id,targetId:e.targetId,ordinal:n}));
   }
-  const precedence=previewPrecedence(items,records);
+  const precedence=sharedContext?.precedence??previewPrecedence(items,records);
   precedence.previewItems.forEach((i,n)=>ledger.add('precedence',{status:i.precedence.relation,...i.precedence},{itemId:i.id,ordinal:n}));
   attach('reprintDeclaration',precedence.declarations,'fromId');
   for(const [k,n] of Object.entries(precedence.issues))bump(ledger.issues,'precedence:'+k,n);
