@@ -1,11 +1,15 @@
 import * as fs from 'node:fs';
 import { stageImportV3 } from '../compendium/importV3Staging';
+import type { CompendiumImportItemV3Input } from '../compendium/importV3Schemas';
 const {openSnapshot}=require('../../scripts/5etools/inventory');
 const {identity}=require('../../scripts/5etools/resolver');
 const {digest}=require('../../scripts/5etools/integrated-review');
 const {physicalCandidateId,sourceId}=require('../../scripts/5etools/homebrew-policy');
 const {residual,rawGraph,validateGraph,buildGlobalGraph,publicSummary}=require('../../scripts/5etools/global-graph');
 const commits={main:'a'.repeat(40),homebrew:'b'.repeat(40)},blob='c'.repeat(40);
+const fixturePrecedence = (): CompendiumImportItemV3Input['precedence'] => ({
+  relation:'unresolved',reprints:[],supersedes:[],coexistsWith:[],basis:'fixture'
+});
 function fixture(){
   const row=(kind:string,name:string,source:string,origin='main',extra:Record<string,unknown>={})=>{
     const entity={name,source,...extra},key=identity(kind,entity);
@@ -16,7 +20,7 @@ function fixture(){
   const item=(r:any,id:string,kind:string,payload:any)=>({
     id,kind,name:r.entity.name,source:{id:r.origin==='main'?'main-source':sourceId('BREW'),status:'needsReview',rulesEra:'2014',contentType:r.origin==='main'?'official':'homebrew',precedenceScope:r.origin==='main'?'official-dnd':'homebrew-source:'+sourceId('BREW'),publication:{precision:'year',date:null,year:2014,evidence:'fixture'}},
     identity:{canonicalKey:kind+':'+r.entity.name,precedenceScope:r.origin==='main'?'official-dnd':'homebrew-source:'+sourceId('BREW')},
-    precedence:{relation:'unresolved',reprints:[],supersedes:[],coexistsWith:[],basis:'fixture'},
+    precedence:fixturePrecedence(),
     provenance:{origin:r.origin==='main'?'5etools':'homebrew',commit:commits[r.origin as keyof typeof commits],blob,path:r.path,entityKey:r.key,index:0,sourceCode:r.entity.source,lineage:[]},
     payload,metadata:r.origin==='homebrew'?{homebrewPolicy:{sourceId:sourceId('BREW'),classificationProvisional:true,distribution:'blocked',activation:'review-required'}}:{}
   });
