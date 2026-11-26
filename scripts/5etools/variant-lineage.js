@@ -2,7 +2,8 @@
 // Offline structural previews. No new V3 IDs, no owner rewrites, no automatic grants.
 const {identity,collect,makeResolver,applyMods}=require('./resolver');
 const {buildPilot:classPilot,physicalId}=require('./class-converter');
-const {matches,expand,buildPilot:magicPilot}=require('./magic-item-converter');
+const {matches,expand,buildPilot:magicPilot,pilot:magicSources}=require('./magic-item-converter');
+const {createHash}=require('node:crypto');
 const rec=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 const clone=x=>JSON.parse(JSON.stringify(x));
@@ -50,6 +51,7 @@ function previewExternalTemplate(r,resolver,templates){
   if(!rec(meta)||!Array.isArray(meta._templates)||!meta._templates.length)fail('invalidTemplateReference');
   if(own(raw,'_versions')||own(raw,'_templates')||own(raw,'_mod'))fail('nestedTemplateOrVersionPending');
   if(Object.keys(meta).some(k=>![...identFields,'_preserve','_mod','_templates'].includes(k)))fail('unsupportedCopyMetadata');
+  if(resolver.lookup(r.origin,r.kind,raw).id!==r.id)fail('ambiguousIdentity');
   const parent=resolver.lookup(r.origin,r.kind,meta),resolved=resolver.resolve(parent);
   const entity=clone(raw),rootKeys=new Set(Object.keys(entity)),mods=dict(),lineage=[];
   delete entity._copy;
@@ -100,6 +102,7 @@ function versionSpecs(container){
     return container._implementations.map((impl,index)=>{
       try{
         if(!rec(impl)||impl._variables!==undefined&&!rec(impl._variables))fail('invalidVersionImplementation');
+        if(Object.keys(impl).some(k=>k.startsWith('_')&&k!=='_variables'))fail('implementationControlMetadataPending');
         // The abstract's operations are inherited unless explicitly replaced by the implementation.
         const a=substitute(container._abstract,impl._variables||{}),b=clone(impl);
         delete b._variables;
@@ -118,7 +121,7 @@ function previewVersion(parent,baseEntity,spec,existingKeys){
   for(const k of ['_versions','hasToken','hasFluff','hasFluffImages'])delete base[k];
   for(const k of ['additionalSources','otherSources','referenceSources']){
     if(base[k]!==undefined&&!Array.isArray(base[k]))fail('invalidVersionSources');
-    if(Array.isArray(base[k]))base[k]=base[k].filter(x=>rec(x)&&x.source!==spec.source);
+    if(Array.isArray(base[k])){if(base[k].some(x=>!rec(x)||typeof x.source!=='string'))fail('invalidVersionSources');base[k]=base[k].filter(x=>x.source!==spec.source);}
     if(!base[k]?.length)delete base[k];
   }
   // Owner fields are inherited, never invented. A changed owner is not a simple version.
@@ -175,6 +178,38 @@ function crossOwnerCandidates(records,emittedIds){
     out.push(row);
   }
   return out;
+}
+// Enumerate structurally expanded pairs from resolved bases, retaining input provenance.
+function previewMagicCandidates(records,resolver,emitted){
+  const rows=[],byId=new Map(),bases=[];
+  for(const b of records.filter(r=>r.kind==='baseitem'&&r.path==='data/items-base.json')){
+    try{bases.push({record:b,entity:resolver.resolve(b).entity});}
+    catch(e){rows.push({base:coordinate(b),status:e.code||'baseResolutionPending'});}
+  }
+  for(const t of records.filter(r=>r.kind==='magicvariant'&&r.path==='data/magicvariants.json'&&own(magicSources,r.entity.source))){
+    let rt;
+    try{rt=resolver.resolve(t).entity;if(rt.inherits?.source!==t.entity.source)fail('variantSourceMismatch');}
+    catch(e){rows.push({template:coordinate(t),status:e.code||'templateResolutionPending'});continue;}
+    let selectorFailed=false,matched=0;
+    for(const b of bases){
+      let match;
+      try{match=matches(b.entity,rt);}catch(e){rows.push({template:coordinate(t),status:e.code||'selectorPending'});selectorFailed=true;break;}
+      if(!match)continue;
+      matched++;
+      const row={template:coordinate(t),base:coordinate(b.record),activation:'review-required'};
+      try{
+        const candidate=expand(b.entity,rt);
+        const id='upstream:main:magicItem:'+createHash('sha256').update(JSON.stringify(['variant',t.key,identity('baseitem',b.entity)])).digest('hex');
+        row.candidateId=id;row.status=emitted.has(id)?'matchedExistingOutput':'newStructuralCandidate';
+        row.entity=candidate;
+        const a=byId.get(id)||[];a.push(row);byId.set(id,a);
+      }catch(e){row.status=e.code||'expansionPending';}
+      rows.push(row);
+    }
+    if(!matched&&!selectorFailed)rows.push({template:coordinate(t),status:'templateWithoutResolvedBaseMatch'});
+  }
+  for(const a of byId.values())if(a.length>1)for(const row of a){row.status='duplicateCandidateIdentity';delete row.entity;delete row.candidateId;}
+  return rows;
 }
 function buildVariantReport(main,homebrew){
   const {records,invalidRecords}=collect(main,homebrew);
@@ -236,11 +271,12 @@ function buildVariantReport(main,homebrew){
     }catch(e){row.status=e.code||'variantReviewPending';}
     magic.push(row);
   }
+  const magicCandidates=previewMagicCandidates(local,resolver,new Set(magicResult.packs.flatMap(p=>p.items.map(i=>i.id))));
   const counts=list=>list.reduce((a,r)=>(bump(a,r.status),a),dict());
   return {schemaVersion:'dnd-upstream-variant-lineage-preview.v1',commits:{main:main.commit,homebrew:homebrew.commit},
-    external,versions,aliases,magic,summary:{templateDefinitions:[...templates.values()].reduce((n,a)=>n+a.length,0),
-      external:counts(external),versions:counts(versions),aliases:counts(aliases),aliasGrants:counts(aliases.flatMap(a=>a.grants)),magic:counts(magic)},
+    external,versions,aliases,magic,magicCandidates,summary:{templateDefinitions:[...templates.values()].reduce((n,a)=>n+a.length,0),
+      external:counts(external),versions:counts(versions),aliases:counts(aliases),aliasGrants:counts(aliases.flatMap(a=>a.grants)),magic:counts(magic),magicCandidates:counts(magicCandidates)},
     activation:'review-required',scope:'main structural preview only; no V3 emission, owner changes, eligibility or mechanical equivalence'};
 }
 function publicSummary(r){return {schemaVersion:r.schemaVersion,commits:r.commits,summary:r.summary,activation:r.activation,scope:r.scope};}
-module.exports={createTemplateIndex,previewExternalTemplate,versionSpecs,previewVersion,crossOwnerCandidates,buildVariantReport,publicSummary};
+module.exports={createTemplateIndex,previewExternalTemplate,versionSpecs,previewVersion,crossOwnerCandidates,previewMagicCandidates,buildVariantReport,publicSummary};

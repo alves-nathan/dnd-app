@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 const {identity,makeResolver}=require('../../scripts/5etools/resolver');
 const {openSnapshot}=require('../../scripts/5etools/inventory');
-const {createTemplateIndex,previewExternalTemplate,versionSpecs,previewVersion,crossOwnerCandidates,buildVariantReport,publicSummary}=require('../../scripts/5etools/variant-lineage');
+const {createTemplateIndex,previewExternalTemplate,versionSpecs,previewVersion,crossOwnerCandidates,previewMagicCandidates,buildVariantReport,publicSummary}=require('../../scripts/5etools/variant-lineage');
 const row=(kind:string,entity:Record<string,unknown>,index=0)=>{
   const key=identity(kind,entity);
   return {kind,entity,key,id:JSON.stringify(['main',key]),origin:'main',path:'fixture.json',index,blob:'b'.repeat(40)};
@@ -40,6 +40,13 @@ describe('a6.4.2 template and lineage preview',()=>{
     expect(p.entity.entries).toEqual(['base']);
     expect(()=>previewVersion(p,p.entity,spec,new Set([v.id]))).toThrow('versionIdentityCollision');
   });
+  test('enumerates resolved-base magic candidates without adding them to the catalog',()=>{
+    const base={...row('baseitem',{name:'Fixture',source:'XPHB',type:'M',edition:'one'}),path:'data/items-base.json'};
+    const t={...row('magicvariant',{name:'Magic Fixture',source:'XDMG',edition:'one',requires:[{type:'M'}],inherits:{source:'XDMG',namePrefix:'Magic ',rarity:'rare',entries:[]}}),path:'data/magicvariants.json'};
+    const r=makeResolver([base,t]),first=previewMagicCandidates([base,t],r,new Set());
+    expect(first).toEqual([expect.objectContaining({status:'newStructuralCandidate',entity:expect.objectContaining({name:'Magic Fixture',source:'XDMG'})})]);
+    expect(previewMagicCandidates([base,t],r,new Set([first[0].candidateId]))[0].status).toBe('matchedExistingOutput');
+  });
   test('cross-owner candidates require direct copy ancestry and exact old-owner membership',()=>{
     const old=row('subclass',{name:'Fixture',shortName:'Fixture',source:'PHB',className:'Wizard',classSource:'PHB',subclassFeatures:['Grant|Wizard|PHB|Fixture|PHB|6|PHB']});
     const grant=row('subclassFeature',{name:'Grant',source:'PHB',className:'Wizard',classSource:'PHB',subclassShortName:'Fixture',subclassSource:'PHB',level:6,entries:[]},1);
@@ -61,6 +68,7 @@ const mainPath=process.env.DND_UPSTREAM_VARIANT_MAIN,brewPath=process.env.DND_UP
   expect(r.summary.aliasGrants.inheritedCrossOwnerCandidate||0).toBeGreaterThan(0);
   expect(r.summary.magic.resolvedBaseStructuralMatch||0).toBeGreaterThan(0);
   expect(r.summary.magic.variantProvenanceMismatch||0).toBe(0);
+  expect(r.summary.magicCandidates.matchedExistingOutput||0).toBeGreaterThan(0);
   expect(r.activation).toBe('review-required');
   const out=process.env.DND_UPSTREAM_VARIANT_OUT;
   if(out)fs.writeFileSync(out,JSON.stringify(r,null,2)+'\n',{flag:'wx'});
