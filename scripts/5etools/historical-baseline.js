@@ -55,7 +55,7 @@ function artifact(snapshot,path){
 function envelopeVersion(v){
   if(!rec(v)||!text(v.id)||!Array.isArray(v.items)||!rec(v.source))return null;
   if([V1,V2,V3].includes(v.templateVersion))return v.templateVersion;
-  return v.templateVersion===undefined?'legacy-unversioned':'unknown';
+  return typeof v.templateVersion==='string'?'unknown':'legacy-unversioned';
 }
 function summarizeRows(rows){
   const byKind=dict(),bySource=dict(),byEra=dict(),byStatus=dict(),fields=dict();
@@ -85,10 +85,24 @@ function inspectPacks(snapshot,{bundled,parse,detect}){
     const version=envelopeVersion(a.value),b=definitions.get(path);
     if(!version){nonPacks++;if(b)bump(issues,'bootstrapEnvelopeMissing');continue;}
     if(a.checksum==='mismatch')bump(issues,'historicalChecksumMismatch');
-    const v=a.value,detected=detect(v),parsed=parse(v,{validateSemantics:false});
+    const v=a.value,detected=detect(v);
     const rawRows=v.items.map((i,n)=>itemRow(i,path,n)),validRows=rawRows.filter(Boolean),ids=new Set(validRows.map(i=>i.id));
+    const parsed=parse(v,{validateSemantics:false});
     const normalized=Array.isArray(parsed.data?.items)?parsed.data.items:[];
-    const normalizedIds=new Set(normalized.map(i=>i.id));
+    const normalizedIds=new Set(normalized.map(i=>i.id)),rawById=new Map(),normalizedById=new Map(),normalizationChanges=dict();
+    for(const row of validRows)push(rawById,row.id,row);
+    for(const i of normalized)push(normalizedById,i.id,i);
+    for(const row of validRows){
+      const matches=normalizedById.get(row.id)||[];
+      if(rawById.get(row.id).length!==1||matches.length>1){row.normalizationState='ambiguousIdentity';}
+      else if(!matches.length){row.normalizationState='notNormalized';}
+      else{
+        const i=matches[0];row.normalizedItemHash=digest(i);row.normalizedPayloadHash=digest(i.payload);
+        row.normalizedPayloadFields=Object.keys(i.payload||{}).sort();
+        row.normalizationState=row.normalizedItemHash===row.itemHash?'unchanged':row.normalizedPayloadHash===row.payloadHash?'envelopeOrSourceChanged':'payloadChanged';
+      }
+      bump(normalizationChanges,row.normalizationState);
+    }
     const rawIdsLost=[...ids].filter(id=>!normalizedIds.has(id)),normalizedIdsAdded=[...normalizedIds].filter(id=>!ids.has(id));
     const normalizationCodes=dict();for(const issue of parsed.issues||[])bump(normalizationCodes,issue.severity+':'+issue.code);
     const formatAgreement=version===V3?detected==='unknown':detected===version;
@@ -96,7 +110,7 @@ function inspectPacks(snapshot,{bundled,parse,detect}){
     const f={path,blob:a.blob,sha256:a.sha256,checksum:a.checksum,bytes:a.bytes,packId:v.id,version,detected,bootstrap:!!b,sourceId:v.source.id||null,
       predecessorPackIds:b?.predecessorPackIds||[],rawCount:v.items.length,invalidRows:rawRows.length-validRows.length,uniqueIds:ids.size,
       duplicateIds:validRows.length-ids.size,parserValid:parsed.ok===true,normalizedCount:normalized.length,normalizedIdsLost:rawIdsLost,
-      normalizedIdsAdded,normalizationCodes,summary:summarizeRows(validRows),migrationState:'preservePending'};
+      normalizedIdsAdded,normalizationCodes,normalizationChanges,summary:summarizeRows(validRows),migrationState:'preservePending'};
     if(b){
       if(v.id!==b.id||version!==V2||b.importFormat!=='v2'||v.source.id!==b.sourceId)bump(issues,'bootstrapManifestMismatch');
       if(own(expectedBootstrap,b.id)&&expectedBootstrap[b.id]!==v.items.length)bump(issues,'bootstrapCountDrift');
@@ -118,7 +132,7 @@ function inspectPacks(snapshot,{bundled,parse,detect}){
   return {files,rows,packGroups,bootstrapRows:[...bootIds.values()],summary:{files:files.length,nonPackJson:nonPacks,versions,
     bootstrapPacks:files.filter(f=>f.bootstrap).length,bootstrap:summarizeRows([...bootIds.values()]),historical:summarizeRows(rows),overlap,
     packIdGroups:groups.size,byteIdenticalCopies:files.length-new Set(files.map(f=>f.sha256)).size,
-    parserInvalidFiles:files.filter(f=>!f.parserValid).length,checksumCounts:files.reduce((a,f)=>(bump(a,f.checksum),a),dict()),issues}};
+    parserInvalidFiles:files.filter(f=>!f.parserValid).length,normalizationChanges:files.reduce((a,f)=>{for(const [k,n] of Object.entries(f.normalizationChanges))bump(a,k,n);return a;},dict()),checksumCounts:files.reduce((a,f)=>(bump(a,f.checksum),a),dict()),issues}};
 }
 function inspectRuntime(bundleArtifact,loadRuntime){
   if(typeof loadRuntime!=='function')throw Error('runtimeValidatorRequired');
@@ -191,7 +205,7 @@ function publicSummary(r){
   const compact=s=>({count:s.count,byKind:s.byKind,byEra:s.byEra,byStatus:s.byStatus});
   return {schemaVersion:r.schemaVersion,commits:r.commits,summary:{historical:{files:h.files,nonPackJson:h.nonPackJson,versions:h.versions,bootstrapPacks:h.bootstrapPacks,
     bootstrap:compact(h.bootstrap),historical:compact(h.historical),overlap:h.overlap,packIdGroups:h.packIdGroups,byteIdenticalCopies:h.byteIdenticalCopies,
-    parserInvalidFiles:h.parserInvalidFiles,checksumCounts:h.checksumCounts,issues:h.issues},
+    parserInvalidFiles:h.parserInvalidFiles,normalizationChanges:h.normalizationChanges,checksumCounts:h.checksumCounts,issues:h.issues},
     runtime:{version:rt.version,sha256:rt.sha256,entries:rt.entries,registry:rt.registry,dependencies:rt.dependencies,aliases:rt.aliases,categories:rt.categories,
       byKind:rt.byKind,byStatus:rt.byStatus,loaderValid:rt.loaderValid,issues:rt.issues},
     comparison:r.summary.comparison,issues:r.summary.issues,localInstallations:r.summary.localInstallations,externalHistoricalArtifacts:r.summary.externalHistoricalArtifacts,

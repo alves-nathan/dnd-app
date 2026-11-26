@@ -38,6 +38,7 @@ describe('a7.1 historical baseline',()=>{
     const r=inspectPacks(f.snapshot,{bundled:[...f.bundled,{id:'missing',fileName:'missing.json',sourceId:'phb',importFormat:'v2'}],parse:parseImportPack,detect:detectCompendiumImportVersion});
     expect(r.summary.issues).toMatchObject({historicalChecksumMismatch:1,missingBootstrapFile:1});
     expect(envelopeVersion({id:'fixture',source,items:[]})).toBe('legacy-unversioned');
+    expect(envelopeVersion({id:'fixture',source,items:[],templateVersion:null})).toBe('legacy-unversioned');
     expect(envelopeVersion(pack('dnd-combat-import.v3',[]))).toBe('dnd-combat-import.v3');
     expect(envelopeVersion({summary:{}})).toBeNull();
   });
@@ -53,6 +54,18 @@ describe('a7.1 historical baseline',()=>{
     expect(r.summary.equivalenceEstablished).toBe(0);
     expect(r.summary.retirementAuthorized).toBe(false);
     expect(r.sources.every((x:any)=>x.migrationState==='preservePending')).toBe(true);
+  });
+  test('normalization changes retain raw fingerprints and never collapse ambiguous repeated IDs',()=>{
+    const f=fixture();
+    f.files[f.b]=Buffer.from(JSON.stringify(pack('dnd-combat-import.v1',[item('a',2),item('a',3),item('b',1)])));
+    const r=inspectPacks(f.snapshot,{bundled:f.bundled,parse:parseImportPack,detect:detectCompendiumImportVersion});
+    const duplicate=r.rows.filter((x:any)=>x.path===f.b&&x.id==='a');
+    expect(duplicate).toHaveLength(2);
+    expect(duplicate.every((x:any)=>x.normalizationState==='ambiguousIdentity')).toBe(true);
+    expect(duplicate[0].payloadHash).not.toBe(duplicate[1].payloadHash);
+    const unique=r.rows.find((x:any)=>x.path===f.a&&x.id==='a');
+    expect(unique.normalizedPayloadHash).toBe(unique.payloadHash);
+    expect(r.summary.normalizationChanges.ambiguousIdentity).toBe(2);
   });
   test('canonical V3 historical input is not silently treated as the active V2 reader',()=>{
     const f=fixture(),p='artifacts/compendium/fixture-v3.json';
