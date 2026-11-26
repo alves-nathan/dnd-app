@@ -66,7 +66,7 @@ function standalone(r,e){
   if(bucket(r)==='equipment'){
     if(!(e.rarity==='none'||e.mundane===true&&e.rarity===undefined)||classify(e)!=='equipment')return 'equipmentKindOutsidePilot';
     if(['baseItem','attachedSpells','ammoType','packContents','additionalEntries','charges','recharge','property','mastery','weapon','armor','wondrous','bonusWeapon','bonusAc'].some(k=>own(e,k)))return 'equipmentDependencyPending';
-    if(typeof e.type!=='string'||!/^([^|]+)\|([^|]+)$/.test(e.type))return 'equipmentTypeSourcePending';
+    if(typeof e.type!=='string'||e.type.split('|').length!==2||!e.type.split('|').every(text))return 'equipmentTypeSourcePending';
   }
   return null;
 }
@@ -100,7 +100,7 @@ function packFor(item){return {templateVersion:'dnd-combat-import.v3',contractRe
 function evidenceFor(item,index){
   const rows=[];
   const add=(domain,list)=>list.forEach((row,ordinal)=>{
-    const fingerprint=digest({domain,ordinal,itemId:item.id,provenance:item.provenance,row});
+    const fingerprint=digest({domain,ordinal,itemId:item.id,provenance:item.provenance,sourceFingerprint:item.metadata?.homebrewPolicy?.sourceFingerprint,row});
     rows.push({id:'review:'+fingerprint,fingerprint,domain,itemId:item.id,status:row.status||'structuredObservation',targetId:row.targetId,path:row.path,activation:'review-required',review:'unreviewed'});
   });
   add('reference',extractReferences(item,index));
@@ -121,6 +121,7 @@ function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30
   const commits={main:main.commit,homebrew:homebrew.commit};
   const policy=createPolicy({manifest,collection,structural,inventory,commits,decisions});
   const mainItems=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const externalItems=mainItems.map(i=>({id:i.id,kind:i.kind,...(i.kind==='condition'?{conditionId:i.payload.conditionId}:{})}));
   const mainDigest=digest(mainItems.map(i=>[i.id,digest(i)]).sort((a,b)=>a[0].localeCompare(b[0])));
   const rawMap=new Map(collection.records.map(r=>[coord(r),r])),sourceMap=new Map(policy.sources.map(s=>[s.id,s]));
   const resolver=makeResolver(collection.records),index=makeExplicitIndex(collection.records,mainItems);
@@ -130,7 +131,8 @@ function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30
   const observations=[],probes=[],exportPacks=[],evidence=[],ids=new Set(mainItems.map(i=>i.id)),issues=dict();
   // Stable ordering; prioritize explicitly reviewed sources without widening the pilot.
   const sorted=policy.rows.filter(x=>x.status==='structuralSourceCandidate').map(x=>({policy:x,raw:rawMap.get(x.coordinate),source:sourceMap.get(x.sourceId)})).filter(x=>x.raw&&x.source&&bucket(x.raw))
-    .sort((a,b)=>Number(!!b.source.review)-Number(!!a.source.review)||a.policy.coordinate.localeCompare(b.policy.coordinate));
+    .map(x=>({...x,preflight:!standalone(x.raw,x.raw.entity)&&(x.raw.kind!=='spell'||Array.isArray(x.raw.entity.classes?.fromClassList)&&x.raw.entity.classes.fromClassList.length>0)}))
+    .sort((a,b)=>Number(!!b.source.review)-Number(!!a.source.review)||Number(!!b.preflight)-Number(!!a.preflight)||a.policy.coordinate.localeCompare(b.policy.coordinate));
   for(const x of sorted){
     const r=x.raw,s=x.source,k=bucket(r),c=byKind[k];c.eligible++;
     if(c.stagingValid>=limitPerKind||c.attempted>=attemptLimitPerKind){c.notSampled++;continue;}
@@ -149,7 +151,7 @@ function buildHomebrewPilot(main,homebrew,{validate,decisions=[],limitPerKind=30
       if(edges.some(e=>e.category==='reference'&&e.status!=='resolvedIdentity'||e.status==='resolvedIdentity'&&!index.byId.has(e.targetId)))fail('explicitReferenceClosurePending');
       // Structured non-identity observations are retained for review, not activated.
       if(edges.some(e=>!e.category&&!['resolvedIdentity','editionRequired','selectorPending','conditionalExpressionPending'].includes(e.status)))fail('structuredReferencePending');
-      const pack=packFor(item),validation=validate(pack);
+      const pack=packFor(item),validation=validate(pack,{externalItems});
       if(validation.ok!==true){
         c.stagingInvalid++;obs.status='stagingInvalid';
         obs.issueCodes=[...new Set((validation.issues||[]).filter(e=>e.severity==='error').map(e=>e.code))];observations.push(obs);continue;

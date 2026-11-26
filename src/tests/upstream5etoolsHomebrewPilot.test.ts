@@ -37,11 +37,31 @@ describe('a6.6.2 isolated homebrew pilot',()=>{
     expect(stageImportV3(packFor(item)).ok).toBe(true);
     expect(evidenceFor(item,index).every((e:any)=>e.activation==='review-required')).toBe(true);
   });
+  test('spell conversion passes the exact external class to V3 semantic validation',()=>{
+    const c=raw('class',{name:'Wizard',source:'PHB'},'main');
+    const main={id:'main-class',kind:'class',source:{rulesEra:'2014'},provenance:{origin:'5etools',entityKey:c.key,path:c.path,index:c.index,blob}};
+    const r=raw('spell',{name:'Fixture',source:'BREW',level:1,school:'V',time:[{number:1,unit:'action'}],range:{type:'point',distance:{type:'feet',amount:30}},components:{v:true,s:true},duration:[{type:'instant'}],entries:['Fixture.'],classes:{fromClassList:[{name:'Wizard',source:'PHB'}]}});
+    const index=makeExplicitIndex([c,r],[main]),item=convertCandidate(r,{entity:r.entity,lineage:[]},s,meta,{index,defs,commit});
+    expect(item.payload.classIds).toEqual(['main-class']);
+    expect(item.payload.classes).toEqual(['Wizard']);
+    expect(stageImportV3(packFor(item),{externalItems:[{id:'main-class',kind:'class'}]}).ok).toBe(true);
+  });
+  test('mundane equipment conversion requires a source-qualified existing type definition',()=>{
+    const r=raw('item',{name:'Fixture',source:'BREW',rarity:'none',type:'G|PHB',value:100,weight:1,entries:['Fixture.']});
+    const index=makeExplicitIndex([r],[]);
+    const localDefs={...defs,types:new Map([[JSON.stringify(['g','phb']),{name:'Adventuring Gear',abbreviation:'G',source:'PHB'}]])};
+    const item=convertCandidate(r,{entity:r.entity,lineage:[]},s,meta,{index,defs:localDefs,commit});
+    expect(item.kind).toBe('equipment');
+    expect(item.payload.mechanics.typeReference.resolved).toBe(true);
+    expect(stageImportV3(packFor(item)).ok).toBe(true);
+    expect(()=>convertCandidate(r,{entity:r.entity,lineage:[]},s,meta,{index,defs,commit})).toThrow('equipmentTypeEndpointPending');
+  });
   test('complex grants, copy, magic and unqualified equipment types remain outside the narrow pilot',()=>{
     const f=raw('feat',{name:'Fixture',source:'BREW',prerequisite:[{level:4}]});
     expect(standalone(f,f.entity)).toBe('featGrantOrPrerequisitePending');
     const i=raw('item',{name:'Fixture',source:'BREW',rarity:'none',type:'G'});
     expect(standalone(i,i.entity)).toBe('equipmentTypeSourcePending');
+    expect(standalone(i,{...i.entity,type:'G| '})).toBe('equipmentTypeSourcePending');
     expect(standalone(i,{...i.entity,type:'G|XPHB',attachedSpells:['Fixture|BREW']})).toBe('equipmentDependencyPending');
     expect(standalone(i,{...i.entity,_copy:{name:'Fixture',source:'PHB'}})).toBe('copyOrVariantPending');
   });
