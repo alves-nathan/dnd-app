@@ -182,3 +182,7 @@ Ver [5ETOOLS_PRESERVATION_CHECKPOINT.md](5ETOOLS_PRESERVATION_CHECKPOINT.md). Ev
 ## Fase a8.3.1 — prévia V3 na importação local
 
 Ver [5ETOOLS_LOCAL_V3_PREVIEW.md](5ETOOLS_LOCAL_V3_PREVIEW.md). UI read-only e barreiras contra fallback V1 de envelopes V3 explícitos. FIX01 de a8.2.2 aprovado nos três checks. Próxima a8.3.2: evidência de preservação na interface, sem ativação.
+
+## Fase a8.3.2 — evidência local de preservação
+
+Ver [5ETOOLS_LOCAL_PRESERVATION_UI.md](5ETOOLS_LOCAL_PRESERVATION_UI.md). Verificação read-only de dois backups selecionados contra o estado carregado e a prévia V3. a8.3.1 aprovada. Sem persistência, restauração ou autorização. Próxima a8.4: matriz consolidada de evidências e lacunas.

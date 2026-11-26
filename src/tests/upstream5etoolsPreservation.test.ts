@@ -1,3 +1,5 @@
+import { previewLocalV3File } from '../compendium/importV3LocalPreview';
+import { verifyLocalV3Preservation, type LocalV3PreservationInput } from '../compendium/importV3LocalPreservation';
 import { prepareV3PreservationCheckpoint, checkV3PreservationCheckpoint, type V3PreservationInputs } from '../compendium/importV3Preservation';
 import { prepareAdditiveV3Stage } from '../compendium/importV3AdditiveStage';
 import { backupToJson, createCharacterDataBackup, createCharacterBackupIntegrity, parseCharacterDataBackup, restoreCharacterDataBackup, LEGACY_CHARACTER_BACKUP_SCHEMA_VERSION, PREVIOUS_CHARACTER_BACKUP_SCHEMA_VERSION, type CharacterBackupPayload } from '../backup/characterBackup';
@@ -148,5 +150,52 @@ describe('V3 preservation checkpoint',()=>{
     expect((await packages.loadActive()).ref).toEqual(index.active);
     expect((await packages.loadIndex()).previous).toEqual(index.previous);
     expect((await packages.readPackage(descriptor.id)).rawText).toBe(raw);
+  });
+});
+
+async function localFixture() {
+  const {input,memory}=await fixture();
+  const installed=input.context.installed;
+  // Mirror the UI preview's object insertion order, then the store snapshot.
+  const uiContext={installed:{items:installed.items,packs:installed.packs,sources:installed.sources,enabledSourceIds:installed.enabledSourceIds},
+    catalog:input.catalog,compendiumReady:true,catalogReady:true};
+  const rawText=input.stage.rawText;
+  const preview=previewLocalV3File(rawText,uiContext);
+  expect(preview.ok).toBe(true);
+  const local: LocalV3PreservationInput={
+    rawText,expectedStageFingerprint:preview.summary!.fingerprint,
+    context:{...uiContext,installed:{sources:installed.sources,packs:installed.packs,items:installed.items,enabledSourceIds:installed.enabledSourceIds}},
+    portableReady:true,portableCheckpoint:input.portableCheckpoint,runtimeRef:input.runtimeRef,
+    compendiumExport:input.compendiumExport,characterBackup:input.characterBackup
+  };
+  return {local,memory};
+}
+
+describe('local preservation evidence bridge',()=>{
+  test('verifies real exports against current preview across UI/store property order, without writes or exposing backup contents',async()=>{
+    const {local,memory}=await localFixture(),before=memory.dump();
+    const r=verifyLocalV3Preservation(local);
+    expect(r).toMatchObject({ok:true,executable:false,writeAuthorized:false,distributionAuthorized:false,retirementAuthorized:false,activation:'review-required',
+      checkpoint:{stageFingerprint:local.expectedStageFingerprint,counts:{storageItems:1,characters:1,scenarios:1,presets:1,history:1,runtimeEntries:1}}});
+    expect(r.checkpoint?.blockers).toContain('durableFullCheckpointNotVerified');
+    expect(r).not.toHaveProperty('compendiumExport');expect(r).not.toHaveProperty('characterBackup');expect(r).not.toHaveProperty('rawText');
+    expect(memory.dump()).toEqual(before);
+  });
+  test('blocks stale preview, changed file and unready stores',async()=>{
+    const {local}=await localFixture();
+    expect(verifyLocalV3Preservation({...local,rawText:local.rawText+' '}).codes).toContain('staleOrInvalidStage');
+    expect(verifyLocalV3Preservation({...local,expectedStageFingerprint:'wrong'}).codes).toContain('staleOrInvalidStage');
+    expect(verifyLocalV3Preservation({...local,portableReady:false}).codes).toContain('portableInventoryNotReady');
+    expect(verifyLocalV3Preservation({...local,context:{...local.context,compendiumReady:false}}).codes).toContain('localInventoryNotReady');
+    expect(verifyLocalV3Preservation({...local,context:{...local.context,catalogReady:false}}).codes).toContain('localInventoryNotReady');
+  });
+  test('rejects missing, corrupt, swapped and stale backup selections',async()=>{
+    const {local}=await localFixture();
+    expect(verifyLocalV3Preservation({...local,characterBackup:''}).codes).toContain('backupSizeOrType');
+    expect(verifyLocalV3Preservation({...local,characterBackup:'{bad'}).ok).toBe(false);
+    expect(verifyLocalV3Preservation({...local,compendiumExport:local.characterBackup,characterBackup:local.compendiumExport}).ok).toBe(false);
+    const stale={...local.portableCheckpoint!,characterStore:{...local.portableCheckpoint!.characterStore,
+      characters:local.portableCheckpoint!.characterStore.characters.map(c=>({...c,name:'Changed after backup'}))}};
+    expect(verifyLocalV3Preservation({...local,portableCheckpoint:stale}).codes).toContain('characterBackupCoverageMismatch');
   });
 });

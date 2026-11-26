@@ -6,6 +6,7 @@ import { useAppTheme } from '../theme';
 import { useCompendiumStore } from '../store/compendiumStore';
 import { useCatalogStore } from '../store/catalogStore';
 import { previewLocalV3File } from '../compendium/importV3LocalPreview';
+import { LocalV3PreservationPanel } from './LocalV3PreservationPanel';
 
 export function LocalV3StagePreview({rawText}: {rawText: string}) {
   const {colors} = useAppTheme();
@@ -45,6 +46,7 @@ export function LocalV3StagePreview({rawText}: {rawText: string}) {
           {result.codes.length>25 ? <Text style={{color:colors.onSurface}}>Mais {result.codes.length-25} código(s) de revisão.</Text> : null}
         </>
       ) : null}
+      {result?.ok && result.summary ? <LocalV3PreservationPanel key={result.summary.fingerprint} rawText={rawText} stageFingerprint={result.summary.fingerprint} /> : null}
     </Card>
   );
 }
