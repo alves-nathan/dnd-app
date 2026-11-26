@@ -1,0 +1,17 @@
+# V1.4a6.4.3 — Tags inline, UID defaults e referências especiais
+
+a6.4.2 aprovada no HEAD 47b06e054923e77930d33ce8b3d8418842fc91bb (Quality push 45738714615, PR 45738721226, structural 45738714665). Snapshots main 2512db75eb48ef06f6190b086a82430887906dca e brew bfa899639c696b0ad38afb9a31c443c3b127a058. 67 definições de template, 14 previews externos, 167 versões estruturais, 126 aliases completos, 450 grants cross-owner candidatos, 75 sameOwner, 3 unproven; 2297 variantes existentes conferidas e 298 transformações não suportadas, 3 templates sem base compatível. Sem novos IDs ativos.
+
+## Evidência e política
+Inspeção estática do snapshot de js/render.js (Renderer.tag, defaults e spell prerequisite), js/parser.js (getTagSource/TAG_TO_PROPS), js/utils.js (generic unpackUid e DataUtil.class unpackers), js/utils/utils-additionalspells.js. O upstream permite redirect dependente de versão quando fonte genérica omitida; não executar código upstream ou redirecionar implicitamente. Defaults documentados são candidatos: PHB spell/feat/condition/class/race/background/optfeature; DMG item; MM creature; XPHB itemMastery; etc. UID de subclass preserva owner (classSource e source default PHB); classFeature default source do class; subclassFeature default source do subclass. Display não faz parte da identidade.
+
+## Entrega
+- Scanner balanceado de tags, offsets na string original, nível de aninhamento, split de pipe fora de tags aninhadas; limite de profundidade, fail-closed para markup malformado. Classifica referências, formatação, fórmulas, especiais e desconhecidas. Sem HTML, eval, expressão de dados ou filtros executados. Apenas campos upstream primários dos payloads em staging; não percorre todo corpus ou textos duplicados de metadata.
+- Resolve referência via índice a6.2, namespace, source, owner/level e provenance; item inclui item/baseitem/itemGroup/magicvariant, sem escolher precedência em caso de colisão. Fonte omitida que encontra alvo recebe defaultIdentityCandidate, não resolvedIdentity; sinaliza crossEra e não usa edição do consumidor como fallback. Homebrew defaults não inferidos.
+- Refinamento sidecar das antigas pendências sourceRequired/unsupportedExpression apenas nos contextos verificados (prerequisite spell/feat/optionalfeature, attached spell, ammo). Qualificador #c preservado como metadado; #x (hex ou feature que amaldiçoa) e outros qualificadores pendentes. Não transforma #c em regra executável. Preserva ledger anterior e contabiliza transições, sem reclassificar silenciosamente.
+- Estruturas additionalSpells (innate/known/prepared/expanded) e attachedSpells agrupadas: preserva bloco, nível, tipo de recarga, chave e alternativas choose.from; seletores all/choose permanecem pendentes, não concede magias. Arrays simples de attachedSpells já tratados pelo ledger/refinamento.
+- Relatório separado inline/refinements/structured; contagens por categoria/tag/status e transição; não somar ocorrências de tags/seletores a entidades únicas. CI só agregados, JSON local opt-in pode conter conteúdo upstream, não publicar. Sem alteração de conversores, V3, runtime, IDs ou precedência. Seis testes sintéticos e um real.
+
+## Execução
+npx jest src/tests/upstream5etoolsTagUidPreview.test.ts --runInBand
+DND_UPSTREAM_TAG_MAIN/BREW habilitam snapshot real; DND_UPSTREAM_TAG_OUT opcional grava JSON local sem sobrescrever. Próxima a6.5: semântica e mecânicas executáveis, incluindo contextual grants, requisitos, escolhas, recursos, efeitos, condições. Os previews a6.4 não constituem importação ou equivalência.

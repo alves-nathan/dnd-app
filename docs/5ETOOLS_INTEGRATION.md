@@ -126,3 +126,7 @@ Ver [5ETOOLS_RESOLVER_EXTENSIONS.md](5ETOOLS_RESOLVER_EXTENSIONS.md). Normaliza�
 ## Fase a6.4.2 — templates, versões e proprietários
 
 Ver [5ETOOLS_VARIANT_LINEAGE.md](5ETOOLS_VARIANT_LINEAGE.md). Preview de templates externos, versões simples/abstratas, evidência de aliases cross-owner e revalidação de variantes mágicas por base resolvida. Sem emissão adicional ou alteração de ownership. a6.4.1 aprovada: 8600 saídas válidas, 2658 resoluções estruturais adicionais. Próxima a6.4.3: tags e UID defaults.
+
+## Fase a6.4.3 — tags e UIDs
+
+Ver [5ETOOLS_TAG_UID_PREVIEW.md](5ETOOLS_TAG_UID_PREVIEW.md). Scanner balanceado, defaults por tipo como candidatos sem redirect, UIDs contextuais, qualificadores e additional/attached spells, transições sobre ledger a6.2 sem alteração de concessões. a6.4.2 aprovada: 167 versões, 126 aliases completos, 2297 variantes conferidas. Próxima a6.5: semântica e mecânicas executáveis.

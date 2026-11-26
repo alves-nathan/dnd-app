@@ -97,6 +97,11 @@ jobs:
           DND_UPSTREAM_VARIANT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_VARIANT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsVariantLineage.test.ts --runInBand
+      - name: Audit inline tags and UID refinements (aggregate only)
+        env:
+          DND_UPSTREAM_TAG_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_TAG_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsTagUidPreview.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |
