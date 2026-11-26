@@ -138,3 +138,7 @@ Ver [5ETOOLS_SEMANTIC_ELIGIBILITY.md](5ETOOLS_SEMANTIC_ELIGIBILITY.md). IR de re
 ## Fase a6.5.2 — recursos e spellcasting
 
 Ver [5ETOOLS_RESOURCE_SPELLCASTING.md](5ETOOLS_RESOURCE_SPELLCASTING.md). Perfis e pools candidatos, política explícita de multiclass, custos de magia e recursos, testes de compatibilidade com managers existentes e orçamento de ações simples. Sem ativação. a6.5.1 aprovada: 123 requisitos integralmente avaliáveis, 1097 grants diretos. Próxima a6.5.3: efeitos e fórmulas.
+
+## Fase a6.5.3 — dano e efeitos
+
+Ver [5ETOOLS_EFFECT_DAMAGE.md](5ETOOLS_EFFECT_DAMAGE.md). Fórmulas léxicas, adaptação de dano e scaling explícitos, eventos por tipo, saves, duração e referências a condições, bridge manual de efeitos e testes contra runtime existente. Sem ativação. a6.5.2 aprovada: 21 perfis de tabela e 735 candidatos de custo. Próxima a6.5.4: integração de candidatos e lacunas.

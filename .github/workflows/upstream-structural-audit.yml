@@ -112,6 +112,11 @@ jobs:
           DND_UPSTREAM_RESOURCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RESOURCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsResourceSpellcasting.test.ts --runInBand
+      - name: Audit effect and damage semantics (aggregate only)
+        env:
+          DND_UPSTREAM_EFFECT_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_EFFECT_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsEffectDamage.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |
