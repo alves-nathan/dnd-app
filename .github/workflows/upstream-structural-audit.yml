@@ -137,6 +137,11 @@ jobs:
           DND_UPSTREAM_GRAPH_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_GRAPH_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsGlobalGraph.test.ts --runInBand
+      - name: Audit historical packs and runtime baseline (aggregate only)
+        env:
+          DND_UPSTREAM_HISTORY_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_HISTORY_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsHistoricalBaseline.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

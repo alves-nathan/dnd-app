@@ -158,3 +158,7 @@ Ver [5ETOOLS_HOMEBREW_PILOT.md](5ETOOLS_HOMEBREW_PILOT.md). Probes Canonical V3 
 ## Fase a6.7 — validação global do grafo
 
 Ver [5ETOOLS_GLOBAL_GRAPH.md](5ETOOLS_GLOBAL_GRAPH.md). Registro Main e probes Homebrew isolados, fechamento físico, proveniência, precedência, evidências e staging global sem ativação. a6.6.2 aprovada: 90 probes válidos, zero exportações. Próxima a7: benchmark histórico e reconciliação Legacy.
+
+## Fase a7.1 — inventário histórico
+
+Ver [5ETOOLS_HISTORICAL_BASELINE.md](5ETOOLS_HISTORICAL_BASELINE.md). Inventário imutável de packs V1/V2/históricos, bootstrap e runtime V4.8.0, hashes, identidade e cobertura nominal de fontes. Sem equivalência ou retirada de dados. a6.7 FIX01 aprovada: 8690 nós, 102735 evidências, issues vazio. Próxima a7.2: mapeamento e lacunas de migração.
