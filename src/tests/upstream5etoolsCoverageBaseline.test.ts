@@ -1,3 +1,4 @@
+const {fromCoverage,writeFragment}=require('../../scripts/5etools/cutover-evidence');
 import {stageImportV3} from '../compendium/importV3Staging';
 import {COMPENDIUM_ENTITY_KINDS} from '../compendium/importDomain';
 import * as fs from 'node:fs';
@@ -65,4 +66,5 @@ const mainPath=process.env.DND_UPSTREAM_BASELINE_MAIN,brewPath=process.env.DND_U
   expect(r.totalsByOrigin.main.stagingValid).toBe(r.uniquePhysicalIds);
   expect(r.totalsByOrigin.homebrew.emitted).toBe(0);
   expect(runtime.total).toBe(5841);
+  if(process.env.DND_UPSTREAM_EVIDENCE_DIR)writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'coverage',fromCoverage(r));
 },240000);

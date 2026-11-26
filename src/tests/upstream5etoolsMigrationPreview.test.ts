@@ -1,3 +1,4 @@
+const {fromMigration,writeFragment}=require('../../scripts/5etools/cutover-evidence');
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
 import { parseImportPack } from '../compendium/parseImportPack';
@@ -99,6 +100,7 @@ const mainPath=process.env.DND_UPSTREAM_MIGRATION_MAIN,brewPath=process.env.DND_
   expect(p.executable).toBe(false);
   expect(checkPreviewBinding(p,installed)).toEqual({ok:true,executable:false});
   expect(digest(memory.dump())).toBe(before);
+  if(process.env.DND_UPSTREAM_EVIDENCE_DIR)writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'migration',fromMigration(r,p,installed));
   const out=process.env.DND_UPSTREAM_MIGRATION_OUT;
   if(out)fs.writeFileSync(out,JSON.stringify(p,null,2)+'\n',{flag:'wx'});
 },360000);

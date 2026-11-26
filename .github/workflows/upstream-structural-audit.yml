@@ -77,8 +77,11 @@ jobs:
         env:
           DND_UPSTREAM_CONDITION_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsConditionConverter.test.ts --runInBand
+      - name: Prepare temporary aggregate evidence directory
+        run: mkdir "$RUNNER_TEMP/5etools-evidence"
       - name: Build integrated coverage baseline (aggregate only)
         env:
+          DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_BASELINE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_BASELINE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts --runInBand
@@ -139,6 +142,7 @@ jobs:
         run: npx jest src/tests/upstream5etoolsHomebrewPilot.test.ts --runInBand
       - name: Validate global staging dependency graph (aggregate only)
         env:
+          DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_GRAPH_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_GRAPH_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsGlobalGraph.test.ts --runInBand
@@ -154,6 +158,7 @@ jobs:
         run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts --runInBand
       - name: Validate read-only migration preview (aggregate only)
         env:
+          DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_MIGRATION_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_MIGRATION_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts --runInBand
@@ -165,7 +170,11 @@ jobs:
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts --runInBand
       - name: Validate isolated local V3 file preview (aggregate only)
         run: npx jest src/tests/upstream5etoolsLocalV3Preview.test.ts --runInBand
+      - name: Reconcile cutover evidence matrix (aggregate only)
+        run: |
+          npx jest src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand
+          node scripts/5etools/cutover-evidence.js "$RUNNER_TEMP/5etools-evidence"
       - name: Remove upstream snapshots
         if: always()
         run: |
-          rm -rf -- "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
+          rm -rf -- "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew" "$RUNNER_TEMP/5etools-evidence"

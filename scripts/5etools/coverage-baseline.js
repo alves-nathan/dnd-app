@@ -63,7 +63,7 @@ const counters=()=>({observed:0,identityInvalid:0,structuralBlocked:0,structural
   invalidIdentityWithOutput:0,structuralBlockedWithOutput:0,scopeReasons:dict(),reviewCodes:dict()});
 function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runtime,validate}){
   if(typeof validate!=='function')throw Error('stagingValidatorRequired');
-  const bySource=new Map(),rows=new Map(),resolved=new Set(structural.entities.map(coord)),issues=dict(),physicalIds=new Set(),byConverter=dict(),canonical=dict();
+  const bySource=new Map(),rows=new Map(),resolved=new Set(structural.entities.map(coord)),issues=dict(),physicalIds=new Set(),byConverter=dict(),canonical=dict(),canonicalValidation=dict();
   const stageSources=Object.fromEntries(runs.map(({stage,result})=>[stage,new Set(Object.keys(result.counts))]));
   function source(origin,code){
     const key=sourceKey(origin,code);
@@ -100,7 +100,7 @@ function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runt
         const row=rows.get(coord({origin:'main',path:p.path,kind,index:p.index}));
         const valid=joint?jointResult?.ok===true:validate({...pack,items:[item]}).ok===true;
         const state=valid?'stagingValid':'stagingInvalid';
-        summary.emitted++;summary[state]++;bump(canonical,item.kind);
+        summary.emitted++;summary[state]++;bump(canonical,item.kind);bump(canonicalValidation[item.kind]??=dict(),state);
         if(physicalIds.has(item.id))bump(issues,'duplicatePhysicalId');physicalIds.add(item.id);
         if(p.commit!==structural.commits.main||p.origin!=='5etools')bump(issues,'snapshotMismatch');
         if(item.source.status!=='needsReview'||pack.metadata?.activation!=='review-required')bump(issues,'activationMismatch');
@@ -142,7 +142,7 @@ function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runt
     return {source:s.source,gaps,outsidePilot:outside,runtimeEntries:runtime.books.filter(b=>b.source===s.source).reduce((n,b)=>n+b.total,0)};
   }).sort((a,b)=>b.gaps-a.gaps||b.outsidePilot-a.outsidePilot||a.source.localeCompare(b.source));
   return {schemaVersion:'dnd-upstream-coverage-baseline.v1',commits:structural.commits,asOf:inventory.asOf,
-    sources,totalsByOrigin,canonical,byConverter,uniquePhysicalIds:physicalIds.size,issues,
+    sources,totalsByOrigin,canonical,canonicalValidation,byConverter,uniquePhysicalIds:physicalIds.size,issues,
     inventoryIssueCounts:inventory.diagnostics.reduce((a,d)=>(bump(a,d.code),a),dict()),structuralIssueCounts:structural.issueCounts,
     runtime,priority,activation:'review-required',scope:'resolver-scanned top-level rows; staging validation only; not mechanical equivalence or installed user catalog'};
 }

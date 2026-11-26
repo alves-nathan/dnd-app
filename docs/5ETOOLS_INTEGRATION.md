@@ -186,3 +186,7 @@ Ver [5ETOOLS_LOCAL_V3_PREVIEW.md](5ETOOLS_LOCAL_V3_PREVIEW.md). UI read-only e b
 ## Fase a8.3.2 — evidência local de preservação
 
 Ver [5ETOOLS_LOCAL_PRESERVATION_UI.md](5ETOOLS_LOCAL_PRESERVATION_UI.md). Verificação read-only de dois backups selecionados contra o estado carregado e a prévia V3. a8.3.1 aprovada. Sem persistência, restauração ou autorização. Próxima a8.4: matriz consolidada de evidências e lacunas.
+
+## Fase a8.4 — matriz de evidências e lacunas
+
+Ver [5ETOOLS_CUTOVER_EVIDENCE.md](5ETOOLS_CUTOVER_EVIDENCE.md). Reutiliza cobertura, grafo e preview de migração no mesmo CI, agregados por 13 kinds, sem novos parses ou jobs. a8.3.2 aprovada. Próxima a8.5: revisão de paridade e evidências mecânicas priorizadas.

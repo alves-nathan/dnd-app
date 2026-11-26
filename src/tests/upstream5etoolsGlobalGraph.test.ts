@@ -1,3 +1,4 @@
+const {fromGraph,writeFragment}=require('../../scripts/5etools/cutover-evidence');
 import * as fs from 'node:fs';
 import { stageImportV3 } from '../compendium/importV3Staging';
 import type { CompendiumImportItemV3Input } from '../compendium/importV3Schemas';
@@ -98,6 +99,7 @@ const mainPath=process.env.DND_UPSTREAM_GRAPH_MAIN,brewPath=process.env.DND_UPST
   expect(r.summary.runtimeEligible).toBe(0);
   expect(r.summary.distributionAuthorized).toBe(0);
   expect(r.nodes.every((n:any)=>n.activation==='review-required'&&!n.runtimeEligible)).toBe(true);
+  if(process.env.DND_UPSTREAM_EVIDENCE_DIR)writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'graph',fromGraph(r));
   const out=process.env.DND_UPSTREAM_GRAPH_OUT;
   if(out)fs.writeFileSync(out,JSON.stringify(r,null,2)+'\n',{flag:'wx'});
 },360000);
