@@ -1,3 +1,4 @@
+const {buildSpellParityEvidence,publicSummary:spellParitySummary}=require('../../scripts/5etools/spell-parity-evidence');
 const {buildClassClosureReview,previewLevelGrantBoundary}=require('../../scripts/5etools/class-closure-review');
 import {createEmptyCharacter} from '../data/mockData';
 import {applyRest,spendResources} from '../rules-engine/resources/resourceManager';
@@ -167,6 +168,14 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(preview).toMatchObject({status:'levelGrantReviewCandidate',runtimeEligible:false,writeAuthorized:false});
       expect(preview.grants.length).toBeGreaterThan(0);
       console.log(JSON.stringify(closure));
+      const spells=buildSpellParityEvidence(input);
+      expect(spells.historical).toMatchObject({occurrences:1236,identityCandidates:1173,identityPending:63});
+      expect(spells.upstream.items).toBe(854);
+      expect(spells.runtime.occurrences).toBe(378);
+      expect(spells.upstream.contractCodes.qualifiedClassAccessPending).toBeGreaterThan(0);
+      expect(spells.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(spells).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(spellParitySummary(spells)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

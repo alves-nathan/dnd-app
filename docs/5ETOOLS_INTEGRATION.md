@@ -242,3 +242,7 @@ Ver [5ETOOLS_FEATURE_RESOURCE_PROJECTION.md](5ETOOLS_FEATURE_RESOURCE_PROJECTION
 ## Fase a8.6.6 — consolidação e limites do level-up
 
 Ver [5ETOOLS_CLASS_CLOSURE_REVIEW.md](5ETOOLS_CLASS_CLOSURE_REVIEW.md). FIX01 a8.6.5 aprovado. Consolidação vinculada e preview isolado de preservação, sem aprovação de paridade. Próxima a8.7.1: auditoria mecânica de magias.
+
+## Fase a8.7.1 — auditoria de paridade mecânica de magias
+
+Ver [5ETOOLS_SPELL_PARITY_EVIDENCE.md](5ETOOLS_SPELL_PARITY_EVIDENCE.md). a8.6.6 aprovada. Evidência histórica por ocorrência e lacunas de contrato, sem ativação. Próxima a8.7.2: tempo de conjuração, alcance, alvos, área e componentes.
