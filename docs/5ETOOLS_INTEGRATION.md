@@ -146,3 +146,7 @@ Ver [5ETOOLS_EFFECT_DAMAGE.md](5ETOOLS_EFFECT_DAMAGE.md). Fórmulas léxicas, ad
 ## Fase a6.5.4 — integrated review ledger
 
 Ver [5ETOOLS_INTEGRATED_REVIEW.md](5ETOOLS_INTEGRATED_REVIEW.md). Consolidação de evidências por coordenada/ID físico, distinção de gaps e candidatos, decisões vinculadas a snapshots e fingerprint. Sem promoção de conteúdo. a6.5.3 aprovada: 661 candidatos de dano e 27 tabelas de scaling. Próxima a6.6: Homebrew.
+
+## Fase a6.6.1 — política Homebrew
+
+Ver [5ETOOLS_HOMEBREW_POLICY.md](5ETOOLS_HOMEBREW_POLICY.md). Inventário por fonte/arquivo, classificação e licença separadas da procedência, colisões, dependências e candidatos estruturais isolados; distribuição bloqueada, nenhuma emissão. a6.5.4 aprovada: 102474 evidências, 103 lacunas com candidatos, issues vazio. Próxima a6.6.2: conversão piloto isolada.
