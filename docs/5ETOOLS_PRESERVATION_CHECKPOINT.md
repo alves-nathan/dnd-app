@@ -10,3 +10,7 @@ Six synthetic tests: actual V1 repository export and disabled manual mapping, co
 
 ## Next
 Confirm all three checks; if green, assess outstanding cutover gates and prioritize user-facing local staging workflow plus explicit evidence/approval model. Keep legacy/runtime and source rights quarantined; no cutover until durable backups, real inventory, parity/dependency/alias, production transaction/rollback, rights/trust and separate approval.
+
+## FIX01 — TypeScript fixture typing
+
+Original HEAD 7e64ad502fc51a77471ddc9eb1cdc827d571caef: structural audit 45836605932 succeeded (job 139967019448, preservation suite 6/6); Quality push 45836606183 and PR 45836620763 failed at release:validate, TS2345 in upstream5etoolsPreservation.test.ts lines 122/124. The mutable object properties inferred schemaVersion as string instead of the literal-version union. Explicit CharacterBackupPayload annotations on V1, V2 body and V2 preserve the existing checksum and reader tests without assertions, casts or production contract changes. No gates relaxed. FIX01 CI pending; do not advance before all three checks pass.

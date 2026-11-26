@@ -1,6 +1,6 @@
 import { prepareV3PreservationCheckpoint, checkV3PreservationCheckpoint, type V3PreservationInputs } from '../compendium/importV3Preservation';
 import { prepareAdditiveV3Stage } from '../compendium/importV3AdditiveStage';
-import { backupToJson, createCharacterDataBackup, createCharacterBackupIntegrity, parseCharacterDataBackup, restoreCharacterDataBackup, LEGACY_CHARACTER_BACKUP_SCHEMA_VERSION, PREVIOUS_CHARACTER_BACKUP_SCHEMA_VERSION } from '../backup/characterBackup';
+import { backupToJson, createCharacterDataBackup, createCharacterBackupIntegrity, parseCharacterDataBackup, restoreCharacterDataBackup, LEGACY_CHARACTER_BACKUP_SCHEMA_VERSION, PREVIOUS_CHARACTER_BACKUP_SCHEMA_VERSION, type CharacterBackupPayload } from '../backup/characterBackup';
 import { createPortableCatalogAuditSection } from '../backup/portableCatalogBackup';
 import { preparePortableRestoreSession, canCommitPortableRestoreSession, type PortableRestoreDataCheckpoint } from '../backup/portableRestoreSession';
 import { emptyProgressionRecoverySummary } from '../characters/progressionRecovery';
@@ -117,9 +117,9 @@ describe('V3 preservation checkpoint',()=>{
     expect(prepared.ok).toBe(true);
     expect(canCommitPortableRestoreSession(prepared.session!)).toBe(false);
     expect(prepared.session?.before).toEqual(input.portableCheckpoint);
-    const v1={...backup,schemaVersion:LEGACY_CHARACTER_BACKUP_SCHEMA_VERSION,integrity:undefined,catalogAudit:undefined};
-    const v2body={...backup,schemaVersion:PREVIOUS_CHARACTER_BACKUP_SCHEMA_VERSION,catalogAudit:undefined};
-    const v2={...v2body,integrity:createCharacterBackupIntegrity(v2body)};
+    const v1: CharacterBackupPayload={...backup,schemaVersion:LEGACY_CHARACTER_BACKUP_SCHEMA_VERSION,integrity:undefined,catalogAudit:undefined};
+    const v2body: CharacterBackupPayload={...backup,schemaVersion:PREVIOUS_CHARACTER_BACKUP_SCHEMA_VERSION,catalogAudit:undefined};
+    const v2: CharacterBackupPayload={...v2body,integrity:createCharacterBackupIntegrity(v2body)};
     for(const old of [v1,v2]){
       const raw=backupToJson(old),parsed=parseCharacterDataBackup(raw);
       expect(parsed.ok).toBe(true);
