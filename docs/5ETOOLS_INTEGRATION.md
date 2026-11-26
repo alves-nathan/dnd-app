@@ -238,3 +238,7 @@ Ver [5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md](5ETOOLS_FEATURE_RESOURCE_EVIDENCE.md)
 ## Fase a8.6.5 — projeção de recursos e substituição de escolhas
 
 Ver [5ETOOLS_FEATURE_RESOURCE_PROJECTION.md](5ETOOLS_FEATURE_RESOURCE_PROJECTION.md). a8.6.4 aprovada. Cinco políticas base vinculadas ao snapshot, eventos hipotéticos e seleção explícita, sem ativação. Próxima a8.6.6: consolidação e limites de transações de level-up.
+
+## Fase a8.6.6 — consolidação e limites do level-up
+
+Ver [5ETOOLS_CLASS_CLOSURE_REVIEW.md](5ETOOLS_CLASS_CLOSURE_REVIEW.md). FIX01 a8.6.5 aprovado. Consolidação vinculada e preview isolado de preservação, sem aprovação de paridade. Próxima a8.7.1: auditoria mecânica de magias.

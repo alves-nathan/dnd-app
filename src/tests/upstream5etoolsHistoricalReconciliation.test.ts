@@ -1,3 +1,4 @@
+const {buildClassClosureReview,previewLevelGrantBoundary}=require('../../scripts/5etools/class-closure-review');
 import {createEmptyCharacter} from '../data/mockData';
 import {applyRest,spendResources} from '../rules-engine/resources/resourceManager';
 const {buildResourceProjection,previewResourceEvent,publicSummary:baseResourceSummary}=require('../../scripts/5etools/feature-resource-projection');
@@ -153,6 +154,19 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(character.resources[0]?.current).toBe(2);
       expect(resourceEvent(fighter,10,0,{kind:'spend',consumerFeatureId:fighter.featureId}).reason).toBe('insufficientResource');
       console.log(JSON.stringify(baseResourceSummary(resourceProjection)));
+      const closure=buildClassClosureReview({progression:classes,mechanics,projection,features:featureResources,resources:resourceProjection});
+      expect(closure.historical.feature).toMatchObject({occurrences:3192,identityCandidates:1170,identityPending:2022});
+      expect(closure.grants).toEqual({directContextCandidate:1097,grantOptionsPending:99});
+      expect(closure.resourceCosts).toEqual({amountNotExplicit:165,explicitAmountCandidate:34,consumptionShapePending:2});
+      expect(closure.baseResources).toEqual({baseResourceCandidate:4,identityOrSnapshotPending:1});
+      expect(closure).toMatchObject({mechanicalParityEstablished:0,executable:false,writeAuthorized:false});
+      const preview=previewLevelGrantBoundary(projection,featureResources,{
+        projectionFingerprint:projection.fingerprint,evidenceFingerprint:featureResources.fingerprint,
+        classId:fighter.classId,rulesEra:'2024',beforeLevel:1,afterLevel:2,totalBefore:1,
+        inventoryComplete:true,subclassSelectionComplete:true});
+      expect(preview).toMatchObject({status:'levelGrantReviewCandidate',runtimeEligible:false,writeAuthorized:false});
+      expect(preview.grants.length).toBeGreaterThan(0);
+      console.log(JSON.stringify(closure));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
