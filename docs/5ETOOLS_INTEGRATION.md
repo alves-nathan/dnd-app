@@ -174,3 +174,7 @@ Ver [5ETOOLS_MIGRATION_PREVIEW.md](5ETOOLS_MIGRATION_PREVIEW.md). Plano read-onl
 ## Fase a8.2.1 — staging aditivo guardado
 
 Ver [5ETOOLS_ADDITIVE_STAGE.md](5ETOOLS_ADDITIVE_STAGE.md). Sessão local V3 sem projeção gravável, reservas de IDs e vínculo com snapshot, sem modificar runtime ou dados legados. a8.1 aprovada: 1997 storage items, 5841 runtime, zero escritas. Próxima a8.2.2: preservação transacional e testes de rollback.
+
+## Fase a8.2.2 — checkpoint de preservação
+
+Ver [5ETOOLS_PRESERVATION_CHECKPOINT.md](5ETOOLS_PRESERVATION_CHECKPOINT.md). Evidência local dos backups e grafo runtime vinculada ao staging V3; testes de rollback isolado e gates existentes. a8.2.1 aprovada: 30 condições staged, zero escritas. Sem executor V3 ou cutover.
