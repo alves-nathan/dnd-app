@@ -33,9 +33,11 @@ function residual(ids,edges){
   return [...remaining].filter(([,n])=>n>0).map(([id])=>id);
 }
 function rawGraph(collection,structural){
-  const byId=new Map(),issues=dict(),byOrigin=dict(),counts=dict(),copyEdges=[];
+  const byId=new Map(),rawByCoordinate=new Map(collection.records.map(r=>[coord(r),r])),issues=dict(),byOrigin=dict(),counts=dict(),copyEdges=[];
   for(const e of structural.entities){
     if(byId.has(e.id))bump(issues,'duplicateResolvedRawId');
+    const r=rawByCoordinate.get(coord(e));
+    if(!r||r.id!==e.id||r.blob!==e.blob)bump(issues,'rawResolvedProvenanceMismatch');
     byId.set(e.id,e);bump(byOrigin,e.origin);
   }
   for(const e of structural.entities){
@@ -112,8 +114,8 @@ function validateGraph({collection,structural,items,precedenceItems,mainLedger,b
   function link(from,to,relation,type,expected){
     const a=full.get(from),b=full.get(to),n=nodes.get(from);
     if(!a||!b){mark(type==='hard'?'hardEndpointMissing':'resolvedEndpointMissing',from);return;}
-    if(expected&&!expected.includes(b.kind)){mark('wrongEndpointKind',from);return;}
     if(ns(a)==='main'&&ns(b)==='homebrew'){mark('forbiddenMainToHomebrew',from);return;}
+    if(expected&&!expected.includes(b.kind)){mark('wrongEndpointKind',from);return;}
     const e={from,to,relation,type,compatibility:compatibility(a,b),activation:'review-required'};
     edges.push(e);
     if(type==='hard')n.hardDependencies.push(to);
@@ -149,7 +151,7 @@ function validateGraph({collection,structural,items,precedenceItems,mainLedger,b
   const nonPending=new Set([...identityStatuses,'nonReference','numericFormulaCandidate','numericRollParameter','damageFormulaCandidate','instantaneous','durationCandidate','plainDefenseCandidate','fullyEvaluable','allocationEvaluable','tableCandidate','costCandidate','capacityCandidate','noDeclaredProgression']);
   for(const [origin,list] of [['main',mainLedger.evidence],['homebrew',brewPilot.evidence]])for(const e of list){
     if(evidenceIds.has(e.id))mark('duplicateEvidenceId',e.itemId);else evidenceIds.add(e.id);
-    if(e.activation!=='review-required'||!text(e.fingerprint)||e.id!=='review:'+e.fingerprint)mark('evidenceIntegrityMismatch',e.itemId);
+    if(e.activation!=='review-required'||!text(e.fingerprint)||!/^[a-f0-9]{64}$/.test(e.fingerprint)||e.id!=='review:'+e.fingerprint)mark('evidenceIntegrityMismatch',e.itemId);
     bump(byEvidenceStatus,e.status);bump(byEvidenceDomain[e.domain]??=dict(),e.status);bump(reviewCounts,e.review||'unreviewed');
     const n=nodes.get(e.itemId);
     if(!n){
@@ -194,7 +196,7 @@ function validateGraph({collection,structural,items,precedenceItems,mainLedger,b
         link(i.id,id,k,'precedence');
       }
     }
-    if(ns(i)==='homebrew'&&seen.size)mark('brewPrecedenceNotReviewed',i.id);
+    if(ns(i)==='homebrew'&&(seen.size||p.relation!=='unresolved'))mark('brewPrecedenceNotReviewed',i.id);
   }
   const precedenceResidual=residual(nodes.keys(),directional).length;
   if(precedenceResidual)mark('precedenceCycleOrDependent');

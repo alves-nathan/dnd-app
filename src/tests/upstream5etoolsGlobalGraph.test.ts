@@ -39,9 +39,9 @@ describe('a6.7 global graph',()=>{
   });
   test('rejects forbidden namespace direction and propagates hard dependency failures',()=>{
     const f=fixture();
-    f.cls.payload.featureIds=[f.brew.id];
+    f.cls.payload.featureIds=['missing-feature'];
     const r=validateGraph(f.args);
-    expect(r.summary.issues.wrongEndpointKind).toBeGreaterThan(0);
+    expect(r.summary.issues.hardEndpointMissing).toBeGreaterThan(0);
     expect(r.summary.byClosure.dependencyBlocked).toBeGreaterThan(0);
     expect(r.summary.integrityValid).toBe(false);
     const g=fixture();const fingerprint=digest('fixture');
@@ -62,6 +62,15 @@ describe('a6.7 global graph',()=>{
     expect(residual(['a','b'],[['a','b']])).toEqual([]);
     const f=fixture();const r=rawGraph(f.args.collection,f.args.structural);
     expect(r.issues).toEqual({});expect(r.cycleOrDependent).toBe(0);
+    f.args.structural.entities[0].blob='stale';
+    expect(rawGraph(f.args.collection,f.args.structural).issues.rawResolvedProvenanceMismatch).toBe(1);
+  });
+  test('rejects cross-scope precedence and checks namespace before endpoint kind',()=>{
+    const f=fixture();
+    f.cls.precedence={relation:'reprint',reprints:[f.brew.id],supersedes:[],coexistsWith:[],basis:'fixture'};
+    expect(validateGraph(f.args).summary.issues.invalidPrecedenceEndpoint).toBe(1);
+    const g=fixture();g.cls.payload.featureIds=[g.brew.id];
+    expect(validateGraph(g.args).summary.issues.forbiddenMainToHomebrew).toBe(1);
   });
   test('a global validator failure cannot be hidden by closed local dependencies',()=>{
     const f=fixture(),r=validateGraph({...f.args,validate:()=>({ok:false,issues:[{severity:'error',code:'fixture',itemId:f.feat.id}]})});
