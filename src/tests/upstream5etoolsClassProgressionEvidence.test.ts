@@ -66,7 +66,9 @@ describe('a8.6.1 owner and progression evidence',()=>{
  });
  test('does not use a legacy owner or feature ID whose occurrences disagree',()=>{
   const f=fixture(),row=f.reconciliation.historical.find((x:any)=>x.id==='old-feature');
-  const item=f.rawHistorical.find((x:any)=>x.item.id==='old-feature').item;
+  const occurrence=f.rawHistorical.find(x=>x.item.id==='old-feature');
+  if(!row||!occurrence)throw Error('missing synthetic historical feature occurrence');
+  const item=occurrence.item;
   const other={...row,index:99,status:'ownerMappingPending',targetId:undefined,targetFingerprint:undefined,evidenceId:'other'};
   const changed={...f,reconciliation:{...f.reconciliation,historical:[...f.reconciliation.historical,other]},rawHistorical:[...f.rawHistorical,{path:row.path,index:99,item}]};
   const r=buildClassProgressionEvidence(changed);

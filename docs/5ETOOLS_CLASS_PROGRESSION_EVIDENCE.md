@@ -19,3 +19,8 @@ Five new synthetic tests using actual class converter and reconciliation; owner/
 
 ## Next a8.6.2
 Use CI aggregates to prioritize class mechanics: hit dice, proficiency and spellcasting tables, owner/progression gaps. Inspect class/subclass spellcasting and multiclass rules separately before runtime regression probes. Preserve grant annotations and optional-feature selection/replacement semantics; no automatic grant or cutover. Actual installation, full historical inventory, durable backup/rollback, rights/trust, native validation and explicit approval still pending.
+
+## FIX01 — strict TypeScript fixture guard
+Original HEAD 2e0a6fcf3e267249e886b03f6e8120853e8b10f4: Quality push 45887821454 (job 140142832328) and PR 45887827957 (job 140142851394) failed in tsc --noEmit at upstream5etoolsClassProgressionEvidence.test.ts:69 (TS2532, possible undefined from Array.find). Add explicit presence guard for historical row and raw occurrence, then dereference the narrowed occurrence. No assertion, production code, converter, workflow or validation gate changes.
+
+Structural 45887821405 (job 140142831959) passed. Real report e75dbcf5b6d1e3bdcf0b14e2ae7c2a2dbd5ab0d7a9df4df3b8585670554bfff6: 35/35 candidate class hit dice and saving throw proficiency fields exact; spellcasting 26 different and 9 missing; 35 resources missing. All 1170 candidate feature levels exact, but 118 sourceType differences. Class grants 573, including 99 annotated; subclass grants 623. Unlisted native features 32 classFeature and 408 subclassFeature (not necessarily errors). Historical progression: classes 3 endpointMappingPending and 32 endpointEditionPending; subclasses 29 and 114 respectively. No approved parity. FIX01 requires all three checks again before a8.6.2.
