@@ -130,3 +130,7 @@ Ver [5ETOOLS_VARIANT_LINEAGE.md](5ETOOLS_VARIANT_LINEAGE.md). Preview de templat
 ## Fase a6.4.3 — tags e UIDs
 
 Ver [5ETOOLS_TAG_UID_PREVIEW.md](5ETOOLS_TAG_UID_PREVIEW.md). Scanner balanceado, defaults por tipo como candidatos sem redirect, UIDs contextuais, qualificadores e additional/attached spells, transições sobre ledger a6.2 sem alteração de concessões. a6.4.2 aprovada: 167 versões, 126 aliases completos, 2297 variantes conferidas. Próxima a6.5: semântica e mecânicas executáveis.
+
+## Fase a6.5.1 — elegibilidade e concessões contextuais
+
+Ver [5ETOOLS_SEMANTIC_ELIGIBILITY.md](5ETOOLS_SEMANTIC_ELIGIBILITY.md). IR de requisitos com avaliação trivalente, schedules e alocações, concessões contextuais preservando ownership; sem integração runtime. a6.4.3 aprovada: 5694 referências inline explícitas, 5162 candidatos de default. Próxima a6.5.2: recursos e spellcasting.
