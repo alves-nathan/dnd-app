@@ -114,3 +114,7 @@ Ver [5ETOOLS_COVERAGE_BASELINE.md](5ETOOLS_COVERAGE_BASELINE.md). Cruza inventá
 ## Fase a6.2 — referências entre entidades
 
 Ver [5ETOOLS_REFERENCE_INDEX.md](5ETOOLS_REFERENCE_INDEX.md). Sidecar de referências por identidade/namespace/proveniência, sem mutação de packs, elegibilidade ou runtime. Seletores e fontes ausentes permanecem pendentes; cross-era sinalizado. a6.1 validou 8589 saídas, zero erros de conciliação. Próxima a6.3: precedência e compatibilidade entre edições.
+
+## Fase a6.3 — precedência e compatibilidade
+
+Ver [5ETOOLS_PRECEDENCE_POLICY.md](5ETOOLS_PRECEDENCE_POLICY.md). Preview V3 global de reprints explícitos e preservação cross-era, supersedes somente com decisão editorial vinculada a snapshot; sem redirecionamento ou ativação. a6.2 aprovada: 13052/15571 referências resolvidas, 748 cross-era. Próxima a6.4: heranças, variantes, templates e tags.

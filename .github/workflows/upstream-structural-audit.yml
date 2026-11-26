@@ -82,6 +82,11 @@ jobs:
           DND_UPSTREAM_REFERENCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_REFERENCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsReferenceIndex.test.ts --runInBand
+      - name: Validate precedence and edition preview (aggregate only)
+        env:
+          DND_UPSTREAM_PRECEDENCE_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_PRECEDENCE_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsPrecedencePolicy.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |
