@@ -9,7 +9,7 @@ import { checkRotationAmmunition, spendRotationAmmunition } from '../characters/
 import type { TurnRotation } from '../types';
 const {compareFields,buildEquipmentParityEvidence,publicSummary}=require('../../scripts/5etools/equipment-parity-evidence');
 const {digest}=require('../../scripts/5etools/integrated-review');
-const {buildPilot}=require('../../scripts/5etools/equipment-converter');
+const {buildPilot,physicalId}=require('../../scripts/5etools/equipment-converter');
 const commits={application:'a'.repeat(40),main:'b'.repeat(40),homebrew:'c'.repeat(40)};
 const src={id:'fixture',status:'active',confidence:'exact'};
 const oldWeapon={weaponType:'finesse',attackAbility:'STR_OR_DEX',damageAbility:'STR_OR_DEX',damageFormula:'1d4 + STR_OR_DEX',damageType:'piercing',properties:['Light','Finesse','Thrown'],range:{normal:20,long:60,unit:'ft'},cost:{amount:2,unit:'GP'}};
@@ -77,7 +77,12 @@ describe('a8.5.1 equipment mechanical evidence',()=>{
     expect(uncertain.mechanicalParityEstablished).toBe(0);
   });
   test('synthetic converter weapon matches selected legacy runtime behavior across ability and range scenarios',()=>{
-    const item=pilot().find((i:any)=>i.kind==='weapon');
+    // The pilot now includes a ranged weapon too, and orders by physical ID.
+    // Bind the comparison to its intended synthetic finesse fixture.
+    const item=pilot().find((i:any)=>i.id===physicalId('XPHB','weapon','Fixture Weapon'));
+    expect(item).toMatchObject({kind:'weapon',name:'Fixture Weapon',payload:{
+      weaponType:'finesse',damageFormula:'1d4 + STR_OR_DEX',range:{normal:20,long:60,unit:'ft'}
+    }});
     const a=stored('weapon',oldWeapon),b=stored('weapon',item.payload);
     for(const [str,dex] of [[18,10],[10,18],[14,14]]){
       const base=createEmptyCharacter('Fixture');
