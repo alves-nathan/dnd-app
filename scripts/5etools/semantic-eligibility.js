@@ -193,9 +193,9 @@ function evaluateGrant(row,facts){
   }else if(row.ownerKind!=='class'||row.ownerId!==row.classId)eligibility=unknown;
   return {eligibility,activation:'review-required'};
 }
-function buildSemanticReport(main,homebrew){
-  const {records}=collect(main,homebrew),items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
-  const index=createReferenceIndex(records,items),requirements=[],choices=[],spellCandidates=[];
+function buildSemanticReport(main,homebrew,context){
+  const records=context?.records??collect(main,homebrew).records,items=context?.items??converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const index=context?.index??createReferenceIndex(records,items),requirements=[],choices=[],spellCandidates=[];
   const counts=dict(),nodes=dict(),choiceCounts=dict(),grantCounts=dict(),spellCounts=dict();
   function visit(n){bump(nodes,n.op);if(n.op==='pending')bump(counts,n.reason);if(n.children)n.children.forEach(visit);}
   for(const item of items){

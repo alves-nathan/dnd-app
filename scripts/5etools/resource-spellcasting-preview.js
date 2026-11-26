@@ -194,9 +194,9 @@ function checkActionBudget(costs,budget){
   if(Object.keys(usage).some(k=>usage[k]>budget[k]))return result('notSatisfied',{usage});
   return result(unresolved?'indeterminate':'satisfied',{usage});
 }
-function buildResourceReport(main,homebrew){
-  const {records}=collect(main,homebrew),items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
-  const index=createReferenceIndex(records,items),profiles=[],spellCosts=[],resourceEvidence=[],spellResources=[];
+function buildResourceReport(main,homebrew,context){
+  const records=context?.records??collect(main,homebrew).records,items=context?.items??converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const index=context?.index??createReferenceIndex(records,items),profiles=[],spellCosts=[],resourceEvidence=[],spellResources=[];
   const byProfile=dict(),byProgression=dict(),bySpellCost=dict(),byActionCost=dict(),byResource=dict(),byRecharge=dict();
   for(const item of items){
     if(['class','subclass'].includes(item.kind)){

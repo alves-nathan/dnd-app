@@ -201,9 +201,9 @@ function effectTemplate(spec){
   return result('effectTemplateCandidate',{template:{id:spec.id,name:spec.name,kind:spec.kind,sourceType:spec.sourceType,
     concentration:spec.concentration,conditionIds:[...spec.conditionIds],duration:{...d},endsOnShortRest:spec.endsOnShortRest,endsOnLongRest:spec.endsOnLongRest,requiresReview:true}});
 }
-function buildEffectReport(main,homebrew){
-  const {records}=collect(main,homebrew),items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
-  const index=createReferenceIndex(records,items),formulas=[],damage=[],scaling=[],durations=[],conditions=[],defenses=[],conditionDefinitions=[],saves=[];
+function buildEffectReport(main,homebrew,context){
+  const records=context?.records??collect(main,homebrew).records,items=context?.items??converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const index=context?.index??createReferenceIndex(records,items),formulas=[],damage=[],scaling=[],durations=[],conditions=[],defenses=[],conditionDefinitions=[],saves=[];
   for(const item of items){
     formulas.push(...formulaObservations(item,index));damage.push(...directDamage(item));scaling.push(...compileScaling(item));
     conditions.push(...compileConditionEvidence(item,index));

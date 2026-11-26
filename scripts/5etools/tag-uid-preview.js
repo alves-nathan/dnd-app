@@ -189,9 +189,9 @@ function spellLists(item,index){
   if(rec(attached))recharge(attached,'/payload/mechanics/upstreamItem/attachedSpells','structuredAttachedSpell',{},true);
   return edges;
 }
-function buildTagReport(main,homebrew){
-  const {records}=collect(main,homebrew),items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
-  const index=createReferenceIndex(records,items),inline=[],refinements=[],structured=[];
+function buildTagReport(main,homebrew,context){
+  const records=context?.records??collect(main,homebrew).records,items=context?.items??converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
+  const index=context?.index??createReferenceIndex(records,items),inline=[],refinements=[],structured=[];
   const previous=dict(),transitions=dict(),byCategory=dict(),byTag=dict(),byInlineStatus=dict(),byStructuredStatus=dict(),byRefinementStatus=dict();
   let crossEra=0,defaultCandidates=0,oldCount=0;
   for(const item of items){

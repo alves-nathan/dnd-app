@@ -211,8 +211,8 @@ function previewMagicCandidates(records,resolver,emitted){
   for(const a of byId.values())if(a.length>1)for(const row of a){row.status='duplicateCandidateIdentity';delete row.entity;delete row.candidateId;}
   return rows;
 }
-function buildVariantReport(main,homebrew){
-  const {records,invalidRecords}=collect(main,homebrew);
+function buildVariantReport(main,homebrew,context){
+  const {records,invalidRecords}=context?.collection??collect(main,homebrew);
   const local=records.filter(r=>r.origin==='main'),resolver=makeResolver(local);
   const templates=createTemplateIndex(main),external=[],versions=[],aliases=[],magic=[];
   const existing=new Set(local.map(r=>r.id));
@@ -253,10 +253,10 @@ function buildVariantReport(main,homebrew){
   for(const r of invalidRecords.filter(r=>r.origin==='main'&&r.kind==='subrace'&&rec(r.entity)&&!norm(r.entity.name))){
     versions.push({record:coordinate(r),status:'anonymousSubraceIdentityPending',activation:'review-required'});
   }
-  const classResult=classPilot(main),emittedIds=new Set(classResult.packs.flatMap(p=>p.items.map(i=>i.id)));
+  const classResult=context?.runs.find(r=>r.stage==='a5.7')?.result??classPilot(main),emittedIds=new Set(classResult.packs.flatMap(p=>p.items.map(i=>i.id)));
   aliases.push(...crossOwnerCandidates(local.filter(r=>['class','subclass','classFeature','subclassFeature'].includes(r.kind)),emittedIds));
   // Independently verify existing magic variants against a resolved base, without changing output.
-  const magicResult=magicPilot(main),byCoordinate=new Map(local.map(r=>[JSON.stringify([r.path,r.kind,r.index]),r]));
+  const magicResult=context?.runs.find(r=>r.stage==='a5.4')?.result??magicPilot(main),byCoordinate=new Map(local.map(r=>[JSON.stringify([r.path,r.kind,r.index]),r]));
   for(const item of magicResult.packs.flatMap(p=>p.items)){
     const b=item.metadata?.variantBase;if(!b)continue;
     const p=item.provenance,row={itemId:item.id,activation:'review-required'};

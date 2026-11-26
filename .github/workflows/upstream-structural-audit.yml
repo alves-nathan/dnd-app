@@ -117,6 +117,11 @@ jobs:
           DND_UPSTREAM_EFFECT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_EFFECT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsEffectDamage.test.ts --runInBand
+      - name: Reconcile integrated review ledger (aggregate only)
+        env:
+          DND_UPSTREAM_INTEGRATED_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_INTEGRATED_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsIntegratedReview.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

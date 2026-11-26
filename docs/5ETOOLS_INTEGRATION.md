@@ -142,3 +142,7 @@ Ver [5ETOOLS_RESOURCE_SPELLCASTING.md](5ETOOLS_RESOURCE_SPELLCASTING.md). Perfis
 ## Fase a6.5.3 — dano e efeitos
 
 Ver [5ETOOLS_EFFECT_DAMAGE.md](5ETOOLS_EFFECT_DAMAGE.md). Fórmulas léxicas, adaptação de dano e scaling explícitos, eventos por tipo, saves, duração e referências a condições, bridge manual de efeitos e testes contra runtime existente. Sem ativação. a6.5.2 aprovada: 21 perfis de tabela e 735 candidatos de custo. Próxima a6.5.4: integração de candidatos e lacunas.
+
+## Fase a6.5.4 — integrated review ledger
+
+Ver [5ETOOLS_INTEGRATED_REVIEW.md](5ETOOLS_INTEGRATED_REVIEW.md). Consolidação de evidências por coordenada/ID físico, distinção de gaps e candidatos, decisões vinculadas a snapshots e fingerprint. Sem promoção de conteúdo. a6.5.3 aprovada: 661 candidatos de dano e 27 tabelas de scaling. Próxima a6.6: Homebrew.
