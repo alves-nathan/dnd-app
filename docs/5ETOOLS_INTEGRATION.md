@@ -106,3 +106,7 @@ Ver [5ETOOLS_CLASS_CONVERSION.md](5ETOOLS_CLASS_CONVERSION.md). Grafo piloto fec
 ## Fase 5.8 — conditions e fechamento dos pilotos
 
 Ver [5ETOOLS_CONDITION_CONVERSION.md](5ETOOLS_CONDITION_CONVERSION.md). PHB/XPHB: condições descritivas com IDs de staging distintos por edição, status/disease diferidos e contabilizados. Registry de cobertura verifica os 13 kinds emitidos pelos oito pilotos no mesmo snapshot, IDs únicos e review-required. CI também dispara em alterações de testes/contrato. A5.7: 1809/2078 validados; Quality fix01 aprovado. Próxima fase a6: expansão e resolução semântica, sem ativação de runtime.
+
+## Fase a6.1 — baseline integrado
+
+Ver [5ETOOLS_COVERAGE_BASELINE.md](5ETOOLS_COVERAGE_BASELINE.md). Cruza inventário, estrutura, elegibilidade, saídas e validação V3 por coordenada de origem, separando expansão de templates e revisão semântica. Bundle v4.8.0 somente leitura para priorização nominal; sem equivalência histórica. A5.8 aprovada: 8589 IDs únicos, 13 kinds, 30 conditions válidas. Próxima a6.2: referências entre entidades.

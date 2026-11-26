@@ -33,7 +33,7 @@ function mainEntityFile(p) {
     p === 'data/bestiary/legendarygroups.json';
 }
 function collect(main, homebrew) {
-  const diagnostics = [], records = [];
+  const diagnostics = [], records = [], invalidRecords = [];
   const brewIndex = homebrew.readJson('_generated/index-sources.json');
   if (!isRecord(brewIndex)) fail('invalidIndex','homebrew source index');
   const paths = { main: [...main.files.keys()].filter(mainEntityFile),
@@ -53,12 +53,12 @@ function collect(main, homebrew) {
             const key = identity(kind,entity);
             records.push({id:JSON.stringify([origin,key]),key,kind,origin,path:p,index,blob:snapshot.files.get(p),entity,
               metaKeys:Object.keys(json._meta || {})});
-          } catch (e) { diagnostics.push({code:e.code || 'invalidEntity',origin,path:p,kind,index,detail:e.message}); }
+          } catch (e) { diagnostics.push({code:e.code || 'invalidEntity',origin,path:p,kind,index,detail:e.message}); invalidRecords.push({kind,origin,path:p,index,blob:snapshot.files.get(p),entity}); }
         }
       }
     }
   }
-  return {records,diagnostics};
+  return {records,diagnostics,invalidRecords};
 }
 const preserveBase = new Set('page otherSources referenceSources srd srd52 basicRules basicRules2024 reprintedAs hasFluff hasFluffImages hasToken tokenCredit tokenCustom foundryTokenScale altArt _versions'.split(' '));
 const preserveByKind = {monster:new Set('legendaryGroup environment soundClip altArt variant dragonCastingColor familiar'.split(' ')),
@@ -204,8 +204,8 @@ function makeResolver(records) {
   }
   return {resolve,lookup,references,featureTarget};
 }
-function audit(main,homebrew) {
-  const {records,diagnostics} = collect(main,homebrew);
+function audit(main,homebrew,collection=collect(main,homebrew)) {
+  const {records} = collection, diagnostics = [...collection.diagnostics];
   const resolver = makeResolver(records);
   const counts = Object.create(null), bySource = Object.create(null), entities = [];
   const issues = Object.create(null);
