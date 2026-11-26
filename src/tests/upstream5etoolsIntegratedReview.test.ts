@@ -40,6 +40,15 @@ describe('a6.5.4 integrated review ledger',()=>{
     expect(summarize(l,[]).rowStates.gapWithStructuralCandidate).toBe(1);
     expect(l.items.size).toBe(2);
   });
+  test('optional local evidence detail does not change the fingerprint or public summary',()=>{
+    const f=fixture(),a=createLedger(f.args),b=createLedger({...f.args,includeDetails:true});
+    const row={status:'structuralPreview',entity:{name:'private-fixture'}};
+    const e=a.add('version',row,{rawCoordinate:f.c}),g=b.add('version',row,{rawCoordinate:f.c});
+    expect(g.id).toBe(e.id);
+    expect(e.detail).toBeUndefined();
+    expect(g.detail).toEqual(row);
+    expect(JSON.stringify(summarize(b,[]))).not.toContain('private-fixture');
+  });
   test('evidence hashes canonical key order, but change with row and snapshot',()=>{
     expect(digest({a:1,b:2})).toBe(digest({b:2,a:1}));
     const f=fixture(),a=createLedger(f.args),b=createLedger(f.args);
@@ -54,7 +63,7 @@ describe('a6.5.4 integrated review ledger',()=>{
 const mainPath=process.env.DND_UPSTREAM_INTEGRATED_MAIN,brewPath=process.env.DND_UPSTREAM_INTEGRATED_BREW;
 (mainPath&&brewPath?test:test.skip)('real ledger reconciles all domains without new emissions',()=>{
   if(!mainPath||!brewPath)throw Error('missing snapshots');
-  const r=buildIntegratedReport(openSnapshot(mainPath),openSnapshot(brewPath));
+  const r=buildIntegratedReport(openSnapshot(mainPath),openSnapshot(brewPath),{includeDetails:!!process.env.DND_UPSTREAM_INTEGRATED_OUT});
   console.log(JSON.stringify(publicSummary(r)));
   expect(r.summary.issues).toEqual({});
   expect(r.summary.emittedItems).toBe(r.items.length);
