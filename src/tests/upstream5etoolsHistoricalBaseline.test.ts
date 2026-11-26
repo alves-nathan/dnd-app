@@ -31,6 +31,31 @@ describe('a7.1 historical baseline',()=>{
     expect(r.rows.every((x:any)=>x.migrationState==='preservePending')).toBe(true);
     expect(r.files.find((x:any)=>x.path===f.a).checksum).toBe('verified');
   });
+  test('mixed historical JSON distinguishes reports from packs and counts every skipped report',()=>{
+    const f=fixture();
+    for(const [path,value] of [
+      ['artifacts/compendium/audit-report.json',{schemaVersion:'fixture-report',summary:{count:4}}],
+      ['artifacts/compendium/other-report.json',{id:'report',source,summary:{count:2}}]
+    ] as const){
+      f.files[path]=Buffer.from(JSON.stringify(value));
+      f.snapshot.files.set(path,'b'.repeat(40));
+    }
+    const r=inspectPacks(f.snapshot,{bundled:f.bundled,parse:parseImportPack,detect:detectCompendiumImportVersion});
+    expect(r.summary.nonPackJson).toBe(2);
+    expect(r.summary.files).toBe(3);
+    expect(r.summary.bootstrap.count).toBe(1);
+    expect(r.summary.overlap.historicalOccurrences).toBe(4);
+    expect(r.summary.issues).toEqual({});
+    const missing=inspectPacks(f.snapshot,{bundled:[...f.bundled,{id:'report',fileName:'report.json',sourceId:'phb',importFormat:'v2'}],parse:parseImportPack,detect:detectCompendiumImportVersion});
+    expect(missing.summary.issues.missingBootstrapFile).toBe(1);
+    // A manifest entry pointing to a non-pack must remain a hard error.
+    const path='assets/compendium/report.json';
+    f.files[path]=Buffer.from(JSON.stringify({summary:{count:1}}));
+    f.snapshot.files.set(path,'b'.repeat(40));
+    const invalid=inspectPacks(f.snapshot,{bundled:[...f.bundled,{id:'report',fileName:'report.json',sourceId:'phb',importFormat:'v2'}],parse:parseImportPack,detect:detectCompendiumImportVersion});
+    expect(invalid.summary.nonPackJson).toBe(3);
+    expect(invalid.summary.issues).toMatchObject({bootstrapEnvelopeMissing:1,missingBootstrapFile:1});
+  });
   test('checksum mismatch, missing bootstrap and unversioned/unsupported input are explicit',()=>{
     const f=fixture();
     f.files[f.a+'.sha256']=Buffer.from('0'.repeat(64));

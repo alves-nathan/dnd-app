@@ -74,7 +74,8 @@ function itemRow(i,path,index){
 }
 function inspectPacks(snapshot,{bundled,parse,detect}){
   if(!Array.isArray(bundled)||typeof parse!=='function'||typeof detect!=='function')throw Error('historicalAdaptersRequired');
-  const definitions=new Map(),issues=dict(),files=[],rows=[],byPath=new Map(),bootIds=new Map(),versions=dict(),groups=new Map(),nonPacks=0;
+  const definitions=new Map(),issues=dict(),files=[],rows=[],byPath=new Map(),bootIds=new Map(),versions=dict(),groups=new Map();
+  let nonPacks=0;
   for(const b of bundled){
     const path='assets/compendium/'+b.fileName;
     if(definitions.has(path))bump(issues,'duplicateBootstrapPath');
