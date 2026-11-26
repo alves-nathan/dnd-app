@@ -122,3 +122,7 @@ Ver [5ETOOLS_PRECEDENCE_POLICY.md](5ETOOLS_PRECEDENCE_POLICY.md). Preview V3 glo
 ## Fase a6.4.1 — identidades e cópias
 
 Ver [5ETOOLS_RESOLVER_EXTENSIONS.md](5ETOOLS_RESOLVER_EXTENSIONS.md). Normalização exclusiva de source aninhado em magicvariant, operações root/literal wildcard e escalares conservadoras, sem regex arbitrária ou alteração de IDs anteriores. a6.3 aprovada: 1562 vínculos reprint, zero supersedes/erros. Próxima a6.4.2: templates, variantes e aliases.
+
+## Fase a6.4.2 — templates, versões e proprietários
+
+Ver [5ETOOLS_VARIANT_LINEAGE.md](5ETOOLS_VARIANT_LINEAGE.md). Preview de templates externos, versões simples/abstratas, evidência de aliases cross-owner e revalidação de variantes mágicas por base resolvida. Sem emissão adicional ou alteração de ownership. a6.4.1 aprovada: 8600 saídas válidas, 2658 resoluções estruturais adicionais. Próxima a6.4.3: tags e UID defaults.

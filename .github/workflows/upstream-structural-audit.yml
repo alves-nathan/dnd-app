@@ -92,6 +92,11 @@ jobs:
           DND_UPSTREAM_RESOLVER_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RESOLVER_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsResolverExtensions.test.ts --runInBand
+      - name: Audit template, version and owner lineage previews (aggregate only)
+        env:
+          DND_UPSTREAM_VARIANT_MAIN: ${{ runner.temp }}/5etools-main
+          DND_UPSTREAM_VARIANT_BREW: ${{ runner.temp }}/5etools-homebrew
+        run: npx jest src/tests/upstream5etoolsVariantLineage.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |
