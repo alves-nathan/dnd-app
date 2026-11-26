@@ -157,6 +157,10 @@ jobs:
           DND_UPSTREAM_MIGRATION_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_MIGRATION_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts --runInBand
+      - name: Validate additive V3 staging boundary (aggregate only)
+        env:
+          DND_UPSTREAM_ADDITIVE_MAIN: ${{ runner.temp }}/5etools-main
+        run: npx jest src/tests/upstream5etoolsAdditiveStage.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

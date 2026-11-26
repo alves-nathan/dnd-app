@@ -170,3 +170,7 @@ Ver [5ETOOLS_HISTORICAL_RECONCILIATION.md](5ETOOLS_HISTORICAL_RECONCILIATION.md)
 ## Fase a8.1 — migration preview
 
 Ver [5ETOOLS_MIGRATION_PREVIEW.md](5ETOOLS_MIGRATION_PREVIEW.md). Plano read-only com IDs de storage/canônicos, preservação integral, checkpoint e bloqueios. Bootstrap real em memória. a7.2 aprovada: 1162/1997 candidatos bootstrap, todos 3573 payloads comparados divergentes, 3665 contratos runtime fora V3. Nenhuma migração executável. Próxima a8.2: integração guardada e rollback.
+
+## Fase a8.2.1 — staging aditivo guardado
+
+Ver [5ETOOLS_ADDITIVE_STAGE.md](5ETOOLS_ADDITIVE_STAGE.md). Sessão local V3 sem projeção gravável, reservas de IDs e vínculo com snapshot, sem modificar runtime ou dados legados. a8.1 aprovada: 1997 storage items, 5841 runtime, zero escritas. Próxima a8.2.2: preservação transacional e testes de rollback.
