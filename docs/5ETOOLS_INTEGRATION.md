@@ -206,3 +206,7 @@ Ver [5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md](5ETOOLS_EQUIPMENT_RUNTIME_FIXES.md). FI
 ## Fase a8.5.4 — preview mecânico de Exhaustion por edição
 
 Ver [5ETOOLS_CONDITION_MECHANICS.md](5ETOOLS_CONDITION_MECHANICS.md). Modelo isolado vinculado às definições PHB/XPHB, transições explícitas e auditoria das 30 ocorrências. Sem ativação, efeitos automáticos ou alteração de fichas. a8.5.3 aprovada. Próxima a8.5.5: matriz de capacidades de condições.
+
+## Fase a8.5.5 — matriz de capacidades de condições
+
+Ver [5ETOOLS_CONDITION_CAPABILITIES.md](5ETOOLS_CONDITION_CAPABILITIES.md). 28 definições vinculadas por edição, obrigações e hooks observados, sem ativação. a8.5.4 aprovada. Próxima a8.5.6: modelo explícito de estado e contexto de condições e semântica de crítico condicionado ao acerto.

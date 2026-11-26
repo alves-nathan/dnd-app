@@ -1,3 +1,10 @@
+import {createEmptyCharacter,defaultCombatState} from '../data/mockData';
+import {createCombatScenario} from '../rules-engine/turns/compareRotations';
+import {createTacticalTarget,combatStateForTarget,effectiveTargetSpeed} from '../rules-engine/turns/tacticalCombat';
+import {calculateHitChance} from '../rules-engine/damage/hitChance';
+import {activeEffectConditionIds,addActiveEffectToCharacter,clearConcentration,getActiveConcentrationEffect} from '../rules-engine/effects/activeEffects';
+import type {ActiveEffect} from '../types';
+const {bindCondition,buildCapabilityMatrix,publicSummary:capabilitySummary}=require('../../scripts/5etools/condition-capability-matrix');
 const {bindExhaustion,previewExhaustion,previewExhaustionTransition,buildConditionMechanicsReport,publicSummary:conditionMechanicsSummary}=require('../../scripts/5etools/condition-mechanics-preview');
 import {stageImportV3} from '../compendium/importV3Staging';
 import {COMPENDIUM_ENTITY_KINDS} from '../compendium/importDomain';
@@ -74,6 +81,25 @@ const snapshotPath=process.env.DND_UPSTREAM_CONDITION_SNAPSHOT;
     expect(bindExhaustion({...i,source:{...i.source,rulesEra:i.source.rulesEra==='2014'?'2024':'2014'}})).toMatchObject({status:'indeterminate',code:'editionIdentityPending'});
   }
   console.log(JSON.stringify(conditionMechanicsSummary(mechanics)));
+  const capabilities=buildCapabilityMatrix(r);
+  expect(capabilities.byEra['2014']).toMatchObject({total:14,bound:14,indeterminate:0});
+  expect(capabilities.byEra['2024']).toMatchObject({total:14,bound:14,indeterminate:0});
+  expect(capabilities.byCoverage.directTargetHook).toBe(2);
+  expect(capabilities.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized)).toBe(true);
+  const obligations=(name:string,era:string)=>bindCondition(items.find((i:any)=>i.name===name&&i.source.rulesEra===era)).obligations.map((o:any)=>o.key);
+  expect(obligations('Stunned','2014')).toContain('movementBlocked');
+  expect(obligations('Stunned','2024')).not.toContain('movementBlocked');
+  expect(obligations('Grappled','2014')).toContain('outsideGrapplerReachEnds');
+  expect(obligations('Grappled','2024')).toContain('nonGrapplerAttackDisadvantage');
+  expect(obligations('Unconscious','2024')).toContain('pronePersistsOnEnd');
+  expect(obligations('Petrified','2024')).toContain('poisonedConditionImmunity');
+  expect(obligations('Petrified','2024')).not.toContain('poisonDiseaseImmunity');
+  const prone=items.find((i:any)=>i.name==='Prone'&&i.source.rulesEra==='2024');
+  const modified={...prone,payload:{...prone.payload,mechanics:{...prone.payload.mechanics,
+    upstreamCondition:{...prone.payload.mechanics.upstreamCondition,entries:['changed definition']}}}};
+  expect(bindCondition(modified)).toMatchObject({status:'indeterminate',code:'definitionChanged'});
+  expect(bindCondition({...prone,source:{...prone.source,rulesEra:'2014'}})).toMatchObject({status:'indeterminate',code:'editionIdentityPending'});
+  console.log(JSON.stringify(capabilitySummary(capabilities)));
   for(const k of ['status','disease'])expect(r.inventory[k].total).toBe(r.inventory[k].deferred);
 },120000);
 (snapshotPath?test:test.skip)('all eight real pilots emit the 13 kinds, distinct physical IDs and review-required only',()=>{
@@ -131,5 +157,53 @@ describe('a8.5.4 edition-specific condition mechanics preview',()=>{
     expect(conditionMechanicsSummary(evidence)).not.toHaveProperty('rows');
     expect(JSON.stringify(conditionMechanicsSummary(evidence))).not.toContain('upstream:main:condition:');
     expect(bindExhaustion({}).status).toBe('indeterminate');
+  });
+});
+
+describe('a8.5.5 condition capability boundary',()=>{
+  test('synthetic text cannot inherit reviewed definition coverage; aggregate output redacts rows',()=>{
+    const r=buildPilot(fixture([condition('Prone'),condition('Stunned'),condition('Exhaustion')]),['XPHB']);
+    const matrix=buildCapabilityMatrix(r);
+    expect(matrix.byEra['2024']).toEqual({total:2,bound:0,indeterminate:2,obligations:0});
+    expect(matrix.rows.every((x:any)=>x.code==='definitionChanged'&&!x.runtimeEligible&&!x.writeAuthorized)).toBe(true);
+    expect(capabilitySummary(matrix)).not.toHaveProperty('rows');
+    expect(JSON.stringify(capabilitySummary(matrix))).not.toContain('upstream:main:condition:');
+    expect(()=>buildCapabilityMatrix({...r,packs:[...r.packs,...r.packs]})).toThrow('conditionInventoryMismatch');
+  });
+});
+
+describe('condition capabilities: observed runtime hooks, not activation',()=>{
+  test('existing Prone target hook selects roll mode at the five-foot boundary and cancels opposing mode',()=>{
+    const character=createEmptyCharacter('Fixture');
+    const scenario=(distance:number,rollMode:'normal'|'advantage'|'disadvantage'='normal')=>({
+      ...createCombatScenario({id:'fixture',characterId:character.id,name:'Fixture',combatState:{...defaultCombatState,rollMode}}),
+      actorPositionFeet:0,targets:[createTacticalTarget({id:'target',positionFeet:distance,conditions:['prone']})]
+    });
+    expect(combatStateForTarget(scenario(5),'target').rollMode).toBe('advantage');
+    expect(combatStateForTarget(scenario(6),'target').rollMode).toBe('disadvantage');
+    expect(combatStateForTarget(scenario(5,'disadvantage'),'target').rollMode).toBe('normal');
+    expect(combatStateForTarget(scenario(6,'advantage'),'target').rollMode).toBe('normal');
+  });
+  test('generic hit chance supports roll mode but guaranteed critical also guarantees hit',()=>{
+    const p={attackBonus:5,targetAC:16};
+    expect(calculateHitChance({...p,rollMode:'normal'}).hitChance).toBeCloseTo(0.5);
+    expect(calculateHitChance({...p,rollMode:'advantage'}).hitChance).toBeCloseTo(0.75);
+    expect(calculateHitChance({...p,rollMode:'disadvantage'}).hitChance).toBeCloseTo(0.25);
+    // Paralyzed and Unconscious require critical ON HIT, not automatic hits.
+    expect(calculateHitChance({...p,rollMode:'normal',criticalGuaranteed:true})).toEqual({hitChance:1,critChance:1,normalHitChance:0});
+  });
+  test('condition labels alone do not enforce speed locks, nested conditions or concentration ending',()=>{
+    for(const condition of ['grappled','restrained','paralyzed','unconscious']){
+      expect(effectiveTargetSpeed(createTacticalTarget({speedFeet:30,conditions:[condition]}))).toBe(30);
+    }
+    const character=createEmptyCharacter('Fixture');
+    const effect:ActiveEffect={id:'concentration',name:'Fixture concentration',kind:'spell',sourceType:'spell',status:'active',concentration:true,conditionIds:[],
+      duration:{unit:'manual'},createdAt:'2026-01-01T00:00:00.000Z'};
+    const first=addActiveEffectToCharacter(character,effect);
+    const second=addActiveEffectToCharacter(first,{...effect,id:'condition',name:'Fixture condition',kind:'condition',sourceType:'condition',concentration:false,conditionIds:['unconscious','unconscious']});
+    expect(activeEffectConditionIds(second)).toEqual(['unconscious']);
+    expect(getActiveConcentrationEffect(second)?.id).toBe('concentration');
+    expect(getActiveConcentrationEffect(clearConcentration(second))).toBeUndefined();
+    expect(getActiveConcentrationEffect(second)?.id).toBe('concentration');
   });
 });
