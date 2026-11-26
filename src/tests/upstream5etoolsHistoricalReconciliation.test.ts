@@ -1,3 +1,4 @@
+const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
@@ -65,6 +66,18 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(report.mechanicalParityEstablished).toBe(0);
       expect(report.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       console.log(JSON.stringify(equipmentParitySummary(report)));
+      const classes=buildClassProgressionEvidence(input);
+      expect(classes.byKind.class).toMatchObject({occurrences:50,identityCandidates:35,identityPending:15});
+      expect(classes.byKind.subclass).toMatchObject({occurrences:251,identityCandidates:143,identityPending:108});
+      expect(classes.byKind.feature).toMatchObject({occurrences:3192,identityCandidates:1170,identityPending:2022});
+      expect(classes.graph.class.items).toBe(27);
+      expect(classes.graph.subclass.items).toBe(146);
+      expect(classes.graph.classFeature.items).toBe(605);
+      expect(classes.graph.subclassFeature.items).toBe(1031);
+      expect(classes.graph.otherFeature.items).toBe(233);
+      expect(classes.rows.every((row:any)=>!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(classes.mechanicalParityEstablished).toBe(0);
+      console.log(JSON.stringify(classProgressionSummary(classes)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

@@ -218,3 +218,7 @@ Ver [5ETOOLS_CONDITION_ATTACK_PREVIEW.md](5ETOOLS_CONDITION_ATTACK_PREVIEW.md). 
 ## Fase a8.5.7 — implicações, ciclo de vida, movimento e saving throws
 
 Ver [5ETOOLS_CONDITION_STATE_PREVIEW.md](5ETOOLS_CONDITION_STATE_PREVIEW.md). Preview isolado, estados explícitos e derivados, transições hipotéticas, sem ativação. a8.5.6 aprovada. Próxima a8.6.1: identidade e progressão de classe/subclasse/feature.
+
+## Fase a8.6.1 — evidências de ownership e progressão
+
+Ver [5ETOOLS_CLASS_PROGRESSION_EVIDENCE.md](5ETOOLS_CLASS_PROGRESSION_EVIDENCE.md). a8.5.7 aprovada. Auditoria por ocorrência, proprietário, nível e grants, optional features separadas; sem aprovação de paridade. Próxima a8.6.2: campos mecânicos de classe e tabelas de spellcasting.
