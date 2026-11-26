@@ -102,3 +102,7 @@ Ver [5ETOOLS_ORIGIN_CONVERSION.md](5ETOOLS_ORIGIN_CONVERSION.md). Herança conse
 ## Fase 5.7 — classes, subclasses e progressões
 
 Ver [5ETOOLS_CLASS_CONVERSION.md](5ETOOLS_CLASS_CONVERSION.md). Grafo piloto fechado por owner e nível, projeção conservadora de proficiências e tabelas de magia/pacto, flags e escolhas preservadas. Aliases cross-owner e dependências fora do piloto são bloqueados; não há ativação nem mudança no runtime. Próximo: conditions e fechamento dos conversores.
+
+## Fase 5.8 — conditions e fechamento dos pilotos
+
+Ver [5ETOOLS_CONDITION_CONVERSION.md](5ETOOLS_CONDITION_CONVERSION.md). PHB/XPHB: condições descritivas com IDs de staging distintos por edição, status/disease diferidos e contabilizados. Registry de cobertura verifica os 13 kinds emitidos pelos oito pilotos no mesmo snapshot, IDs únicos e review-required. CI também dispara em alterações de testes/contrato. A5.7: 1809/2078 validados; Quality fix01 aprovado. Próxima fase a6: expansão e resolução semântica, sem ativação de runtime.
