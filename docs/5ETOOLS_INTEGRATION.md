@@ -166,3 +166,7 @@ Ver [5ETOOLS_HISTORICAL_BASELINE.md](5ETOOLS_HISTORICAL_BASELINE.md). Inventári
 ## Fase a7.2 — reconciliação histórica
 
 Ver [5ETOOLS_HISTORICAL_RECONCILIATION.md](5ETOOLS_HISTORICAL_RECONCILIATION.md). Candidatos de identidade por fonte/tipo/nome, owner/nível, fingerprints, obrigações de preservação de entidades e grafo runtime. Sem migração. a7.1 FIX01 aprovada: 6335 ocorrências/2199 IDs, bootstrap1997, runtime5841. CI: concurrency por workflow/evento/ref e cache npm upstream; cobertura intacta.
+
+## Fase a8.1 — migration preview
+
+Ver [5ETOOLS_MIGRATION_PREVIEW.md](5ETOOLS_MIGRATION_PREVIEW.md). Plano read-only com IDs de storage/canônicos, preservação integral, checkpoint e bloqueios. Bootstrap real em memória. a7.2 aprovada: 1162/1997 candidatos bootstrap, todos 3573 payloads comparados divergentes, 3665 contratos runtime fora V3. Nenhuma migração executável. Próxima a8.2: integração guardada e rollback.
