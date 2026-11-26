@@ -1,5 +1,6 @@
 import { parseImportPack, type ParseImportPackResult } from './parseImportPack';
 import { parseAndPreviewImportPack } from './parseImportPreview';
+import { isV3StagingJson } from './importVersion';
 import type { ExistingCompendiumPreviewItem } from './importPreview';
 import { buildSemiStructuredImportDraft, summarizeSemiStructuredDraft, type SemiStructuredImportDraft, type SemiStructuredImportOptions } from './semiStructuredImport';
 import type { CompendiumItemType } from './types';
@@ -135,6 +136,16 @@ export const parseLocalCompendiumFileContent = (
   text: string,
   options: LocalCompendiumFileParseOptions
 ): LocalCompendiumFileParseResult => {
+  // Structured V3 cannot fall through into text/Markdown conversion even
+  // when its extension or a user-selected forced kind says otherwise.
+  if (isV3StagingJson(text)) {
+    const issues = [issue('error', 'IMPORT_V3_STAGING_ONLY', 'Import V3 aceita somente prévia isolada, sem persistência.')];
+    return {
+      ok: false, kind: 'json', fileName: file.name, fileExtension: getFileExtension(file.name),
+      fileSize: file.size, mimeType: file.mimeType, generatedJson: '',
+      preview: { ok: false, issues }, issues, summary: 'Import V3 reservado à prévia isolada.', detectedItemCount: 0
+    };
+  }
   const forcedKind = options.forceKind && options.forceKind !== 'auto' ? options.forceKind : undefined;
   const inferredKind = forcedKind ?? inferLocalImportFileKind(file, text);
   const trimmed = text.trim();

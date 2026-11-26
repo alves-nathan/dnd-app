@@ -178,3 +178,7 @@ Ver [5ETOOLS_ADDITIVE_STAGE.md](5ETOOLS_ADDITIVE_STAGE.md). Sessão local V3 sem
 ## Fase a8.2.2 — checkpoint de preservação
 
 Ver [5ETOOLS_PRESERVATION_CHECKPOINT.md](5ETOOLS_PRESERVATION_CHECKPOINT.md). Evidência local dos backups e grafo runtime vinculada ao staging V3; testes de rollback isolado e gates existentes. a8.2.1 aprovada: 30 condições staged, zero escritas. Sem executor V3 ou cutover.
+
+## Fase a8.3.1 — prévia V3 na importação local
+
+Ver [5ETOOLS_LOCAL_V3_PREVIEW.md](5ETOOLS_LOCAL_V3_PREVIEW.md). UI read-only e barreiras contra fallback V1 de envelopes V3 explícitos. FIX01 de a8.2.2 aprovado nos três checks. Próxima a8.3.2: evidência de preservação na interface, sem ativação.

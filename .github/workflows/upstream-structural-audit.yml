@@ -163,6 +163,8 @@ jobs:
         run: npx jest src/tests/upstream5etoolsAdditiveStage.test.ts --runInBand
       - name: Validate preservation checkpoint and isolated rollback (aggregate only)
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts --runInBand
+      - name: Validate isolated local V3 file preview (aggregate only)
+        run: npx jest src/tests/upstream5etoolsLocalV3Preview.test.ts --runInBand
       - name: Remove upstream snapshots
         if: always()
         run: |

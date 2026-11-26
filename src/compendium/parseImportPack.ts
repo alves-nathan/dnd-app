@@ -3,7 +3,7 @@ import type { RuleValidationIssue } from '../types';
 import { compendiumImportSchema } from './schemas';
 import { compendiumImportV2Schema, type CompendiumImportV2Input } from './importV2Schemas';
 import { analyzeCompendiumImportV2Semantics, type ImportSemanticValidationResult } from './importSemanticValidation';
-import { detectCompendiumImportVersion, type DetectedCompendiumImportVersion } from './importVersion';
+import { detectCompendiumImportVersion, isV3StagingEnvelope, type DetectedCompendiumImportVersion } from './importVersion';
 import { migrateImportV1ToV2 } from './importV1Migration';
 import { normalizeCompendiumImportPack, type ImportNormalizationIssue } from './importNormalization';
 import { IMPORT_TEMPLATE_VERSION_V2, LEGACY_IMPORT_TEMPLATE_VERSION_V1 } from './importVersions';
@@ -59,6 +59,10 @@ export const parseImportPack = (input: string | unknown, options: ParseImportPac
     return { ok: false, detectedVersion: 'unknown', issues: json.issues, normalizationIssues: [] };
   }
 
+  if (isV3StagingEnvelope(json.value)) return {
+    ok: false, detectedVersion: 'unknown', normalizationIssues: [],
+    issues: [{ severity: 'error', code: 'IMPORT_V3_STAGING_ONLY', message: 'Import V3 aceita somente prévia isolada, sem persistência.' }]
+  };
   const detectedVersion = detectCompendiumImportVersion(json.value);
   const originalEnvelope = asRecord(json.value);
   if (detectedVersion === 'unknown') {
