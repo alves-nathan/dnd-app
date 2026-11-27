@@ -282,3 +282,7 @@ Ver [5ETOOLS_ORIGIN_GRANT_EVIDENCE.md](5ETOOLS_ORIGIN_GRANT_EVIDENCE.md). a8.8.2
 ## Fase a8.8.4 — consolidação das origens e preservação
 
 Ver [5ETOOLS_ORIGIN_CLOSURE_REVIEW.md](5ETOOLS_ORIGIN_CLOSURE_REVIEW.md). a8.8.3 aprovada. Relatórios vinculados e fronteira isolada de escolha de tamanho, sem aplicação de grants. Próxima a8.9.1: auditoria mecânica de feats.
+
+## Fase a8.9.1 — paridade mecânica de feats
+
+Ver [5ETOOLS_FEAT_PARITY_EVIDENCE.md](5ETOOLS_FEAT_PARITY_EVIDENCE.md). a8.8.4 aprovada. Evidência por ocorrência, fonte e edição, requisitos, ASI, repetibilidade, escolhas e grants; sem ativação. Próxima a8.9.2: requisitos qualificados e categorias.

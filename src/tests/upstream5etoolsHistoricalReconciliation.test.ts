@@ -16,6 +16,7 @@ const {buildFeatureResourceEvidence,publicSummary:featureResourceSummary}=requir
 const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
+const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
@@ -77,6 +78,15 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
     bundled:BUNDLED_COMPENDIUM_PACKS,parse:parseImportPack,detect:detectCompendiumImportVersion,
     loadRuntime:(b:RuntimeCatalogBundle)=>new CatalogLoader().initializeFromBundle(b),
     onEvidenceInputs:(input:any)=>{
+      const feats=buildFeatParityEvidence(input);
+      expect(feats.historical.occurrences).toBe(input.rawHistorical.filter((x:any)=>x.item.kind==='feat').length);
+      expect(feats.historical.identityCandidates+feats.historical.identityPending).toBe(feats.historical.occurrences);
+      expect(feats.runtime.occurrences).toBe(input.reconciliation.runtime.filter((x:any)=>x.kind==='feat').length);
+      expect(feats.upstream.items).toBe(input.items.filter((x:any)=>x.kind==='feat').length);
+      expect(feats.upstream.items).toBeGreaterThan(0);
+      expect(feats.mechanicalParityEstablished).toBe(0);
+      expect([...feats.rows,...feats.upstreamRows,...feats.runtimeRows].every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      console.log(JSON.stringify(featParitySummary(feats)));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});
