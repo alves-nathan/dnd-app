@@ -290,3 +290,7 @@ Ver [5ETOOLS_FEAT_PARITY_EVIDENCE.md](5ETOOLS_FEAT_PARITY_EVIDENCE.md). a8.8.4 a
 ## Fase a8.9.2 — requisitos e categorias de feats
 
 Ver [5ETOOLS_FEAT_REQUIREMENT_PROJECTION.md](5ETOOLS_FEAT_REQUIREMENT_PROJECTION.md). a8.9.1 aprovada. Requisitos qualificados e categorias sob contexto explícito, sem autorização de aquisição. Próxima a8.9.3: ASI e repetibilidade por instância.
+
+## Fase a8.9.3 — ASI e repetibilidade por instância
+
+Ver [5ETOOLS_FEAT_ALLOCATION_PROJECTION.md](5ETOOLS_FEAT_ALLOCATION_PROJECTION.md). a8.9.2 aprovada. Alternativas de atributos e fronteiras de instância isoladas, sem aquisição. Próxima a8.9.4: escolhas, grants e recursos.

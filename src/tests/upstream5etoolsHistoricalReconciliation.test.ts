@@ -16,6 +16,7 @@ const {buildFeatureResourceEvidence,publicSummary:featureResourceSummary}=requir
 const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
+const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
@@ -94,6 +95,12 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(featRequirements.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized&&!x.executable)).toBe(true);
       expect(featRequirements.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(featRequirementSummary(featRequirements)));
+      const featAllocations=buildFeatAllocationProjection(input,featRequirements);
+      expect(featAllocations.summary.items).toBe(feats.upstream.items);
+      expect(featAllocations.requirementFingerprint).toBe(featRequirements.fingerprint);
+      expect(featAllocations.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized&&!x.executable)).toBe(true);
+      expect(featAllocations.mechanicalParityEstablished).toBe(0);
+      console.log(JSON.stringify(featAllocationSummary(featAllocations)));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});

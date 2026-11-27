@@ -96,3 +96,64 @@ describe('a8.9.2 feat requirement projection',()=>{
   expect(()=>buildFeatRequirementProjection(x)).toThrow('featPrerequisiteBindingMismatch');
  });
 });
+
+const {buildFeatAllocationProjection,previewFeatAllocation,previewFeatInstance,publicSummary:allocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
+function allocationFixture(){
+ const x=requirementsFixture();
+ return {...x,items:[...x.items,
+  feat('Alloc','XPHB',{category:'G',repeatable:true,ability:[{choose:{from:['str','dex'],amount:2}},{choose:{from:['str','dex','con'],count:2}}]}),
+  feat('Fixed','XPHB',{category:'G',ability:[{str:1,con:1,max:30}]}),
+  feat('Conditional','XPHB',{category:'G',repeatable:true,repeatableNote:'different option'}),
+  feat('Overlap','XPHB',{category:'G',ability:[{str:1,choose:{from:['str','dex']}}]}),
+  feat('Ability Score Improvement','XPHB',{category:'G'}),
+  feat('Hidden','XPHB',{category:'G',ability:[{str:1,hidden:true}]})]};
+}
+describe('a8.9.3 feat allocation and instance boundaries',()=>{
+ function context(x:ReturnType<typeof allocationFixture>,name:string){
+  const p=buildFeatAllocationProjection(x),i=x.items.find((i:any)=>i.name===name),r=p.rows.find((r:any)=>r.featId===i.id);
+  return {featId:i.id,sourceFingerprint:r.sourceFingerprint,projectionFingerprint:p.fingerprint,rulesEra:r.rulesEra};
+ }
+ const scores={STR:18,DEX:19,CON:20,INT:10,WIS:10,CHA:10};
+ test('keeps alternatives distinct, exact choices, cap and fixed increases',()=>{
+  const x=allocationFixture(),q={...context(x,'Alloc'),scores,scoreContextConfirmed:true,allocationPolicyConfirmed:true,alternativeIndex:0,selected:['STR']};
+  expect(previewFeatAllocation(x,q)).toMatchObject({status:'allocationCandidate',increases:{STR:2},after:{STR:20,DEX:19},writeAuthorized:false});
+  expect(previewFeatAllocation(x,{...q,selected:['DEX']}).status).toBe('notSatisfied');
+  expect(previewFeatAllocation(x,{...q,alternativeIndex:1,selected:['STR','DEX']})).toMatchObject({increases:{STR:1,DEX:1}});
+  expect(previewFeatAllocation(x,{...q,alternativeIndex:1,selected:['STR','STR']}).status).toBe('notSatisfied');
+  expect(previewFeatAllocation(x,{...q,...context(x,'Fixed'),selected:[]})).toMatchObject({increases:{STR:1,CON:1},maximum:30});
+  expect(scores.STR).toBe(18);
+ });
+ test('hidden, overlap, legacy name fallback and incomplete context never grant ASI',()=>{
+  const x=allocationFixture(),q={scores,scoreContextConfirmed:true,allocationPolicyConfirmed:true,alternativeIndex:0,selected:[]};
+  for(const name of ['Hidden','Overlap','Ability Score Improvement'])expect(previewFeatAllocation(x,{...q,...context(x,name)}).status).toBe('indeterminate');
+  expect(previewFeatAllocation(x,{...q,...context(x,'Origin'),alternativeIndex:undefined}).status).toBe('noDeclaredAllocation');
+  expect(previewFeatAllocation(x,{...q,...context(x,'Fixed'),scores:{STR:18}}).status).toBe('indeterminate');
+ });
+ test('physical instance identity, conditional repeatability, explicit false and preserved indices',()=>{
+  const x=allocationFixture();
+  function request(name:string){
+   const c=context(x,name);
+   return {...c,inventoryCompleteConfirmed:true,physicalIdentityScopeConfirmed:true,retainedHistoryCollisionExcludedConfirmed:true,repeatabilityConditionsExcludedConfirmed:true,
+    instances:[{featId:c.featId,sourceFingerprint:c.sourceFingerprint,instanceId:'existing',instanceIndex:2}],newInstanceId:'new',newInstanceIndex:3};
+  }
+  const q=request('Alloc');
+  expect(previewFeatInstance(x,q)).toMatchObject({status:'instanceCandidate',priorCount:1,newInstanceIndex:3,executable:false});
+  expect(previewFeatInstance(x,{...q,retainedHistoryCollisionExcludedConfirmed:false}).status).toBe('indeterminate');
+  expect(previewFeatInstance(x,{...q,newInstanceIndex:1}).reason).toBe('nextInstanceIndexRequired');
+  expect(previewFeatInstance(x,{...q,newInstanceId:'existing'}).reason).toBe('instanceAlreadyExists');
+  expect(previewFeatInstance(x,{...q,repeatabilityConditionsExcludedConfirmed:false}).status).toBe('indeterminate');
+  expect(previewFeatInstance(x,request('Fixture')).reason).toBe('explicitNonRepeatable');
+  expect(previewFeatInstance(x,request('Conditional')).reason).toBe('repeatabilityPolicyPending');
+  expect(previewFeatInstance(x,request('Fixed')).reason).toBe('repeatabilityPolicyPending');
+  expect(previewFeatInstance(x,{...q,instances:[...q.instances,...q.instances]}).status).toBe('indeterminate');
+  expect(previewFeatInstance(x,{...q,instances:[],newInstanceIndex:0}).status).toBe('instanceCandidate');
+ });
+ test('binds evidence and raw projections; public output excludes individual rows',()=>{
+  const x=allocationFixture(),p=buildFeatAllocationProjection(x);
+  expect(allocationSummary(p).rows).toBeUndefined();
+  expect(p.mechanicalParityEstablished).toBe(0);
+  expect(()=>buildFeatAllocationProjection(x,{...buildFeatRequirementProjection(x),approvedMappings:1})).toThrow('featRequirementEvidenceMismatch');
+  x.items.find((i:any)=>i.name==='Alloc').payload.mechanics.abilityAllocationPlan.alternatives[0].max=30;
+  expect(()=>buildFeatAllocationProjection(x)).toThrow('featAllocationBindingMismatch');
+ });
+});
