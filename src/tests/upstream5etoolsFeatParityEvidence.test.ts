@@ -200,3 +200,17 @@ describe('a8.9.4 feat grant evidence',()=>{
   expect(()=>buildFeatGrantEvidence(x,{...buildFeatAllocationProjection(x),approvedMappings:1})).toThrow('featAllocationEvidenceMismatch');
  });
 });
+
+const {buildFeatClosureReview}=require('../../scripts/5etools/feat-closure-review');
+describe('a8.9.5 feat closure',()=>{
+ test('binds all reports and preserves occurrence coverage without exposing rows',()=>{
+  const x=grantFixture(),parity=buildFeatParityEvidence(x),requirements=buildFeatRequirementProjection(x,parity),allocation=buildFeatAllocationProjection(x,requirements),grants=buildFeatGrantEvidence(x,allocation);
+  const reports={parity,requirements,allocation,grants},before=digest(x),r=buildFeatClosureReview(x,reports);
+  expect(r).toMatchObject({historical:{occurrences:3,identityCandidates:2},runtime:{occurrences:1},approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+  expect(JSON.stringify(r)).not.toContain('upstream:main:');
+  expect(digest(x)).toBe(before);
+  expect(()=>buildFeatClosureReview(x,{...reports,grants:{...grants,fingerprint:'stale'}})).toThrow('featReviewFingerprintMismatch');
+  const {fingerprint,...body}=grants,changed={...body,rows:body.rows.slice(1)};
+  expect(()=>buildFeatClosureReview(x,{...reports,grants:{...changed,fingerprint:digest(changed)}})).toThrow('featReviewSourceMismatch');
+ });
+});

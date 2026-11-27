@@ -298,3 +298,7 @@ Ver [5ETOOLS_FEAT_ALLOCATION_PROJECTION.md](5ETOOLS_FEAT_ALLOCATION_PROJECTION.m
 ## Fase a8.9.4 — escolhas, grants e recursos de feats
 
 Ver [5ETOOLS_FEAT_GRANT_EVIDENCE.md](5ETOOLS_FEAT_GRANT_EVIDENCE.md). a8.9.3 aprovada. Seleções, endpoints e declarações de recursos isolados, sem concessão. Próxima a8.9.5: consolidação e preservação.
+
+## Fase a8.9.5 — consolidação e preservação de feats
+
+Ver [5ETOOLS_FEAT_CLOSURE_REVIEW.md](5ETOOLS_FEAT_CLOSURE_REVIEW.md). a8.9.4 aprovada. Relatórios vinculados e fronteira isolada de ASI existente, sem aquisição ou migração. Próxima a8.10.1: inventário e paridade das famílias restantes.

@@ -16,6 +16,7 @@ const {buildFeatureResourceEvidence,publicSummary:featureResourceSummary}=requir
 const {buildClassProjection,publicSummary:classProjectionSummary}=require('../../scripts/5etools/class-projection-preview');
 const {buildClassMechanicsEvidence,publicSummary:classMechanicsSummary}=require('../../scripts/5etools/class-mechanics-evidence');
 const {buildClassProgressionEvidence,publicSummary:classProgressionSummary}=require('../../scripts/5etools/class-progression-evidence');
+const {buildFeatClosureReview}=require('../../scripts/5etools/feat-closure-review');
 const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scripts/5etools/feat-grant-evidence');
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
@@ -108,6 +109,11 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(featGrants.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized&&!x.executable)).toBe(true);
       expect(featGrants.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(featGrantSummary(featGrants)));
+      const featClosure=buildFeatClosureReview(input,{parity:feats,requirements:featRequirements,allocation:featAllocations,grants:featGrants});
+      expect(featClosure.upstream.items).toBe(feats.upstream.items);
+      expect(featClosure.mechanicalParityEstablished).toBe(0);
+      expect(featClosure.writeAuthorized).toBe(false);
+      console.log(JSON.stringify(featClosure));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});
