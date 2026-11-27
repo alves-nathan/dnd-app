@@ -7,3 +7,6 @@ Magic variants recheck the existing template selector and expansion against reta
 Charges: literal cap, explicit dawn/dusk/midnight event and fixed or bounded simple recovery dice are separate observations. No equivalence to rests, recovery application, shared pool or depletion interpretation. Charge preview only subtracts a caller-confirmed amount from a caller-confirmed instance/pool and current value. Attached spells require explicit source and same-edition emitted endpoint; class-feature grants and narrative effects remain pending.
 
 No inventory mutation, runtime activation, new workflows, dependencies or upstream clones. Aggregate audit only. Next a8.10.4: remaining-family closure and isolated inventory/encounter preservation, then runtime-only contract preservation.
+
+### CI correction a8.10.3.1
+Both Quality workflows failed the same fixture: the bounded recovery parser excluded d3. Add d3 to its explicit allowlist and test additive modifiers, multiple dice, and rejection of unknown die sizes and dynamic formulas. No recharge execution or runtime changes.

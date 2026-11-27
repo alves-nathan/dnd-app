@@ -54,6 +54,20 @@ describe('a8.10.3 item mechanics projection',()=>{
   expect(row.magic.charges).toMatchObject({event:{event:'dawn'},recovery:{status:'diceAmountCandidate',min:1,max:3},sharing:'notEstablished'});
   expect(row.references.spells[0].status).toBe('endpointPending');
  });
+ test('recovery supports d3 and additive modifiers without accepting unknown dice or formulas',()=>{
+  for(const [formula,expected] of [
+   ['1d3 + 2',{status:'diceAmountCandidate',min:3,max:5}],
+   ['2d3',{status:'diceAmountCandidate',min:2,max:6}],
+   ['1d5',{status:'semanticsPending'}],
+   ['1d3 + PB',{status:'semanticsPending'}]
+  ] as const){
+   const x=fixture(),item=x.items.find((i:any)=>i.name==='Private Charm');
+   item.payload.mechanics.upstreamItem.rechargeAmount=formula;
+   const row=buildItemMechanicsProjection(x).rows.find((r:any)=>r.itemId===item.id);
+   expect(row.magic.charges.recovery).toMatchObject(expected);
+   expect(row.magic.charges.sharing).toBe('notEstablished');
+  }
+ });
  test('binds evidence, verifies raw-derived values and emits only aggregates',()=>{
   const x=fixture(),before=digest(x),r=buildItemMechanicsProjection(x);
   expect(r.summary.byKind).toEqual({equipment:2,magicItem:5});

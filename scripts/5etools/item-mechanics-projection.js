@@ -75,7 +75,7 @@ function charges(raw){
  const n=raw.rechargeAmount;
  let recovery=!own(raw,'rechargeAmount')?absent():int(n,1,1000000)?{status:'fixedAmountCandidate',amount:n}:pending();
  if(typeof n==='string'){
-  const m=/^([1-9]\d*)d(4|6|8|10|12|20)(?:\s*\+\s*(\d+))?$/.exec(n);
+  const m=/^([1-9]\d*)d(3|4|6|8|10|12|20)(?:\s*\+\s*(\d+))?$/.exec(n);
   if(m&&int(Number(m[1]),1,1000)&&int(Number(m[3]||0),0,1000000)){
    const count=Number(m[1]),sides=Number(m[2]),modifier=Number(m[3]||0);
    recovery={status:'diceAmountCandidate',count,sides,modifier,min:count+modifier,max:count*sides+modifier};
