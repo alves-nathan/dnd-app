@@ -306,3 +306,7 @@ Ver [5ETOOLS_FEAT_CLOSURE_REVIEW.md](5ETOOLS_FEAT_CLOSURE_REVIEW.md). a8.9.4 apr
 ## Fase a8.10.1 — inventário das famílias restantes
 
 Ver [5ETOOLS_REMAINING_FAMILY_EVIDENCE.md](5ETOOLS_REMAINING_FAMILY_EVIDENCE.md). a8.9.5 aprovada. Cobertura integral por ocorrência e evidência selecionada de equipamentos, itens mágicos e criaturas. Próxima a8.10.2: chassis e contratos de criaturas.
+
+## Fase a8.10.2 — chassis e combate de criaturas
+
+Ver [5ETOOLS_CREATURE_COMBAT_PROJECTION.md](5ETOOLS_CREATURE_COMBAT_PROJECTION.md). a8.10.1 aprovada. Projeções isoladas de chassis, ações e defesas explícitas, sem execução de encontro. Próxima a8.10.3: equipamentos gerais e itens mágicos.
