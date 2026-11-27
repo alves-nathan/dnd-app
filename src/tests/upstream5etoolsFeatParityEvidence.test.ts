@@ -1,12 +1,13 @@
 import { describe, expect, test } from '@jest/globals';
 const {convert}=require('../../scripts/5etools/feature-converter');
+const {identity:fixtureIdentity}=require('../../scripts/5etools/resolver');
 const {reconcile}=require('../../scripts/5etools/historical-reconciliation');
 const {digest}=require('../../scripts/5etools/integrated-review');
 const {compareFeatFields,featContractEvidence,buildFeatParityEvidence,publicSummary}=require('../../scripts/5etools/feat-parity-evidence');
 const commits={application:'a'.repeat(40),main:'b'.repeat(40),homebrew:'c'.repeat(40)};
 function feat(name:string,code='XPHB',extra:Record<string,unknown>={}){
  const entity={name,source:code,entries:[],...extra};
- return convert({kind:'feat',blob:'d'.repeat(40),path:'data/feats.json',key:name,index:0},{entity,lineage:[]},
+ return convert({kind:'feat',blob:'d'.repeat(40),path:'data/feats.json',key:fixtureIdentity('feat',entity),index:0},{entity,lineage:[]},
   {id:'upstream:main:'+code,rulesEra:code==='PHB'?'2014':'2024',precedenceScope:'official-dnd'},commits.main);
 }
 function input(){
@@ -155,5 +156,47 @@ describe('a8.9.3 feat allocation and instance boundaries',()=>{
   expect(()=>buildFeatAllocationProjection(x,{...buildFeatRequirementProjection(x),approvedMappings:1})).toThrow('featRequirementEvidenceMismatch');
   x.items.find((i:any)=>i.name==='Alloc').payload.mechanics.abilityAllocationPlan.alternatives[0].max=30;
   expect(()=>buildFeatAllocationProjection(x)).toThrow('featAllocationBindingMismatch');
+ });
+});
+
+const {buildFeatGrantEvidence,previewFeatGrant,publicSummary:grantSummary}=require('../../scripts/5etools/feat-grant-evidence');
+function grantFixture(){
+ const x=allocationFixture();
+ return {...x,items:[...x.items,
+  feat('Choice','XPHB',{category:'G',skillProficiencies:[{arcana:true,choose:{from:['history','nature'],count:1}}],featProgression:[{name:'Fixture',category:['O'],progression:{'4':1}}],feats:[{'Required|XPHB':true}],consumes:{name:'Fixture Pool',amount:2},uses:3,recharge:'longRest'}),
+  feat('Pending grant','XPHB',{category:'G',feats:[{'Fixture|PHB':true},{'Required':true},{'Pending grant|XPHB':true}],skillProficiencies:[{any:1}],additionalSpells:[{ability:'cha',known:{'1':['Fixture|XPHB']}}]}),
+  feat('Complex','XPHB',{category:'G',skillProficiencies:[{arcana:true}],expertise:[{arcana:true}]})]};
+}
+describe('a8.9.4 feat grant evidence',()=>{
+ function ctx(x:ReturnType<typeof grantFixture>,name:string){
+  const p=buildFeatGrantEvidence(x),i=x.items.find((i:any)=>i.name===name),r=p.rows.find((r:any)=>r.featId===i.id);
+  return {featId:i.id,sourceFingerprint:r.sourceFingerprint,projectionFingerprint:p.fingerprint,rulesEra:r.rulesEra,contextConfirmed:true,selectionPolicyConfirmed:true};
+ }
+ test('literal proficiency alternatives, duplicates and complex policy',()=>{
+  const x=grantFixture(),q={...ctx(x,'Choice'),domain:'proficiency',category:'skill',literalIdentityConfirmed:true,existingInventoryComplete:true,existing:['stealth'],selected:['history']};
+  expect(previewFeatGrant(x,q)).toMatchObject({status:'proficiencyCandidate',grants:['arcana','history'],writeAuthorized:false});
+  expect(previewFeatGrant(x,{...q,selected:['stealth']}).status).toBe('notSatisfied');
+  expect(previewFeatGrant(x,{...q,existing:['arcana']}).reason).toBe('duplicateProficiencyPolicyPending');
+  expect(previewFeatGrant(x,{...q,...ctx(x,'Complex'),selected:[]}).status).toBe('indeterminate');
+ });
+ test('qualified selector checkpoint and direct feat grants stay separate',()=>{
+  const x=grantFixture(),origin=x.items.find((i:any)=>i.name==='Origin').id,required=x.items.find((i:any)=>i.name==='Required').id;
+  const q={...ctx(x,'Choice'),domain:'selection',index:0,endpointCoverageConfirmed:true,endpointEligibilityConfirmed:true,countSemanticsConfirmed:true,existingInventoryComplete:true,existingIds:[],selectedIds:[origin],characterLevel:4};
+  expect(previewFeatGrant(x,q)).toMatchObject({status:'selectionCandidate',count:1,targets:[{targetId:origin}],executable:false});
+  expect(previewFeatGrant(x,{...q,characterLevel:5}).reason).toBe('checkpointPending');
+  expect(previewFeatGrant(x,{...q,selectedIds:[required]}).status).toBe('notSatisfied');
+  const g={...q,domain:'feat',group:0,groupPolicyConfirmed:true};
+  expect(previewFeatGrant(x,g)).toMatchObject({status:'featGrantCandidate',targets:[{targetId:required}]});
+  expect(previewFeatGrant(x,{...g,existingIds:[required]}).status).toBe('indeterminate');
+ });
+ test('cross edition, omitted source, self-reference and missing spells stay pending; resource evidence is not a pool',()=>{
+  const x=grantFixture(),p=buildFeatGrantEvidence(x),pending=p.rows.find((r:any)=>r.featId===ctx(x,'Pending grant').featId),choice=p.rows.find((r:any)=>r.featId===ctx(x,'Choice').featId);
+  expect(pending.feats.map((g:any)=>g.entries[0].status)).toEqual(['editionPending','selectorOrSourcePending','selfGrantPending']);
+  expect(pending.spells[0].entries[0].status).toBe('endpointPending');
+  expect(choice.resources).toMatchObject({cost:{status:'explicitAmountCandidate',amount:2},recoveryStatus:'notEstablished',bindingStatus:'notEstablished'});
+  expect(previewFeatGrant(x,{...ctx(x,'Choice'),domain:'resource'}).status).toBe('indeterminate');
+  expect(grantSummary(p).rows).toBeUndefined();
+  expect(p.mechanicalParityEstablished).toBe(0);
+  expect(()=>buildFeatGrantEvidence(x,{...buildFeatAllocationProjection(x),approvedMappings:1})).toThrow('featAllocationEvidenceMismatch');
  });
 });

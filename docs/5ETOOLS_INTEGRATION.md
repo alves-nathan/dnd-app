@@ -294,3 +294,7 @@ Ver [5ETOOLS_FEAT_REQUIREMENT_PROJECTION.md](5ETOOLS_FEAT_REQUIREMENT_PROJECTION
 ## Fase a8.9.3 — ASI e repetibilidade por instância
 
 Ver [5ETOOLS_FEAT_ALLOCATION_PROJECTION.md](5ETOOLS_FEAT_ALLOCATION_PROJECTION.md). a8.9.2 aprovada. Alternativas de atributos e fronteiras de instância isoladas, sem aquisição. Próxima a8.9.4: escolhas, grants e recursos.
+
+## Fase a8.9.4 — escolhas, grants e recursos de feats
+
+Ver [5ETOOLS_FEAT_GRANT_EVIDENCE.md](5ETOOLS_FEAT_GRANT_EVIDENCE.md). a8.9.3 aprovada. Seleções, endpoints e declarações de recursos isolados, sem concessão. Próxima a8.9.5: consolidação e preservação.
