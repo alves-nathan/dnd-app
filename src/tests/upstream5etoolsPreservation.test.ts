@@ -362,3 +362,36 @@ describe('a8.13.3 package observations and local coherence',()=>{
   expect(result.evidence.summary.observed).toBe(0);
  });
 });
+
+import {presentLocalInventory,compareLocalInventoryRevalidation} from '../compendium/localInventoryPanelModel';
+describe('a8.13.4 inventory panel presentation and revalidation',()=>{
+ async function panelFixture(){
+  const f=await fixture(),captureId='panel-fixture';
+  const frame:InventoryStoreFrame={guard:[f.input.catalog],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:f.input.context.installed},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:{snapshot:f.input.catalog,ref:f.input.runtimeRef}}
+  }};
+  return {f,frame,captureId,read:()=>captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:f.memory},'disposableFixture')};
+ }
+ test('presents every surface and explicit non-authorization without raw data',async()=>{
+  const {read}=await panelFixture(),view=presentLocalInventory(await read());
+  expect(view.surfaces).toHaveLength(20);
+  expect(view.surfaces.find(s=>s.surface==='externalPacksAndBackups')).toMatchObject({status:'Não inspecionado'});
+  expect(view).toMatchObject({runtimePackage:'Não verificado',activePersistence:'Não verificado',readiness:'Migração bloqueada',canMigrate:false});
+  expect(JSON.stringify(view)).not.toMatch(/Manual blade|legacy-weapon|panel-fixture/);
+ });
+ test('revalidation compares the same capture and coherence without accepting the gate',async()=>{
+  const {read,f,frame,captureId}=await panelFixture(),first=await read();
+  expect(compareLocalInventoryRevalidation(first,await read())).toBe('unchanged');
+  expect(compareLocalInventoryRevalidation(first,{...first,coherence:{...first.coherence,activePersistence:'mismatch'}})).toBe('changed');
+  f.memory.setItem(COMPENDIUM_STORAGE_KEY,'{}');
+  expect(compareLocalInventoryRevalidation(first,await read())).toBe('changed');
+  const blocked=await captureLocalInventoryEvidence(captureId,{readStores:()=>({...frame,blocked:true}),storage:f.memory});
+  expect(compareLocalInventoryRevalidation(first,blocked)).toBe('unavailable');
+ });
+ test('different capture identifiers cannot revalidate previous observations',async()=>{
+  const {f,frame,read}=await panelFixture(),first=await read();
+  const other=await captureLocalInventoryEvidence('different',{readStores:()=>frame,storage:f.memory},'disposableFixture');
+  expect(compareLocalInventoryRevalidation(first,other)).toBe('changed');
+ });
+});

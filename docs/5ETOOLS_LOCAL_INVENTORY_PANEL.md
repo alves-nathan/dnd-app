@@ -1,0 +1,7 @@
+# a8.13.4 — Local inventory review panel
+
+Adds an explicit read-only panel after successful V3 staging. It displays the aggregate inventory summary, all twenty surfaces with localized statuses, runtime-package and active-persistence coherence, fingerprint and blocked readiness. No raw content, entity names, source IDs, package IDs, exports, network or writes. Explicit recapture and revalidation use existing observation adapters; revalidation keeps the same capture ID, compares evidence and coherence, and discards a changed/unavailable result. A new capture is required after a mismatch. Subscriptions to all seventeen observed stores and persisted hydration events expire in-memory evidence; leaving active app state or unmounting invalidates outstanding results. Request generation and in-flight guard prevent late responses from replacing expired evidence. The stage key remounts the panel on changed preview.
+
+External storage changes cannot be detected continuously; manual revalidation remains required. This is not atomic capture or acceptance. Three synthetic tests cover presentation, same-capture revalidation and mismatch/unavailability; actual React Native UI, lifecycle, accessibility and real backend reads remain unverified. Existing structural audit path filter now includes the new panel and its host; no new workflow or dependencies.
+
+Next a8.13.5: inventory disposition ledger for historical/installed identities, unmatched/manual records and explicit exclusions; retain unknown external/SQLite/IndexedDB coverage as pending. No migration.

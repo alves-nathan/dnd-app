@@ -350,3 +350,7 @@ Ver [5ETOOLS_LOCAL_INVENTORY_CAPTURE.md](5ETOOLS_LOCAL_INVENTORY_CAPTURE.md). a8
 ## Fase a8.13.3 — inventário auxiliar e coerência
 
 Ver [5ETOOLS_LOCAL_INVENTORY_COHERENCE.md](5ETOOLS_LOCAL_INVENTORY_COHERENCE.md). a8.13.2 aprovada. Observações de stores auxiliares, leitura limitada de chunks e comparação de coerência local. Próxima a8.13.4: painel de inventário somente leitura e revalidação explícita.
+
+## Fase a8.13.4 — painel de inventário local
+
+Ver [5ETOOLS_LOCAL_INVENTORY_PANEL.md](5ETOOLS_LOCAL_INVENTORY_PANEL.md). a8.13.3 aprovada. Painel somente leitura, revalidação e expiração de evidências. Próxima a8.13.5: ledger de disposições de inventário.

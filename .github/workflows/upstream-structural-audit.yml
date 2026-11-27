@@ -11,6 +11,8 @@ on:
       - 'src/tests/compendiumImportV3Staging.test.ts'
       - 'src/compendium/importV3*.ts'
       - 'src/compendium/localInventory*.ts'
+      - 'src/components/LocalV3InventoryPanel.tsx'
+      - 'src/components/LocalV3StagePreview.tsx'
       - 'src/compendium/importV2Schemas.ts'
       - 'src/compendium/importSemanticValidation.ts'
       - 'src/compendium/importDomain.ts'
