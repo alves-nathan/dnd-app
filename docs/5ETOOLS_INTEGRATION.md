@@ -274,3 +274,7 @@ Ver [5ETOOLS_ORIGIN_PARITY_EVIDENCE.md](5ETOOLS_ORIGIN_PARITY_EVIDENCE.md). a8.7
 ## Fase a8.8.2 — chassis, atributos e proficiências das origens
 
 Ver [5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md](5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md). a8.8.1 aprovada. Projeções isoladas de atributos, tamanho, movimento, sentidos e proficiências, sem concessão automática. Próxima a8.8.3: traits, variantes e grants.
+
+## Fase a8.8.3 — traits, variantes e grants das origens
+
+Ver [5ETOOLS_ORIGIN_GRANT_EVIDENCE.md](5ETOOLS_ORIGIN_GRANT_EVIDENCE.md). a8.8.2 aprovada. Evidência de traits, herança, grupos de feats, magias e equipamentos, sem concessão automática. Próxima a8.8.4: consolidação e preservação da criação.

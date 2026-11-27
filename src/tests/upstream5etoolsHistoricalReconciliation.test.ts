@@ -1,3 +1,4 @@
+const {buildOriginGrantEvidence,publicSummary:originGrantSummary}=require('../../scripts/5etools/origin-grant-evidence');
 const {buildOriginChassisProjection,publicSummary:originChassisSummary}=require('../../scripts/5etools/origin-chassis-projection');
 const {buildOriginParityEvidence,publicSummary:originParitySummary}=require('../../scripts/5etools/origin-parity-evidence');
 const {buildSpellClosureReview}=require('../../scripts/5etools/spell-closure-review');
@@ -256,6 +257,14 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(originChassis.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
       expect(originChassis).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(originChassisSummary(originChassis)));
+      const originGrants=buildOriginGrantEvidence(input,originChassis);
+      expect(originGrants.summary).toMatchObject({species:166,background:81,featEdges:{featIdentityCandidate:42,featEndpointPending:3,featSelectionPending:4}});
+      expect(originGrants.summary.spellGroups).toBeGreaterThan(0);
+      expect(originGrants.summary.equipmentEntries.copperValueCandidate).toBeGreaterThan(0);
+      expect(originGrants.summary.traits.localTraitReviewRequired).toBeGreaterThan(0);
+      expect(originGrants.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      expect(originGrants).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(originGrantSummary(originGrants)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
