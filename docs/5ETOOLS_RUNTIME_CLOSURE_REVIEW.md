@@ -1,0 +1,7 @@
+# a8.11.3 — Runtime closure review
+
+Consolidates the runtime contract evidence and exact unchanged-bundle comparison. Verifies schema, all non-authorization flags, fingerprints, commits and complete evidence by rebuilding the preservation comparison from the original in-memory inputs. Aggregates runtime-only versus pilot identity review, pending edition and editorial review. Cross-checks relationship occurrence counts. The dependency classification mirrors the existing ContentPolicyService filter-break predicate (requireEnabled, hard, ownership), not the full semantics of resolution policies. Alias groups and active occurrences shadowed by later records are counted using loader's current indexing boundary, without performing resolution or treating any alias as approved. Directional category declarations remain unreconciled; policy sections are fingerprinted, not interpreted.
+
+Readiness is always blocked. An unchanged bundled fixture does not validate the installed catalog, filter preferences/history, provider or selection semantics, rights/trust, native operations, durable backup, transactional rollback or migration. Filter comparison is still a separate disposable boundary. Aggregate-only output, no new workflow, dependency, upstream clone or runtime wiring.
+
+Next a8.12.1: consolidate all family and runtime checkpoints with global coverage, graph and historical cutover evidence; distinguish existing gates from new work and retain all blockers. No cutover authorization.

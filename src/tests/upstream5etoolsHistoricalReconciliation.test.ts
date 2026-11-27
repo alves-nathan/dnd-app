@@ -21,6 +21,7 @@ const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scr
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
+const {buildRuntimeClosureReview}=require('../../scripts/5etools/runtime-closure-review');
 const {compareRuntimeContractPreservation}=require('../../scripts/5etools/runtime-contract-preservation');
 const {buildRuntimeContractEvidence,publicSummary:runtimeContractSummary}=require('../../scripts/5etools/runtime-contract-evidence');
 const {buildRemainingClosureReview}=require('../../scripts/5etools/remaining-closure-review');
@@ -160,6 +161,13 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       const runtimePreservation=compareRuntimeContractPreservation(input,runtimeContracts,input.runtimeBundle,input.runtimeBundle);
       expect(runtimePreservation).toMatchObject({status:'runtimeContractPreservationCandidate',codes:[],writeAuthorized:false,preservedCounts:{entries:5841,registry:5841,dependencies:15385,aliases:127,categories:57,policies:13}});
       console.log(JSON.stringify(runtimePreservation));
+      const runtimeClosure=buildRuntimeClosureReview(input,{evidence:runtimeContracts,preservation:runtimePreservation});
+      expect(runtimeClosure.identity).toMatchObject({entries:5841,runtimeOnly:3835,pilotReview:2006,candidates:1389,pending:4452,editionPending:1389});
+      expect(runtimeClosure.identity.runtimeOnly).toBe(remainingClosure.runtimeOutsidePilot.occurrences);
+      expect(runtimeClosure.relationships.dependencies.occurrences).toBe(15385);
+      expect(runtimeClosure.relationships.aliases.occurrences).toBe(127);
+      expect(runtimeClosure).toMatchObject({readiness:'blocked',approvedMappings:0,mechanicalParityEstablished:0,writeAuthorized:false});
+      console.log(JSON.stringify(runtimeClosure));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});

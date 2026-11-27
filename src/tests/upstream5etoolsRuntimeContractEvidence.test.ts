@@ -68,3 +68,38 @@ describe('a8.11.2 runtime bundle preservation',()=>{
   expect(compareRuntimeContractPreservation(x,e,x.runtimeBundle,after).changedSections).toEqual(['extra','runtimeIndex','selectionContracts']);
  });
 });
+
+const {buildRuntimeClosureReview}=require('../../scripts/5etools/runtime-closure-review');
+describe('a8.11.3 runtime closure review',()=>{
+ test('consolidates unchanged fixture, pending identity and relation boundaries without approval',()=>{
+  const x=fixture(),before=digest(x),evidence=buildRuntimeContractEvidence(x);
+  const preservation=compareRuntimeContractPreservation(x,evidence,x.runtimeBundle,x.runtimeBundle);
+  const r=buildRuntimeClosureReview(x,{evidence,preservation});
+  expect(r).toMatchObject({scope:'bundledFixtureOnly',readiness:'blocked',identity:{entries:3,pilotReview:1,runtimeOnly:2,candidates:1,pending:2,editionPending:1},
+   relationships:{dependencies:{occurrences:1,requiredByCurrentFilter:1,requiredWithPendingEndpoints:1},aliases:{occurrences:1,active:1,endpointPending:1}},
+   categories:{memberships:2,inverseMembershipPending:1},policies:{total:13},approvedMappings:0,mechanicalParityEstablished:0,writeAuthorized:false});
+  expect(r.blockers.map((x:any)=>x.code)).toContain('installedRuntimeInventoryAndConfigurationNotVerified');
+  expect(JSON.stringify(r)).not.toMatch(/Private|upstream:main:/);
+  expect(digest(x)).toBe(before);
+ });
+ test('rejects changed bundles and internally rehashed forged evidence',()=>{
+  const x=fixture(),evidence=buildRuntimeContractEvidence(x),preservation=compareRuntimeContractPreservation(x,evidence,x.runtimeBundle,x.runtimeBundle);
+  const blocked=compareRuntimeContractPreservation(x,evidence,x.runtimeBundle,{...x.runtimeBundle,selectionContracts:{changed:true}});
+  expect(()=>buildRuntimeClosureReview(x,{evidence,preservation:blocked})).toThrow('runtimeClosurePreservationBlocked');
+  const {fingerprint,...body}=preservation,forged={...body,preservedCounts:{...body.preservedCounts,aliases:0}};
+  expect(()=>buildRuntimeClosureReview(x,{evidence,preservation:{...forged,fingerprint:digest(forged)}})).toThrow('runtimeClosureSourceMismatch');
+  expect(()=>buildRuntimeClosureReview(x,{evidence:{...evidence,fingerprint:'stale'},preservation})).toThrow('runtimeClosureFingerprintMismatch');
+ });
+ test('counts active alias shadowing without silently resolving or rewriting it',()=>{
+  const x=fixture(),b=x.runtimeBundle;
+  const alias={...b.aliases.entities[0],id:'another',to:'category'};
+  b.aliases.entities.push(alias);
+  const old=x.reconciliation.aliases[0];
+  x.reconciliation.aliases.push({...old,...alias,fingerprint:digest(alias)});
+  x.reconciliation.summary.runtimeAliases++;
+  const evidence=buildRuntimeContractEvidence(x),preservation=compareRuntimeContractPreservation(x,evidence,b,b);
+  const r=buildRuntimeClosureReview(x,{evidence,preservation});
+  expect(r.relationships.aliases).toMatchObject({occurrences:2,active:2,activeFromGroups:1,activeFromWithMultipleOccurrences:1,activeFromWithConflictingTargets:1,activeOccurrencesShadowedByLaterRecord:1});
+  expect(r.readiness).toBe('blocked');
+ });
+});

@@ -326,3 +326,7 @@ Ver [5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md](5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md)
 ## Fase a8.11.2 — comparação de preservação runtime
 
 Ver [5ETOOLS_RUNTIME_CONTRACT_PRESERVATION.md](5ETOOLS_RUNTIME_CONTRACT_PRESERVATION.md). a8.11.1 aprovada. Comparação integral do bundle e fronteira isolada de filtros, sem escrita. Próxima a8.11.3: consolidação dos contratos runtime.
+
+## Fase a8.11.3 — consolidação dos contratos runtime
+
+Ver [5ETOOLS_RUNTIME_CLOSURE_REVIEW.md](5ETOOLS_RUNTIME_CLOSURE_REVIEW.md). a8.11.2 aprovada. Evidência e preservação vinculadas; readiness bloqueado. Próxima a8.12.1: consolidação global dos checkpoints e bloqueios de cutover.
