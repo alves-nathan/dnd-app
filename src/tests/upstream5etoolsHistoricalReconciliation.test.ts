@@ -1,3 +1,4 @@
+const {buildSpellLifecycleProjection,publicSummary:spellLifecycleSummary}=require('../../scripts/5etools/spell-lifecycle-projection');
 const {buildSpellEffectProjection,publicSummary:spellEffectSummary,previewSpellEffects}=require('../../scripts/5etools/spell-effect-projection');
 const {buildSpellCastingProjection,publicSummary:spellCastingSummary}=require('../../scripts/5etools/spell-casting-projection');
 const {buildSpellParityEvidence,publicSummary:spellParitySummary}=require('../../scripts/5etools/spell-parity-evidence');
@@ -211,6 +212,13 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(effect('Cure Wounds','PHB',3,2,[hit([8,8],'heal')],{spellcastingAbilityModifier:3})).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:19,healing:true}]});
       expect(effect('Cure Wounds','XPHB',3,2,[hit([8,8,8,8],'heal')],{spellcastingAbilityModifier:3})).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:35,healing:true}]});
       console.log(JSON.stringify(spellEffectSummary(effects)));
+      const lifecycle=buildSpellLifecycleProjection(input,spells);
+      expect(lifecycle.summary.items).toBe(854);
+      expect(lifecycle.summary.duration).toEqual({durationCandidate:572,instantaneous:253,terminationPending:26,indeterminate:3});
+      expect(lifecycle.summary.concentration.required).toBeGreaterThan(0);
+      expect(lifecycle.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      expect(lifecycle).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(spellLifecycleSummary(lifecycle)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

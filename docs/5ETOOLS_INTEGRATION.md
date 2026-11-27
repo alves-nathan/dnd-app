@@ -254,3 +254,7 @@ Ver [5ETOOLS_SPELL_CASTING_PROJECTION.md](5ETOOLS_SPELL_CASTING_PROJECTION.md). 
 ## Fase a8.7.3 — dano, cura, escalonamento e saves
 
 Ver [5ETOOLS_SPELL_EFFECT_PROJECTION.md](5ETOOLS_SPELL_EFFECT_PROJECTION.md). a8.7.2 aprovada. Doze definições qualificadas e resultados hipotéticos de dados, sem conjuração ou mutação de HP. Próxima a8.7.4: concentração, duração e ciclo de vida de efeitos.
+
+## Fase a8.7.4 — duração, concentração e ciclo de vida
+
+Ver [5ETOOLS_SPELL_LIFECYCLE_PROJECTION.md](5ETOOLS_SPELL_LIFECYCLE_PROJECTION.md). a8.7.3 aprovada. Duração finita e grupos de conjuração qualificados, salvaguardas de concentração por edição, sem alterações em efeitos ativos. Próxima a8.7.5: acesso, preparação e transações de Spell Slots.
