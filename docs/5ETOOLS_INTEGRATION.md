@@ -258,3 +258,7 @@ Ver [5ETOOLS_SPELL_EFFECT_PROJECTION.md](5ETOOLS_SPELL_EFFECT_PROJECTION.md). a8
 ## Fase a8.7.4 — duração, concentração e ciclo de vida
 
 Ver [5ETOOLS_SPELL_LIFECYCLE_PROJECTION.md](5ETOOLS_SPELL_LIFECYCLE_PROJECTION.md). a8.7.3 aprovada. Duração finita e grupos de conjuração qualificados, salvaguardas de concentração por edição, sem alterações em efeitos ativos. Próxima a8.7.5: acesso, preparação e transações de Spell Slots.
+
+## Fase a8.7.5 — acesso, preparação e transações de slots
+
+Ver [5ETOOLS_SPELL_ACCESS_PROJECTION.md](5ETOOLS_SPELL_ACCESS_PROJECTION.md). a8.7.4 aprovada. Vínculos qualificados de classe, limites separados, seleção explícita de pool e preservação de assignments. Próxima a8.7.6: consolidação de magias e limites de transações.
