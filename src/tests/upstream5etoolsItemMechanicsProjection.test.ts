@@ -78,3 +78,21 @@ describe('a8.10.3 item mechanics projection',()=>{
   expect(()=>buildItemMechanicsProjection(x)).toThrow('itemValueBindingMismatch');
  });
 });
+
+const {buildRemainingClosureReview}=require('../../scripts/5etools/remaining-closure-review');
+const {buildCreatureCombatProjection}=require('../../scripts/5etools/creature-combat-projection');
+describe('a8.10.4 remaining family closure',()=>{
+ test('binds all reports and rejects rehashed incomplete projections',()=>{
+  const x=fixture(),remaining=buildRemainingFamilyEvidence(x),creatures=buildCreatureCombatProjection(x,remaining),itemMechanics=buildItemMechanicsProjection(x,remaining);
+  const reports={remaining,creatures,itemMechanics},before=digest(x),r=buildRemainingClosureReview(x,reports);
+  expect(r.coverage.equipment.upstream).toBe(2);
+  expect(r.coverage.magicItem.upstream).toBe(5);
+  expect(r.coverage.creatureStatBlock.upstream).toBe(0);
+  expect(r).toMatchObject({mechanicalParityEstablished:0,writeAuthorized:false,retirementAuthorized:false});
+  expect(JSON.stringify(r)).not.toMatch(/Private|upstream:main:/);
+  expect(digest(x)).toBe(before);
+  expect(()=>buildRemainingClosureReview(x,{...reports,itemMechanics:{...itemMechanics,fingerprint:'stale'}})).toThrow('remainingReviewFingerprintMismatch');
+  const {fingerprint,...body}=itemMechanics,changed={...body,rows:body.rows.slice(1)};
+  expect(()=>buildRemainingClosureReview(x,{...reports,itemMechanics:{...changed,fingerprint:digest(changed)}})).toThrow('remainingProjectionSourceMismatch');
+ });
+});

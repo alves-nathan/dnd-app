@@ -314,3 +314,7 @@ Ver [5ETOOLS_CREATURE_COMBAT_PROJECTION.md](5ETOOLS_CREATURE_COMBAT_PROJECTION.m
 ## Fase a8.10.3 — equipamentos gerais e itens mágicos
 
 Ver [5ETOOLS_ITEM_MECHANICS_PROJECTION.md](5ETOOLS_ITEM_MECHANICS_PROJECTION.md). a8.10.2 aprovada. Valores, variantes, attunement, bônus e charges isolados; sem escrita. Próxima a8.10.4: consolidação e preservação de inventário e encontros.
+
+## Fase a8.10.4 — consolidação das famílias restantes
+
+Ver [5ETOOLS_REMAINING_CLOSURE_REVIEW.md](5ETOOLS_REMAINING_CLOSURE_REVIEW.md). a8.10.3.1 aprovada. Auditorias vinculadas e comparação isolada de quantidade e HP, sem escrita. Próxima a8.11.1: preservação dos contratos exclusivos do runtime.

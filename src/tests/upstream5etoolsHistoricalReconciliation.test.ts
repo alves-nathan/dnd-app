@@ -21,6 +21,7 @@ const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scr
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
+const {buildRemainingClosureReview}=require('../../scripts/5etools/remaining-closure-review');
 const {buildItemMechanicsProjection,publicSummary:itemMechanicsSummary}=require('../../scripts/5etools/item-mechanics-projection');
 const {buildCreatureCombatProjection,publicSummary:creatureCombatSummary}=require('../../scripts/5etools/creature-combat-projection');
 const {buildRemainingFamilyEvidence,publicSummary:remainingFamilySummary}=require('../../scripts/5etools/remaining-family-evidence');
@@ -140,6 +141,13 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(itemMechanics.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized&&!x.executable)).toBe(true);
       expect(itemMechanics.mechanicalParityEstablished).toBe(0);
       console.log(JSON.stringify(itemMechanicsSummary(itemMechanics)));
+      const remainingClosure=buildRemainingClosureReview(input,{remaining,creatures,itemMechanics});
+      expect(remainingClosure.totals).toMatchObject({historical:6335,runtime:5841,upstream:8600});
+      expect(remainingClosure.coverage.creatureStatBlock.upstream).toBe(1110);
+      expect(remainingClosure.runtimeOutsidePilot.occurrences).toBeGreaterThan(0);
+      expect(remainingClosure.mechanicalParityEstablished).toBe(0);
+      expect(remainingClosure.writeAuthorized).toBe(false);
+      console.log(JSON.stringify(remainingClosure));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});

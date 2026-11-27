@@ -1,0 +1,7 @@
+# a8.10.4 — Remaining families closure and preservation
+
+Binds the remaining-family, creature-combat and item-mechanics reports by schema, flags, snapshot commits and fingerprints. Rebuilds each from the same inputs, checks exact upstream and occurrence coverage, candidate target fingerprints and edition-pending counts. Exposes only aggregates, including the runtime-only contract denominator. This is neither independent source authentication nor mechanical approval.
+
+Two disposable preservation comparisons: (1) existing validated mundane equipment, exact active stored link and positive bounded quantity adjustment, no removal, source/identity change, ammunition, focus, starting-equipment selection, or explicit bundle/resource declaration; (2) existing source-bound tactical target, positive bounded current HP adjustment, no crossing zero, temporary HP, pending reaction or ready action. Complete base snapshots and caller-confirmed excluded dependencies are required. All remaining character and encounter fields, order, history, effects, pools and links must stay unchanged. No implicit acquisition, consumption, purchase, damage/healing, time or log transition. Comparisons are intentionally strict and not a substitute for a live transaction validator.
+
+No runtime wiring, dependency, workflow or upstream clone added. No payloads or individual identities in public report. Next a8.11.1: runtime-only contract preservation and dependency/alias boundaries, before any global readiness or migration decision.
