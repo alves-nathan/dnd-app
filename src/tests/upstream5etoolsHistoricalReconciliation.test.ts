@@ -1,3 +1,4 @@
+const {buildOriginClosureReview}=require('../../scripts/5etools/origin-closure-review');
 const {buildOriginGrantEvidence,publicSummary:originGrantSummary}=require('../../scripts/5etools/origin-grant-evidence');
 const {buildOriginChassisProjection,publicSummary:originChassisSummary}=require('../../scripts/5etools/origin-chassis-projection');
 const {buildOriginParityEvidence,publicSummary:originParitySummary}=require('../../scripts/5etools/origin-parity-evidence');
@@ -265,6 +266,13 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(originGrants.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
       expect(originGrants).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(originGrantSummary(originGrants)));
+      const originClosure=buildOriginClosureReview({parity:origins,chassis:originChassis,grants:originGrants});
+      expect(originClosure).toMatchObject({origins:{species:166,background:81},historicalIdentity:{identityCandidate:175},
+        historical:{species:{occurrences:70,eraPending:60},background:{occurrences:105,eraPending:89}},
+        grants:{parents:{notSubrace:187,parentIdentityCandidate:60},versions:60,spellGroups:81,equipmentGroups:87,
+          featEdges:{featIdentityCandidate:42,featEndpointPending:3,featSelectionPending:4},spellEntries:{identityCandidate:25},equipmentOptions:{equipmentOptionCandidate:70,equipmentOptionPending:69}},
+        approvedMappings:0,mechanicalParityEstablished:0,executable:false,writeAuthorized:false});
+      console.log(JSON.stringify(originClosure));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

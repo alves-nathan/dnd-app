@@ -278,3 +278,7 @@ Ver [5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md](5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md)
 ## Fase a8.8.3 — traits, variantes e grants das origens
 
 Ver [5ETOOLS_ORIGIN_GRANT_EVIDENCE.md](5ETOOLS_ORIGIN_GRANT_EVIDENCE.md). a8.8.2 aprovada. Evidência de traits, herança, grupos de feats, magias e equipamentos, sem concessão automática. Próxima a8.8.4: consolidação e preservação da criação.
+
+## Fase a8.8.4 — consolidação das origens e preservação
+
+Ver [5ETOOLS_ORIGIN_CLOSURE_REVIEW.md](5ETOOLS_ORIGIN_CLOSURE_REVIEW.md). a8.8.3 aprovada. Relatórios vinculados e fronteira isolada de escolha de tamanho, sem aplicação de grants. Próxima a8.9.1: auditoria mecânica de feats.

@@ -1,4 +1,13 @@
-export {};
+import type {Character} from '../types';
+import {buildPersistedCompendiumImport} from '../compendium/importer';
+import {applyCompendiumItemToCharacter} from '../compendium/mapper';
+import {createEmptyCharacter} from '../data/mockData';
+import {sanitizeCharacterCreationDraft} from '../characters/creationDraft';
+import {getSpeciesChoiceRequirements,setSpeciesChoiceOption,applyDirectSpeciesChoiceEffects} from '../characters/speciesChoiceRules';
+import {normalizeCharacterChoiceReference} from '../catalog/characterChoiceBridge';
+import {reviewCreationOriginSizePreservation,reviewCharacterOriginSizePreservation,type OriginSizeReviewContext} from '../compendium/originPreservationPreview';
+const {buildOriginParityEvidence}=require('../../scripts/5etools/origin-parity-evidence');
+const {buildOriginClosureReview}=require('../../scripts/5etools/origin-closure-review');
 const {buildPilot:buildOrigins}=require('../../scripts/5etools/origin-converter');
 const {buildPilot:buildSpells}=require('../../scripts/5etools/spell-converter');
 const {buildPilot:buildFeatures}=require('../../scripts/5etools/feature-converter');
@@ -83,5 +92,78 @@ describe('a8.8.3 origin trait and grant evidence',()=>{
   expect(f.preview('Revised',{domain:'spell',rulesEra:'2014'}).reason).toBe('originIdentityOrEditionPending');
   expect(f.preview('Base (Hill)',{domain:'spell'}).reason).toBe('variantPolicyPending');
   expect(digest(f.input)).toBe(before);
+ });
+});
+
+describe('a8.8.4 origin closure and preservation',()=>{
+ test('binds three reports, exact coverage and parent lineage without promoting any grants',()=>{
+  const f=fixture(),parity=buildOriginParityEvidence(f.input),reports={parity,chassis:f.chassis,grants:f.projection},before=digest(reports);
+  const r=buildOriginClosureReview(reports);
+  expect(r).toMatchObject({origins:{species:3,background:1},grants:{parents:{notSubrace:3,parentIdentityCandidate:1},spellGroups:2,equipmentGroups:2},
+   approvedMappings:0,mechanicalParityEstablished:0,writeAuthorized:false});
+  expect(JSON.stringify(r)).not.toMatch(/Private|PRIVATE_|upstream:main:/);
+  expect(digest(reports)).toBe(before);
+  expect(()=>buildOriginClosureReview({...reports,grants:{...f.projection,fingerprint:'stale'}})).toThrow('originReviewFingerprintMismatch');
+  const {fingerprint,...body}=f.projection;
+  const missing={...body,rows:body.rows.slice(1)};
+  expect(()=>buildOriginClosureReview({...reports,grants:{...missing,fingerprint:digest(missing)}})).toThrow('originReviewCoverageMismatch');
+  const altered={...body,rows:body.rows.map((x:any)=>x.traits.parent.status==='parentIdentityCandidate'?{...x,traits:{...x.traits,parent:{...x.traits.parent,parentFingerprint:'wrong'}}}:x)};
+  expect(()=>buildOriginClosureReview({...reports,grants:{...altered,fingerprint:digest(altered)}})).toThrow('originParentReviewBindingMismatch');
+ });
+ const ctx:OriginSizeReviewContext={rulesEra:'2024',selectedSize:'Small',selectionPolicyConfirmed:true,otherOriginDependenciesExcludedConfirmed:true};
+ function disposable(){
+  const source={id:'fixture',book:'Fixture',version:'2024',status:'active' as const,confidence:'exact' as const};
+  const pack=buildPersistedCompendiumImport({id:'fixture-pack',source,items:[
+   {id:'fixture-species',kind:'species',name:'Fixture Species',source,payload:{sizeOptions:['Small','Medium']}},
+   {id:'fixture-bg',kind:'background',name:'Fixture Background',source,payload:{}},
+   {id:'fixture-feat',kind:'feat',name:'Fixture Feat',source,payload:{category:'origin'}},
+   {id:'fixture-spell',kind:'spell',name:'Fixture Spell',source,payload:{level:1,classes:['Wizard'],castingTime:{kind:'action',actionCost:'action'}}},
+   {id:'fixture-gear',kind:'equipment',name:'Fixture Gear',source,payload:{weight:1}}
+  ]});
+  const item=pack.items.find(i=>i.type==='species');if(!item)throw Error('missing fixture');
+  const requirement=getSpeciesChoiceRequirements(item,pack.items,1).find(r=>r.kind==='size');if(!requirement)throw Error('missing size requirement');
+  let character=createEmptyCharacter('Fixture');
+  for(const i of pack.items){const result=applyCompendiumItemToCharacter(character,i);if(!result.ok)throw Error('fixture application failed '+i.type);character=result.character;}
+  if(!character.species||!character.buildChoices)throw Error('missing species or choices');
+  const old=setSpeciesChoiceOption([],requirement,'Medium'),next=setSpeciesChoiceOption(old,requirement,'Small');
+  const current:Character={...character,species:{...character.species,size:'Medium'},buildChoices:{...character.buildChoices,speciesChoices:old},
+   resources:[{id:'pool',name:'Pool',max:3,current:1,recharge:'shortRest'}],
+   activeEffects:[{id:'effect',name:'Effect',kind:'spell',sourceType:'spell',status:'active',concentration:true,duration:{unit:'round',remaining:2},createdAt:'2026-01-01T00:00:00Z'}],
+   proficiencies:{...character.proficiencies,skills:['Arcana'],languages:['Common']},abilityScoreBonuses:{DEX:2}};
+  const after=applyDirectSpeciesChoiceEffects({...current,buildChoices:{...current.buildChoices!,speciesChoices:next}},item,[requirement],next);
+  return {item,requirement,current,after,old};
+ }
+ test('preserves the complete existing character except an explicit size choice and size field',()=>{
+  const f=disposable(),before=digest(f.current);
+  expect(reviewCharacterOriginSizePreservation(f.current,f.current,f.after,f.item,ctx)).toMatchObject({status:'originSizeOnlyPreservationCandidate',codes:[],unexpectedPaths:[],writeAuthorized:false});
+  expect(f.after.compendiumLinks).toEqual(f.current.compendiumLinks);
+  expect(f.after.spells).toEqual(f.current.spells);
+  expect(digest(f.current)).toBe(before);
+  const changed={...f.after,abilities:{...f.after.abilities,DEX:20},proficiencies:{...f.after.proficiencies,skills:[]},feats:[],spells:[],equipment:[],resources:[],activeEffects:[],compendiumLinks:[]};
+  expect(reviewCharacterOriginSizePreservation(f.current,f.current,changed,f.item,ctx)).toMatchObject({status:'preservationBlocked',unexpectedPaths:['abilities','activeEffects','compendiumLinks','equipment','feats','proficiencies','resources','spells']});
+  expect(reviewCharacterOriginSizePreservation(f.current,{...f.current,notes:'changed'},f.after,f.item,ctx).codes).toContain('baseSnapshotMismatch');
+  expect(reviewCharacterOriginSizePreservation(f.current,f.current,f.after,f.item,{...ctx,rulesEra:'2014'}).codes).toContain('originChoiceBindingPending');
+  expect(reviewCharacterOriginSizePreservation(f.current,f.current,f.after,{...f.item,id:'other'},ctx).codes).toContain('originLinkBindingPending');
+ });
+ test('rejects unresolved dependencies, unsupported size and duplicate or stale origin choices',()=>{
+  const f=disposable();
+  for(const c of [{...ctx,otherOriginDependenciesExcludedConfirmed:false},{...ctx,selectedSize:'Large' as const},{...ctx,selectionPolicyConfirmed:false}]){
+   expect(reviewCharacterOriginSizePreservation(f.current,f.current,f.after,f.item,c).codes).toContain('originChoiceBindingPending');
+  }
+  const duplicate={...f.current,buildChoices:{...f.current.buildChoices!,speciesChoices:[...f.old,...f.old]}};
+  expect(reviewCharacterOriginSizePreservation(duplicate,duplicate,f.after,f.item,ctx).codes).toContain('originChoiceBindingPending');
+  const wrong={...f.current,species:{...f.current.species!,size:'Large' as const}};
+  expect(reviewCharacterOriginSizePreservation(wrong,wrong,f.after,f.item,ctx).codes).toContain('originChoiceBindingPending');
+ });
+ test('creation draft preserves canonical choice references and rejects unrelated selection changes',()=>{
+  const f=disposable(),base=sanitizeCharacterCreationDraft({name:'Fixture',targetLevel:'1',selectedSpeciesId:f.item.id,speciesChoices:f.old,
+   selectedBackgroundId:'background',selectedFeatCounts:{feat:1},spellAssignments:{spell:'class'},bonusAbilities:['STR','DEX'],classSkillChoices:['Arcana']});
+  if(!base)throw Error('missing creation draft');
+  const requirement={...f.requirement,speciesItemId:normalizeCharacterChoiceReference(f.requirement.speciesItemId),featureItemId:normalizeCharacterChoiceReference(f.requirement.featureItemId)};
+  const after={...base,speciesChoices:setSpeciesChoiceOption(base.speciesChoices,requirement,'Small')};
+  expect(reviewCreationOriginSizePreservation(base,base,after,f.item,ctx)).toMatchObject({status:'originSizeOnlyPreservationCandidate',codes:[]});
+  expect(reviewCreationOriginSizePreservation(base,base,{...after,selectedFeatCounts:{},spellAssignments:{},classSkillChoices:[],bonusAbilities:[]},f.item,ctx)).toMatchObject({status:'preservationBlocked',unexpectedPaths:['bonusAbilities','classSkillChoices','selectedFeatCounts','spellAssignments']});
+  expect(reviewCreationOriginSizePreservation(base,{...base,name:'concurrent'},after,f.item,ctx).codes).toContain('baseSnapshotMismatch');
+  expect(reviewCreationOriginSizePreservation(base,base,after,f.item,{...ctx,selectionPolicyConfirmed:false}).codes).toContain('originChoiceBindingPending');
  });
 });
