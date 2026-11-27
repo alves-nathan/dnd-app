@@ -358,3 +358,7 @@ Ver [5ETOOLS_LOCAL_INVENTORY_PANEL.md](5ETOOLS_LOCAL_INVENTORY_PANEL.md). a8.13.
 ## Fase a8.13.5 — ledger de disposições de inventário
 
 Ver [5ETOOLS_INVENTORY_DISPOSITION_LEDGER.md](5ETOOLS_INVENTORY_DISPOSITION_LEDGER.md). a8.13.4 aprovada. Ocorrências e disposições preservadas, propostas de exclusão não aprovadas. Próxima a8.13.6: vínculo com observações locais e revisão de pendências.
+
+## Fase a8.13.6 — revisão de observação e ledger
+
+Ver [5ETOOLS_INVENTORY_OBSERVATION_REVIEW.md](5ETOOLS_INVENTORY_OBSERVATION_REVIEW.md). a8.13.5 aprovada. Vínculo exato do snapshot observado ao ledger, escopos separados, revisão agregada sem autorização. Próxima a8.13.7: fechamento das obrigações de inventário e disposições de runtime/referências portáteis.

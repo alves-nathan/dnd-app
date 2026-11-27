@@ -1,4 +1,8 @@
 const {fromMigration,writeFragment}=require('../../scripts/5etools/cutover-evidence');
+import {captureLocalInventoryEvidence,type InventoryStoreFrame} from '../compendium/localInventoryCapture';
+import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
+const {buildInventoryObservationReview}=require('../../scripts/5etools/inventory-observation-review');
+
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
 import { parseImportPack } from '../compendium/parseImportPack';
@@ -91,6 +95,13 @@ const mainPath=process.env.DND_UPSTREAM_MIGRATION_MAIN,brewPath=process.env.DND_
   console.log(JSON.stringify(inventoryLedgerSummary(ledger)));
   expect(ledger.summary).toMatchObject({installed:baseline.items.length,historical:6335,runtimeBaseline:5841,approvedMappings:0,approvedExclusions:0,writes:0,deletes:0});
   expect(ledger.readiness).toBe('blocked');
+  const captureId='bundled-ledger-fixture';
+  const frame:InventoryStoreFrame={guard:[installed],blocked:false,observations:{compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed}}};
+  const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:memory},'disposableFixture');
+  const observationReview=buildInventoryObservationReview({reconciliation:r,baselineSnapshot:baseline,installedSnapshot:installed,scope:'bundledFixture'},p,ledger,capture);
+  console.log(JSON.stringify(observationReview));
+  expect(observationReview.summary).toMatchObject({installedRows:baseline.items.length,historicalOccurrences:6335,runtimeBaseline:5841,approvedMappings:0,approvedExclusions:0});
+  expect(observationReview.blockers).toContain('disposableFixtureNotInstalledEvidence');
   expect(p.summary.issues).toEqual({});
   expect(p.summary.storageItems).toBe(baseline.items.length);
   expect(p.summary.storageItems).toBeGreaterThan(0);
@@ -141,6 +152,42 @@ describe('a8.13.5 inventory disposition ledger',()=>{
   const absent=buildInventoryDispositionLedger(f,buildMigrationPreview(f));
   expect(absent.historical.every((x:any)=>x.identityStatus==='notObservedInstalled')).toBe(true);
   expect(absent.missingBaseline[0].disposition).toBe('respectLocalAbsence');
+ });
+ async function captureLedgerFixture(f:ReturnType<typeof ledgerFixture>,scope:'disposableFixture'|'observedLocal'='disposableFixture'){
+  const captureId='ledger-join-fixture';
+  const frame:InventoryStoreFrame={guard:[f.installedSnapshot],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:f.installedSnapshot as unknown as CompendiumPersistenceState}
+  }};
+  return captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:{getItem:()=>null}},scope);
+ }
+ test('binds the observed snapshot without leaking row identities or approving the inventory',async()=>{
+  const f=ledgerFixture(),p=buildMigrationPreview(f),ledger=buildInventoryDispositionLedger(f,p),capture=await captureLedgerFixture(f);
+  const r=buildInventoryObservationReview(f,p,ledger,capture);
+  expect(r.surfaceReview.find((x:any)=>x.surface==='compendium')).toMatchObject({disposition:'snapshotFingerprintBound'});
+  expect(r).toMatchObject({runtimeCountComparison:'notVerified',portableCoverage:'coveragePending',readiness:'blocked',inventoryAcceptance:'notEstablished',writeAuthorized:false});
+  expect(r.summary).toMatchObject({installedRows:1,historicalOccurrences:1,approvedMappings:0,approvedExclusions:0});
+  expect(JSON.stringify(r)).not.toMatch(/pack:legacy|upstream:new|migration:fixture|ledger-join-fixture/);
+  expect(r.blockers).toContain('disposableFixtureNotInstalledEvidence');
+ });
+ test('rejects fixture promotion, stale observed data and modified evidence or ledger',async()=>{
+  const f=ledgerFixture(),p=buildMigrationPreview(f),ledger=buildInventoryDispositionLedger(f,p),capture=await captureLedgerFixture(f);
+  const local={...f,scope:'localSnapshot'},lp=buildMigrationPreview(local),ll=buildInventoryDispositionLedger(local,lp);
+  expect(()=>buildInventoryObservationReview(local,lp,ll,capture)).toThrow('inventoryCaptureScopeMismatch');
+  expect(()=>buildInventoryObservationReview(f,p,{...ledger,writeAuthorized:true},capture)).toThrow('inventoryLedgerBindingMismatch');
+  expect(()=>buildInventoryObservationReview(f,p,ledger,{...capture,evidence:{...capture.evidence,inventoryAcceptance:'accepted'}})).toThrow('inventoryCaptureFingerprintMismatch');
+  expect(()=>buildInventoryObservationReview(f,p,ledger,{...capture,captureStatus:'stale'})).toThrow('stableInventoryCaptureRequired');
+  Object.assign(f.installedSnapshot.items[0].normalizedJson,{manual:false});
+  const next=buildMigrationPreview(f),nextLedger=buildInventoryDispositionLedger(f,next);
+  expect(()=>buildInventoryObservationReview(f,next,nextLedger,capture)).toThrow('installedObservationBindingMismatch');
+ });
+ test('keeps exclusion proposals and coherence discrepancies pending for local scope',async()=>{
+  const f={...ledgerFixture(),scope:'localSnapshot'},p=buildMigrationPreview(f),base=buildInventoryDispositionLedger(f,p);
+  const proposals=[{rowFingerprint:base.storage[0].rowFingerprint,reason:'sourceRightsPending'}];
+  const ledger=buildInventoryDispositionLedger(f,p,proposals),capture=await captureLedgerFixture(f,'observedLocal');
+  const r=buildInventoryObservationReview(f,p,ledger,{...capture,coherence:{...capture.coherence,activePersistence:'mismatch'}},proposals);
+  expect(r.summary).toMatchObject({exclusionProposals:1,approvedExclusions:0});
+  expect(r.blockers).toContain('observedCoherenceMismatch');
+  expect(r.executable).toBe(false);
  });
  test('does not transfer identity across kind/source and blocks stale previews or exclusion proposals',()=>{
   const f=ledgerFixture(),p=buildMigrationPreview(f),r=buildInventoryDispositionLedger(f,p);
