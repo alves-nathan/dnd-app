@@ -9,3 +9,7 @@ Four synthetic tests reuse the existing disposable memory repository fixture and
 ## a8.13.1.1 — CI correction
 
 Original Quality push 46071754021 and PR 46071759276 failed typecheck (TS2349 and dependent TS7006 diagnostics). Structural audit 46071753938 reached the preservation suite: nine tests passed, four failed with `TypeError: flags is not a function`. The immutable flag object is now spread directly, restoring the inferred result type and preserving every non-authorization flag. No test, gate or runtime behavior was relaxed. The original four regression cases remain intact. Next a8.13.2 only after all three checks pass.
+
+## a8.13.1.2 — Structural audit path coverage
+
+Correction a8.13.1.1 passed Quality push 46072836666 and PR 46072845110. The push full regression included upstream5etoolsPreservation.test.ts (overall 1218 passed, 28 skipped, 251 suites passed). Structural audit did not trigger because localInventoryEvidence.ts was outside its path filters. Add the narrow localInventory*.ts filter to cover the inventory contract and planned observation adapters without broadening to unrelated compendium changes. No additional workflow, clone, test or runtime change. Require the structural audit to pass on this HEAD before a8.13.2.

@@ -10,6 +10,7 @@ on:
       - 'src/tests/upstream5etools*.test.ts'
       - 'src/tests/compendiumImportV3Staging.test.ts'
       - 'src/compendium/importV3*.ts'
+      - 'src/compendium/localInventory*.ts'
       - 'src/compendium/importV2Schemas.ts'
       - 'src/compendium/importSemanticValidation.ts'
       - 'src/compendium/importDomain.ts'
