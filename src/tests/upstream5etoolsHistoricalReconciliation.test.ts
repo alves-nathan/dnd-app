@@ -1,3 +1,4 @@
+const {buildOriginParityEvidence,publicSummary:originParitySummary}=require('../../scripts/5etools/origin-parity-evidence');
 const {buildSpellClosureReview}=require('../../scripts/5etools/spell-closure-review');
 const {buildSpellAccessProjection,publicSummary:spellAccessSummary}=require('../../scripts/5etools/spell-access-projection');
 const {buildSpellLifecycleProjection,publicSummary:spellLifecycleSummary}=require('../../scripts/5etools/spell-lifecycle-projection');
@@ -235,6 +236,17 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
         effectCoverage:{reviewedDefinitionCandidates:12,withoutBaseEffectCandidate:842},lifecycle:{concentration:{required:348,notRequired:477,pending:29}},
         approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(spellClosure));
+      const origins=buildOriginParityEvidence(input);
+      expect(origins.historical.species).toMatchObject({occurrences:70,identityCandidates:70,identityPending:0});
+      expect(origins.historical.background).toMatchObject({occurrences:105,identityCandidates:105,identityPending:0});
+      expect(origins.upstream.species.items).toBe(166);
+      expect(origins.upstream.background.items).toBe(81);
+      expect(origins.runtime.species.occurrences).toBe(10);
+      expect(origins.runtime.background.occurrences).toBe(16);
+      expect(origins.upstream.background.contractCodes.standardBackgroundAbilityCandidate).toBeGreaterThan(0);
+      expect(origins.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      expect(origins).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(originParitySummary(origins)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
