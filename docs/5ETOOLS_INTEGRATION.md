@@ -286,3 +286,7 @@ Ver [5ETOOLS_ORIGIN_CLOSURE_REVIEW.md](5ETOOLS_ORIGIN_CLOSURE_REVIEW.md). a8.8.3
 ## Fase a8.9.1 — paridade mecânica de feats
 
 Ver [5ETOOLS_FEAT_PARITY_EVIDENCE.md](5ETOOLS_FEAT_PARITY_EVIDENCE.md). a8.8.4 aprovada. Evidência por ocorrência, fonte e edição, requisitos, ASI, repetibilidade, escolhas e grants; sem ativação. Próxima a8.9.2: requisitos qualificados e categorias.
+
+## Fase a8.9.2 — requisitos e categorias de feats
+
+Ver [5ETOOLS_FEAT_REQUIREMENT_PROJECTION.md](5ETOOLS_FEAT_REQUIREMENT_PROJECTION.md). a8.9.1 aprovada. Requisitos qualificados e categorias sob contexto explícito, sem autorização de aquisição. Próxima a8.9.3: ASI e repetibilidade por instância.

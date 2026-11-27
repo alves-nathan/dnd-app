@@ -50,3 +50,49 @@ describe('a8.9.1 feat parity evidence',()=>{
   expect(()=>buildFeatParityEvidence(z)).toThrow('historicalCoverageMismatch');
  });
 });
+
+const {buildFeatRequirementProjection,previewFeatRequirements,publicSummary:requirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
+function requirementsFixture(){
+ const x=input();
+ const items=[...x.items,feat('Required'),feat('Gate','XPHB',{category:'G',prerequisite:[{level:4,ability:[{str:13},{dex:13}],feat:['Required|XPHB']}]}),
+  feat('Unqualified','XPHB',{category:'G',prerequisite:[{feat:['Required']}]}),
+  feat('Cross era','XPHB',{category:'G',prerequisite:[{feat:['Fixture|PHB']}]}),
+  feat('Partial','XPHB',{category:'G',prerequisite:[{level:4},{campaign:['fixture']}]}),
+  feat('Origin','XPHB',{category:'O'}),feat('Legacy','PHB')];
+ return {...x,items};
+}
+describe('a8.9.2 feat requirement projection',()=>{
+ function request(x:ReturnType<typeof requirementsFixture>,name:string,facts:Record<string,unknown>){
+  const p=buildFeatRequirementProjection(x),i=x.items.find((item:any)=>item.name===name),row=p.rows.find((r:any)=>r.featId===i.id);
+  return {projectionFingerprint:p.fingerprint,sourceFingerprint:row.sourceFingerprint,featId:i.id,rulesEra:row.rulesEra,
+   allowedCategories:['general'],factsConfirmed:true,categoryPolicyConfirmed:true,facts};
+ }
+ test('qualified AND/OR and exact possession; no implicit feat grant',()=>{
+  const x=requirementsFixture(),id=x.items.find((i:any)=>i.name==='Required').id;
+  const facts={characterLevel:4,abilities:{STR:10,DEX:13},possessedIds:[id],possessedIdsComplete:true};
+  const q=request(x,'Gate',facts);
+  expect(previewFeatRequirements(x,q)).toMatchObject({status:'requirementsCandidate',prerequisiteStatus:'satisfied',writeAuthorized:false,executable:false});
+  expect(previewFeatRequirements(x,{...q,facts:{...facts,characterLevel:3}}).status).toBe('notSatisfied');
+  expect(previewFeatRequirements(x,{...q,facts:{...facts,possessedIds:[],possessedIdsComplete:false}}).status).toBe('indeterminate');
+  expect(previewFeatRequirements(x,{...q,facts:{...facts,possessedIds:[]}}).status).toBe('notSatisfied');
+  expect(previewFeatRequirements(x,{...q,facts:{...facts,possessedIds:['unqualified']}}).reason).toBe('unqualifiedCharacterFacts');
+ });
+ test('missing sources, cross edition and category policy remain distinct',()=>{
+  const x=requirementsFixture(),facts={characterLevel:4};
+  for(const name of ['Unqualified','Cross era'])expect(previewFeatRequirements(x,request(x,name,facts)).status).toBe('indeterminate');
+  expect(previewFeatRequirements(x,request(x,'Origin',facts)).reason).toBe('categoryOutsideConfirmedContext');
+  expect(previewFeatRequirements(x,request(x,'Legacy',facts)).reason).toBe('categoryPolicyPending');
+  expect(previewFeatRequirements(x,request(x,'Partial',facts)).status).toBe('requirementsCandidate');
+  expect(previewFeatRequirements(x,request(x,'Partial',{characterLevel:3})).status).toBe('indeterminate');
+ });
+ test('binds raw tree, evidence and context; only aggregate summary is public',()=>{
+  const x=requirementsFixture(),p=buildFeatRequirementProjection(x),q=request(x,'Gate',{characterLevel:4});
+  expect(requirementSummary(p).rows).toBeUndefined();
+  expect(previewFeatRequirements(x,{...q,projectionFingerprint:'stale'}).reason).toBe('staleProjection');
+  expect(previewFeatRequirements(x,{...q,rulesEra:'2014'}).reason).toBe('featIdentityOrEditionMismatch');
+  expect(previewFeatRequirements(x,{...q,facts:{characterLevel:21}}).reason).toBe('explicitContextRequired');
+  expect(()=>buildFeatRequirementProjection(x,{...buildFeatParityEvidence(x),approvedMappings:1})).toThrow('featEvidenceMismatch');
+  x.items.find((i:any)=>i.name==='Gate').payload.mechanics.prerequisiteTree={op:'none'};
+  expect(()=>buildFeatRequirementProjection(x)).toThrow('featPrerequisiteBindingMismatch');
+ });
+});
