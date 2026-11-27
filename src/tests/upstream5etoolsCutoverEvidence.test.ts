@@ -108,3 +108,40 @@ describe('a8.12.1 global checkpoint review',()=>{
   expect(()=>buildGlobalCheckpointReview({...matrix,distributionAuthorized:true},fragment)).toThrow('invalidGlobalMatrix');
  });
 });
+
+const {buildCutoverAcceptanceMatrix}=require('../../scripts/5etools/cutover-acceptance-matrix');
+describe('a8.12.2 cutover acceptance matrix',()=>{
+ test('covers all blockers with ordered dependencies and explicit unverified criteria',()=>{
+  const {matrix,fragment}=globalFixture(),global=buildGlobalCheckpointReview(matrix,fragment),before=digest({matrix,fragment,global});
+  const r=buildCutoverAcceptanceMatrix(matrix,fragment,global);
+  expect(r.summary).toEqual({gates:8,accepted:0,blocked:8,criteria:31});
+  expect(r.gates.map((g:any)=>g.blocker).sort()).toEqual([...global.blockers].sort());
+  const visited=new Set<string>();
+  for(const g of r.gates){
+   expect(g.dependsOn.every((id:string)=>visited.has(id))).toBe(true);
+   visited.add(g.id);
+   expect(g.acceptanceCriteria.every((c:any)=>c.status==='requiredNotVerified')).toBe(true);
+   expect(g).toMatchObject({status:'blocked',writeAuthorized:false,executable:false});
+  }
+  expect(r).toMatchObject({readiness:'blocked',nextEngineeringGate:'inventory',parallelReview:['rightsTrust'],distributionAuthorized:false});
+  expect(digest({matrix,fragment,global})).toBe(before);
+ });
+ test('does not treat fixture coverage or a closed graph as acceptance',()=>{
+  const {matrix,fragment}=globalFixture(),global=buildGlobalCheckpointReview(matrix,fragment);
+  const r=buildCutoverAcceptanceMatrix(matrix,fragment,global);
+  expect(r.gates.find((g:any)=>g.id==='inventory').observed).toMatchObject({bundledStorage:1,installedScope:'notInspected'});
+  expect(r.gates.find((g:any)=>g.id==='relationshipParity').observed.graphBlocked).toBe(0);
+  expect(r.gates.find((g:any)=>g.id==='relationshipParity').status).toBe('blocked');
+  expect(r.gates.find((g:any)=>g.id==='cutoverApproval').dependsOn).toHaveLength(7);
+ });
+ test('rejects forged global report and dropped or unknown blockers even if rehashed',()=>{
+  const {matrix,fragment}=globalFixture(),global=buildGlobalCheckpointReview(matrix,fragment);
+  const {fingerprint,...body}=global,forged={...body,readiness:'ready'};
+  expect(()=>buildCutoverAcceptanceMatrix(matrix,fragment,{...forged,fingerprint:digest(forged)})).toThrow('acceptanceGlobalBindingMismatch');
+  const {fingerprint:mf,...mb}=matrix;
+  for(const blockers of [mb.blockers.slice(1),[...mb.blockers,'unknownGate'],[...mb.blockers.slice(1),mb.blockers[1]]]){
+   const m={...mb,blockers},changed={...m,fingerprint:digest(m)},g=buildGlobalCheckpointReview(changed,fragment);
+   expect(()=>buildCutoverAcceptanceMatrix(changed,fragment,g)).toThrow('acceptanceBlockerCoverageMismatch');
+  }
+ });
+});

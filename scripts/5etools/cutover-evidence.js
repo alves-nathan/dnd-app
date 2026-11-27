@@ -155,5 +155,7 @@ if(require.main===module){
   console.log(JSON.stringify(report));
   const global=require('./global-checkpoint-review').buildGlobalCheckpointReview(report,read('families'));
   console.log(JSON.stringify(global));
+  const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,read('families'),global);
+  console.log(JSON.stringify(acceptance));
 }
 

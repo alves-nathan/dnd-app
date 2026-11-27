@@ -334,3 +334,7 @@ Ver [5ETOOLS_RUNTIME_CLOSURE_REVIEW.md](5ETOOLS_RUNTIME_CLOSURE_REVIEW.md). a8.1
 ## Fase a8.12.1 — consolidação global dos checkpoints
 
 Ver [5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md](5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md). a8.11.3 aprovada. Cruzamento por família com a matriz global a8.4 e bloqueios preservados. Próxima a8.12.2: matriz de aceitação e priorização dos gates pendentes.
+
+## Fase a8.12.2 — matriz de aceitação e priorização
+
+Ver [5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md](5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md). a8.12.1 aprovada. Oito gates vinculados aos bloqueios globais; nenhuma aprovação implícita. Próxima a8.13.1: inventário local somente leitura.
