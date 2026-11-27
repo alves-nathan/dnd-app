@@ -21,6 +21,7 @@ const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scr
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
+const {buildRemainingFamilyEvidence,publicSummary:remainingFamilySummary}=require('../../scripts/5etools/remaining-family-evidence');
 const {buildEquipmentParityEvidence,publicSummary:equipmentParitySummary}=require('../../scripts/5etools/equipment-parity-evidence');
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
@@ -114,6 +115,16 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(featClosure.mechanicalParityEstablished).toBe(0);
       expect(featClosure.writeAuthorized).toBe(false);
       console.log(JSON.stringify(featClosure));
+      const remaining=buildRemainingFamilyEvidence(input);
+      expect(remaining.totals).toMatchObject({historical:6335,runtime:5841});
+      expect(remaining.totals.upstream).toBe(input.items.length);
+      for(const kind of ['equipment','magicItem','creatureStatBlock']){
+        expect(remaining.coverage.upstream[kind].items).toBeGreaterThan(0);
+        expect(remaining.upstreamRows.filter((x:any)=>x.kind===kind)).toHaveLength(remaining.coverage.upstream[kind].items);
+      }
+      expect(remaining.mechanicalParityEstablished).toBe(0);
+      expect([...remaining.rows,...remaining.upstreamRows,...remaining.runtimeRows].every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized&&!x.executable)).toBe(true);
+      console.log(JSON.stringify(remainingFamilySummary(remaining)));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});

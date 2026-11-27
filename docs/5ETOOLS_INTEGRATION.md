@@ -302,3 +302,7 @@ Ver [5ETOOLS_FEAT_GRANT_EVIDENCE.md](5ETOOLS_FEAT_GRANT_EVIDENCE.md). a8.9.3 apr
 ## Fase a8.9.5 — consolidação e preservação de feats
 
 Ver [5ETOOLS_FEAT_CLOSURE_REVIEW.md](5ETOOLS_FEAT_CLOSURE_REVIEW.md). a8.9.4 aprovada. Relatórios vinculados e fronteira isolada de ASI existente, sem aquisição ou migração. Próxima a8.10.1: inventário e paridade das famílias restantes.
+
+## Fase a8.10.1 — inventário das famílias restantes
+
+Ver [5ETOOLS_REMAINING_FAMILY_EVIDENCE.md](5ETOOLS_REMAINING_FAMILY_EVIDENCE.md). a8.9.5 aprovada. Cobertura integral por ocorrência e evidência selecionada de equipamentos, itens mágicos e criaturas. Próxima a8.10.2: chassis e contratos de criaturas.
