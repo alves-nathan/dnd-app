@@ -87,6 +87,10 @@ const mainPath=process.env.DND_UPSTREAM_MIGRATION_MAIN,brewPath=process.env.DND_
   const baseline=await repository.loadSnapshot(),installed=clone(baseline),before=digest(memory.dump());
   const p=buildMigrationPreview({reconciliation:r,baselineSnapshot:baseline,installedSnapshot:installed,scope:'bundledFixture'});
   console.log(JSON.stringify(publicSummary(p)));
+  const ledger=buildInventoryDispositionLedger({reconciliation:r,baselineSnapshot:baseline,installedSnapshot:installed,scope:'bundledFixture'},p);
+  console.log(JSON.stringify(inventoryLedgerSummary(ledger)));
+  expect(ledger.summary).toMatchObject({installed:baseline.items.length,historical:6335,runtimeBaseline:5841,approvedMappings:0,approvedExclusions:0,writes:0,deletes:0});
+  expect(ledger.readiness).toBe('blocked');
   expect(p.summary.issues).toEqual({});
   expect(p.summary.storageItems).toBe(baseline.items.length);
   expect(p.summary.storageItems).toBeGreaterThan(0);
@@ -104,3 +108,51 @@ const mainPath=process.env.DND_UPSTREAM_MIGRATION_MAIN,brewPath=process.env.DND_
   const out=process.env.DND_UPSTREAM_MIGRATION_OUT;
   if(out)fs.writeFileSync(out,JSON.stringify(p,null,2)+'\n',{flag:'wx'});
 },360000);
+
+
+const {buildInventoryDispositionLedger,publicSummary:inventoryLedgerSummary}=require('../../scripts/5etools/inventory-disposition-ledger');
+describe('a8.13.5 inventory disposition ledger',()=>{
+ function ledgerFixture(){
+  const f=fixture(),i=f.installedSnapshot.items[0];
+  Object.assign(i,{type:'weapon',rawJson:{id:'legacy',kind:'weapon',source:{id:'source'},payload:{damage:'1d6'}}});
+  f.baselineSnapshot=clone(f.installedSnapshot);
+  Object.assign(f.reconciliation.historical[0],{kind:'weapon',sourceId:'source',sourceFingerprint:digest(i.rawJson),decision:'unreviewed'});
+  Object.assign(f.reconciliation.summary,{approvedMappings:0,mechanicalParityEstablished:0,retirementAuthorized:false});
+  return f;
+ }
+ test('binds exact occurrence separately from local review and never approves identity',()=>{
+  const f=ledgerFixture(),p=buildMigrationPreview(f),before=digest(f),r=buildInventoryDispositionLedger(f,p);
+  expect(r.storage[0]).toMatchObject({identityStatus:'singleExactRawOccurrence',manualReviewMarkers:true,baselineStatus:'unchanged',disposition:'preserveCandidatePendingParity',writeAuthorized:false});
+  expect(r.historical[0]).toMatchObject({identityStatus:'singleExactRawOccurrence',exactInstalled:1,preservation:'required'});
+  expect(r.summary).toMatchObject({installed:1,historical:1,runtimeBaseline:1,approvedMappings:0,approvedExclusions:0,writes:0,deletes:0});
+  expect(JSON.stringify(inventoryLedgerSummary(r))).not.toMatch(/pack:legacy|upstream:new|migration:fixture/);
+  expect(digest(f)).toBe(before);
+ });
+ test('distinguishes duplicate occurrences, modified payloads and absent baseline storage',()=>{
+  const f=ledgerFixture(),h=f.reconciliation.historical[0];
+  f.reconciliation.historical.push({...h,index:1,evidenceId:'migration:second'});
+  Object.assign(f.reconciliation.historicalGroups[0],{occurrences:2});
+  const r=buildInventoryDispositionLedger(f,buildMigrationPreview(f));
+  expect(r.storage[0].identityStatus).toBe('multipleExactRawOccurrences');
+  Object.assign(f.installedSnapshot.items[0].rawJson,{payload:{damage:'2d6'}});
+  const changed=buildInventoryDispositionLedger(f,buildMigrationPreview(f));
+  expect(changed.storage[0]).toMatchObject({identityStatus:'qualifiedIdentityPayloadDiffers',baselineStatus:'changed',disposition:'preserveLocalModification'});
+  f.installedSnapshot.items=[];
+  const absent=buildInventoryDispositionLedger(f,buildMigrationPreview(f));
+  expect(absent.historical.every((x:any)=>x.identityStatus==='notObservedInstalled')).toBe(true);
+  expect(absent.missingBaseline[0].disposition).toBe('respectLocalAbsence');
+ });
+ test('does not transfer identity across kind/source and blocks stale previews or exclusion proposals',()=>{
+  const f=ledgerFixture(),p=buildMigrationPreview(f),r=buildInventoryDispositionLedger(f,p);
+  const proposal={rowFingerprint:r.storage[0].rowFingerprint,reason:'outsideProposedScope'};
+  const proposed=buildInventoryDispositionLedger(f,p,[proposal]);
+  expect(proposed.exclusions[0]).toMatchObject({status:'proposedNotApproved',preservation:'required',writeAuthorized:false});
+  expect(proposed.summary).toMatchObject({exclusionProposals:1,approvedExclusions:0,installed:1});
+  expect(()=>buildInventoryDispositionLedger(f,p,[proposal,proposal])).toThrow('invalidExclusionProposal');
+  Object.assign(f.installedSnapshot.items[0],{type:'armor'});
+  expect(()=>buildInventoryDispositionLedger(f,p)).toThrow('inventoryPreviewBindingMismatch');
+  const next=buildMigrationPreview(f);
+  expect(buildInventoryDispositionLedger(f,next).storage[0].identityStatus).toBe('qualifiedIdentityMismatch');
+  expect(()=>buildInventoryDispositionLedger(f,next,[proposal])).toThrow('invalidExclusionProposal');
+ });
+});

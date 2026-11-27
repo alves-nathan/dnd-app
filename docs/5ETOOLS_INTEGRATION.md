@@ -354,3 +354,7 @@ Ver [5ETOOLS_LOCAL_INVENTORY_COHERENCE.md](5ETOOLS_LOCAL_INVENTORY_COHERENCE.md)
 ## Fase a8.13.4 — painel de inventário local
 
 Ver [5ETOOLS_LOCAL_INVENTORY_PANEL.md](5ETOOLS_LOCAL_INVENTORY_PANEL.md). a8.13.3 aprovada. Painel somente leitura, revalidação e expiração de evidências. Próxima a8.13.5: ledger de disposições de inventário.
+
+## Fase a8.13.5 — ledger de disposições de inventário
+
+Ver [5ETOOLS_INVENTORY_DISPOSITION_LEDGER.md](5ETOOLS_INVENTORY_DISPOSITION_LEDGER.md). a8.13.4 aprovada. Ocorrências e disposições preservadas, propostas de exclusão não aprovadas. Próxima a8.13.6: vínculo com observações locais e revisão de pendências.
