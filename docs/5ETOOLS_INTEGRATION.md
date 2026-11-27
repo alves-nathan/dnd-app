@@ -250,3 +250,7 @@ Ver [5ETOOLS_SPELL_PARITY_EVIDENCE.md](5ETOOLS_SPELL_PARITY_EVIDENCE.md). a8.6.6
 ## Fase a8.7.2 — projeção de requisitos de conjuração
 
 Ver [5ETOOLS_SPELL_CASTING_PROJECTION.md](5ETOOLS_SPELL_CASTING_PROJECTION.md). a8.7.1 aprovada. Tempo, alcance, âncora, alvos e VSM explícitos; sem conjuração ou consumo real. Próxima a8.7.3: dano, cura, scaling e saves.
+
+## Fase a8.7.3 — dano, cura, escalonamento e saves
+
+Ver [5ETOOLS_SPELL_EFFECT_PROJECTION.md](5ETOOLS_SPELL_EFFECT_PROJECTION.md). a8.7.2 aprovada. Doze definições qualificadas e resultados hipotéticos de dados, sem conjuração ou mutação de HP. Próxima a8.7.4: concentração, duração e ciclo de vida de efeitos.

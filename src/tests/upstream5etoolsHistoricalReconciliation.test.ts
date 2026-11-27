@@ -1,3 +1,4 @@
+const {buildSpellEffectProjection,publicSummary:spellEffectSummary,previewSpellEffects}=require('../../scripts/5etools/spell-effect-projection');
 const {buildSpellCastingProjection,publicSummary:spellCastingSummary}=require('../../scripts/5etools/spell-casting-projection');
 const {buildSpellParityEvidence,publicSummary:spellParitySummary}=require('../../scripts/5etools/spell-parity-evidence');
 const {buildClassClosureReview,previewLevelGrantBoundary}=require('../../scripts/5etools/class-closure-review');
@@ -186,6 +187,30 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(casting.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(casting).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(spellCastingSummary(casting)));
+      const effects=buildSpellEffectProjection(input,casting);
+      expect(effects.counts).toEqual({baseEffectCandidate:12});
+      expect(effects.byFamily).toEqual({healing:2,beamAttack:2,singleAttack:2,areaSave:2,projectile:2,singleSave:2});
+      expect(effects).toMatchObject({upstreamSpells:854,approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      expect(effects.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      const {physicalId:spellPhysicalId}=require('../../scripts/5etools/spell-converter');
+      const effect=(name:string,source:string,characterLevel:number,slotLevel:number,events:unknown[],extra:Record<string,unknown>={})=>previewSpellEffects(input,{
+        rulesEra:source==='PHB'?'2014':'2024',spellId:spellPhysicalId(source,name),projectionFingerprint:effects.fingerprint,
+        baseOnlyConfirmed:true,castingContextConfirmed:true,targetPolicyConfirmed:true,exceptionsReviewedConfirmed:true,
+        characterLevel,slotLevel,targets:[{id:'a',kind:'creature',creatureType:'humanoid',eligibilityConfirmed:true}],events,...extra});
+      const hit=(rolls:number[],outcome='hit',targetId='a')=>({targetId,outcome,rolls});
+      expect(effect('Fire Bolt','XPHB',11,0,[hit([10,10,10,10,10,10],'critical')])).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:60,damageType:'fire'}]});
+      expect(effect('Eldritch Blast','PHB',11,0,[hit([10]),hit([],'miss'),hit([1,2],'critical')])).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:10},{amount:0},{amount:3}]});
+      expect(effect('Sacred Flame','XPHB',5,0,[hit([8,8],'success')])).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:0}]});
+      const targets=[{id:'a',kind:'creature',eligibilityConfirmed:true},{id:'b',kind:'creature',eligibilityConfirmed:true}];
+      const dice=[1,2,3,4,5,6,1,2,3];
+      expect(effect('Fireball','PHB',7,4,[hit(dice,'failure'),hit(dice,'success','b')],{targets})).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:27},{amount:13}]});
+      expect(effect('Fireball','PHB',7,4,[hit(dice,'failure'),hit([...dice.slice(0,8),4],'success','b')],{targets}).reason).toBe('sharedRollMismatch');
+      const missiles=Array.from({length:4},()=>hit([4],'guaranteed'));
+      expect(effect('Magic Missile','XPHB',3,2,missiles).reason).toBe('projectileRollPolicyPending');
+      expect(effect('Magic Missile','XPHB',3,2,missiles,{projectileRollPolicy:'shared',projectileRollPolicyConfirmed:true})).toMatchObject({status:'effectOutcomeCandidate',events:Array.from({length:4},()=>expect.objectContaining({amount:5}))});
+      expect(effect('Cure Wounds','PHB',3,2,[hit([8,8],'heal')],{spellcastingAbilityModifier:3})).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:19,healing:true}]});
+      expect(effect('Cure Wounds','XPHB',3,2,[hit([8,8,8,8],'heal')],{spellcastingAbilityModifier:3})).toMatchObject({status:'effectOutcomeCandidate',events:[{amount:35,healing:true}]});
+      console.log(JSON.stringify(spellEffectSummary(effects)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
