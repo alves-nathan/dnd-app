@@ -246,3 +246,7 @@ Ver [5ETOOLS_CLASS_CLOSURE_REVIEW.md](5ETOOLS_CLASS_CLOSURE_REVIEW.md). FIX01 a8
 ## Fase a8.7.1 — auditoria de paridade mecânica de magias
 
 Ver [5ETOOLS_SPELL_PARITY_EVIDENCE.md](5ETOOLS_SPELL_PARITY_EVIDENCE.md). a8.6.6 aprovada. Evidência histórica por ocorrência e lacunas de contrato, sem ativação. Próxima a8.7.2: tempo de conjuração, alcance, alvos, área e componentes.
+
+## Fase a8.7.2 — projeção de requisitos de conjuração
+
+Ver [5ETOOLS_SPELL_CASTING_PROJECTION.md](5ETOOLS_SPELL_CASTING_PROJECTION.md). a8.7.1 aprovada. Tempo, alcance, âncora, alvos e VSM explícitos; sem conjuração ou consumo real. Próxima a8.7.3: dano, cura, scaling e saves.

@@ -1,3 +1,4 @@
+const {buildSpellCastingProjection,publicSummary:spellCastingSummary}=require('../../scripts/5etools/spell-casting-projection');
 const {buildSpellParityEvidence,publicSummary:spellParitySummary}=require('../../scripts/5etools/spell-parity-evidence');
 const {buildClassClosureReview,previewLevelGrantBoundary}=require('../../scripts/5etools/class-closure-review');
 import {createEmptyCharacter} from '../data/mockData';
@@ -176,6 +177,15 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(spells.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
       expect(spells).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(spellParitySummary(spells)));
+      const casting=buildSpellCastingProjection(input,spells);
+      expect(casting.summary.items).toBe(854);
+      expect(casting.summary.timeAlternatives.actionCandidate).toBeGreaterThan(0);
+      expect(casting.summary.timeAlternatives.durationCandidate).toBeGreaterThan(0);
+      expect(casting.summary.range.selfAreaCandidate).toBeGreaterThan(0);
+      expect(casting.summary.materials.explicitCopperCandidate).toBeGreaterThan(0);
+      expect(casting.rows.every((row:any)=>!row.runtimeEligible&&!row.writeAuthorized&&!row.retirementAuthorized)).toBe(true);
+      expect(casting).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(spellCastingSummary(casting)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));
