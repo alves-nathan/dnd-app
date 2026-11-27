@@ -338,3 +338,7 @@ Ver [5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md](5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md). 
 ## Fase a8.12.2 — matriz de aceitação e priorização
 
 Ver [5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md](5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md). a8.12.1 aprovada. Oito gates vinculados aos bloqueios globais; nenhuma aprovação implícita. Próxima a8.13.1: inventário local somente leitura.
+
+## Fase a8.13.1 — contrato de inventário local
+
+Ver [5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md](5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md). a8.12.2 aprovada. Contrato de observações locais, provenance, estados indisponíveis e fingerprints sem autorização. Próxima a8.13.2: adaptadores de observação somente leitura.

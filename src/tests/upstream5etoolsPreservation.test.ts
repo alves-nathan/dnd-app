@@ -199,3 +199,58 @@ describe('local preservation evidence bridge',()=>{
     expect(verifyLocalV3Preservation({...local,portableCheckpoint:stale}).codes).toContain('characterBackupCoverageMismatch');
   });
 });
+
+import {buildLocalInventoryEvidence,LOCAL_INVENTORY_SURFACES,type LocalInventoryInput} from '../compendium/localInventoryEvidence';
+describe('a8.13.1 local inventory contract',()=>{
+ async function observations(){
+  const f=await fixture(),captureId='fixture-capture',input:LocalInventoryInput={captureId,scope:'disposableFixture',observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:f.input.context.installed},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:f.input.portableCheckpoint},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:{snapshot:f.input.catalog,ref:f.input.runtimeRef}},
+   packageContents:{status:'unavailable',source:'catalogPackageRepository',captureId},
+   trust:{status:'busy',source:'catalogTrustStore',captureId}
+  }};
+  return {f,input};
+ }
+ test('binds real disposable repository and portable observations, distinguishes missing and unavailable',async()=>{
+  const {f,input}=await observations(),before=f.memory.dump(),r=buildLocalInventoryEvidence(input);
+  expect(r.summary).toEqual({required:Object.keys(LOCAL_INVENTORY_SURFACES).length,observed:3,notInspected:15,unavailable:1,busy:1,invalid:0,stale:0});
+  expect(r.surfaces.find(s=>s.surface==='compendium')).toMatchObject({status:'observed',counts:{items:1,packs:1,itemsWithReviewMarkers:1}});
+  expect(r.surfaces.find(s=>s.surface==='portable')).toMatchObject({status:'observed',counts:{characters:1,scenarios:1,presets:1,buildHistory:1}});
+  expect(r.surfaces.find(s=>s.surface==='runtime')).toMatchObject({status:'observed',counts:{entries:1,registry:1}});
+  expect(r).toMatchObject({readiness:'blocked',inventoryAcceptance:'notEstablished',writeAuthorized:false,executable:false});
+  expect(JSON.stringify(r)).not.toMatch(/Manual blade|Fixture hero|legacy-weapon|manual review|fixture-capture/);
+  expect(f.memory.dump()).toEqual(before);
+  expect(buildLocalInventoryEvidence(input)).toEqual(r);
+ });
+ test('does not treat stale observations or duplicate identities as observed',async()=>{
+  const {f,input}=await observations(),captureId=input.captureId;
+  input.observations.compendium={status:'observed',source:'activeCompendiumRepository',captureId,value:{...f.input.context.installed,items:[...f.input.context.installed.items,...f.input.context.installed.items]}};
+  input.observations.runtime={status:'observed',source:'catalogStore',captureId:'older',value:{snapshot:f.input.catalog,ref:f.input.runtimeRef}};
+  const r=buildLocalInventoryEvidence(input);
+  expect(r.surfaces.find(s=>s.surface==='compendium')).toMatchObject({status:'invalid',codes:['invalidSurfaceData']});
+  expect(r.surfaces.find(s=>s.surface==='runtime')).toMatchObject({status:'stale',codes:['captureBindingMismatch']});
+  expect(r.summary.observed).toBe(1);
+ });
+ test('binds changes to recovery data and refuses non-JSON auxiliary state',async()=>{
+  const {f,input}=await observations(),before=buildLocalInventoryEvidence(input),captureId=input.captureId;
+  input.observations.portable={status:'observed',source:'portableDataCheckpoint',captureId,value:{...f.input.portableCheckpoint,catalog:{...f.input.portableCheckpoint.catalog,revision:1}}};
+  input.observations.trust={status:'observed',source:'catalogTrustStore',captureId,value:{registry:new Map()}};
+  const after=buildLocalInventoryEvidence(input);
+  expect(after.fingerprint).not.toBe(before.fingerprint);
+  expect(after.surfaces.find(s=>s.surface==='trust')?.status).toBe('invalid');
+  expect(after.surfaces.find(s=>s.surface==='portable')?.counts?.catalogRevision).toBe(1);
+ });
+ test('even all observed surface envelopes do not establish acceptance',async()=>{
+  const {input}=await observations();
+  // Generic auxiliary observations are unverified JSON, not evidence of completeness.
+  for(const [surface,source] of Object.entries(LOCAL_INVENTORY_SURFACES)){
+   if(['compendium','portable','runtime'].includes(surface))continue;
+   Object.assign(input.observations,{[surface]:{status:'observed',source,captureId:input.captureId,value:{}}});
+  }
+  const r=buildLocalInventoryEvidence(input);
+  expect(r.summary.observed).toBe(r.summary.required);
+  expect(r.inventoryAcceptance).toBe('notEstablished');
+  expect(r.readiness).toBe('blocked');
+ });
+});
