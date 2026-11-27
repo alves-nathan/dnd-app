@@ -318,3 +318,7 @@ Ver [5ETOOLS_ITEM_MECHANICS_PROJECTION.md](5ETOOLS_ITEM_MECHANICS_PROJECTION.md)
 ## Fase a8.10.4 — consolidação das famílias restantes
 
 Ver [5ETOOLS_REMAINING_CLOSURE_REVIEW.md](5ETOOLS_REMAINING_CLOSURE_REVIEW.md). a8.10.3.1 aprovada. Auditorias vinculadas e comparação isolada de quantidade e HP, sem escrita. Próxima a8.11.1: preservação dos contratos exclusivos do runtime.
+
+## Fase a8.11.1 — contratos exclusivos do runtime
+
+Ver [5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md](5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md). a8.10.4 aprovada. Auditoria de registro, políticas, dependências, aliases e categorias do bundle original. Próxima a8.11.2: comparação isolada de preservação dos contratos.

@@ -139,7 +139,7 @@ function buildReconciliation(main,homebrew,snapshot,{bundled,parse,detect,loadRu
   const records=collect(main,homebrew).records,items=converters.flatMap(c=>require('./'+c.module).buildPilot(main).packs.flatMap(p=>p.items));
   const out=reconcile({historical,runtime,rawHistorical,rawRuntime:a.value.runtimeIndex.entries,items,records,commits:{application:snapshot.commit,main:main.commit,homebrew:homebrew.commit}});
   for(const [domain,s] of [['historical',historical.summary],['runtime',runtime.summary]])for(const [k,n] of Object.entries(s.issues))bump(out.summary.issues,domain+':'+k,n);
-  if(onEvidenceInputs)onEvidenceInputs({reconciliation:out,rawHistorical,items});
+  if(onEvidenceInputs)onEvidenceInputs({reconciliation:out,rawHistorical,items,runtimeBundle:a.value});
   return out;
 }
 function publicSummary(r){return {schemaVersion:r.schemaVersion,commits:r.commits,summary:r.summary,activation:r.activation,scope:r.scope};}
