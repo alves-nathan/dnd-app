@@ -330,3 +330,7 @@ Ver [5ETOOLS_RUNTIME_CONTRACT_PRESERVATION.md](5ETOOLS_RUNTIME_CONTRACT_PRESERVA
 ## Fase a8.11.3 — consolidação dos contratos runtime
 
 Ver [5ETOOLS_RUNTIME_CLOSURE_REVIEW.md](5ETOOLS_RUNTIME_CLOSURE_REVIEW.md). a8.11.2 aprovada. Evidência e preservação vinculadas; readiness bloqueado. Próxima a8.12.1: consolidação global dos checkpoints e bloqueios de cutover.
+
+## Fase a8.12.1 — consolidação global dos checkpoints
+
+Ver [5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md](5ETOOLS_GLOBAL_CHECKPOINT_REVIEW.md). a8.11.3 aprovada. Cruzamento por família com a matriz global a8.4 e bloqueios preservados. Próxima a8.12.2: matriz de aceitação e priorização dos gates pendentes.

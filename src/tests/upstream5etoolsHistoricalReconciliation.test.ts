@@ -21,6 +21,8 @@ const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scr
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
+const {buildFamilyCheckpointFragment}=require('../../scripts/5etools/global-checkpoint-review');
+const {writeFragment}=require('../../scripts/5etools/cutover-evidence');
 const {buildRuntimeClosureReview}=require('../../scripts/5etools/runtime-closure-review');
 const {compareRuntimeContractPreservation}=require('../../scripts/5etools/runtime-contract-preservation');
 const {buildRuntimeContractEvidence,publicSummary:runtimeContractSummary}=require('../../scripts/5etools/runtime-contract-evidence');
@@ -364,6 +366,13 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
           featEdges:{featIdentityCandidate:42,featEndpointPending:3,featSelectionPending:4},spellEntries:{identityCandidate:25},equipmentOptions:{equipmentOptionCandidate:70,equipmentOptionPending:69}},
         approvedMappings:0,mechanicalParityEstablished:0,executable:false,writeAuthorized:false});
       console.log(JSON.stringify(originClosure));
+      const familyCheckpoint=buildFamilyCheckpointFragment(input,{equipment:report,classes:closure,spells:spellClosure,origins:originClosure,feats:featClosure,remaining:remainingClosure,runtime:runtimeClosure});
+      expect(familyCheckpoint.totals).toMatchObject({upstream:8600,historical:6335,runtime:5841,dependencies:15385,aliases:127,categories:57});
+      expect(Object.keys(familyCheckpoint.rows)).toHaveLength(13);
+      expect(familyCheckpoint.outside.runtime).toBe(3835);
+      expect(familyCheckpoint.mechanicalParityEstablished).toBe(0);
+      writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'families',familyCheckpoint);
+      console.log(JSON.stringify(familyCheckpoint));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

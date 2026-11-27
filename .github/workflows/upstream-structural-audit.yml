@@ -153,6 +153,7 @@ jobs:
         run: npx jest src/tests/upstream5etoolsHistoricalBaseline.test.ts --runInBand
       - name: Reconcile historical identities and preservation obligations (aggregate only)
         env:
+          DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_RECONCILE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RECONCILE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts src/tests/upstream5etoolsEquipmentParity.test.ts --runInBand

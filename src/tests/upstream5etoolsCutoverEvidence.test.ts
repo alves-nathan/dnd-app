@@ -73,3 +73,38 @@ describe('a8.4 cutover evidence matrix',()=>{
     expect(r.rows.find((x:any)=>x.kind==='feature')).toMatchObject({nextReview:'stagingValidation',runtimeEligible:0,retirementAuthorized:false});
   });
 });
+
+const {buildGlobalCheckpointReview}=require('../../scripts/5etools/global-checkpoint-review');
+function globalFixture(){
+ const [c,g,m]=fragments(),matrix=buildMatrix(c,g,m);
+ const checkpoints:Record<string,string>={weapon:'equipment',armor:'equipment',class:'classes',subclass:'classes',feature:'classes',spell:'spells',species:'origins',background:'origins',feat:'feats',equipment:'remaining',magicItem:'remaining',creatureStatBlock:'remaining',condition:'conditions'};
+ const rows=Object.fromEntries(matrix.rows.map((x:any)=>[x.kind,{checkpoint:checkpoints[x.kind],upstream:x.conversion.emitted,historical:x.preservation.historical??0,runtime:x.preservation.runtime??0,historicalCandidates:x.preservation['historical:identityCandidate']??0,runtimeCandidates:x.preservation['runtime:identityCandidate']??0,historicalEraPending:0,runtimeEraPending:0}]));
+ const body={schemaVersion:'dnd-upstream-family-checkpoint-fragment.v1',commits,rows,outside:{historical:0,runtime:1},totals:{upstream:1,historical:1,runtime:2,dependencies:1,aliases:0,categories:0,legacyLinks:0},
+  runtimeIdentity:{entries:2,runtimeOnly:1},bindings:{},conditionScope:{},checkpointBlockers:{},approvedMappings:0,mechanicalParityEstablished:0,activation:'review-required',runtimeEligible:false,writeAuthorized:false,distributionAuthorized:false,retirementAuthorized:false,executable:false};
+ return {matrix,fragment:{...body,fingerprint:digest(body)}};
+}
+describe('a8.12.1 global checkpoint review',()=>{
+ test('joins all family denominators and retains every global blocker',()=>{
+  const {matrix,fragment}=globalFixture(),before=digest({matrix,fragment}),r=buildGlobalCheckpointReview(matrix,fragment);
+  expect(r.rows).toHaveLength(13);
+  expect(r.rows.find((v:any)=>v.kind==='feature')).toMatchObject({checkpoint:'classes',upstream:1,historical:1,runtime:1,historicalCandidates:1,storage:1,reviewStatus:'scopedEvidenceOnly'});
+  expect(r).toMatchObject({readiness:'blocked',outside:{runtime:1},approvedMappings:0,mechanicalParityEstablished:0,writeAuthorized:false});
+  expect(r.blockers).toEqual(matrix.blockers);
+  expect(digest({matrix,fragment})).toBe(before);
+ });
+ test('blocks stale snapshots, altered fingerprints and cross-kind redistribution',()=>{
+  const {matrix,fragment}=globalFixture();
+  expect(()=>buildGlobalCheckpointReview(matrix,{...fragment,fingerprint:'stale'})).toThrow('familyFragmentFingerprintMismatch');
+  const {fingerprint,...body}=fragment;
+  const stale={...body,commits:{...commits,application:'d'.repeat(40)}};
+  expect(()=>buildGlobalCheckpointReview(matrix,{...stale,fingerprint:digest(stale)})).toThrow('globalCheckpointCommitMismatch');
+  const rows={...body.rows,feature:{...body.rows.feature,upstream:0},spell:{...body.rows.spell,upstream:1}},moved={...body,rows};
+  expect(()=>buildGlobalCheckpointReview(matrix,{...moved,fingerprint:digest(moved)})).toThrow('globalCheckpointKindAccounting');
+ });
+ test('never promotes an aggregate to distribution or migration approval',()=>{
+  const {matrix,fragment}=globalFixture(),{fingerprint,...body}=fragment;
+  const changed={...body,writeAuthorized:true};
+  expect(()=>buildGlobalCheckpointReview(matrix,{...changed,fingerprint:digest(changed)})).toThrow('invalidFamilyFragment');
+  expect(()=>buildGlobalCheckpointReview({...matrix,distributionAuthorized:true},fragment)).toThrow('invalidGlobalMatrix');
+ });
+});

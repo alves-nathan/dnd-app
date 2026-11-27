@@ -146,11 +146,14 @@ function writeFragment(dir,name,report){
   if(!dir)return;
   fs.writeFileSync(require('node:path').join(dir,name+'.json'),JSON.stringify(report)+'\n',{flag:'wx'});
 }
+module.exports={KINDS,fromCoverage,fromGraph,fromMigration,buildMatrix,writeFragment};
 if(require.main===module){
   const dir=process.argv[2];assert(dir,'fragmentDirectoryRequired');
   const read=n=>JSON.parse(fs.readFileSync(require('node:path').join(dir,n+'.json'),'utf8'));
   const report=buildMatrix(read('coverage'),read('graph'),read('migration'));
   // Aggregates only: no entity IDs, raw rows, filenames, source codes or texts.
   console.log(JSON.stringify(report));
+  const global=require('./global-checkpoint-review').buildGlobalCheckpointReview(report,read('families'));
+  console.log(JSON.stringify(global));
 }
-module.exports={KINDS,fromCoverage,fromGraph,fromMigration,buildMatrix,writeFragment};
+
