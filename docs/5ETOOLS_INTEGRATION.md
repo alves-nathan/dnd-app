@@ -310,3 +310,7 @@ Ver [5ETOOLS_REMAINING_FAMILY_EVIDENCE.md](5ETOOLS_REMAINING_FAMILY_EVIDENCE.md)
 ## Fase a8.10.2 — chassis e combate de criaturas
 
 Ver [5ETOOLS_CREATURE_COMBAT_PROJECTION.md](5ETOOLS_CREATURE_COMBAT_PROJECTION.md). a8.10.1 aprovada. Projeções isoladas de chassis, ações e defesas explícitas, sem execução de encontro. Próxima a8.10.3: equipamentos gerais e itens mágicos.
+
+## Fase a8.10.3 — equipamentos gerais e itens mágicos
+
+Ver [5ETOOLS_ITEM_MECHANICS_PROJECTION.md](5ETOOLS_ITEM_MECHANICS_PROJECTION.md). a8.10.2 aprovada. Valores, variantes, attunement, bônus e charges isolados; sem escrita. Próxima a8.10.4: consolidação e preservação de inventário e encontros.
