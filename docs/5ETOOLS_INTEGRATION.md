@@ -362,3 +362,7 @@ Ver [5ETOOLS_INVENTORY_DISPOSITION_LEDGER.md](5ETOOLS_INVENTORY_DISPOSITION_LEDG
 ## Fase a8.13.6 — revisão de observação e ledger
 
 Ver [5ETOOLS_INVENTORY_OBSERVATION_REVIEW.md](5ETOOLS_INVENTORY_OBSERVATION_REVIEW.md). a8.13.5 aprovada. Vínculo exato do snapshot observado ao ledger, escopos separados, revisão agregada sem autorização. Próxima a8.13.7: fechamento das obrigações de inventário e disposições de runtime/referências portáteis.
+
+## Fase a8.13.7 — referências runtime e portáteis
+
+Ver [5ETOOLS_INVENTORY_REFERENCE_REVIEW.md](5ETOOLS_INVENTORY_REFERENCE_REVIEW.md). a8.13.6 aprovada. Disposições de entradas runtime e referências explícitas, quatro critérios de inventário ainda bloqueados. Próxima a8.13.8: vínculo com ledger histórico e revisão de observação.

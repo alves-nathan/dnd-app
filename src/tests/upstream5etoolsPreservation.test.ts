@@ -395,3 +395,52 @@ describe('a8.13.4 inventory panel presentation and revalidation',()=>{
   expect(compareLocalInventoryRevalidation(first,other)).toBe('changed');
  });
 });
+
+import {reviewLocalInventoryReferences} from '../compendium/localInventoryReferenceReview';
+describe('a8.13.7 runtime and portable reference inventory',()=>{
+ async function referenceFixture(){
+  const f=await fixture(),captureId='reference-fixture',scope='disposableFixture' as const;
+  const runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef},portable=f.input.portableCheckpoint,installed=f.input.context.installed;
+  const baselineRuntime=f.input.catalog.entries.map(e=>({id:e.entityId,kind:e.kind,sourceFingerprint:nodeDigest(e)}));
+  const input={captureId,scope,runtime,portable,installed,baselineRuntime};
+  const read=()=>captureLocalInventoryEvidence(captureId,{readStores:()=>({guard:[installed,runtime,portable],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:runtime},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:portable}
+  }}),storage:f.memory},scope);
+  return {f,input,read};
+ }
+ test('binds exact runtime entries and explicit portable references while all criteria remain blocked',async()=>{
+  const {f,input,read}=await referenceFixture(),before=f.memory.dump(),r=reviewLocalInventoryReferences(input,await read());
+  expect(r.ok).toBe(true);
+  if(!r.ok)throw Error(r.code);
+  expect(r.review.summary.runtimeDispositions).toEqual({exactEntry:1});
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='scenarioCharacter')).toMatchObject({total:1,statuses:{present:1}});
+  expect(r.review.obligations).toHaveLength(4);
+  expect(r.review.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(r)).not.toMatch(/Fixture hero|Manual blade|feature\.test|reference-fixture/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('distinguishes changed/missing runtime entries and orphan references without repairing',async()=>{
+  const {input,read}=await referenceFixture();
+  input.baselineRuntime[0].sourceFingerprint='a'.repeat(64);
+  input.baselineRuntime.push({id:'missing-entry',kind:'feature',sourceFingerprint:'b'.repeat(64)});
+  input.portable.scenarios[0].characterId='missing-character';
+  const r=reviewLocalInventoryReferences(input,await read());
+  if(!r.ok)throw Error(r.code);
+  expect(r.review.summary.runtimeDispositions).toEqual({changedEntry:1,missingLoadedEntry:1});
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='scenarioCharacter')).toMatchObject({statuses:{missing:1}});
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='historyScenario')).toMatchObject({statuses:{ownerMismatch:1}});
+  expect(input.portable.scenarios[0].characterId).toBe('missing-character');
+ });
+ test('rejects stale capture, duplicate baseline identities and changed core observations',async()=>{
+  const {input,read}=await referenceFixture(),capture=await read();
+  expect(reviewLocalInventoryReferences(input,{...capture,captureStatus:'stale'})).toMatchObject({ok:false,code:'captureBindingMismatch'});
+  input.baselineRuntime.push(input.baselineRuntime[0]);
+  expect(reviewLocalInventoryReferences(input,capture)).toMatchObject({ok:false,code:'invalidRuntimeBaseline'});
+  input.baselineRuntime.pop();
+  input.portable.catalog.revision++;
+  expect(reviewLocalInventoryReferences(input,capture)).toMatchObject({ok:false,code:'coreObservationBindingMismatch'});
+ });
+});
+const {digest:nodeDigest}=require('../../scripts/5etools/integrated-review');
