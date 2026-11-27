@@ -310,3 +310,55 @@ describe('a8.13.2 read-only inventory capture',()=>{
   expect(changed.evidence.summary.observed).toBe(0);
  });
 });
+
+describe('a8.13.3 package observations and local coherence',()=>{
+ async function packageFixture(){
+  const f=await fixture(),captureId='package-capture',packages=createCatalogPackageRepository(f.memory,now);
+  const raw=JSON.stringify(minimalBundle('1.0.0')),checksum=sha256Hex(raw);
+  const descriptor=await packages.stage(raw,{id:'private-package',catalogVersion:'1.0.0',snapshotId:f.input.catalog.snapshotId,checksum});
+  await packages.activate({kind:'stored',packageId:descriptor.id});
+  const runtime={...f.input.catalog,bundleSha256:checksum};
+  const frame:InventoryStoreFrame={guard:[runtime],blocked:false,activeBackend:'legacy',observations:{
+   runtime:{status:'observed',source:'catalogStore',captureId,value:{snapshot:runtime,ref:{kind:'stored',packageId:descriptor.id}}},
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:f.input.context.installed}
+  }};
+  return {f,frame,captureId,descriptor};
+ }
+ test('verifies indexed bytes and active legacy snapshot without mutating storage',async()=>{
+  const {f,frame,captureId}=await packageFixture(),before=f.memory.dump();
+  const r=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:f.memory});
+  expect(r.captureStatus).toBe('stableObservation');
+  expect(r.evidence.surfaces.find(s=>s.surface==='packageContents')?.status).toBe('observed');
+  expect(r.coherence).toEqual({runtimePackage:'storedPackageMatch',activePersistence:'legacySnapshotMatch'});
+  expect(r.evidence.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(r)).not.toContain('private-package');
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('blocks corrupt chunks and does not claim coherence',async()=>{
+  const {f,frame,captureId,descriptor}=await packageFixture();
+  const key=CATALOG_PACKAGE_INDEX_KEY+'/package/'+descriptor.id+'/chunk/0';
+  const original=f.memory.getItem(key) as string;
+  f.memory.setItem(key,original.replace('Test Feature','Fake Feature'));
+  const r=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:f.memory});
+  expect(r.evidence.surfaces.find(s=>s.surface==='packageContents')?.status).toBe('invalid');
+  expect(r.coherence).toMatchObject({runtimePackage:'notVerified',packageCode:'packageChecksumMismatch'});
+ });
+ test('detects package/reference mismatch and does not independently read sqlite',async()=>{
+  const {f,frame,captureId}=await packageFixture();
+  const runtime=frame.observations.runtime!;
+  if(runtime.status!=='observed')throw Error('fixture');
+  const changed:InventoryStoreFrame={...frame,activeBackend:'sqlite',observations:{...frame.observations,runtime:{...runtime,value:{...runtime.value,ref:{kind:'bundled'}}}}};
+  const r=await captureLocalInventoryEvidence(captureId,{readStores:()=>changed,storage:f.memory});
+  expect(r.coherence).toEqual({runtimePackage:'mismatch',activePersistence:'notVerified'});
+ });
+ test('expires the whole observation when package chunks change between reads',async()=>{
+  const {f,frame,captureId,descriptor}=await packageFixture();let reads=0;
+  const key=CATALOG_PACKAGE_INDEX_KEY+'/package/'+descriptor.id+'/chunk/0';
+  const result=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:{getItem:k=>{
+   const raw=f.memory.getItem(k);
+   return k===key&&++reads===2&&typeof raw==='string'?raw.replace('Test Feature','Fake Feature'):raw;
+  }}});
+  expect(result.captureStatus).toBe('stale');
+  expect(result.evidence.summary.observed).toBe(0);
+ });
+});

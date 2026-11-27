@@ -346,3 +346,7 @@ Ver [5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md](5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md). 
 ## Fase a8.13.2 — adaptadores de observação local
 
 Ver [5ETOOLS_LOCAL_INVENTORY_CAPTURE.md](5ETOOLS_LOCAL_INVENTORY_CAPTURE.md). a8.13.1.2 aprovada. Captura explícita dos stores hidratados, leitura bruta dupla e invalidação por divergência, sem escrita. Próxima a8.13.3: ampliar inventário e evidências de coerência.
+
+## Fase a8.13.3 — inventário auxiliar e coerência
+
+Ver [5ETOOLS_LOCAL_INVENTORY_COHERENCE.md](5ETOOLS_LOCAL_INVENTORY_COHERENCE.md). a8.13.2 aprovada. Observações de stores auxiliares, leitura limitada de chunks e comparação de coerência local. Próxima a8.13.4: painel de inventário somente leitura e revalidação explícita.

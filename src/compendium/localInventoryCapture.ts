@@ -2,6 +2,7 @@ import {buildLocalInventoryEvidence,LOCAL_INVENTORY_SURFACES,type LocalInventory
 import {COMPENDIUM_STORAGE_KEY} from '../storage/compendiumSnapshot';
 import {CATALOG_PACKAGE_INDEX_KEY,CATALOG_PACKAGE_SCHEMA} from '../storage/catalogPackageRepository';
 import {CATALOG_DOWNLOAD_CACHE_INDEX_KEY,CATALOG_DOWNLOAD_CACHE_SCHEMA} from '../storage/catalogDownloadCacheRepository';
+import {observeIndexedPackageContents,compareLoadedPackage} from './localInventoryPackageObservation';
 import type {KeyValueStorageAdapter} from '../storage/keyValueStorage';
 
 type Observations=LocalInventoryInput['observations'];
@@ -11,6 +12,7 @@ export interface InventoryStoreFrame {
  guard:readonly unknown[];
  observations:Observations;
  blocked:boolean;
+ activeBackend?:'sqlite'|'web'|'legacy';
 }
 export interface LocalInventoryReadPorts {
  readStores:(captureId:string)=>InventoryStoreFrame;
@@ -51,22 +53,43 @@ function rawObservation(surface:RawSurface,result:ReadResult,captureId:string){
  * Returns only aggregate evidence, never store data or raw storage content. */
 export async function captureLocalInventoryEvidence(captureId:string,ports:LocalInventoryReadPorts,scope:LocalInventoryInput['scope']='observedLocal'){
  const build=(observations:Observations)=>buildLocalInventoryEvidence({captureId,scope,observations});
- const finish=(captureStatus:'stableObservation'|'blocked'|'stale'|'unavailable',observations:Observations)=>({
-  captureStatus,evidence:build(observations),writeAuthorized:false as const,executable:false as const});
+ const finish=(captureStatus:'stableObservation'|'blocked'|'stale'|'unavailable',observations:Observations,coherence:{runtimePackage:string;activePersistence:string;packageCode?:string}={runtimePackage:'notVerified',activePersistence:'notVerified'})=>({
+  captureStatus,evidence:build(observations),coherence,writeAuthorized:false as const,executable:false as const});
  try{
   const before=ports.readStores(captureId);
   if(before.blocked)return finish('blocked',statuses(before.observations,'busy',captureId));
   const initial=build(before.observations);
-  const first=await readRaw(ports),second=await readRaw(ports);
+  const first=await readRaw(ports);
+  const packagesFirst=await observeIndexedPackageContents(first.packageIndex.ok?first.packageIndex.raw:null,ports.storage);
+  const second=await readRaw(ports);
+  const packagesSecond=await observeIndexedPackageContents(second.packageIndex.ok?second.packageIndex.raw:null,ports.storage);
+  // Re-read index after the final chunk read to catch a concurrent replacement.
+  let finalIndex:ReadResult;
+  try{finalIndex={ok:true,raw:await ports.storage.getItem(CATALOG_PACKAGE_INDEX_KEY)};}catch{finalIndex={ok:false};}
+  const indexStable=JSON.stringify(second.packageIndex)===JSON.stringify(finalIndex);
   const after=ports.readStores(captureId);
-  const changed=after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
+  const changed=!indexStable||JSON.stringify(packagesFirst)!==JSON.stringify(packagesSecond)||before.activeBackend!==after.activeBackend||after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
    rawSurfaces.some(k=>{const a=first[k],b=second[k];return a.ok!==b.ok||(a.ok&&b.ok&&a.raw!==b.raw);});
   if(changed){
-   const all={...before.observations,...Object.fromEntries(rawSurfaces.map(k=>[k,{status:'stale',source:LOCAL_INVENTORY_SURFACES[k],captureId}]))};
+   const all={...before.observations,...Object.fromEntries([...rawSurfaces,'packageContents' as const].map(k=>[k,{status:'stale',source:LOCAL_INVENTORY_SURFACES[k],captureId}]))};
    return finish('stale',statuses(all,'stale',captureId));
   }
   const observations={...after.observations,...Object.fromEntries(rawSurfaces.map(k=>[k,rawObservation(k,second[k],captureId)]))} as Observations;
-  // A stable observation is not a successful read of every surface.
-  return finish('stableObservation',observations);
+  const packageSource=LOCAL_INVENTORY_SURFACES.packageContents;
+  observations.packageContents=packagesSecond.status==='observed'?{status:'observed',source:packageSource,captureId,value:packagesSecond}:
+   {status:packagesSecond.status,source:packageSource,captureId};
+  const runtime=after.observations.runtime;
+  const runtimePackage=compareLoadedPackage(runtime?.status==='observed'?runtime.value:undefined,packagesSecond);
+  let activePersistence='notVerified';
+  // Legacy is the only backend for which we already have an independent,
+  // non-initializing raw read. Never open SQLite/IndexedDB here.
+  if(after.activeBackend==='legacy'&&second.legacyCompendium.ok&&second.legacyCompendium.raw!==null&&observations.legacyCompendium?.status==='observed'){
+   const raw=JSON.parse(second.legacyCompendium.raw),state=record(raw.state)?raw.state:raw;
+   const stored=build({compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:state}});
+   const a=stored.surfaces.find(s=>s.surface==='compendium'),b=initial.surfaces.find(s=>s.surface==='compendium');
+   if(a?.status==='observed'&&b?.status==='observed')activePersistence=a.fingerprint===b.fingerprint?'legacySnapshotMatch':'mismatch';
+  }
+  // A stable observation is not a successful read or accepted gate.
+  return finish('stableObservation',observations,{runtimePackage,activePersistence,...(packagesSecond.status==='observed'?{}:{packageCode:packagesSecond.code})});
  }catch{return finish('unavailable',{});}
 }
