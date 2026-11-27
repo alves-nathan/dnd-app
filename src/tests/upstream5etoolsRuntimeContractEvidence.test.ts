@@ -49,3 +49,22 @@ describe('a8.11.1 runtime contract preservation evidence',()=>{
   expect(q).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,writeAuthorized:false,retirementAuthorized:false});
  });
 });
+
+const {compareRuntimeContractPreservation}=require('../../scripts/5etools/runtime-contract-preservation');
+describe('a8.11.2 runtime bundle preservation',()=>{
+ test('binds the complete baseline and preserves every occurrence and policy',()=>{
+  const x=fixture(),e=buildRuntimeContractEvidence(x),clone=()=>JSON.parse(JSON.stringify(x.runtimeBundle));
+  const before=digest(x),r=compareRuntimeContractPreservation(x,e,clone(),clone());
+  expect(r).toMatchObject({status:'runtimeContractPreservationCandidate',codes:[],writeAuthorized:false,preservedCounts:{entries:3,dependencies:1,policies:13}});
+  expect(digest(x)).toBe(before);
+  const after=clone();after.activationPolicy={changed:true};after.providerCollections={changed:true};after.aliases.entities=[];
+  expect(compareRuntimeContractPreservation(x,e,clone(),after)).toMatchObject({status:'preservationBlocked',changedSections:['activationPolicy','aliases','providerCollections']});
+  expect(compareRuntimeContractPreservation(x,e,after,clone()).codes).toContain('baseSnapshotMismatch');
+  expect(()=>compareRuntimeContractPreservation(x,{...e,approvedMappings:1},clone(),clone())).toThrow('runtimePreservationEvidenceMismatch');
+ });
+ test('blocks reorder, deletion, unknown fields and selection contract changes',()=>{
+  const x=fixture(),e=buildRuntimeContractEvidence(x),after=JSON.parse(JSON.stringify(x.runtimeBundle));
+  after.runtimeIndex.entries.reverse();after.selectionContracts={changed:true};after.extra={};
+  expect(compareRuntimeContractPreservation(x,e,x.runtimeBundle,after).changedSections).toEqual(['extra','runtimeIndex','selectionContracts']);
+ });
+});

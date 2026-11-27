@@ -322,3 +322,7 @@ Ver [5ETOOLS_REMAINING_CLOSURE_REVIEW.md](5ETOOLS_REMAINING_CLOSURE_REVIEW.md). 
 ## Fase a8.11.1 — contratos exclusivos do runtime
 
 Ver [5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md](5ETOOLS_RUNTIME_CONTRACT_EVIDENCE.md). a8.10.4 aprovada. Auditoria de registro, políticas, dependências, aliases e categorias do bundle original. Próxima a8.11.2: comparação isolada de preservação dos contratos.
+
+## Fase a8.11.2 — comparação de preservação runtime
+
+Ver [5ETOOLS_RUNTIME_CONTRACT_PRESERVATION.md](5ETOOLS_RUNTIME_CONTRACT_PRESERVATION.md). a8.11.1 aprovada. Comparação integral do bundle e fronteira isolada de filtros, sem escrita. Próxima a8.11.3: consolidação dos contratos runtime.

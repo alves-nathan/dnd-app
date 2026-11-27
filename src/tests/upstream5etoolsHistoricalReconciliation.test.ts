@@ -21,6 +21,7 @@ const {buildFeatGrantEvidence,publicSummary:featGrantSummary}=require('../../scr
 const {buildFeatAllocationProjection,publicSummary:featAllocationSummary}=require('../../scripts/5etools/feat-allocation-projection');
 const {buildFeatRequirementProjection,publicSummary:featRequirementSummary}=require('../../scripts/5etools/feat-requirement-projection');
 const {buildFeatParityEvidence,publicSummary:featParitySummary}=require('../../scripts/5etools/feat-parity-evidence');
+const {compareRuntimeContractPreservation}=require('../../scripts/5etools/runtime-contract-preservation');
 const {buildRuntimeContractEvidence,publicSummary:runtimeContractSummary}=require('../../scripts/5etools/runtime-contract-evidence');
 const {buildRemainingClosureReview}=require('../../scripts/5etools/remaining-closure-review');
 const {buildItemMechanicsProjection,publicSummary:itemMechanicsSummary}=require('../../scripts/5etools/item-mechanics-projection');
@@ -156,6 +157,9 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(runtimeContracts.mechanicalParityEstablished).toBe(0);
       expect(runtimeContracts.writeAuthorized).toBe(false);
       console.log(JSON.stringify(runtimeContractSummary(runtimeContracts)));
+      const runtimePreservation=compareRuntimeContractPreservation(input,runtimeContracts,input.runtimeBundle,input.runtimeBundle);
+      expect(runtimePreservation).toMatchObject({status:'runtimeContractPreservationCandidate',codes:[],writeAuthorized:false,preservedCounts:{entries:5841,registry:5841,dependencies:15385,aliases:127,categories:57,policies:13}});
+      console.log(JSON.stringify(runtimePreservation));
       const report=buildEquipmentParityEvidence(input);
       expect(report.byKind.weapon).toMatchObject({occurrences:114,identityCandidates:114});
       expect(report.byKind.armor).toMatchObject({occurrences:39,identityCandidates:39});
