@@ -32,7 +32,7 @@ export type InventorySurface=keyof typeof LOCAL_INVENTORY_SURFACES;
 type ObservationSource<K extends InventorySurface>=typeof LOCAL_INVENTORY_SURFACES[K];
 export type InventoryObservation<K extends InventorySurface,T> =
  {status:'observed';source:ObservationSource<K>;captureId:string;value:T}|
- {status:'unavailable'|'notInspected'|'busy';source:ObservationSource<K>;captureId:string};
+ {status:'unavailable'|'notInspected'|'busy'|'invalid'|'stale';source:ObservationSource<K>;captureId:string};
 export interface RuntimeInventoryValue {snapshot:CatalogSnapshot;ref:CatalogRuntimePackageRef}
 type InventoryValues={compendium:CompendiumPersistenceState;portable:PortableRestoreDataCheckpoint;runtime:RuntimeInventoryValue};
 export interface LocalInventoryInput {
@@ -124,7 +124,7 @@ export function buildLocalInventoryEvidence(input:LocalInventoryInput){
   if(!o)continue;
   if(!validContext||o.captureId!==input.captureId){row.status='stale';row.codes.push('captureBindingMismatch');continue;}
   if(o.source!==source){row.status='invalid';row.codes.push('sourceBindingMismatch');continue;}
-  if(o.status==='unavailable'||o.status==='notInspected'||o.status==='busy'){row.status=o.status;continue;}
+  if(o.status==='unavailable'||o.status==='notInspected'||o.status==='busy'||o.status==='invalid'||o.status==='stale'){row.status=o.status;continue;}
   if(o.status!=='observed'){row.status='invalid';row.codes.push('invalidObservationStatus');continue;}
   try{
    let data:unknown=o.value;

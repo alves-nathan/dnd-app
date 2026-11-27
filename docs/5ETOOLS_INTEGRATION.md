@@ -342,3 +342,7 @@ Ver [5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md](5ETOOLS_CUTOVER_ACCEPTANCE_MATRIX.md)
 ## Fase a8.13.1 — contrato de inventário local
 
 Ver [5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md](5ETOOLS_LOCAL_INVENTORY_EVIDENCE.md). a8.12.2 aprovada. Contrato de observações locais, provenance, estados indisponíveis e fingerprints sem autorização. Próxima a8.13.2: adaptadores de observação somente leitura.
+
+## Fase a8.13.2 — adaptadores de observação local
+
+Ver [5ETOOLS_LOCAL_INVENTORY_CAPTURE.md](5ETOOLS_LOCAL_INVENTORY_CAPTURE.md). a8.13.1.2 aprovada. Captura explícita dos stores hidratados, leitura bruta dupla e invalidação por divergência, sem escrita. Próxima a8.13.3: ampliar inventário e evidências de coerência.

@@ -254,3 +254,59 @@ describe('a8.13.1 local inventory contract',()=>{
   expect(r.readiness).toBe('blocked');
  });
 });
+
+import {captureLocalInventoryEvidence,type InventoryStoreFrame} from '../compendium/localInventoryCapture';
+import {COMPENDIUM_STORAGE_KEY} from '../storage/compendiumSnapshot';
+import {CATALOG_PACKAGE_INDEX_KEY} from '../storage/catalogPackageRepository';
+describe('a8.13.2 read-only inventory capture',()=>{
+ async function captureFixture(){
+  const f=await fixture(),captureId='capture-fixture';
+  const frame:InventoryStoreFrame={guard:[f.input.catalog,f.input.portableCheckpoint],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:f.input.context.installed},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:f.input.portableCheckpoint},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:{snapshot:f.input.catalog,ref:f.input.runtimeRef}}
+  }};
+  return {f,frame,captureId};
+ }
+ test('reads raw legacy envelope twice without writes or invented default indexes',async()=>{
+  const {f,frame,captureId}=await captureFixture(),before=f.memory.dump(),reads:string[]=[];
+  const result=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:{getItem:key=>{reads.push(key);return f.memory.getItem(key);}}},'disposableFixture');
+  expect(result.captureStatus).toBe('stableObservation');
+  expect(reads.filter(k=>k===COMPENDIUM_STORAGE_KEY)).toHaveLength(2);
+  expect(result.evidence.surfaces.find(s=>s.surface==='legacyCompendium')?.status).toBe('observed');
+  expect(result.evidence.surfaces.find(s=>s.surface==='packageIndex')?.status).toBe('unavailable');
+  expect(result.evidence.surfaces.find(s=>s.surface==='packageContents')?.status).toBe('notInspected');
+  expect(result.evidence.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(result)).not.toMatch(/Manual blade|legacy-weapon|capture-fixture/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('distinguishes corruption and read failure from absent storage',async()=>{
+  const {frame,captureId}=await captureFixture();
+  const result=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:{getItem:key=>{
+   if(key===CATALOG_PACKAGE_INDEX_KEY)return '{corrupt';
+   if(key===COMPENDIUM_STORAGE_KEY)throw Error('private storage failure');
+   return null;
+  }}});
+  expect(result.captureStatus).toBe('stableObservation');
+  expect(result.evidence.surfaces.find(s=>s.surface==='packageIndex')?.status).toBe('invalid');
+  expect(result.evidence.surfaces.find(s=>s.surface==='legacyCompendium')?.status).toBe('unavailable');
+  expect(JSON.stringify(result)).not.toContain('private storage failure');
+ });
+ test('blocks busy sessions before any storage reads and expires changed stores',async()=>{
+  const {frame,captureId}=await captureFixture();let reads=0,frames=0;
+  const storage={getItem:()=>{reads++;return null;}};
+  const blocked=await captureLocalInventoryEvidence(captureId,{readStores:()=>({...frame,blocked:true}),storage});
+  expect(blocked.captureStatus).toBe('blocked');expect(reads).toBe(0);
+  const stale=await captureLocalInventoryEvidence(captureId,{readStores:()=>++frames===1?frame:{...frame,guard:[{}]},storage});
+  expect(stale.captureStatus).toBe('stale');expect(stale.evidence.summary.observed).toBe(0);
+ });
+ test('detects changes in raw storage and same-reference observation data',async()=>{
+  const {f,frame,captureId}=await captureFixture();let reads=0;
+  const result=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:{getItem:key=>key===COMPENDIUM_STORAGE_KEY?String(++reads):null}});
+  expect(result.captureStatus).toBe('stale');
+  const mutable=f.input.portableCheckpoint;let calls=0;
+  const changed=await captureLocalInventoryEvidence(captureId,{readStores:()=>{if(++calls===2)mutable.catalog.revision++;return frame;},storage:{getItem:()=>null}});
+  expect(changed.captureStatus).toBe('stale');
+  expect(changed.evidence.summary.observed).toBe(0);
+ });
+});
