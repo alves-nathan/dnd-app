@@ -1,3 +1,4 @@
+const {buildOriginChassisProjection,publicSummary:originChassisSummary}=require('../../scripts/5etools/origin-chassis-projection');
 const {buildOriginParityEvidence,publicSummary:originParitySummary}=require('../../scripts/5etools/origin-parity-evidence');
 const {buildSpellClosureReview}=require('../../scripts/5etools/spell-closure-review');
 const {buildSpellAccessProjection,publicSummary:spellAccessSummary}=require('../../scripts/5etools/spell-access-projection');
@@ -247,6 +248,14 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(origins.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
       expect(origins).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(originParitySummary(origins)));
+      const originChassis=buildOriginChassisProjection(input,origins);
+      expect(originChassis.summary).toMatchObject({species:166,background:81,ability:{backgroundAllocationCandidate:43}});
+      expect(originChassis.summary.size.sizeCandidate).toBeGreaterThan(0);
+      expect(originChassis.summary.movement.movementCandidate).toBeGreaterThan(0);
+      expect(originChassis.summary.proficiencies.skill.literalProficiencyCandidate).toBeGreaterThan(0);
+      expect(originChassis.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
+      expect(originChassis).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(originChassisSummary(originChassis)));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

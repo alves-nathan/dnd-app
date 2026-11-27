@@ -270,3 +270,7 @@ Ver [5ETOOLS_SPELL_CLOSURE_REVIEW.md](5ETOOLS_SPELL_CLOSURE_REVIEW.md). a8.7.5 a
 ## Fase a8.8.1 — paridade mecânica de espécies e backgrounds
 
 Ver [5ETOOLS_ORIGIN_PARITY_EVIDENCE.md](5ETOOLS_ORIGIN_PARITY_EVIDENCE.md). a8.7.6 aprovada. Comparação por ocorrência e lacunas dos contratos de criação, sem ativação. Próxima a8.8.2: chassis, atributos e seleções de proficiências.
+
+## Fase a8.8.2 — chassis, atributos e proficiências das origens
+
+Ver [5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md](5ETOOLS_ORIGIN_CHASSIS_PROJECTION.md). a8.8.1 aprovada. Projeções isoladas de atributos, tamanho, movimento, sentidos e proficiências, sem concessão automática. Próxima a8.8.3: traits, variantes e grants.
