@@ -1,3 +1,4 @@
+const {buildSpellClosureReview}=require('../../scripts/5etools/spell-closure-review');
 const {buildSpellAccessProjection,publicSummary:spellAccessSummary}=require('../../scripts/5etools/spell-access-projection');
 const {buildSpellLifecycleProjection,publicSummary:spellLifecycleSummary}=require('../../scripts/5etools/spell-lifecycle-projection');
 const {buildSpellEffectProjection,publicSummary:spellEffectSummary,previewSpellEffects}=require('../../scripts/5etools/spell-effect-projection');
@@ -228,6 +229,12 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(access.rows.every((x:any)=>!x.runtimeEligible&&!x.writeAuthorized&&!x.retirementAuthorized)).toBe(true);
       expect(access).toMatchObject({approvedMappings:0,mechanicalParityEstablished:0,executable:false});
       console.log(JSON.stringify(spellAccessSummary(access)));
+      const spellClosure=buildSpellClosureReview({parity:spells,casting,effects,lifecycle,access});
+      expect(spellClosure).toMatchObject({upstreamSpells:854,historical:{occurrences:1236,identityCandidates:1173,identityPending:63,eraPending:782},
+        runtime:{occurrences:378},access:{directEdges:2202,edgeStatus:{directListCandidate:1924,classEndpointPending:135,conditionalAccessPending:100,editionPending:43}},
+        effectCoverage:{reviewedDefinitionCandidates:12,withoutBaseEffectCandidate:842},lifecycle:{concentration:{required:348,notRequired:477,pending:29}},
+        approvedMappings:0,mechanicalParityEstablished:0,executable:false});
+      console.log(JSON.stringify(spellClosure));
     }
   });
   console.log(JSON.stringify(publicSummary(r)));

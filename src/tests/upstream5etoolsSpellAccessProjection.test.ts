@@ -1,3 +1,9 @@
+import type {Character} from '../types';
+import {reviewSpellSlotOnlyPreservation} from '../compendium/spellSlotPreservationPreview';
+const {buildSpellClosureReview,previewInstantSlotBoundary}=require('../../scripts/5etools/spell-closure-review');
+const {buildSpellCastingProjection}=require('../../scripts/5etools/spell-casting-projection');
+const {buildSpellEffectProjection}=require('../../scripts/5etools/spell-effect-projection');
+const {buildSpellLifecycleProjection}=require('../../scripts/5etools/spell-lifecycle-projection');
 import {createEmptyCharacter} from '../data/mockData';
 import {spendSpellSlots,applySpellSlotRest} from '../rules-engine/resources/spellSlotManager';
 const {buildPilot:buildClasses}=require('../../scripts/5etools/class-converter');
@@ -102,5 +108,66 @@ describe('a8.7.5 spell access and slot transaction preview',()=>{
   expect(f.preview({assignments:[f.assignment('Higher','prepared')],cast:{assignmentId:'Higher',mode:'normal',poolId:'spellcasting-shared-1',poolEligibilityConfirmed:true}}).reason).toBe('slotTooLow');
   expect(f.preview({projectionFingerprint:'stale'}).reason).toBe('projectionFingerprintMismatch');
   expect(f.preview({assignmentInventoryComplete:false}).reason).toBe('explicitSpellAccessContextRequired');
+ });
+});
+
+describe('a8.7.6 spell closure and transaction preservation boundary',()=>{
+ test('consolidates five reports with exact coverage, no promoted effects',()=>{
+  const f=fixture(),casting=buildSpellCastingProjection(f.input,f.evidence),effects=buildSpellEffectProjection(f.input,casting),
+   lifecycle=buildSpellLifecycleProjection(f.input,f.evidence),reports={parity:f.evidence,casting,effects,lifecycle,access:f.projection};
+  const before=digest(reports),r=buildSpellClosureReview(reports);
+  expect(r).toMatchObject({upstreamSpells:7,effectCoverage:{reviewedDefinitionCandidates:0,withoutBaseEffectCandidate:7},
+   access:{directEdges:7},mechanicalParityEstablished:0,approvedMappings:0,executable:false});
+  expect(JSON.stringify(r)).not.toMatch(/Private|PRIVATE_TEXT|upstream:main:spell:/);
+  expect(digest(reports)).toBe(before);
+  expect(()=>buildSpellClosureReview({...reports,casting:{...casting,fingerprint:'stale'}})).toThrow('spellReviewFingerprintMismatch');
+  const {fingerprint,...body}=lifecycle;
+  const missing={...body,rows:body.rows.slice(1)};
+  expect(()=>buildSpellClosureReview({...reports,lifecycle:{...missing,fingerprint:digest(missing)}})).toThrow('spellReviewCoverageMismatch');
+  const mismatched={...body,evidenceFingerprint:'other'};
+  expect(()=>buildSpellClosureReview({...reports,lifecycle:{...mismatched,fingerprint:digest(mismatched)}})).toThrow('spellReviewBindingMismatch');
+ });
+ test('composes casting and access for the same physical spell, without claiming a complete cast',()=>{
+  const f=fixture(),casting=buildSpellCastingProjection(f.input,f.evidence);
+  const c={contextComplete:true,casterId:'caster',rulesEra:'2024',spellId:f.row('Prepared').spellId,projectionFingerprint:casting.fingerprint,
+   timeAlternativeIndex:0,ritual:false,timingAvailableConfirmed:true,anchor:{id:'target',kind:'creature',distanceFeet:30},anchorEligibilityConfirmed:true,
+   targeting:{policyConfirmed:true,membershipComplete:true,eligibilityConfirmed:true,min:1,max:1,ids:['target']},components:{verbalAvailableConfirmed:true}};
+  const request={contextComplete:true,otherCostsAndEffectsExcludedConfirmed:true,casting:c,access:f.request},before=digest(request);
+  const r=previewInstantSlotBoundary(f.input,request);
+  expect(r).toMatchObject({status:'instantSlotBoundaryCandidate',slotCosts:[{amount:1,slotLevel:1,poolKind:'spellcasting'}],writeAuthorized:false,executable:false});
+  expect(r.assignments).toEqual(f.request.assignments);
+  expect(digest(request)).toBe(before);
+  expect(previewInstantSlotBoundary(f.input,{...request,casting:{...c,spellId:f.row('Ritual').spellId}}).reason).toBe('castSpellBindingMismatch');
+  expect(previewInstantSlotBoundary(f.input,{...request,casting:{...c,ritual:true}}).reason).toBe('castModeOrEditionMismatch');
+  expect(previewInstantSlotBoundary(f.input,{...request,casting:{...c,anchor:{...c.anchor,distanceFeet:61}}}).reason).toBe('castingRequirementsPending');
+  expect(previewInstantSlotBoundary(f.input,{...request,access:{...f.request,pools:f.request.pools.map((p:any)=>({...p,current:0}))}}).reason).toBe('slotOrAccessPending');
+ });
+ function disposable(){
+  const f=fixture(),base=createEmptyCharacter('Fixture');
+  const character:Character={...base,spellSlots:f.request.pools,spells:[{id:'existing-spell',name:'Existing',level:1,castingTime:'action'}],
+   activeEffects:[{id:'existing-effect',name:'Existing effect',kind:'spell',sourceType:'spell',status:'active',concentration:true,duration:{unit:'round',remaining:2},createdAt:'2026-01-01T00:00:00Z'}],
+   compendiumLinks:[{id:'existing-link',characterId:base.id,itemId:'stored',importItemId:'imported',packId:'pack',sourceId:'source',itemType:'spell',appliedAs:'spell',appliedEntityId:'existing-spell',appliedEntityName:'Existing',status:'active',addedAt:'2026-01-01T00:00:00Z'}],
+   resources:[{id:'existing-resource',name:'Existing resource',max:3,current:1,recharge:'shortRest'}]};
+  return {f,character};
+ }
+ test('disposable slot spend preserves spells, effects, resources, links and prior state',()=>{
+  const {f,character}=disposable(),before=digest(character),plan=f.preview();
+  const spent=spendSpellSlots({character,costs:plan.slotCosts});
+  expect(reviewSpellSlotOnlyPreservation(character,character,spent.character,'spellcasting-shared-1')).toMatchObject({status:'slotOnlyPreservationCandidate',codes:[],unexpectedPaths:[],writeAuthorized:false});
+  expect(reviewSpellSlotOnlyPreservation(character,character,character,null)).toMatchObject({status:'slotOnlyPreservationCandidate',codes:[]});
+  expect(digest(character)).toBe(before);
+  expect(spent.character.compendiumLinks).toEqual(character.compendiumLinks);
+  expect(spent.character.activeEffects).toEqual(character.activeEffects);
+ });
+ test('strict preservation detects concurrent changes, unrelated mutation, wrong pool and forged transaction',()=>{
+  const {f,character}=disposable(),spent=spendSpellSlots({character,costs:f.preview().slotCosts}).character;
+  const altered={...spent,spells:[],activeEffects:[],compendiumLinks:[],resources:[]};
+  expect(reviewSpellSlotOnlyPreservation(character,character,altered,'spellcasting-shared-1')).toMatchObject({status:'preservationBlocked',unexpectedPaths:['activeEffects','compendiumLinks','resources','spells']});
+  expect(reviewSpellSlotOnlyPreservation(character,{...character,notes:'concurrent edit'},spent,'spellcasting-shared-1').codes).toContain('baseSnapshotMismatch');
+  expect(reviewSpellSlotOnlyPreservation(character,character,spent,'pact-Pact-2').codes).toContain('unexpectedSlotChanges');
+  expect(reviewSpellSlotOnlyPreservation(character,character,{...spent,spellSlotTransactions:[]},'spellcasting-shared-1').codes).toContain('slotHistoryMismatch');
+  expect(reviewSpellSlotOnlyPreservation(character,character,{...spent,spellSlotTransactions:spent.spellSlotTransactions?.map(tx=>({...tx,amount:-2}))},'spellcasting-shared-1').codes).toContain('slotTransactionMismatch');
+  const duplicate={...character,spellSlots:[...character.spellSlots,character.spellSlots[0]]};
+  expect(reviewSpellSlotOnlyPreservation(duplicate,duplicate,duplicate,null).codes).toContain('invalidSlotInventory');
  });
 });

@@ -262,3 +262,7 @@ Ver [5ETOOLS_SPELL_LIFECYCLE_PROJECTION.md](5ETOOLS_SPELL_LIFECYCLE_PROJECTION.m
 ## Fase a8.7.5 — acesso, preparação e transações de slots
 
 Ver [5ETOOLS_SPELL_ACCESS_PROJECTION.md](5ETOOLS_SPELL_ACCESS_PROJECTION.md). a8.7.4 aprovada. Vínculos qualificados de classe, limites separados, seleção explícita de pool e preservação de assignments. Próxima a8.7.6: consolidação de magias e limites de transações.
+
+## Fase a8.7.6 — consolidação de magias e preservação de slots
+
+Ver [5ETOOLS_SPELL_CLOSURE_REVIEW.md](5ETOOLS_SPELL_CLOSURE_REVIEW.md). a8.7.5 aprovada. Relatórios vinculados, fronteira isolada de slot e preservação estrita da ficha, sem aprovação de paridade. Próxima a8.8.1: espécies e backgrounds.
