@@ -141,6 +141,6 @@ export function buildLocalInventoryEvidence(input:LocalInventoryInput){
  const body={schemaVersion:'dnd-local-inventory-evidence.v1',scope:input.scope,captureFingerprint:digest({captureId:validContext?input.captureId:null}),
   surfaces,summary,codes,readiness:'blocked',inventoryAcceptance:'notEstablished',
   blockers:['callerSuppliedObservationsNotIndependentCapture','installedCompletenessAndCrossStoreCoherenceNotVerified',
-   'packageBytesTrustAndExternalInventoryNotVerified','noDurableCheckpointOrMigrationAuthorization'],...flags()};
+   'packageBytesTrustAndExternalInventoryNotVerified','noDurableCheckpointOrMigrationAuthorization'],...flags};
  return {...body,fingerprint:digest(body)};
 }
