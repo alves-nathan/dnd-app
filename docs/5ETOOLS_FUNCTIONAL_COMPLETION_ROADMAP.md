@@ -75,3 +75,7 @@ Ver [5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md](5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY
 - 19B.4: atualizador no app, consultar manifesto privado, preview de alterações/impacto em personagens, download opcional ou arquivo local, validação, checkpoint, aplicação transacional, rollback e proteção anti-replay; preservar catálogo offline. Fonte Homebrew nova requer seleção; não habilitar publicação pública.
 - 19F.4: regressão integrada de atualização Main/Brew, erratas, dependentes transitivos, exclusões sem quebrar referências, fontes novas, base stale, assinatura inválida, interrupções, restart e rollback. Build inicial completo continua obrigatório sem importação/download pelo usuário.
 A1/A2/A3 antes de A4/A5; B4 após B1–B3; F4 após E e F1–F3. Reutilizar catalogTrust, catalogUpdateTransaction, catalogPackageRepository e download coordinator. Atualização de conteúdo não pressupõe atualização de código; mecânica não suportada exige correção antes de ativar o lote afetado. Conversão no computador local; endpoint privado opcional, não serviço público obrigatório.
+
+## Política de CI revisada
+
+Cada fase 19A–F é um tema, sem limite de commits; Quality + fast por commit, full somente na conclusão do tema, correção de full falho ou candidato final (exceção se risco concreto fora do fast). A1c implementa fronteira de leitura operacional dos insumos selecionados; pendências de disposição/seleção continuam abertas e devem ser tratadas no pipeline A2/A3, sem declarar A1 funcionalmente fechado antes de reconciliar o corpus.

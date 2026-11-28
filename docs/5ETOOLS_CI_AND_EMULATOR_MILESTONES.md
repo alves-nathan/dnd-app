@@ -36,3 +36,7 @@ O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir 
 ## Otimização medida após 19A.1
 
 Run 46151057043 full: 704s; Quality 46151062484: 215s. Fetch 106s, histórico/reconciliação 79s, migration preview 66s, coverage 52s, graph 50s. Full permanece obrigatório em marcos e alterações estruturais; iterações de seleção de escopo sem alteração de converter/lock usam fast + Quality, adicionados fixtures corpus/histórico ao fast. Fetch dos dois SHAs em paralelo no mesmo runner, aguarda ambos e falha se qualquer falhar. Sem cache/artifact de upstream e sem remover suites. Ganho real precisa ser medido em próximo full; não prometer tempo. Se insuficiente, consolidar cálculo comum/leituras de snapshots sem alterar denominadores, depois avaliar paralelismo de suites com limite de memória/CPU.
+
+## Política de auditoria por tema (decisão do proprietário)
+
+Sem limite de commits. Quality + fast structural em cada entrega intermediária; full upstream no fechamento de cada tema 19A/19B/19C/19D/19E/19F e candidato final, e na correção de full falho. Antecipação excepcional se regressão relevante não detectável por fast. Não reduzir cobertura; não tratar fast como full. Usar o marker já existente apenas nesses casos; não alterar gatilhos de PR/manual.

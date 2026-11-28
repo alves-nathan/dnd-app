@@ -133,6 +133,7 @@ describe('functional scope batch selection and legacy obligations',()=>{
   expect(r.selection.decisions.every((x:any)=>x.sourceId!==brew)).toBe(true);
   expect(prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',homebrewSourceIds:[brew],reason:'fixture'}).scope.counts).toEqual({included:3,excluded:0,pending:0});
   expect(()=>prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',homebrewSourceIds:['*'],reason:'fixture'})).toThrow('functionalBatchHomebrewInvalid');
+  expect(prepareFunctionalSelection(d,{mainPolicy:'explicitOnly',mainSourceIds:[JSON.stringify(['main','XPHB'])],reason:'fixture'}).scope.counts).toEqual({included:1,excluded:0,pending:2});
   expect(digest(d)).toBe(before);
  });
  test('preserves unmapped historical sources and prevents excluding required Main sources',()=>{
@@ -143,5 +144,39 @@ describe('functional scope batch selection and legacy obligations',()=>{
   expect(r).toMatchObject({requiredSourceIds:[required],pending:{historicalOccurrences:1,bootstrap:0,runtime:1},installedInventory:'notInspected',executable:false});
   expect(()=>prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',excludedSourceIds:[required],reason:'fixture'},r)).toThrow('functionalRequiredLegacySourceExcluded');
   expect(()=>reconcileFunctionalLegacySources(d,{...history,commits:{...history.commits,application:'a'.repeat(40)}})).toThrow('functionalHistoryBindingMismatch');
+ });
+});
+
+describe('functional conversion inputs',()=>{
+ const {buildFunctionalInputPlan,readSelectedFunctionalInputs,publicInputPlanSummary}=require('../../scripts/5etools/functional-input-plan');
+ const {digest}=require('../../scripts/5etools/integrated-review');
+ const fixture=()=>{
+  const data:Record<string,unknown>={'data/races.json':{race:[{name:'Fixture',source:'A',_versions:[{name:'Variant'}]}],other:[{name:'Unclassified'}]},'data/book/book-a.json':{data:[{name:'Chapter',entries:['private text']}]},'data/shared.json':{definitions:{x:1}}};
+  const brew:Record<string,unknown>={'brew.json':{spell:[{name:'Private brew',source:'B'}]},'_generated/index-sources.json':{B:'brew.json'}};
+  const main={commit:mainSha,files:new Map(Object.keys(data).map(p=>[p,'a'])),readJson:(p:string)=>data[p]},homebrew={commit:brewSha,files:new Map(Object.keys(brew).map(p=>[p,'b'])),readJson:(p:string)=>brew[p]};
+  const inventory={commits:{main:mainSha,homebrew:brewSha},sources:[{origin:'main',code:'A',publications:[{kind:'book',id:'A'}],paths:[]},{origin:'homebrew',code:'B',publications:[],paths:[{path:'brew.json'}]}],files:[...Object.keys(data).map(path=>({origin:'main',path,blob:'a'})),{origin:'homebrew',path:'brew.json',blob:'b'}]};
+  const source=(origin:string,source:string|null)=>({id:JSON.stringify([origin,source]),origin,source});
+  const body={schemaVersion:'dnd-upstream-functional-corpus.v1',scope:'privateScopeDraft',executable:false,commits:{...inventory.commits,application:'d'.repeat(40)},bindings:{inventory:digest(inventory)},sources:[source('main','A'),source('main',null),source('homebrew','B')],totals:{main:{resolverRows:1,otherRootRows:2},homebrew:{resolverRows:1,otherRootRows:0}}};
+  const draft={...body,fingerprint:digest(body)},selection={schemaVersion:'dnd-upstream-functional-source-selection.v1',corpusFingerprint:draft.fingerprint,decisions:[{sourceId:JSON.stringify(['main','A']),disposition:'include',reason:'fixture'}]};
+  return {main,homebrew,inventory,draft,selection,data};
+ };
+ test('routes selected mechanical and consultation inputs, preserves nested versions and tracks unresolved support',()=>{
+  const {main,homebrew,inventory,draft,selection}=fixture();
+  const p=buildFunctionalInputPlan(main,homebrew,inventory,draft,selection);
+  expect(p.totals.main).toMatchObject({resolverRows:1,otherRootRows:2,nonArrayValues:1,included:2,sourcePending:1,sharedSupportPending:1});
+  expect(p.totals.homebrew).toMatchObject({included:0,sourcePending:1});
+  const values=[...readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,p)];
+  expect(values.map((r:any)=>r.descriptor.lane).sort()).toEqual(['publicationSection','resolverEntity']);
+  expect(values.find((r:any)=>r.descriptor.lane==='resolverEntity').value._versions).toHaveLength(1);
+  expect(JSON.stringify(publicInputPlanSummary(p))).not.toContain('Private brew');
+  expect(JSON.stringify(publicInputPlanSummary(p))).not.toContain('private text');
+  expect(JSON.stringify(p)).not.toContain('private text');
+ });
+ test('rejects stale plans, mismatched snapshots and changed raw values',()=>{
+  const {main,homebrew,inventory,draft,selection,data}=fixture(),p=buildFunctionalInputPlan(main,homebrew,inventory,draft,selection);
+  expect(()=>[...readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,{...p,fingerprint:'stale'})]).toThrow('functionalInputPlanMismatch');
+  expect(()=>buildFunctionalInputPlan({...main,commit:'e'.repeat(40)},homebrew,inventory,draft,selection)).toThrow('functionalInputSnapshotMismatch');
+  data['data/book/book-a.json']={data:[{name:'changed'}]};
+  expect(()=>[...readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,p)]).toThrow('functionalInputPlanMismatch');
  });
 });

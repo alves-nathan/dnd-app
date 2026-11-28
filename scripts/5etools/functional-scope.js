@@ -32,18 +32,19 @@ function reconcileFunctionalLegacySources(draft,history){
 }
 // Explicit batch selection is bound to a digest of the exact source set.
 // No wildcard for future snapshots; unknown sources remain pending.
-function prepareFunctionalSelection(draft,{mainPolicy,homebrewSourceIds=[],excludedSourceIds=[],reason}={},legacy){
+function prepareFunctionalSelection(draft,{mainPolicy,mainSourceIds=[],homebrewSourceIds=[],excludedSourceIds=[],reason}={},legacy){
  verify(draft);
- assert(['allObservedMain','explicitOnly'].includes(mainPolicy)&&Array.isArray(homebrewSourceIds)&&Array.isArray(excludedSourceIds)&&text(reason),'functionalBatchSelectionInvalid');
+ assert(['allObservedMain','explicitOnly'].includes(mainPolicy)&&Array.isArray(mainSourceIds)&&Array.isArray(homebrewSourceIds)&&Array.isArray(excludedSourceIds)&&text(reason),'functionalBatchSelectionInvalid');
  const known=new Map(draft.sources.map(s=>[s.id,s]));
  const include=new Set(),exclude=new Set();
+ for(const id of mainSourceIds){const s=known.get(id);assert(s?.origin==='main'&&s.source!==null&&!include.has(id),'functionalBatchMainInvalid');include.add(id);}
  for(const id of homebrewSourceIds){const s=known.get(id);assert(s?.origin==='homebrew'&&s.source!==null&&!include.has(id),'functionalBatchHomebrewInvalid');include.add(id);}
  for(const id of excludedSourceIds){const s=known.get(id);assert(s&&s.source!==null&&!exclude.has(id)&&!include.has(id),'functionalBatchExclusionInvalid');exclude.add(id);}
  if(mainPolicy==='allObservedMain')for(const s of draft.sources)if(s.origin==='main'&&s.source!==null&&!exclude.has(s.id))include.add(s.id);
  if(legacy){
   const {fingerprint,...body}=legacy;
   assert(legacy.schemaVersion==='dnd-upstream-functional-legacy-source-review.v1'&&legacy.corpusFingerprint===draft.fingerprint&&digest(body)===fingerprint&&Array.isArray(legacy.requiredSourceIds),'functionalLegacyReviewInvalid');
-  for(const id of legacy.requiredSourceIds)assert(known.has(id)&&!exclude.has(id),'functionalRequiredLegacySourceExcluded');
+  for(const id of legacy.requiredSourceIds){assert(known.has(id)&&!exclude.has(id),'functionalRequiredLegacySourceExcluded');include.add(id);}
  }
  const decisions=[...include].map(sourceId=>({sourceId,disposition:'include',reason})).concat([...exclude].map(sourceId=>({sourceId,disposition:'exclude',reason}))).sort((a,b)=>a.sourceId<b.sourceId?-1:a.sourceId>b.sourceId?1:0);
  const selection={schemaVersion:'dnd-upstream-functional-source-selection.v1',corpusFingerprint:draft.fingerprint,decisions};
