@@ -1,6 +1,7 @@
 'use strict';
 // Expanded Main equipment and magic items. Historical pilots remain unchanged.
-const {identity,normalizeIdentity,makeResolver}=require('./resolver');
+const {identity,normalizeIdentity}=require('./resolver');
+const {createFunctionalResolver,retainStructuralEvidence}=require('./functional-resolver');
 const {readMainPublications,projectMainSource}=require('./functional-main-source');
 const eq=require('./equipment-converter'),magic=require('./magic-item-converter');
 const cmp=(a,b)=>a<b?-1:a>b?1:0;
@@ -46,7 +47,7 @@ function buildFunctionalItems(snapshot,selection){
    }catch(err){if(wanted)invalid.push({kind,path,index,entity:e,reason:err.code||'invalidIdentity'});}
   }
  }
- const resolver=makeResolver(records),bases=records.filter(r=>r.kind==='baseitem'),resolvedBases=[];
+ const resolver=createFunctionalResolver(snapshot,records),bases=records.filter(r=>r.kind==='baseitem'),resolvedBases=[];
  const sourceFor=(e,mode)=>projectMainSource(e.source,publications,e,(mode==='magic'?magic.pilot:eq.pilot)[e.source]);
  const mergeReview=(item,projection,extra=[])=>{
   item.metadata.sourceEditionEvidence=projection.editionEvidence;
@@ -78,7 +79,9 @@ function buildFunctionalItems(snapshot,selection){
     entry.mode=mode;
     projected=sourceFor(e,mode);
     const item=mode==='equipment'?eq.convertItem(r,resolved,projected.source,defs,snapshot.commit):magic.convert(r,e,projected.source,defs,snapshot.commit,{lineage:resolved.lineage});
+    retainStructuralEvidence(item,resolved);
     entry.items.push(mergeReview(item,projected));
+    if(resolved.versions?.length){entry.blocked=true;diagnostic(mode,r,'nestedVersionExpansionPending');}
    }else{
     projected=sourceFor(e,'magic');
     if(e.inherits?.source!==e.source)fail('variantSourceMismatch');
@@ -110,9 +113,15 @@ function buildFunctionalItems(snapshot,selection){
       // Preserve exact base provenance and both copy lineages. The existing
       // stable ID remains template identity + base identity.
       item.metadata.variantBase={...item.metadata.variantBase,path:br.path,blob:br.blob,index:br.index,lineage:baseEntry.resolved.lineage};
+      retainStructuralEvidence(item,resolved);
+      if(baseEntry.resolved.versions?.length){
+       item.metadata.variantBase.versionContainer=baseEntry.resolved.versions;
+       entry.blocked=true;diagnostic('magic',r,'variantBaseVersionsPending',br);
+      }
       entry.items.push(mergeReview(item,projected,['variantBaseDependencyPending']));
      }catch(err){entry.blocked=true;c.variantBlocked++;diagnostic('magic',r,err.code||'variantConversionError',br);}
     }
+    if(resolved.versions?.length){entry.blocked=true;diagnostic('magic',r,'nestedVersionExpansionPending');}
     if(!matched)fail('variantNoMatchingBase');
    }
   }catch(err){entry.blocked=true;diagnostic(entry.mode,r,err.code||'conversionError');}

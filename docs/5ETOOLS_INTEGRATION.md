@@ -543,3 +543,7 @@ Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.m
 ## 19A.2g.1 — resolução funcional de templates e versões
 
 Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md). Template externo e versões suportadas passam de preview a emissão funcional de revisão para magias/criaturas, com coordenadas e bloqueios. Próxima: estender transformações e resolução a outras famílias, resolver variantes cross-source e preparar execução real. Fast + Quality.
+
+## 19A.2g.2 — operações e resolver funcional compartilhado
+
+Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md). Operações adicionais opt-in, reutilização em todas as famílias e emissão de versões simples de feats/optional features. Próximo: seleção de fontes aninhadas, compatibilidade de owners e execução expandida real.

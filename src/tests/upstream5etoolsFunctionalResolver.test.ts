@@ -64,3 +64,32 @@ describe('functional structural resolution and variant emission',()=>{
   expect(()=>createFunctionalResolver(fixture([]),[r,child]).resolve(child)).toThrow();
  });
 });
+
+describe('functional copy operations',()=>{
+ const {applyMods}=require('../../scripts/5etools/resolver');
+ test('adds attack/DC tags, renames entries, prefixes strings and floors numeric scaling only in functional mode',()=>{
+  const entity={name:'Fixture',trait:[{name:'Old Trait',entries:['Old prose {@hit +4} {@dc 12|CON} {@damage 1d6}',{type:'entries',entries:['{@hit -1}']}]}],skill:{arcana:'+5'},label:'core'};
+  const mods={trait:[{mode:'replaceName',replace:'Old',with:'New'},{mode:'scalarAddHit',scalar:2},{mode:'scalarAddDc',scalar:1}],skill:{mode:'scalarMultProp',prop:'arcana',scalar:0.5,floor:true},_:{mode:'prefixSuffixStringProp',prop:'label',prefix:'pre-',suffix:'-post'}};
+  expect(()=>applyMods(JSON.parse(JSON.stringify(entity)),mods)).toThrow();
+  const out=applyMods(JSON.parse(JSON.stringify(entity)),mods,{functional:true});
+  expect(out.trait[0]).toEqual({name:'New Trait',entries:['Old prose {@hit 6} {@dc 13} {@damage 1d6}',{type:'entries',entries:['{@hit 1}']}]});
+  expect(out.skill.arcana).toBe('+2');expect(out.label).toBe('pre-core-post');
+  expect(entity.trait[0].name).toBe('Old Trait');
+ });
+ test('keeps unsafe modifiers and dynamic expressions blocked',()=>{
+  const entity={trait:[{name:'Fixture',entries:['{@hit 3}']}]};
+  expect(()=>applyMods(entity,{trait:{mode:'replaceName',replace:'F.*',with:'X'}},{functional:true})).toThrow();
+  expect(()=>applyMods(entity,{_:{mode:'prefixSuffixStringProp',prop:'__proto__.polluted',prefix:'x'}},{functional:true})).toThrow();
+  expect(()=>applyMods(entity,{trait:{mode:'scalarAddHit',scalar:1,extra:'unknown'}},{functional:true})).toThrow();
+  expect(()=>applyMods(entity,{trait:{mode:'replaceName',replace:'Fixture',with:'<$name$>'}},{functional:true})).toThrow();
+ });
+ test('uses extended operations inside external templates and nested versions',()=>{
+  const base=beast('Base',{trait:[{name:'Old Trait',entries:['{@hit 4}']}]});
+  const child={name:'Child',source:'NEW',_copy:{name:'Base',source:'NEW',_templates:[{name:'Fixture Template',source:'NEW'}]},_versions:[{name:'Version',source:'NEW',_mod:{trait:{mode:'scalarAddHit',scalar:1}}}]};
+  const template={name:'Fixture Template',source:'NEW',apply:{_mod:{trait:{mode:'scalarAddHit',scalar:2}}}};
+  const rows=[record(base),record(child,1)],snapshot=fixture([base,child],[template]),resolved=createFunctionalResolver(snapshot,rows).resolve(rows[1]);
+  expect(resolved.entity.trait[0].entries).toEqual(['{@hit 6}']);
+  const v=expandFunctionalVersions(rows[1],resolved,new Set(rows.map(r=>r.id)));
+  expect(v.candidates[0].entity.trait[0].entries).toEqual(['{@hit 7}']);
+ });
+});

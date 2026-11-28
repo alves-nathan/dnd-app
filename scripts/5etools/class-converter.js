@@ -159,7 +159,7 @@ function buildClassGraph(snapshot,codes,selected){
     }
   }
   if(functional&&seenCoordinates.size!==selected.size)fail('functionalClassSelectionCoordinateMissing');
-  const resolver=makeResolver(records),nodes=new Map(),selectedIds=new Set(records.filter(r=>functional?selected.has(coordinate(r.path,r.kind,r.index)):own(counts,r.entity.source)).map(r=>r.id));
+  const resolver=functional?require('./functional-resolver').createFunctionalResolver(snapshot,records):makeResolver(records),nodes=new Map(),selectedIds=new Set(records.filter(r=>functional?selected.has(coordinate(r.path,r.kind,r.index)):own(counts,r.entity.source)).map(r=>r.id));
   function classOwner(e){return resolver.lookup('main','class',{name:e.className,source:e.classSource});}
   function subclassOwner(e){return resolver.lookup('main','subclass',{shortName:e.subclassShortName,source:e.subclassSource,className:e.className,classSource:e.classSource});}
   function convert(r){
@@ -219,12 +219,17 @@ function buildClassGraph(snapshot,codes,selected){
       if(r.kind==='subclass'&&(e.casterProgression||e.spellcastingAbility||e.subclassTableGroups))notes.add('subclassSpellcastingPending');
     }
     if(e.additionalSpells)notes.add('spellGrantChoicesPending');
-    return {r,deps,item:{id:physicalId(r.kind,e),kind,name:e.name,
+    const item={id:physicalId(r.kind,e),kind,name:e.name,
       source:{...source,...(e.page===undefined?{}:{page:String(e.page)})},
       identity:{canonicalKey:canonicalKey(r.kind,e),precedenceScope:source.precedenceScope},
       precedence:{relation:'unresolved',supersedes:[],reprints:[],coexistsWith:[],basis:'upstreamPendingGlobalResolution'},
       provenance:{origin:'5etools',repository:'5etools-mirror-3/5etools-src',commit:snapshot.commit,blob:r.blob,path:r.path,entityKey:r.key,index:r.index,sourceCode:e.source,resolverVersion:'a5.7',lineage:resolved.lineage},
-      payload,metadata:{reviewCodes:[...notes].sort(),upstreamReprintedAs:clone(e.reprintedAs||[]),...(projection?{sourceEditionEvidence:projection.editionEvidence}:{})}}};
+      payload,metadata:{reviewCodes:[...notes].sort(),upstreamReprintedAs:clone(e.reprintedAs||[]),...(projection?{sourceEditionEvidence:projection.editionEvidence}:{})}};
+    if(functional){
+      require('./functional-resolver').retainStructuralEvidence(item,resolved);
+      if(resolved.versions?.length)diagnostics.push({source:r.entity.source,kind:r.kind,path:r.path,index:r.index,code:'nestedVersionExpansionPending'});
+    }
+    return {r,deps,item};
   }
   for(const r of records){
     const code=r.entity.source;if(functional?!selected.has(coordinate(r.path,r.kind,r.index)):!own(counts,code))continue;

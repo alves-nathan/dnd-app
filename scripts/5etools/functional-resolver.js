@@ -7,9 +7,10 @@ function createFunctionalResolver(snapshot,records){
  let templates;
  return makeResolver(records,{
   separateVersions:true,
+  functionalMods:true,
   resolveTemplate(record,resolver){
    templates??=createTemplateIndex(snapshot);
-   return previewExternalTemplate(record,resolver,templates);
+   return previewExternalTemplate(record,resolver,templates,{functional:true});
   }
  });
 }
@@ -24,11 +25,25 @@ function expandFunctionalVersions(record,resolved,existingKeys){
    try{
     if(v.status)fail(v.status);
     if(v.spec.source!==record.entity.source)fail('versionSourceSelectionPending');
-    const expanded=previewVersion(record,resolved.entity,v.spec,existingKeys);
+    const expanded=previewVersion(record,resolved.entity,v.spec,existingKeys,{functional:true});
     candidates.push({...location,...expanded});
    }catch(e){diagnostics.push({...location,code:e.code||'versionExpansionError'});}
   }
  }
  return {candidates,diagnostics};
 }
-module.exports={createFunctionalResolver,expandFunctionalVersions};
+function retainStructuralEvidence(item,resolved){
+ const notes=[];
+ if(resolved.templateLineage?.length){
+  item.metadata.externalTemplateLineage=JSON.parse(JSON.stringify(resolved.templateLineage));
+  notes.push('externalTemplateSemanticsPending');
+ }
+ if(resolved.versions?.length){
+  item.payload.mechanics??={};
+  item.payload.mechanics.upstreamVersionContainer=JSON.parse(JSON.stringify(resolved.versions));
+  notes.push('versionContainerReviewPending');
+ }
+ item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...notes])].sort();
+ return notes;
+}
+module.exports={createFunctionalResolver,expandFunctionalVersions,retainStructuralEvidence};

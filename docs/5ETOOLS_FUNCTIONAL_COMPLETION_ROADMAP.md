@@ -107,3 +107,7 @@ Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.m
 ## Handoff 19A.2g.1
 
 Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md). Reuso de preview de template/versão em conversão Main spell/monster, sem mudar piloto histórico. Próximo 19A.2g.2: ampliar transformações e famílias, com regressões da fonte fixada; depois execução real expandida e fechamento de lacunas, A3/A4/A5.
+
+## Handoff 19A.2g.2
+
+Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md). Resolver expandido em todas as famílias, versões simples de feat/optional feature, operações adicionais; variantes complexas e outras famílias ainda requerem emissão e fechamento. Próxima 19A.2g.3: fonte aninhada e vínculos cross-owner, preparar execução real expandida; A3/A4/A5 pendentes.

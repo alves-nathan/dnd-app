@@ -48,3 +48,17 @@ describe('functional Main origins, feats, optional features and conditions',()=>
   expect(()=>buildFunctionalOriginFeatures(fixture(),[pick('data/feats.json','feat',2)])).toThrow('functionalOriginSelectionCoordinateMissing');
  });
 });
+
+test('emits same-source feat versions without changing the parent occurrence identity',()=>{
+ const s=fixture(),read=s.readJson;
+ s.readJson=(p:string)=>p==='data/feats.json'?{feat:[{name:'Base Feat',source,edition:'one',category:'G',entries:['Fixture'],_versions:[{name:'Version Feat',source,_mod:{entries:{mode:'appendArr',items:['Extra fixture']}}},{name:'Foreign',source:'OTHER'}]}]}:read(p);
+ const r=buildFunctionalOriginFeatures(s,[pick('data/feats.json','feat')]),items=r.features.packs[0].items;
+ expect(r.features.counts.NEW).toMatchObject({total:1,converted:1,blocked:0,versionsConverted:1,versionsBlocked:1});
+ expect(items.map((i:any)=>i.name).sort()).toEqual(['Base Feat','Version Feat']);
+ const version=items.find((i:any)=>i.name==='Version Feat');
+ expect(version.provenance.index).toBe(0);
+ expect(version.payload.mechanics.upstreamFeature.entries).toEqual(['Fixture','Extra fixture']);
+ expect(version.metadata.versionOrigin.containerIndex).toBe(0);
+ expect(r.features.diagnostics).toEqual([expect.objectContaining({code:'versionSourceSelectionPending'})]);
+ expect(stageImportV3(r.features.packs[0]).ok).toBe(true);
+});

@@ -45,7 +45,7 @@ function appendMods(target,mods){
 }
 // Apply the explicit template subset in original declaration order. Child root values win;
 // templates then contribute root values and append mods to the child's existing operations.
-function previewExternalTemplate(r,resolver,templates){
+function previewExternalTemplate(r,resolver,templates,options={}){
   if(r.origin!=='main'||!['monster','legendaryGroup'].includes(r.kind))fail('templateNamespaceOrKindPending');
   const raw=r.entity,meta=raw._copy;
   if(!rec(meta)||!Array.isArray(meta._templates)||!meta._templates.length)fail('invalidTemplateReference');
@@ -77,7 +77,7 @@ function previewExternalTemplate(r,resolver,templates){
     }
     appendMods(mods,a._mod);lineage.push(coordinate(t));
   }
-  applyMods(merged,mods);
+  applyMods(merged,mods,options);
   if(identity(r.kind,merged)!==r.key)fail('identityChangedByMod');
   if(merged._copy||merged._versions||merged._templates||merged._mod)fail('nestedTemplateOrVersionPending');
   return {entity:merged,baseLineage:[parent.id,...resolved.lineage],templateLineage:lineage};
@@ -113,7 +113,7 @@ function versionSpecs(container){
   }
   return [{implementation:null,spec:clone(container)}];
 }
-function previewVersion(parent,baseEntity,spec,existingKeys){
+function previewVersion(parent,baseEntity,spec,existingKeys,options={}){
   if(!rec(spec)||Object.keys(spec).some(k=>!safe(k)||k.startsWith('_')&&!['_mod','_preserve'].includes(k)))fail('unsupportedVersionMetadata');
   checked(spec);
   if(!norm(spec.name)||!norm(spec.source))fail('versionIdentityPending');
@@ -138,7 +138,7 @@ function previewVersion(parent,baseEntity,spec,existingKeys){
   const mods=child._mod;delete child._mod;delete child._preserve;
   child._copy={...target,_preserve:preserve,...(mods===undefined?{}:{_mod:mods})};
   const r={...parent,id,key,entity:child};
-  const entity=makeResolver([{...parent,entity:base},r]).resolve(r).entity;
+  const entity=makeResolver([{...parent,entity:base},r],{functionalMods:options.functional===true}).resolve(r).entity;
   checked(entity);
   return {key,id,entity};
 }

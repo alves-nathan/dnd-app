@@ -1,7 +1,8 @@
 'use strict';
 // Selected Main origins, feats, optional features and conditions.
 // Preserve historical pilots; share their mechanical projections.
-const {identity,makeResolver,mainEntityFile}=require('./resolver');
+const {identity,mainEntityFile}=require('./resolver');
+const {createFunctionalResolver,expandFunctionalVersions,retainStructuralEvidence}=require('./functional-resolver');
 const {readMainPublications,projectMainSource}=require('./functional-main-source');
 const origin=require('./origin-converter'),feature=require('./feature-converter'),condition=require('./condition-converter');
 const rec=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
@@ -82,7 +83,7 @@ function buildFunctionalOriginFeatures(snapshot,selection){
      const key=identity(kind,e),id=JSON.stringify(['main',key]),entity=clone(e);
      // Preserve lineage containers in mechanics, not as fabricated playable
      // variants. Keep the same explicit boundary as the origin converter.
-     if(kind==='race'||kind==='subrace')delete entity._versions;
+     // The functional resolver separates and validates all version containers.
      originals.set(id,e);
      const r={id,key,kind,origin:'main',path,index,blob:snapshot.files.get(path),entity};
      records.push(r);if(tracked)selected.push(r);
@@ -91,7 +92,7 @@ function buildFunctionalOriginFeatures(snapshot,selection){
   }
  }
  if(seen.size!==wanted.size)fail('functionalOriginSelectionCoordinateMissing');
- const resolver=makeResolver(records),groups=new Map(),candidates=[],selectedIds=new Set(selected.map(r=>r.id));
+ const resolver=createFunctionalResolver(snapshot,records),groups=new Map(),candidates=[],selectedIds=new Set(selected.map(r=>r.id)),existingKeys=new Set(records.map(r=>r.id)),versions=[];
  for(const r of selected){
   try{
    const resolved=resolver.resolve(r),e=resolved.entity,spec=specs[r.kind];
@@ -109,14 +110,48 @@ function buildFunctionalOriginFeatures(snapshot,selection){
    else item=convertCondition(r,resolved,projection.source,snapshot.commit);
    item.metadata.sourceEditionEvidence=projection.editionEvidence;
    item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...projection.notes,...extra])].sort(cmp);
+   retainStructuralEvidence(item,resolved);
    candidates.push({r,item,spec});
+   if(resolved.versions?.length){
+    const {result,c}=summary(r.kind,r.entity.source);
+    const pending=(code,version)=>{
+     c.versionsBlocked=(c.versionsBlocked||0)+1;
+     result.diagnostics.push({source:r.entity.source,kind:r.kind,path:r.path,index:r.index,code,...(version?{version}:{})});
+    };
+    if(spec.group==='features'){
+     const expanded=expandFunctionalVersions(r,resolved,existingKeys);
+     for(const d of expanded.diagnostics)pending(d.code,{containerIndex:d.containerIndex,implementation:d.implementation});
+     for(const v of expanded.candidates)versions.push({r,spec,v,resolved,pending});
+    }else pending('nestedVersionExpansionPending');
+   }
   }catch(err){block(r,err.code||'conversionError');}
+ }
+ const versionCounts=new Map();
+ for(const {v} of versions)versionCounts.set(v.id,(versionCounts.get(v.id)||0)+1);
+ for(const {r,spec,v,resolved,pending} of versions){
+  try{
+   if(versionCounts.get(v.id)!==1)fail('versionIdentityCollision');
+   const projection=projectMainSource(v.entity.source,publications,v.entity,spec.pilot[v.entity.source]);
+   const result={entity:v.entity,lineage:[r.id,...resolved.lineage],templateLineage:resolved.templateLineage};
+   const item=feature.convert(r,result,projection.source,snapshot.commit);
+   item.metadata.versionOrigin={parentKey:r.key,versionKey:v.key,containerIndex:v.containerIndex,implementation:v.implementation};
+   item.metadata.sourceEditionEvidence=projection.editionEvidence;
+   item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...projection.notes,'versionSemanticsPending'])].sort(cmp);
+   retainStructuralEvidence(item,result);
+   candidates.push({r,item,spec,version:true});
+  }catch(err){pending(err.code||'versionConversionError',{containerIndex:v.containerIndex,implementation:v.implementation});}
  }
  const frequencies=new Map();
  for(const {item} of candidates)frequencies.set(item.id,(frequencies.get(item.id)||0)+1);
- for(const {r,item,spec} of candidates){
-  if(frequencies.get(item.id)!==1){block(r,'duplicatePhysicalId');continue;}
-  const {c,k}=summary(r.kind,r.entity.source);c.converted++;k.converted++;
+ for(const {r,item,spec,version} of candidates){
+  const {c,k,result}=summary(r.kind,r.entity.source);
+  if(frequencies.get(item.id)!==1){
+   if(version){c.versionsBlocked=(c.versionsBlocked||0)+1;result.diagnostics.push({source:r.entity.source,kind:r.kind,path:r.path,index:r.index,code:'versionIdentityCollision'});}
+   else block(r,'duplicatePhysicalId');
+   continue;
+  }
+  if(version)c.versionsConverted=(c.versionsConverted||0)+1;
+  else {c.converted++;k.converted++;}
   const key=JSON.stringify([spec.group,r.entity.source]),group=groups.get(key)||{spec,code:r.entity.source,items:[]};
   group.items.push(item);groups.set(key,group);
  }
