@@ -507,3 +507,7 @@ O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir 
 ## 19A.1 — inventário operacional e lock dos snapshots
 
 Entrega 19 aprovada. Ver [5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md](5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md). Snapshot lock e manifesto de escopo preliminar, denominadores por fonte, expansão e observações de coleções fora do resolver. Próximo: validar auditoria real, concluir seleção e disposition do corpus, então pipeline funcional 19A.2. Sem importação/ativação ainda.
+
+## 19A.1b — seleção operacional e obrigações legadas
+
+Ver [5ETOOLS_FUNCTIONAL_SCOPE_SELECTION.md](5ETOOLS_FUNCTIONAL_SCOPE_SELECTION.md). Entrega 19A.1 aprovada. Seleção em lote vinculada ao corpus e reconciliação de fontes históricas; atualização incremental incorporada ao roadmap. CI: fetch simultâneo no full, cobertura sintética de escopo no fast. Próxima: operacionalizar seleção e disposition de coleções, iniciar pipeline de conversão sem depender de aprovação fictícia.

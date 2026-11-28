@@ -68,3 +68,10 @@ Usar checkout feature/5etools-integration no Windows, perfil/snapshot de emulado
 ## Handoff 19A.1
 
 Ver [5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md](5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md). O lock usa a dupla de commits validada na entrega 19. Seleção do corpus e disposição de registros não resolvidos ainda precisam de fechamento; não considerar A1 concluída apenas pelo inventário preliminar.
+
+## Atualização incremental de conteúdo (extensão do roadmap)
+- 19A.4: detectar alterações de snapshots Main/Brew por commit, blob, fonte e identidade; invalidar dependentes e reprocessar alterações transitivas, sem assumir que apenas arquivos modificados importam. Comparar inventários e produzir plano determinístico add/update/deprecate/noop/conflict. Fixar snapshot novo somente após validação.
+- 19A.5: gerar pacote privado V3 inicial ou incremental com mesma cadeia de conversão, versões, hashes, sequência, base obrigatória, dependências e assinatura existente; recusar base incorreta, fornecer fallback de catálogo completo quando necessário. Nenhum payload upstream no Git/CI.
+- 19B.4: atualizador no app, consultar manifesto privado, preview de alterações/impacto em personagens, download opcional ou arquivo local, validação, checkpoint, aplicação transacional, rollback e proteção anti-replay; preservar catálogo offline. Fonte Homebrew nova requer seleção; não habilitar publicação pública.
+- 19F.4: regressão integrada de atualização Main/Brew, erratas, dependentes transitivos, exclusões sem quebrar referências, fontes novas, base stale, assinatura inválida, interrupções, restart e rollback. Build inicial completo continua obrigatório sem importação/download pelo usuário.
+A1/A2/A3 antes de A4/A5; B4 após B1–B3; F4 após E e F1–F3. Reutilizar catalogTrust, catalogUpdateTransaction, catalogPackageRepository e download coordinator. Atualização de conteúdo não pressupõe atualização de código; mecânica não suportada exige correção antes de ativar o lote afetado. Conversão no computador local; endpoint privado opcional, não serviço público obrigatório.

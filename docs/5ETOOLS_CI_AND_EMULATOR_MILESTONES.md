@@ -32,3 +32,7 @@ Ver [5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md](5ETOOLS_FUNCTIONAL_COMPLETION_ROA
 ### Correção do requisito de disponibilidade inicial
 
 O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir o app candidato, inclusive na primeira execução offline, sem importação manual. Catálogo preparado antes do build local, bootstrap idempotente, preservar dados e filtros em upgrades. Importador V3 destina-se também a atualizações e conteúdo adicional. Ver roadmap funcional; nenhum payload upstream novo no Git público.
+
+## Otimização medida após 19A.1
+
+Run 46151057043 full: 704s; Quality 46151062484: 215s. Fetch 106s, histórico/reconciliação 79s, migration preview 66s, coverage 52s, graph 50s. Full permanece obrigatório em marcos e alterações estruturais; iterações de seleção de escopo sem alteração de converter/lock usam fast + Quality, adicionados fixtures corpus/histórico ao fast. Fetch dos dois SHAs em paralelo no mesmo runner, aguarda ambos e falha se qualquer falhar. Sem cache/artifact de upstream e sem remover suites. Ganho real precisa ser medido em próximo full; não prometer tempo. Se insuficiente, consolidar cálculo comum/leituras de snapshots sem alterar denominadores, depois avaliar paralelismo de suites com limite de memória/CPU.

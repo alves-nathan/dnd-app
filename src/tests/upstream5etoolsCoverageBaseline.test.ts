@@ -117,3 +117,31 @@ describe('functional corpus scope and denominator',()=>{
   expect(scan.totals.homebrew.resolverRows).toBe(1);
  });
 });
+
+describe('functional scope batch selection and legacy obligations',()=>{
+ const {prepareFunctionalSelection,reconcileFunctionalLegacySources}=require('../../scripts/5etools/functional-scope');
+ const {digest}=require('../../scripts/5etools/integrated-review');
+ const build=()=>{
+  const b=reconcileCoverage(scenario()),empty={resolverRows:0,otherRootRows:0,nestedNamedSourceNodes:0,nestedVersionRows:0,explicitEditionObservations:0};
+  const scan={totals:{main:{...empty,resolverRows:5,files:1,nonObjectFiles:0},homebrew:{...empty,resolverRows:1,files:1,nonObjectFiles:0}},sources:[{origin:'main',source:'XPHB',...empty,resolverRows:4},{origin:'main',source:'XDMG',...empty,resolverRows:1},{origin:'homebrew',source:'SECRET_BREW',...empty,resolverRows:1}],fileFingerprint:'a'.repeat(64)};
+  return buildFunctionalCorpus(b,{commits:b.commits,asOf:b.asOf,files:[],sources:[],diagnostics:[]},scan,'d'.repeat(40));
+ };
+ test('selects exact Main snapshot sources in batch and only explicitly selected Homebrew',()=>{
+  const d=build(),brew=JSON.stringify(['homebrew','SECRET_BREW']),before=digest(d);
+  const r=prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',reason:'fixture'});
+  expect(r.scope.counts).toEqual({included:2,excluded:0,pending:1});
+  expect(r.selection.decisions.every((x:any)=>x.sourceId!==brew)).toBe(true);
+  expect(prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',homebrewSourceIds:[brew],reason:'fixture'}).scope.counts).toEqual({included:3,excluded:0,pending:0});
+  expect(()=>prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',homebrewSourceIds:['*'],reason:'fixture'})).toThrow('functionalBatchHomebrewInvalid');
+  expect(digest(d)).toBe(before);
+ });
+ test('preserves unmapped historical sources and prevents excluding required Main sources',()=>{
+  const d=build(),required=JSON.stringify(['main','XPHB']);
+  const row=(domain:string,sourceId:string|null,count:number,codes:string[])=>({domain,sourceId,count,codes,status:codes.length?'mainPublicationCandidate':'sourceMappingPending',migrationState:'preservePending',equivalence:'notEstablished'});
+  const history={schemaVersion:'dnd-upstream-historical-baseline.v1',activation:'review-required',commits:d.commits,summary:{issues:{},retirementAuthorized:false,historical:{historical:{count:2},bootstrap:{count:1}},runtime:{entries:2}},comparison:{sources:[row('historicalOccurrences','phb',1,['XPHB']),row('historicalOccurrences','unknown',1,[]),row('bootstrap','phb',1,['XPHB']),row('runtime','phb-2024',1,['XPHB']),row('runtime',null,1,[])]}};
+  const r=reconcileFunctionalLegacySources(d,history);
+  expect(r).toMatchObject({requiredSourceIds:[required],pending:{historicalOccurrences:1,bootstrap:0,runtime:1},installedInventory:'notInspected',executable:false});
+  expect(()=>prepareFunctionalSelection(d,{mainPolicy:'allObservedMain',excludedSourceIds:[required],reason:'fixture'},r)).toThrow('functionalRequiredLegacySourceExcluded');
+  expect(()=>reconcileFunctionalLegacySources(d,{...history,commits:{...history.commits,application:'a'.repeat(40)}})).toThrow('functionalHistoryBindingMismatch');
+ });
+});

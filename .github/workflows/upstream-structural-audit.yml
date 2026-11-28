@@ -41,7 +41,9 @@ jobs:
       - name: Fetch upstream snapshots (no upstream code execution)
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
-          for origin in main homebrew; do
+          fetch_snapshot() (
+            set -euo pipefail
+            origin="$1"
             url=$(node -p "require('./scripts/5etools/functional-inputs.json').$origin.repository")
             sha=$(node -p "require('./scripts/5etools/functional-inputs.json').$origin.commit")
             dir="$RUNNER_TEMP/5etools-$origin"
@@ -49,7 +51,13 @@ jobs:
             git -C "$dir" fetch --quiet --depth=1 --no-tags "$url" "$sha"
             git -C "$dir" update-ref HEAD FETCH_HEAD
             test "$(git -C "$dir" rev-parse HEAD)" = "$sha"
-          done
+          )
+          fetch_snapshot main & main_pid=$!
+          fetch_snapshot homebrew & brew_pid=$!
+          result=0
+          wait "$main_pid" || result=1
+          wait "$brew_pid" || result=1
+          exit "$result"
       - name: Aggregate coverage only
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
@@ -213,6 +221,9 @@ jobs:
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts src/tests/upstream5etoolsLocalV3Preview.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
+      - name: Validate functional corpus and historical scope fixtures (fast mode)
+        if: env.FULL_UPSTREAM_AUDIT == 'false'
+        run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts src/tests/upstream5etoolsHistoricalBaseline.test.ts --runInBand
       - name: Validate migration and cutover fixtures (fast mode)
         if: env.FULL_UPSTREAM_AUDIT == 'false'
         run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts src/tests/upstream5etoolsCutoverEvidence.test.ts src/tests/upstream5etoolsRelationshipIdentity.test.ts src/tests/upstream5etoolsRuntimeContractEvidence.test.ts --runInBand
