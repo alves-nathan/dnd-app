@@ -53,7 +53,10 @@ jobs:
       - name: Install validation dependencies
         run: npm ci
       - name: Rehearse real SQLite engine (disposable memory only)
-        run: node scripts/5etools/independent-persistence-harness.js
+        run: |
+          node scripts/5etools/independent-persistence-harness.js > "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
+          cat "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
+          node scripts/5etools/validate-persistence-rehearsal.js "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
       - name: Validate spell pilot (aggregate only)
         env:
           DND_UPSTREAM_SPELL_SNAPSHOT: ${{ runner.temp }}/5etools-main

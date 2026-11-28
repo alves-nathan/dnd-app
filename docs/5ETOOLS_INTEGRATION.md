@@ -386,3 +386,7 @@ Ver [5ETOOLS_INDEXEDDB_EXISTING_OBSERVATION.md](5ETOOLS_INDEXEDDB_EXISTING_OBSER
 ## Fase a8.14.4 — harness de persistência real
 
 Ver [5ETOOLS_INDEPENDENT_PERSISTENCE_REHEARSAL.md](5ETOOLS_INDEPENDENT_PERSISTENCE_REHEARSAL.md). a8.14.3 aprovada. SQLite real descartável no CI, harness IndexedDB isolado e protocolo de validação. Próxima a8.14.5: revisão das evidências de persistência e cobertura dos stores auxiliares.
+
+## Fase a8.14.5 — revisão de persistência e stores auxiliares
+
+Ver [5ETOOLS_AUXILIARY_PERSISTENCE_REVIEW.md](5ETOOLS_AUXILIARY_PERSISTENCE_REVIEW.md). a8.14.4 aprovada. Validação do relatório SQLite contra HEAD e comparação de 11 projeções auxiliares. Próxima a8.14.6: persistência de personagens, cenários, presets, históricos e configuração do catálogo.

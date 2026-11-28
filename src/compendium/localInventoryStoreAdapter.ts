@@ -74,7 +74,7 @@ export function readHydratedInventoryStores(captureId:string):InventoryStoreFram
 }
 /** Explicit local call; not yet wired to a screen or startup lifecycle. */
 export function observeHydratedLocalInventory(captureId:string){
- return captureLocalInventoryEvidence(captureId,{readStores:readHydratedInventoryStores,storage:asyncStorageAdapter,readActivePersistence:observeExistingActiveCompendium});
+ return captureLocalInventoryEvidence(captureId,{readStores:readHydratedInventoryStores,storage:asyncStorageAdapter,readActivePersistence:observeExistingActiveCompendium,observeAuxiliaryPersistence:true});
 }
 
 /** Observe changes without hydrating or calling store actions. The panel

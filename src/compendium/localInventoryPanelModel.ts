@@ -21,6 +21,7 @@ export function presentLocalInventory(result:LocalInventoryCaptureResult){
   runtimePackage:coherenceLabels[coherence.runtimePackage]??'Não verificado',
   activePersistence:coherenceLabels[coherence.activePersistence]??'Não verificado',
   independentPersistence:coherence.independentPersistence?{backend:coherence.independentPersistence.backend,status:inventoryStatusLabels[coherence.independentPersistence.status],...(coherence.independentPersistence.status==='observed'?{counts:coherence.independentPersistence.counts}:{code:coherence.independentPersistence.code})}:undefined,
+  auxiliaryPersistence:coherence.auxiliaryPersistence?.summary,
   packageCode:coherence.packageCode,fingerprint:evidence.fingerprint,
   readiness:'Migração bloqueada',canMigrate:false as const};
 }
@@ -31,5 +32,6 @@ export function compareLocalInventoryRevalidation(previous:LocalInventoryCapture
  return previous.evidence.fingerprint===next.evidence.fingerprint&&
   previous.coherence.runtimePackage===next.coherence.runtimePackage&&previous.coherence.activePersistence===next.coherence.activePersistence&&
   previous.coherence.packageCode===next.coherence.packageCode&&
-  JSON.stringify(previous.coherence.independentPersistence)===JSON.stringify(next.coherence.independentPersistence)?'unchanged':'changed';
+  JSON.stringify(previous.coherence.independentPersistence)===JSON.stringify(next.coherence.independentPersistence)&&
+  previous.coherence.auxiliaryPersistence?.fingerprint===next.coherence.auxiliaryPersistence?.fingerprint?'unchanged':'changed';
 }

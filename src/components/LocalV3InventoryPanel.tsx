@@ -77,6 +77,7 @@ export function LocalV3InventoryPanel(){
     {'counts' in view.independentPersistence&&view.independentPersistence.counts?<Text style={style}>{view.independentPersistence.counts.items} item(ns) · {view.independentPersistence.counts.packs} pacote(s) · {view.independentPersistence.counts.sources} fonte(s)</Text>:null}
     {'code' in view.independentPersistence&&view.independentPersistence.code?<Text style={style}>Diagnóstico: {view.independentPersistence.code}</Text>:null}
    </>:null}
+   {view.auxiliaryPersistence?<Text style={style}>Persistência auxiliar: {view.auxiliaryPersistence.match} de {view.auxiliaryPersistence.required} projeções correspondentes; {view.auxiliaryPersistence.mismatch} divergentes, {view.auxiliaryPersistence.invalid} inválidas, {view.auxiliaryPersistence.unavailable} indisponíveis, {view.auxiliaryPersistence.notVerified} não verificadas.</Text>:null}
    {view.packageCode?<Text style={style}>Revisão do pacote: {view.packageCode}</Text>:null}
    {view.surfaces.map(s=><Text key={s.surface} style={style}>{s.label}: {s.status}</Text>)}
    <Text selectable style={style}>Fingerprint: {view.fingerprint}</Text>

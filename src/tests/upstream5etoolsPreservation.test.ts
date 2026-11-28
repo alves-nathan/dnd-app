@@ -677,3 +677,55 @@ describe('a8.14.3 existing-only IndexedDB observation',()=>{
   expect(match.evidence.inventoryAcceptance).toBe('notEstablished');
  });
 });
+
+import {AUXILIARY_PERSISTENCE,readAuxiliaryPersistence,reviewAuxiliaryPersistence} from '../compendium/localInventoryAuxiliaryPersistence';
+describe('a8.14.5 auxiliary persistence and rehearsal validation',()=>{
+ test('compares persisted projections without exposing values and separates missing or old envelopes',async()=>{
+  const memory=createMemoryKeyValueStorage(),captureId='auxiliary-fixture';
+  const trust={registry:{fixture:'private-value'}},a=AUXILIARY_PERSISTENCE.trust;
+  await memory.setItem(a.key,JSON.stringify({version:a.version,state:trust}));
+  await memory.setItem(AUXILIARY_PERSISTENCE.updateSessions.key,JSON.stringify({version:1,state:{history:[]}}));
+  const before=memory.dump();
+  const report=reviewAuxiliaryPersistence(await readAuxiliaryPersistence(memory),{trust:{status:'observed',source:'catalogTrustStore',captureId,value:trust.registry}});
+  expect(report.summary).toMatchObject({required:11,match:1,invalid:1,unavailable:9});
+  expect(JSON.stringify(report)).not.toContain('private-value');
+  expect(memory.dump()).toEqual(before);
+ });
+ test('redacts aggregation secret and reports only projected presence',async()=>{
+  const memory=createMemoryKeyValueStorage(),def=AUXILIARY_PERSISTENCE.rolloutAggregation,captureId='secret-fixture';
+  const state={contributorSecret:'private-secret',policies:{},submissions:[],reports:[],approvals:[],decisions:[],events:[]};
+  await memory.setItem(def.key,JSON.stringify({version:def.version,state}));
+  const {contributorSecret,...rest}=state;
+  const observations={rolloutAggregation:{status:'observed' as const,source:'catalogRolloutAggregationStore' as const,captureId,value:{...rest,contributorSecretPresent:!!contributorSecret}}};
+  const a=reviewAuxiliaryPersistence(await readAuxiliaryPersistence(memory),observations);
+  await memory.setItem(def.key,JSON.stringify({version:def.version,state:{...state,contributorSecret:'another-secret'}}));
+  const b=reviewAuxiliaryPersistence(await readAuxiliaryPersistence(memory),observations);
+  expect(a.summary.match).toBe(1);expect(a.fingerprint).toBe(b.fingerprint);
+  expect(JSON.stringify(a)).not.toContain('private-secret');
+ });
+ test('invalidates capture on changed auxiliary raw data and compares later projected differences',async()=>{
+  const f=await fixture(),captureId='aux-capture',def=AUXILIARY_PERSISTENCE.trust;
+  const value={registry:{test:'first'}};
+  await f.memory.setItem(def.key,JSON.stringify({version:def.version,state:value}));
+  const frame:InventoryStoreFrame={guard:[],blocked:false,observations:{trust:{status:'observed',source:'catalogTrustStore',captureId,value:value.registry}}};
+  const ports={readStores:()=>frame,storage:f.memory,observeAuxiliaryPersistence:true};
+  const first=await captureLocalInventoryEvidence(captureId,ports);
+  expect(first.coherence.auxiliaryPersistence?.summary.match).toBe(1);
+  await f.memory.setItem(def.key,JSON.stringify({version:def.version,state:{registry:{test:'second'}}}));
+  const changed=await captureLocalInventoryEvidence(captureId,ports);
+  expect(changed.coherence.auxiliaryPersistence?.summary.mismatch).toBe(1);
+  expect(compareLocalInventoryRevalidation(first,changed)).toBe('changed');
+  let reads=0;
+  const stale=await captureLocalInventoryEvidence(captureId,{...ports,storage:{getItem:async key=>key===def.key?JSON.stringify({version:def.version,state:{registry:{n:++reads}}}):f.memory.getItem(key)}});
+  expect(stale.captureStatus).toBe('stale');
+ });
+ test('validates exact rehearsal binding and checks but never native or inventory acceptance',()=>{
+  const {validateRehearsal}=require('../../scripts/5etools/validate-persistence-rehearsal');
+  const expected={gitSha:'a'.repeat(40),sourceFingerprint:'b'.repeat(64)};
+  const report={schemaVersion:'dnd-independent-persistence-rehearsal.v1',scope:'disposableFixture',...expected,inventoryAcceptance:'notEstablished',writeAuthorized:false,executable:false,nativeEvidence:false,environment:'nodeSQLite',nodeVersion:'v22.16.0',engineVersion:'3.50.0',checks:['actualSQLiteMatch','noRowMutation','hydratedMismatch','uninitializedUnavailable','mirrorCorruptionRejected','changedReadStale','invalidJsonRejected'],passed:true};
+  expect(validateRehearsal(report,expected)).toMatchObject({status:'consistentRehearsal',nativeEvidence:false,inventoryAcceptance:'notEstablished'});
+  expect(validateRehearsal({...report,checks:report.checks.slice(1)},expected).status).toBe('invalid');
+  expect(validateRehearsal({...report,nativeEvidence:true},expected).status).toBe('invalid');
+  expect(validateRehearsal({...report,gitSha:'c'.repeat(40)},expected).status).toBe('invalid');
+ });
+});
