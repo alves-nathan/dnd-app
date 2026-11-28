@@ -131,3 +131,20 @@ const snapshotPath=process.env.DND_UPSTREAM_EQUIPMENT_SNAPSHOT;
   expect(r.counts.PHB.converted).toBeGreaterThan(0);
   expect(r.counts.XPHB.converted).toBeGreaterThan(0);
 },120000);
+
+describe('functional Main item conversion',()=>{
+ const {buildFunctionalItems}=require('../../scripts/5etools/functional-item-converter');
+ test('converts selected non-pilot mundane and magic items without misclassifying unresolved records',()=>{
+  const s=fixture([weapon({source:'NEW',name:'New Blade'}),{name:'Unselected',source:'OTHER',rarity:'none',type:'G'}],[{name:'New Shield',source:'NEW',rarity:'none',edition:'one',type:'S|XPHB',ac:2},{name:'New Charm',source:'NEW',rarity:'rare',charges:3},{name:'Unclassified',source:'NEW',type:'G'}]);
+  const oldRead=s.readJson;s.files.set('data/magicvariants.json','b'.repeat(40));
+  s.readJson=(p:string)=>p==='data/magicvariants.json'?{magicvariant:[]}:oldRead(p);
+  const pick=(path:string,kind:string,index:number)=>({path,kind,index,sourceId:JSON.stringify(['main','NEW'])});
+  const r=buildFunctionalItems(s,[pick('data/items-base.json','baseitem',0),...Array.from({length:3},(_,i)=>pick('data/items.json','item',i))]);
+  expect(r.equipment.counts.NEW).toMatchObject({inputs:3,convertedRows:2,blockedRows:1,outputs:2,blockCodes:{itemClassificationPending:1}});
+  expect(r.magic.counts.NEW).toMatchObject({inputs:1,convertedRows:1,outputs:1});
+  const eq=r.equipment.packs[0],mi=r.magic.packs[0];
+  expect(eq.items.map((i:any)=>i.kind).sort()).toEqual(['armor','weapon']);
+  expect(mi.items[0].payload.mechanics.upstreamItem.charges).toBe(3);
+  expect(stageImportV3(eq).ok).toBe(true);expect(stageImportV3(mi).ok).toBe(true);
+ });
+});

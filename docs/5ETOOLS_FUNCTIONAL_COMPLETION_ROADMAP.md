@@ -87,3 +87,7 @@ Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md)
 ## Handoff 19A.2b
 
 Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md). Magias/criaturas Main selecionadas além dos pilotos, edição sem inferência temporal, observações de classe qualificadas e bloqueios por ocorrência. Pilotos históricos preservados para comparar; cobertura real expandida ainda não aferida. Próximo 19A.2c equipamentos/magic items.
+
+## Handoff 19A.2c
+
+Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md). CLI usa conversão expandida de itens por coordenada, variantes com edição explícita e diagnóstico por base. Não fechar cobertura até tratar as lacunas de transformações/identidade/coleções; próxima 19A.2d classes e features, seguida de origens/feats/conditions e coleções auxiliares.

@@ -523,3 +523,7 @@ Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md)
 ## 19A.2b — expansão funcional Main: magias e criaturas
 
 Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md). Entrega 19A.2a aprovada. CLI usa conversor indexado de escopo selecionado para spell/monster, além do piloto, com publicação/edição explícita e proveniência. Próxima: expansão equipamentos/magic items e resolução das variantes bloqueadas. Fast + Quality; full ao fechar 19A.
+
+## 19A.2c — equipamentos e itens mágicos Main
+
+Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md). Seleção por ocorrência, conversão real de equipamentos e magia além dos pilotos, expansão de variantes compatíveis e proveniência de base. Próxima: classes/subclasses/features/origens; suporte a variantes complexas continua aberto. Fast + Quality; full no fim de 19A.

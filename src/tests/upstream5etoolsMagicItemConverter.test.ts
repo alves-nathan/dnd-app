@@ -72,3 +72,27 @@ const snapshotPath=process.env.DND_UPSTREAM_MAGIC_SNAPSHOT;
   expect(r.counts.XDMG.concreteConverted).toBeGreaterThan(0);
   expect(r.counts.XDMG.variantsConverted).toBeGreaterThan(0);
 },120000);
+
+describe('functional Main magic variant expansion',()=>{
+ const {buildFunctionalItems}=require('../../scripts/5etools/functional-item-converter');
+ const pick=(index:number)=>({path:'data/magicvariants.json',kind:'magicvariant',index,sourceId:JSON.stringify(['main','NEW'])});
+ test('expands selected templates against same-era resolved bases and records cross-source provenance',()=>{
+  const t={...template,edition:'one',inherits:{...template.inherits,source:'NEW'}};
+  const classic={...base,name:'Classic Blade',source:'PHB',edition:'classic'};
+  const unknown={...base,name:'Unknown Blade',source:'UNKNOWN',edition:undefined};
+  const s=fixture([t],[],[base,classic,JSON.parse(JSON.stringify(unknown))]);
+  const r=buildFunctionalItems(s,[pick(0)]),p=r.magic.packs[0],i=p.items[0];
+  expect(r.magic.counts.NEW).toMatchObject({inputs:1,partialRows:1,outputs:1,variantCandidates:2,variantBlocked:1,blockCodes:{variantEditionPending:1}});
+  expect(i.name).toBe('Fixture Blade +1');
+  expect(i.metadata.variantBase).toMatchObject({source:'XPHB',index:0,blob:'b'.repeat(40),path:'data/items-base.json',lineage:[]});
+  expect(i.payload.magicBonus).toBe(1);
+  expect(stageImportV3(p).ok).toBe(true);
+  expect(r.magic.diagnostics[0]).toMatchObject({kind:'magicvariant',index:0,base:{index:2},code:'variantEditionPending'});
+ });
+ test('blocks unsupported transforms without losing selected template disposition',()=>{
+  const t={...template,edition:'one',inherits:{...template.inherits,source:'NEW',valueExpression:'fixture'}};
+  const r=buildFunctionalItems(fixture([t]),[pick(0)]);
+  expect(r.magic.counts.NEW).toMatchObject({inputs:1,blockedRows:1,outputs:0,variantCandidates:1,variantBlocked:1,blockCodes:{unsupportedVariantTransform:1}});
+  expect(r.magic.packs).toEqual([]);
+ });
+});

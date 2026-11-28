@@ -21,7 +21,8 @@ const originFor=p=>p.origin==='5etools'?'main':p.origin==='homebrew'?'homebrew':
 function collectMainRuns(main,plan){
  const {buildFunctionalIndexed}=require('./functional-indexed-converter');
  const selected=kind=>[...new Set(plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&r.kind===kind).map(r=>JSON.parse(r.sourceId)[1]))].sort(cmp);
- return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:plan&&['a5.1','a5.2'].includes(c.stage)?buildFunctionalIndexed(main,c.stage==='a5.1'?'spell':'monster',selected(c.stage==='a5.1'?'spell':'monster')):require('./'+c.module).buildPilot(main)}));
+ const itemRuns=plan?require('./functional-item-converter').buildFunctionalItems(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['baseitem','item','magicvariant'].includes(r.kind))):null;
+ return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:plan&&['a5.1','a5.2'].includes(c.stage)?buildFunctionalIndexed(main,c.stage==='a5.1'?'spell':'monster',selected(c.stage==='a5.1'?'spell':'monster')):itemRuns&&c.stage==='a5.3'?itemRuns.equipment:itemRuns&&c.stage==='a5.4'?itemRuns.magic:require('./'+c.module).buildPilot(main)}));
 }
 // Results from real converters are not trusted until their exact provenance
 // is joined to the input plan. Filtering never mutates the original packs.
