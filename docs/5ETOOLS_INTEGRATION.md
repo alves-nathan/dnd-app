@@ -398,3 +398,7 @@ Ver [5ETOOLS_PORTABLE_PERSISTENCE_REVIEW.md](5ETOOLS_PORTABLE_PERSISTENCE_REVIEW
 ## Fase a8.14.7 — consolidação da persistência
 
 Ver [5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.md](5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.md). a8.14.6 aprovada. Revisão de 17 lanes, bindings e lacunas vinculadas ao ledger e closure. Próxima a8.15.1: referências de escolhas complexas dos personagens e presets.
+
+## Fase a8.15.1 — referências de escolhas complexas
+
+Ver [5ETOOLS_COMPLEX_BUILD_REFERENCES.md](5ETOOLS_COMPLEX_BUILD_REFERENCES.md). a8.14.7 aprovada. Inventário de ocorrências explícitas de escolhas, referências materializadas em presets e joins de captura. Próxima a8.15.2: relações de instância, combate/tática e histórico.

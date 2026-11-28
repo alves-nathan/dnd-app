@@ -35,7 +35,7 @@ function buildInventoryClosureReview({input,preview,ledger,capture,observationRe
  assert(Object.entries(d).every(([k,v])=>allowed.includes(k)&&integer(v))&&
   (d.exactEntry||0)+(d.changedEntry||0)+(d.missingLoadedEntry||0)===s.baselineEntries&&
   (d.exactEntry||0)+(d.changedEntry||0)+(d.loadedOnly||0)===s.loadedEntries,'closureRuntimeDispositionMismatch');
- const lanes=['characterSnapshot','characterLink','presetLink','scenarioCharacter','historyCharacter','historyScenario','filterEntity','filterCategory','filterBook'];
+ const lanes=['characterSnapshot','characterLink','characterBuildChoice','presetBuildReference','presetLink','scenarioCharacter','historyCharacter','historyScenario','filterEntity','filterCategory','filterBook'];
  const statuses=['present','missing','ambiguous','ownerMismatch','removed','unqualified'];
  assert(Array.isArray(s.referenceLanes)&&new Set(s.referenceLanes.map(l=>l.lane)).size===s.referenceLanes.length&&
   s.referenceLanes.every(l=>lanes.includes(l.lane)&&integer(l.total)&&Object.entries(l.statuses).every(([k,v])=>statuses.includes(k)&&integer(v))&&Object.values(l.statuses).reduce((a,v)=>a+v,0)===l.total)&&

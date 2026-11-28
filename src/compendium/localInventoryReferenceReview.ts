@@ -3,6 +3,7 @@ import type {LocalInventoryCaptureResult} from './localInventoryPanelModel';
 import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
 import type {CharacterCompendiumLink} from '../types';
+import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {sha256Hex} from '../catalog/catalogBundleDigest';
 
 export interface BaselineRuntimeOccurrence {id:string;kind:string;sourceFingerprint:string}
@@ -71,11 +72,25 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    }
    return 'unqualified';
   };
+  const choiceStatus=(value:unknown):Status=>{
+   if(typeof value!=='string'||!value.trim()||value!==value.trim())return 'unqualified';
+   if(value.startsWith('catalog:'))return snapshot.registry.has(value.slice(8))?'present':'missing';
+   if(value.startsWith('compendium:')){
+    const id=value.slice(11);if(storage.has(id))return 'present';
+    return (canonicalIds.get(id)??0)>1?'ambiguous':canonicalIds.has(id)?'unqualified':'missing';
+   }
+   const hits=(snapshot.registry.has(value)?1:0)+(storage.has(value)?1:0)+(canonicalIds.get(value)??0);
+   return hits>1?'ambiguous':hits===0?'missing':'unqualified';
+  };
   for(const c of portable.characterStore.characters){
    if(c.catalogSnapshotId)add('characterSnapshot',c.id,c.catalogSnapshotId,c.catalogSnapshotId===snapshot.snapshotId?'present':'ownerMismatch');
+   for(const occurrence of collectBuildReferenceOccurrences(c,'character'))add('characterBuildChoice',[c.id,...occurrence.path],occurrence.value,choiceStatus(occurrence.value));
    for(const [i,l] of (c.compendiumLinks??[]).entries())add('characterLink',[c.id,i],l,l.characterId!==c.id?'ownerMismatch':linkStatus(l));
   }
-  for(const p of portable.buildPresets)for(const [i,l] of (p.snapshot.compendiumLinks??[]).entries())add('presetLink',[p.id,i],l,linkStatus(l));
+  for(const p of portable.buildPresets){
+   for(const occurrence of collectBuildReferenceOccurrences(p.snapshot,'preset'))add('presetBuildReference',[p.id,...occurrence.path],occurrence.value,choiceStatus(occurrence.value));
+   for(const [i,l] of (p.snapshot.compendiumLinks??[]).entries())add('presetLink',[p.id,i],l,linkStatus(l));
+  }
   for(const s of portable.scenarios)add('scenarioCharacter',s.id,s.characterId,chars.has(s.characterId)?'present':'missing');
   for(const h of portable.buildHistorySnapshots){
    add('historyCharacter',h.id,h.characterId,chars.has(h.characterId)?'present':'missing');
@@ -92,7 +107,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    summary:{baselineEntries:baselineRuntime.length,loadedEntries:snapshot.entries.length,runtimeDispositions:tally(runtimeRows),referenceOccurrences:references.length,referenceLanes:lanes},
    runtimeRowsFingerprint:digest(runtimeRows),referenceRowsFingerprint:digest(references),
    obligations:[
-    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceAndTacticalReferences','draftRecoveryQuarantineReferences','auxiliaryPersistence']},
+    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndTacticalReferences','draftRecoveryQuarantineReferences','auxiliaryPersistence']},
     {criterion:'exactRuntimePackageAndConfigurationBinding',status:'partial',pending:['registryDependencyAliasAndCategoryDispositions','bundledBytesAndPackageTrust','configurationHistoryReferences']},
     {criterion:'legacyVersionsManualMappingsAndExternalPacksInventory',status:'pending',pending:['legacyVersionAndManualMappingReview','externalOwnerInventory']},
     {criterion:'explicitUnmatchedAndExcludedOccurrenceLedger',status:'partial',pending:['historicalLedgerJoin','ownerExclusionDecisions']}

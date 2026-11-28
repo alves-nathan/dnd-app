@@ -838,3 +838,36 @@ describe('a8.14.7 consolidated persistence evidence',()=>{
   expect(()=>buildInventoryPersistenceReview({...capture,coherence:{...capture.coherence,portablePersistence:{...capture.coherence.portablePersistence,writeAuthorized:true}}},installed)).toThrow('persistenceGroupFingerprintMismatch');
  });
 });
+
+import {collectBuildReferenceOccurrences} from '../compendium/localInventoryBuildReferences';
+describe('a8.15.1 complex build reference occurrences',()=>{
+ test('retains distinct choice paths, including nested invocations and repeated selections',()=>{
+  const rows=collectBuildReferenceOccurrences({buildChoices:{startingClassItemId:'catalog:class',speciesChoices:[{speciesItemId:'species',featureItemId:'feature',replacementSpellItemId:'spell'}],spellAssignments:{source:'spell'},equipmentSelections:[{sourceItemId:'class',items:[{compendiumItemId:'weapon'}]}]},featChoices:[{featItemId:'feat',eldritchInvocationChoice:{invocationItemId:'inv',cantripItemIds:['spell','spell']}}]},'character');
+  expect(rows.filter(r=>r.value==='spell')).toHaveLength(4);
+  expect(rows.map(r=>r.path.join('.'))).toContain('featChoices.0.eldritchInvocationChoice.cantripItemIds.1');
+  expect(rows.map(r=>r.path.join('.'))).toContain('buildChoices.spellAssignments.0.key');
+ });
+ test('preset only inspects fields actually stored, not nonexistent character choices or instance ids',()=>{
+  const rows=collectBuildReferenceOccurrences({weapons:[{id:'instance',pactWeaponSourceItemId:'weapon'}],spells:[{id:'spell-instance',grantedByInvocationItemId:'inv'}],buildChoices:{startingClassItemId:'ignored'}},'preset');
+  expect(rows.map(r=>r.value)).toEqual(['weapon','inv']);
+ });
+ test('binds qualified, ambiguous or unqualified occurrences to the same capture without repair',async()=>{
+  const f=await fixture(),captureId='complex-build-fixture',scope='disposableFixture' as const,installed=f.input.context.installed,portable=f.input.portableCheckpoint;
+  const runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef},c=portable.characterStore.characters[0],item=installed.items[0];
+  // Use explicit fixture fields rather than fabricating complete choice objects.
+  c.buildChoices={startingClassItemId:'catalog:feature.test',speciesFeatItemId:item.importItemId,spellAssignments:{'catalog:missing':'compendium:'+item.id}} as typeof c.buildChoices;
+  portable.buildPresets[0].snapshot.weapons=[{id:'fixture-weapon',pactWeaponSourceItemId:'compendium:'+item.id} as any];
+  const input={captureId,scope,installed,runtime,portable,baselineRuntime:runtime.snapshot.entries.map(e=>({id:e.entityId,kind:e.kind,sourceFingerprint:nodeDigest(e)}))};
+  const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>({guard:[],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:runtime},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:portable}
+  }}),storage:f.memory},scope);
+  const result=reviewLocalInventoryReferences(input,capture);
+  if(!result.ok)throw Error(result.code);
+  expect(result.review.summary.referenceLanes.find(l=>l.lane==='characterBuildChoice')?.statuses).toMatchObject({present:2,missing:1,unqualified:1});
+  expect(result.review.summary.referenceLanes.find(l=>l.lane==='presetBuildReference')?.statuses).toMatchObject({present:1});
+  expect(result.review.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(result)).not.toContain('catalog:missing');
+ });
+});
