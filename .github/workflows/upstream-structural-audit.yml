@@ -223,7 +223,7 @@ jobs:
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts src/tests/upstream5etoolsLocalV3Preview.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
       - name: Validate functional corpus and historical scope fixtures (fast mode)
         if: env.FULL_UPSTREAM_AUDIT == 'false'
-        run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts src/tests/upstream5etoolsHistoricalBaseline.test.ts src/tests/upstream5etoolsFunctionalConversion.test.ts --runInBand
+        run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts src/tests/upstream5etoolsHistoricalBaseline.test.ts src/tests/upstream5etoolsFunctionalConversion.test.ts src/tests/upstream5etoolsSpellConverter.test.ts src/tests/upstream5etoolsCreatureConverter.test.ts --runInBand
       - name: Validate migration and cutover fixtures (fast mode)
         if: env.FULL_UPSTREAM_AUDIT == 'false'
         run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts src/tests/upstream5etoolsCutoverEvidence.test.ts src/tests/upstream5etoolsRelationshipIdentity.test.ts src/tests/upstream5etoolsRuntimeContractEvidence.test.ts --runInBand

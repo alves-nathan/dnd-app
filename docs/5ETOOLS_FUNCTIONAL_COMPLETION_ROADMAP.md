@@ -83,3 +83,7 @@ Cada fase 19A–F é um tema, sem limite de commits; Quality + fast por commit, 
 ## Handoff 19A.2a
 
 Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md). Primeiro CLI de geração real de packs V3 privados, seleção exata, validação conjunta e disposição por ocorrência. Escopo dos conversores ainda piloto; Homebrew e consulta ainda não convertidos por este CLI. Próximo passo é expansão funcional dos conversores e preparação das coleções, não novo relatório de aceitação.
+
+## Handoff 19A.2b
+
+Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md). Magias/criaturas Main selecionadas além dos pilotos, edição sem inferência temporal, observações de classe qualificadas e bloqueios por ocorrência. Pilotos históricos preservados para comparar; cobertura real expandida ainda não aferida. Próximo 19A.2c equipamentos/magic items.

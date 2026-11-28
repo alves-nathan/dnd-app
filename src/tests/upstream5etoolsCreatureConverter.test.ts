@@ -97,3 +97,18 @@ const snapshotPath=process.env.DND_UPSTREAM_CREATURE_SNAPSHOT;
     expect(validated[code].blocked).toBe(0);
   }
 },120000);
+
+describe('functional Main creature conversion beyond pilots',()=>{
+ const {buildFunctionalIndexed}=require('../../scripts/5etools/functional-indexed-converter');
+ test('converts indexed and unindexed records, retains explicit era and blocks malformed rows',()=>{
+  const data:Record<string,unknown>={'data/books.json':{book:[]},'data/adventures.json':{adventure:[{source:'NEW',name:'Fixture adventure',published:'2025-01-01',edition:'classic'}]},'data/bestiary/index.json':{NEW:'bestiary-new.json'},'data/bestiary/bestiary-new.json':{monster:[creature({source:'NEW',name:'New Beast'}),creature({source:'NEW',name:'Broken',str:null})]},'data/bestiary/bestiary-extra.json':{monster:[creature({source:'NEW',name:'Extra',edition:'one'}),creature({source:'OTHER',name:'Excluded'})]}};
+  const snapshot={commit:'a'.repeat(40),files:new Map(Object.keys(data).map(p=>[p,'b'.repeat(40)])),readJson:(p:string)=>data[p]};
+  const r=buildFunctionalIndexed(snapshot,'monster',['NEW']);
+  expect(r.counts.NEW).toMatchObject({total:3,converted:2,blocked:1,blockCodes:{invalidAbilityScore:1}});
+  expect(r.packs[0].items.find((x:any)=>x.name==='New Beast').source.rulesEra).toBe('2014');
+  const conflict=r.packs[0].items.find((x:any)=>x.name==='Extra');
+  expect(conflict.source.rulesEra).toBe('unknown');
+  expect(conflict.metadata.reviewCodes).toContain('sourceEditionConflict');
+  expect(stageImportV3(r.packs[0]).ok).toBe(true);
+ });
+});

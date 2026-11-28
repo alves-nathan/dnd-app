@@ -18,8 +18,10 @@ const seal=b=>({...b,fingerprint:digest(b)});
 const bump=(o,k)=>o[k]=(o[k]||0)+1;
 const sorted=a=>[...a].sort(cmp);
 const originFor=p=>p.origin==='5etools'?'main':p.origin==='homebrew'?'homebrew':null;
-function collectMainRuns(main){
- return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:require('./'+c.module).buildPilot(main)}));
+function collectMainRuns(main,plan){
+ const {buildFunctionalIndexed}=require('./functional-indexed-converter');
+ const selected=kind=>[...new Set(plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&r.kind===kind).map(r=>JSON.parse(r.sourceId)[1]))].sort(cmp);
+ return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:plan&&['a5.1','a5.2'].includes(c.stage)?buildFunctionalIndexed(main,c.stage==='a5.1'?'spell':'monster',selected(c.stage==='a5.1'?'spell':'monster')):require('./'+c.module).buildPilot(main)}));
 }
 // Results from real converters are not trusted until their exact provenance
 // is joined to the input plan. Filtering never mutates the original packs.
@@ -81,7 +83,8 @@ function assembleReviewConversion(plan,runs,validate){
   if(valid){
    const externalItems=all.map(i=>({id:i.id,kind:i.kind,...(i.kind==='condition'?{conditionId:i.payload.conditionId}:{})}));
    for(const pack of packs){
-    const result=validate(pack,{externalItems:externalItems.filter(i=>!pack.items.some(p=>p.id===i.id))});
+    const localIds=new Set(pack.items.map(i=>i.id));
+    const result=validate(pack,{externalItems:externalItems.filter(i=>!localIds.has(i.id))});
     if(result.ok!==true)valid=false;
     for(const issue of result.issues??[])if(issue.severity==='error')bump(validationCodes,'pack:'+issue.code);
    }
@@ -115,7 +118,7 @@ function convertSelectedCorpus(main,homebrew,inventory,draft,selection,validate)
   assert(descriptor.disposition==='included','functionalConversionSelectionMismatch');n++;
  }
  assert(n===plan.totals.main.included+plan.totals.homebrew.included,'functionalConversionSelectionMismatch');
- return assembleReviewConversion(plan,collectMainRuns(main),validate);
+ return assembleReviewConversion(plan,collectMainRuns(main,plan),validate);
 }
 function publicConversionSummary(m){
  return {schemaVersion:m.schemaVersion,commits:m.commits,counts:m.counts,validation:m.validation.status,packCount:m.files.length,fingerprint:m.fingerprint,complete:false,runtimeEligible:false};

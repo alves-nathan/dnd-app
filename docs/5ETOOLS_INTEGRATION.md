@@ -519,3 +519,7 @@ Ver [5ETOOLS_FUNCTIONAL_INPUT_PLAN.md](5ETOOLS_FUNCTIONAL_INPUT_PLAN.md). 19A.1b
 ## 19A.2a — CLI consolidado de conversão privada
 
 Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md). Entrega 19A.1c aprovada. Gera pacotes reais de revisão Main com validação conjunta e manifesto por ocorrência; preserva lacunas e não declara catálogo completo. Próxima: ampliar conversão Main além dos pilotos, resolver registros auxiliares e dependências; depois Homebrew e atualizações incrementais. Fast + Quality; full no fechamento 19A.
+
+## 19A.2b — expansão funcional Main: magias e criaturas
+
+Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md). Entrega 19A.2a aprovada. CLI usa conversor indexado de escopo selecionado para spell/monster, além do piloto, com publicação/edição explícita e proveniência. Próxima: expansão equipamentos/magic items e resolução das variantes bloqueadas. Fast + Quality; full ao fechar 19A.

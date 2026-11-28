@@ -87,3 +87,20 @@ const snapshotPath=process.env.DND_UPSTREAM_SPELL_SNAPSHOT;
     expect(validated[code].blocked).toBe(0);
   }
 },120000);
+
+describe('functional Main spell conversion beyond pilots',()=>{
+ const {buildFunctionalIndexed}=require('../../scripts/5etools/functional-indexed-converter');
+ test('converts non-pilot sources with explicit class references and no date-based edition inference',()=>{
+  const data:Record<string,unknown>={'data/books.json':{book:[{source:'NEW',name:'Fixture Supplement',published:'2025-01-01'}]},'data/spells/index.json':{NEW:'spells-new.json'},'data/spells/spells-new.json':{spell:[spell({source:'NEW',name:'New Ray'})]},'data/generated/gendata-spell-source-lookup.json':{new:{'new ray':{class:{PHB:{Wizard:true},XPHB:{Sorcerer:true}},subclass:{fixture:true}}}}};
+  const snapshot={commit:'a'.repeat(40),files:new Map(Object.keys(data).map(p=>[p,'b'.repeat(40)])),readJson:(p:string)=>data[p]};
+  const r=buildFunctionalIndexed(snapshot,'spell',['NEW']),item=r.packs[0].items[0];
+  expect(r.counts.NEW).toMatchObject({total:1,converted:1,blocked:0});
+  expect(item.source.rulesEra).toBe('unknown');
+  expect(item.payload.classes).toEqual(['Sorcerer','Wizard']);
+  expect(item.payload.mechanics.upstreamSpell.selectedClassAccess.map((x:any)=>x.source)).toEqual(['PHB','XPHB']);
+  expect(item.payload.mechanics.upstreamSpellRecord.name).toBe('New Ray');
+  expect(item.metadata.reviewCodes).toEqual(expect.arrayContaining(['classAccessEditionPending','rulesEraPending']));
+  expect(stageImportV3(r.packs[0]).ok).toBe(true);
+  expect(buildFunctionalIndexed(snapshot,'spell',[]).packs).toEqual([]);
+ });
+});
