@@ -483,3 +483,7 @@ Ver [5ETOOLS_ISOLATED_MIGRATION_PLAN.md](5ETOOLS_ISOLATED_MIGRATION_PLAN.md). Ho
 ## Fase a8.20.2 — entrega 16/20
 
 Ver [5ETOOLS_ISOLATED_TRANSACTION_EXECUTOR.md](5ETOOLS_ISOLATED_TRANSACTION_EXECUTOR.md). Entrega 15 aprovada. Executor exclusivamente isolado, journal imutável de intenção/confirmação, readback e retomada após falhas. Próxima entrega 17/20: rollback verificado do candidato isolado e auditoria completa.
+
+## Fase a8.20.3 — entrega 17/20
+
+Ver [5ETOOLS_ISOLATED_ROLLBACK_MILESTONE.md](5ETOOLS_ISOLATED_ROLLBACK_MILESTONE.md). Entrega 16 aprovada. Rollback lógico por quarentena imutável, bloqueio de retomada, preservação de evidências e verificação do checkpoint. Próxima entrega 18/20: validação automatizada final.

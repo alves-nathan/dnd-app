@@ -1246,8 +1246,54 @@ describe('a8.20.1 isolated additive migration plan',()=>{
    await expect(reopened.createExclusive(plan.operations[0].key,'changed')).rejects.toThrow();
    expect(await reopened.read(plan.operations[0].key)).toBe(plan.operations[0].value);
    expect((await fs.readdir(dir)).length).toBe(11);
+   expect(await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,reopened)).toMatchObject({ok:true,receipt:{status:'quarantineVerified',retainedRecords:11}});
+   const afterRollback=await createPrivateCandidateFilePort(dir);
+   expect(await inspectV3IsolatedExecution(plan,afterRollback)).toMatchObject({state:'quarantined'});
+   expect((await fs.readdir(dir)).length).toBe(12);
   }finally{await fs.rm(dir,{recursive:true,force:true});}
  },30000);
+
+ const {rollbackV3IsolatedMigration}=require('../compendium/v3IsolatedMigrationExecutor') as typeof import('../compendium/v3IsolatedMigrationExecutor');
+ const rollbackRequest=(plan:{fingerprint:string})=>({scope:'disposableCandidateOnly' as const,planFingerprint:plan.fingerprint,acknowledgement:'quarantineCandidateKeepEvidence' as const});
+ test('quarantines every interrupted journal prefix and completed candidate without deleting bytes',async()=>{
+  const {plan,ports,archivePort,memory}=await setup(),before=memory.dump();
+  for(let prefix=0;prefix<=11;prefix++){
+   const rows=new Map<string,string>();let calls=0;
+   const candidate={read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};
+   const interrupted={...candidate,createExclusive:async(key:string,value:string)=>{if(++calls>prefix)throw Error('injected');await candidate.createExclusive(key,value);}};
+   await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,interrupted);
+   const retained=new Map(rows);
+   const rolled=await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,candidate);
+   expect(rolled).toMatchObject({ok:true,createdRecords:1,receipt:{status:'quarantineVerified',activePreservation:'checkpointMatch',journalVerified:true,retainedRecords:prefix,activeWrites:0,deletes:0}});
+   expect(rows.size).toBe(prefix+1);
+   for(const [k,v] of retained)expect(rows.get(k)).toBe(v);
+   expect(await inspectV3IsolatedExecution(plan,candidate)).toMatchObject({state:'quarantined'});
+   expect(await inspectV3MigrationCandidate(plan,{getItem:candidate.read})).toMatchObject({state:'quarantined'});
+   expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate)).toMatchObject({ok:false,code:'isolatedExecutionQuarantined'});
+   expect(await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,candidate)).toMatchObject({ok:true,createdRecords:0});
+  }
+  expect(memory.dump()).toEqual(before);
+ },60000);
+ test('recovers ambiguous tombstone publication without replacing evidence',async()=>{
+  const {plan,ports,archivePort}=await setup();
+  for(const afterWrite of [false,true]){
+   const rows=new Map<string,string>();
+   const candidate={read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};
+   const fault={...candidate,createExclusive:async(key:string,value:string)=>{if(afterWrite)await candidate.createExclusive(key,value);throw Error('injected');}};
+   expect(await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,fault)).toMatchObject({ok:false,code:'isolatedRollbackInterrupted'});
+   expect(await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,candidate)).toMatchObject({ok:true,createdRecords:afterWrite?0:1,receipt:{status:'quarantineVerified'}});
+   expect(rows.size).toBe(1);
+  }
+ });
+ test('quarantines stale or corrupt candidates without claiming verified preservation',async()=>{
+  const {plan,ports,archivePort,memory}=await setup(),rows=new Map<string,string>();
+  const candidate={read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};
+  rows.set(plan.operations[0].key,'foreign');
+  memory.setItem('dnd-combat-math-new-recovery','changed');
+  expect(await rollbackV3IsolatedMigration(plan,rollbackRequest(plan),ports,archivePort,candidate)).toMatchObject({ok:true,receipt:{status:'quarantinedReviewRequired',activePreservation:'notVerified',journalVerified:false}});
+  expect(rows.get(plan.operations[0].key)).toBe('foreign');
+  expect(await inspectV3IsolatedExecution(plan,candidate)).toMatchObject({state:'quarantined'});
+ });
  test('blocks stale active data, tampered plan and missing archive',async()=>{
   const {memory,ports,archivePort,id,plan}=await setup();
   const altered={...plan,operations:plan.operations.map((o,i)=>i===0?{...o,key:'dnd-combat-math-compendium'}:o)};

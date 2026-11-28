@@ -84,7 +84,16 @@ export async function revalidateV3MigrationPlan(plan:V3MigrationPlan,ports:V3Che
  const result=await prepareV3MigrationPlan(ports,archivePort,plan.bindings.archive);
  return {ok:result.ok&&result.plan.fingerprint===plan.fingerprint,executable:false as const};
 }
-export type V3CandidateState='empty'|'matchingPrefix'|'complete'|'conflict'|'unavailable'|'invalidPlan';
+/** Immutable terminal marker; no candidate or journal bytes are deleted.
+ * Consumers must check this marker even when a completion marker exists. */
+export function v3CandidateQuarantineRecord(plan:V3MigrationPlan){
+ return {key:V3_CANDIDATE_NAMESPACE+plan.candidateId+'/quarantine',value:JSON.stringify({schemaVersion:'dnd-v3-isolated-quarantine.v1',candidateId:plan.candidateId,planFingerprint:plan.fingerprint,checkpointFingerprint:plan.bindings.checkpoint,disposition:'quarantined',...flags})};
+}
+export async function inspectV3CandidateQuarantine(plan:V3MigrationPlan,read:(key:string)=>Promise<string|null>|string|null):Promise<'absent'|'quarantined'|'conflict'>{
+ const marker=v3CandidateQuarantineRecord(plan),raw=await read(marker.key);
+ return raw===null?'absent':raw===marker.value?'quarantined':'conflict';
+}
+export type V3CandidateState='empty'|'matchingPrefix'|'complete'|'quarantined'|'conflict'|'unavailable'|'invalidPlan';
 /** Read-only idempotency classifier: only an exact ordered prefix is a
  * recoverable partial candidate. A later record without its predecessor is
  * a conflict, not an invitation to repair or overwrite. */
@@ -92,6 +101,8 @@ export async function inspectV3MigrationCandidate(plan:V3MigrationPlan,storage:P
  const result=(state:V3CandidateState,matchingRecords=0)=>({state,matchingRecords,executable:false as const});
  if(!verifyV3MigrationPlanStructure(plan))return result('invalidPlan');
  try{
+  const before=await inspectV3CandidateQuarantine(plan,storage.getItem);
+  if(before!=='absent')return result(before);
   let matching=0,missing=false;
   for(const operation of plan.operations){
    const value=await storage.getItem(operation.key);
@@ -99,6 +110,8 @@ export async function inspectV3MigrationCandidate(plan:V3MigrationPlan,storage:P
    if(missing||value!==operation.value)return result('conflict');
    matching++;
   }
+  const after=await inspectV3CandidateQuarantine(plan,storage.getItem);
+  if(after!=='absent')return result(after);
   return result(matching===0?'empty':matching===plan.operations.length?'complete':'matchingPrefix',matching);
  }catch{return result('unavailable');}
 }

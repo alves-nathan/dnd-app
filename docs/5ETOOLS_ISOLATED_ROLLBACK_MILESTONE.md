@@ -1,0 +1,9 @@
+# a8.20.3 — Delivery 17/20
+
+Base bf232999d5e043364c1fbe9e117b2dbc0db90398; delivery 16 approved by owner. Branch feature/5etools-integration.
+
+Logical rollback via a single immutable exclusive quarantine marker bound to plan/candidate/checkpoint. Retain all bytes and journal, no deletion or active writes. Both candidate inspectors check marker before and after observations; executor refuses quarantine before writes and before receipt. Marker overrides completion. Reopen and readback handle ambiguous before/after-publication errors. Verify archive bindings, exact journal prefix stability and fresh active checkpoint before/after quarantine; stale or corrupt candidate may be quarantined safely but receipt explicitly says review required, not preservation verified. Receipt non-executable; no active restore. Existing POSIX adapter accepts only the additional exact quarantine key. Tests cover all 12 journal prefixes (empty through complete), before/after marker failure, stale/corrupt state, and actual isolated file reopen.
+
+Decision: quarantine rather than erase evidence. This is a logical terminal disposition for the candidate, not rollback of active production data. Concurrent writers are not serialized across calls; an in-flight write may finish after marker creation, but the marker remains authoritative for subsequent inspection; no native, crash/power-loss, or cross-store atomicity proof. No runtime activation/reader changes. Full audit triggered. CI pending, no local suite execution.
+
+Next a8.21.1 / 18 of 20: automated final validation across checkpoint, transaction, rollback and existing inventory/mechanics/relationships/trust evidence, preserve explicit blockers; 19 final acceptance review and 20 isolated candidate cutover; emulator after 20. Main and irreversible retirement require native validation and explicit approval. Private table scope only, no new upstream content or publication.
