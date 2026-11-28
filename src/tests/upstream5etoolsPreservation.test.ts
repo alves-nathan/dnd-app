@@ -1120,7 +1120,9 @@ describe('a8.19.2 private archive and isolated restore rehearsal',()=>{
  }
  (process.platform==='win32'?test.skip:test)('syncs private file, reopens with fresh adapter and rehearses all captured logical lanes',async()=>{
   const {r,memory}=await captured(),before=memory.dump();
-  const fs=await import('node:fs/promises'),os=await import('node:os'),path=await import('node:path');
+  const fs:typeof import('node:fs/promises')=require('node:fs/promises');
+  const os:typeof import('node:os')=require('node:os');
+  const path:typeof import('node:path')=require('node:path');
   const {createPrivateCheckpointFilePort}=require('../../scripts/5etools/private-checkpoint-file-port');
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dnd-checkpoint-'));
   try{

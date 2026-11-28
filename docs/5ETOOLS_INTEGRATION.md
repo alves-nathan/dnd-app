@@ -471,3 +471,7 @@ Ver [5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.md](5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.m
 ## Fase a8.19.2 — entrega 14/20
 
 Ver [5ETOOLS_DURABLE_CHECKPOINT_MILESTONE.md](5ETOOLS_DURABLE_CHECKPOINT_MILESTONE.md). Entrega 13 aprovada. Arquivo privado imutável, readback e ensaio de restauração isolado. Próxima entrega 15/20: plano transacional explícito, idempotente e sem remoção implícita.
+
+### Hotfix a8.19.2 — Jest
+
+Quality e auditoria completa falharam no mesmo teste de arquivo por import dinâmico incompatível com Jest. Substituição por require tipado; auditoria completa repetida. Entrega 14 permanece em validação.
