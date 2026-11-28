@@ -531,3 +531,7 @@ Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.m
 ## 19A.2d — classes, subclasses e features Main
 
 Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md). Conversão selecionada por coordenada, fontes além do piloto, grafo fechado com dependências qualificadas e progressão preservada. Próxima: origens, feats, optional features e conditions. Fast + Quality; full ao fechar 19A.
+
+## 19A.2e — origens, feats, optional features e condições Main
+
+Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md). Hotfix 19A.2d.1 aprovado. O CLI passa a usar as oito famílias de conversores expandidas para seleção Main. Próxima: coleções consultáveis e suporte, depois resolução das lacunas e execução real. Fast + Quality; full no encerramento de 19A.

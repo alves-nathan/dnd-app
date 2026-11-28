@@ -250,7 +250,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
   }
   return {commit:snapshot.commit,counts,packs,diagnostics,activation:'review-required'};
 }
-module.exports={buildPilot,backgroundAbility,mergeSubrace,speedOf,proficiency};
+module.exports={buildPilot,convert,pilot,backgroundAbility,mergeSubrace,speedOf,proficiency};
 if(require.main===module){
   try{
     const [root,out,ref]=process.argv.slice(2);if(!root||!out)fail('usage');

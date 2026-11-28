@@ -95,3 +95,7 @@ Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.m
 ## Handoff 19A.2d
 
 Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md). Classes/subclasses/features Main além dos pilotos; fonte/edição explícitas e seleção fechada de dependências; progressão e tabelas suportadas preservadas. Próximo 19A.2e: origens, feats, optional features e conditions; depois consulta/suporte, resolução real das lacunas, Brew e updates.
+
+## Handoff 19A.2e
+
+Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md). Expansão selecionada de espécies/subespécies/backgrounds, feats/optional features/conditions. As oito etapas de conversão Main têm caminho expandido; não significa cobertura integral. Próximo 19A.2f: consulta e coleções auxiliares (incluindo status/disease sem relabel), resolução de lacunas e regressão real antes de fechar 19A; A3 Brew e A4/A5 updates ainda pendentes.
