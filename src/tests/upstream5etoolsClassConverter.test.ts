@@ -102,11 +102,11 @@ describe('functional Main classes and progression',()=>{
   const selection=[pick('class',0,'NEW'),pick('classFeature',0,'SUP'),pick('subclass',0,'SUP'),pick('subclassFeature',0,'SUP')];
   const r=buildFunctionalClasses(snapshot,selection),items=r.packs.flatMap((p:any)=>p.items);
   expect(items).toHaveLength(4);
-  const c=items.find((i:any)=>i.kind==='class'),f=items.find((i:any)=>i.payload.sourceType==='classFeature'),sc=items.find((i:any)=>i.kind==='subclass'),sf=items.find((i:any)=>i.payload.sourceType==='subclassFeature');
+  const c=items.find((i:any)=>i.kind==='class'),f=items.find((i:any)=>i.payload.sourceType==='classFeature'),sc=items.find((i:any)=>i.kind==='subclass'),convertedSubclassFeature=items.find((i:any)=>i.payload.sourceType==='subclassFeature');
   expect(c.source.rulesEra).toBe('2024');
   expect(c.payload).toMatchObject({featureIds:[f.id],progression:[{level:1,featureIds:[f.id]}],spellcasting:{ability:'INT',cantripsKnownByLevel:Array(20).fill(2)},mechanics:{featureGrantReferences:[{raw:{gainSubclassFeature:true}}]}});
-  expect(sc.payload).toMatchObject({classId:c.id,featureIds:[sf.id]});
-  expect(sf.payload).toMatchObject({classId:c.id,subclassId:sc.id,levelGained:3});
+  expect(sc.payload).toMatchObject({classId:c.id,featureIds:[convertedSubclassFeature.id]});
+  expect(convertedSubclassFeature.payload).toMatchObject({classId:c.id,subclassId:sc.id,levelGained:3});
   expect(f.metadata.reviewCodes).toContain('crossPublicationOwnerReviewPending');
   expect(combined(r).ok).toBe(true);
   expect(r.counts.NEW.class).toEqual({total:1,converted:1,blocked:0});
