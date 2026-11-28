@@ -4,7 +4,7 @@ import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
 import type {CharacterCompendiumLink} from '../types';
 import {collectOwnerInstanceReferences,collectScenarioInstanceReferences,collectHistoryInstanceReferences} from './localInventoryInstanceReferences';
-import {collectRecoveryAndTransactionReferences} from './localInventoryRecoveryReferences';
+import {collectRecoveryAndTransactionReferences,type ReferenceStatus} from './localInventoryRecoveryReferences';
 import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {sha256Hex} from '../catalog/catalogBundleDigest';
 
@@ -13,7 +13,7 @@ interface ReferenceReviewInput {
  captureId:string;scope:LocalInventoryInput['scope'];installed:CompendiumPersistenceState;
  runtime:RuntimeInventoryValue;portable:PortableRestoreDataCheckpoint;baselineRuntime:readonly BaselineRuntimeOccurrence[];
 }
-type Status='exactEntry'|'changedEntry'|'missingLoadedEntry'|'loadedOnly'|'present'|'missing'|'ambiguous'|'ownerMismatch'|'removed'|'unqualified';
+type Status='exactEntry'|'changedEntry'|'missingLoadedEntry'|'loadedOnly'|ReferenceStatus;
 const canonical=(v:unknown):unknown=>{
  if(v===null||typeof v==='string'||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v))return v;
  if(Array.isArray(v))return v.map(canonical);
@@ -60,7 +60,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
   for(const i of installed.items)canonicalIds.set(i.importItemId,(canonicalIds.get(i.importItemId)??0)+1);
   const references:Array<{lane:string;status:Status;fingerprint:string}>=[];
   const add=(lane:string,coordinate:unknown,value:unknown,status:Status)=>references.push({lane,status,fingerprint:digest({lane,coordinate,value,status})});
-  const linkStatus=(l:CharacterCompendiumLink):Status=>{
+  const linkStatus=(l:CharacterCompendiumLink):ReferenceStatus=>{
    if(l.status==='removed')return 'removed';
    if(l.origin==='catalog'){
     if(!l.catalogEntityId)return 'unqualified';
@@ -74,7 +74,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    }
    return 'unqualified';
   };
-  const choiceStatus=(value:unknown):Status=>{
+  const choiceStatus=(value:unknown):ReferenceStatus=>{
    if(typeof value!=='string'||!value.trim()||value!==value.trim())return 'unqualified';
    if(value.startsWith('catalog:'))return snapshot.registry.has(value.slice(8))?'present':'missing';
    if(value.startsWith('compendium:')){

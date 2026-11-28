@@ -5,7 +5,8 @@ import {characterProgressionFingerprint} from '../characters/progressionTransact
 import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {collectOwnerInstanceReferences} from './localInventoryInstanceReferences';
 
-type Status='present'|'missing'|'ambiguous'|'ownerMismatch'|'unqualified'|'removed';
+export type ReferenceStatus='present'|'missing'|'ambiguous'|'ownerMismatch'|'unqualified'|'removed';
+type Status=ReferenceStatus;
 type Path=readonly (string|number)[];
 type Add=(lane:string,path:Path,value:unknown,status:Status)=>void;
 interface Context {

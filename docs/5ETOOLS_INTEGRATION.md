@@ -414,3 +414,7 @@ Ver [5ETOOLS_INSTANCE_TACTICAL_REFERENCES.md](5ETOOLS_INSTANCE_TACTICAL_REFERENC
 ## Fase a8.15.3 — entrega 2/20
 
 Ver [5ETOOLS_RECOVERY_TRANSACTION_REFERENCES.md](5ETOOLS_RECOVERY_TRANSACTION_REFERENCES.md). Entrega 1/20 aprovada. Drafts, recuperação, planos, quarentena e transações históricas vinculados à revisão. Próxima entrega 3/20: grafo runtime e histórico de configuração.
+
+### Hotfix a8.15.3 — tipagem
+
+Quality PR 46099360348 falhou no typecheck (TS2719/TS2322): classificadores de referências declarados com a união mais ampla de estados do runtime. Auditoria rápida 46099356254 aprovada. Compartilhar `ReferenceStatus` e restringir os retornos dos classificadores, sem casts ou alteração comportamental. A entrega permanece 2/20; avançar após CI verde.
