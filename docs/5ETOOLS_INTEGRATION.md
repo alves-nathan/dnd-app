@@ -463,3 +463,7 @@ Ver [5ETOOLS_RELATIONSHIP_POLICY_REVIEW.md](5ETOOLS_RELATIONSHIP_POLICY_REVIEW.m
 ## Fase a8.18.3 — entrega 12/20
 
 Ver [5ETOOLS_RELATIONSHIP_MILESTONE.md](5ETOOLS_RELATIONSHIP_MILESTONE.md). Entrega 11 aprovada. Consolidação das relações, evidências do grafo e lacunas semânticas; auditoria completa do marco. Próxima entrega 13/20: checkpoint durável e coerente, com todos os stores e bytes do pacote runtime.
+
+## Fase a8.19.1 — entrega 13/20
+
+Ver [5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.md](5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.md). Entrega 12 aprovada. Contrato de captura local em memória, export lógico do compêndio, bytes de runtime e envelopes persistidos, sem gravação ou ativação. Próxima entrega 14/20: armazenamento durável, leitura de volta e ensaio descartável de restauração.

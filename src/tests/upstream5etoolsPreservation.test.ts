@@ -1050,3 +1050,60 @@ describe('a8.15.5 owner inventory declaration and milestone',()=>{
   expect(()=>reviewOwnerInventory(capture,manifest)).toThrow('ownerInventoryUnavailableFiles');
  });
 });
+
+describe('a8.19.1 in-memory durable checkpoint candidate',()=>{
+ const {captureV3DurableCheckpoint,verifyV3CheckpointPayload}=require('../compendium/v3DurableCheckpoint') as typeof import('../compendium/v3DurableCheckpoint');
+ const {observeExistingKeyValueCompendium}=require('../storage/readOnlyCompendiumObservation') as typeof import('../storage/readOnlyCompendiumObservation');
+ async function checkpointFixture(){
+  const {input,memory}=await fixture();
+  const bundled=JSON.stringify(minimalBundle('1.0.0'));
+  const guard=[input],readFrame=()=>({guard,blocked:false,backend:'legacy' as const,preservation:input,observations:{}});
+  const ports={readFrame,storage:{getItem:memory.getItem,getAllKeys:()=>Object.keys(memory.dump())},observeActiveCompendium:()=>observeExistingKeyValueCompendium('legacy',memory),readBundledRuntimeText:async()=>bundled};
+  return {input,memory,ports};
+ }
+ test('retains exact local bytes and explicit absences without writes or approval',async()=>{
+  const {memory,ports}=await checkpointFixture();
+  memory.setItem('@dnd-combat-math/catalog-download-cache/v1/session/fixture/chunk/0','private cached text');
+  memory.setItem('dnd-combat-math-future-store','{"value":"private"}');
+  memory.setItem('unrelated-app','not in scope');
+  const before=memory.dump(),r=await captureV3DurableCheckpoint(ports);
+  expect(r.ok).toBe(true);if(!r.ok)throw Error(r.code);
+  expect(r.manifest).toMatchObject({packageStatus:'bundledAssetSupplied',writeAuthorized:false,executable:false});
+  expect(r.payload.keyValues).toContainEqual({key:'dnd-combat-math-future-store',raw:'{"value":"private"}'});
+  expect(r.payload.keyValues.some(x=>x.raw===null)).toBe(true);
+  expect(r.payload.keyValues.some(x=>x.key==='unrelated-app')).toBe(false);
+  expect(JSON.stringify(r.manifest)).not.toContain('private cached text');
+  expect(verifyV3CheckpointPayload(r.manifest,r.payload)).toBe(true);
+  expect(verifyV3CheckpointPayload(r.manifest,{...r.payload,bundledRuntimeText:r.payload.bundledRuntimeText+' '})).toBe(false);
+  expect(verifyV3CheckpointPayload(r.manifest,{...r.payload,keyValues:r.payload.keyValues.slice(1)})).toBe(false);
+  expect(memory.dump()).toEqual(before);
+ });
+ test('rejects runtime content that differs from the loaded graph and stale raw reads',async()=>{
+  const {memory,ports}=await checkpointFixture();
+  const wrong=await captureV3DurableCheckpoint({...ports,readBundledRuntimeText:async()=>JSON.stringify(minimalBundle('1.0.0','Different'))});
+  expect(wrong).toMatchObject({ok:false,executable:false});
+  let reads=0;
+  const stale=await captureV3DurableCheckpoint({...ports,readBundledRuntimeText:async()=>{
+   if(++reads===1)memory.setItem('dnd-combat-math-future-store','changed');
+   return ports.readBundledRuntimeText();
+  }});
+  expect(stale).toMatchObject({ok:false,code:'checkpointCaptureStale'});
+ });
+ test('retains indexed package bytes and rejects corrupted chunks',async()=>{
+  const {memory,ports}=await checkpointFixture();
+  const raw=JSON.stringify(minimalBundle('2.0.0'));
+  const snapshot=await new CatalogLoader().initializeFromText(raw);
+  await createCatalogPackageRepository(memory,now).stage(raw,{id:'fixture-package',catalogVersion:snapshot.catalogVersion,snapshotId:snapshot.snapshotId,checksum:sha256Hex(raw)});
+  const key='@dnd-combat-math/catalog-packages/v1/package/fixture-package/chunk/0';
+  const r=await captureV3DurableCheckpoint(ports);
+  expect(r.ok).toBe(true);if(!r.ok)throw Error(r.code);
+  expect(r.payload.keyValues).toContainEqual({key,raw});
+  memory.setItem(key,raw+' ');
+  expect(await captureV3DurableCheckpoint(ports)).toMatchObject({ok:false,code:'indexedRuntimePackageInvalid'});
+ });
+ test('rejects an active backend that is not independently verified',async()=>{
+  const {ports}=await checkpointFixture();
+  const r=await captureV3DurableCheckpoint({...ports,observeActiveCompendium:async()=>({status:'unavailable',backend:'legacy',code:'fixture'})});
+  expect(r).toMatchObject({ok:false,code:'activeCompendiumNotVerified'});
+ });
+});
