@@ -97,7 +97,9 @@ function buildFamilyCheckpointFragment(input,reports,runtimeEvidence){
  const relationshipPolicy=buildRelationshipPolicyReview(input,runtimeEvidence);
  assert(relationshipPolicy.bindings.runtimeEvidence===reports.runtime.bindings.evidence&&relationshipPolicy.alias.occurrences===totals.aliases&&relationshipPolicy.category.occurrences===totals.categories&&relationshipPolicy.bindings.reconciliation===body.reconciliationFingerprint,'relationshipPolicyDenominatorMismatch');
  body.bindings.relationshipPolicy=relationshipPolicy.fingerprint;
- return {...body,mechanicalPreservation,relationshipIdentity,relationshipPolicy,fingerprint:digest({...body,mechanicalPreservation,relationshipIdentity,relationshipPolicy})};
+ const relationshipMainDigest=digest(input.items.map(i=>[i.id,digest(i)]).sort((a,b)=>a[0].localeCompare(b[0])));
+ const result={...body,mechanicalPreservation,relationshipIdentity,relationshipPolicy,relationshipMainDigest};
+ return {...result,fingerprint:digest(result)};
 }
 function buildGlobalCheckpointReview(matrix,fragment){
  assert(matrix?.schemaVersion==='dnd-upstream-cutover-evidence.v1'&&matrix.activation==='review-required'&&matrix.executable===false&&matrix.runtimeEligible===0&&

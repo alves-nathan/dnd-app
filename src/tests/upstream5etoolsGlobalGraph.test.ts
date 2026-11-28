@@ -1,3 +1,4 @@
+const {buildGraphRelationshipFragment}=require('../../scripts/5etools/relationship-milestone-review');
 const {fromGraph,writeFragment}=require('../../scripts/5etools/cutover-evidence');
 import * as fs from 'node:fs';
 import { stageImportV3 } from '../compendium/importV3Staging';
@@ -41,6 +42,13 @@ describe('a6.7 global graph',()=>{
     expect(r.summary.byNamespace).toMatchObject({main:{semanticReviewRequired:2},homebrew:{homebrewQuarantined:1}});
     expect(r.summary.runtimeEligible).toBe(0);
     expect(r.nodes.every((n:any)=>n.runtimeEligible===false)).toBe(true);
+  });
+  test('binds graph relationships and evidence without promoting structural closure',()=>{
+    const f=fixture(),r=validateGraph(f.args),before=digest(r),g=buildGraphRelationshipFragment(r);
+    expect(g).toMatchObject({mainItems:2,homebrewProbes:1,readiness:'blocked',relationshipParityEstablished:0,writeAuthorized:false});
+    expect(g.edgeOccurrences).toBe(r.edges.length);
+    expect(()=>buildGraphRelationshipFragment({...r,edges:[]})).toThrow('relationshipGraphEdgeAccounting');
+    expect(digest(r)).toBe(before);
   });
   test('rejects forbidden namespace direction and propagates hard dependency failures',()=>{
     const f=fixture();
@@ -99,7 +107,10 @@ const mainPath=process.env.DND_UPSTREAM_GRAPH_MAIN,brewPath=process.env.DND_UPST
   expect(r.summary.runtimeEligible).toBe(0);
   expect(r.summary.distributionAuthorized).toBe(0);
   expect(r.nodes.every((n:any)=>n.activation==='review-required'&&!n.runtimeEligible)).toBe(true);
-  if(process.env.DND_UPSTREAM_EVIDENCE_DIR)writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'graph',fromGraph(r));
+  if(process.env.DND_UPSTREAM_EVIDENCE_DIR){
+    writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'graph',fromGraph(r));
+    writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'relationship-graph',buildGraphRelationshipFragment(r));
+  }
   const out=process.env.DND_UPSTREAM_GRAPH_OUT;
   if(out)fs.writeFileSync(out,JSON.stringify(r,null,2)+'\n',{flag:'wx'});
 },360000);

@@ -1,0 +1,7 @@
+# a8.18.3 — Delivery 12/20
+
+Base 4ba0b96ea31fb18dcb911a2eb1e2d3a995ad4f53, delivery 11 Quality/fast audit approved by owner. Branch feature/5etools-integration.
+
+Existing real graph callback now emits a separate temporary aggregate relationship fragment. Validate physical edge and compatibility counts, evidence domain/status denominators, attached/pending/unattached occurrences, namespace and exact Main item fingerprint (same sorted physical ID/payload digest as family callback). Final same-run join binds graph, legacy identity and runtime policy fragments to existing matrix, cross-checks preservation and graph denominators, and retains the relationship blocker. Structural hard closure is not selector/grant equivalence or character-choice/provider/selection candidate regression; those, installed inventory and runtime semantics remain pending. Synthetic graph and join regressions, no new workflow or clone, no runtime mutation, content publication, DRM or migration authorization. Main and Homebrew remain distinct.
+
+CI pending: require Quality and full upstream audit with milestone marker; no local full suite execution. Next a8.19.1 / 13 of 20: coherent durable checkpoint design and actual package bytes, complete store and recovery/quarantine coverage. Delivery 14 durable write/readback and restore rehearsal; 15–17 transaction/rollback; 18–19 automated final validation; 20 isolated candidate cutover. Emulator only after 20. Main/irreversible legacy retirement require native validation and explicit approval; private table use only.

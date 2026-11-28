@@ -166,6 +166,8 @@ if(require.main===module){
   const {fingerprint:policyFingerprint,...policyBody}=policy;
   assert(digest(policyBody)===policyFingerprint&&families.bindings.relationshipPolicy===policyFingerprint&&policy.bindings.reconciliation===families.reconciliationFingerprint&&policy.bindings.runtimeBundle===relations.bindings.runtime&&policy.alias.occurrences===report.totals.aliases&&policy.category.occurrences===report.totals.categories&&policy.relationshipParityEstablished===0&&policy.writeAuthorized===false,'relationshipPolicyReportMismatch');
   console.log(JSON.stringify(policy));
+  const relationshipMilestone=require('./relationship-milestone-review').buildRelationshipMilestoneReview(report,families,read('relationship-graph'));
+  console.log(JSON.stringify(relationshipMilestone));
   console.log(JSON.stringify(global));
   const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,families,global);
   console.log(JSON.stringify(acceptance));

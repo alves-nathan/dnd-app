@@ -145,3 +145,34 @@ describe('a8.12.2 cutover acceptance matrix',()=>{
   }
  });
 });
+
+const {buildRelationshipMilestoneReview}=require('../../scripts/5etools/relationship-milestone-review');
+function relationshipFixture(){
+ const {matrix,fragment}=globalFixture();
+ const flags={activation:'review-required',runtimeEligible:false,writeAuthorized:false,distributionAuthorized:false,retirementAuthorized:false,executable:false,readiness:'blocked',approvedMappings:0,relationshipParityEstablished:0,mechanicalParityEstablished:0};
+ const seal=(body:Record<string,unknown>)=>({...body,fingerprint:digest(body)});
+ const mainDigest=digest('main'),reconciliation=digest('reconciliation'),runtime=digest('runtime');
+ const identity=seal({schemaVersion:'dnd-upstream-relationship-identity-review.v1',commits,bindings:{reconciliation,runtime},legacy:{occurrences:0,byDisposition:{},byField:{}},dependencies:{occurrences:1,byDisposition:{endpointIdentityPending:1},requiredByCurrentFilter:1,requiredByDisposition:{endpointIdentityPending:1}},...flags});
+ const policy=seal({schemaVersion:'dnd-upstream-relationship-policy-review.v1',commits,bindings:{reconciliation,runtimeBundle:runtime},alias:{occurrences:0,groups:0,selectedActive:0,selectedNonActive:0,duplicateFromOccurrences:0},category:{occurrences:0,groups:0,shadowedOccurrences:0,membershipOccurrences:0,selectedMembershipOccurrences:0,shadowedMembershipOccurrences:0},dependencyPolicies:{requireEnabled:1},policySections:Array.from({length:13},(_,i)=>({section:'section'+i,fingerprint:digest(i)})),...flags});
+ const graph=seal({schemaVersion:'dnd-upstream-relationship-graph-fragment.v1',commits:{main:commits.main,homebrew:commits.homebrew},mainDigest,mainItems:1,homebrewProbes:1,registry:2,evidenceOccurrences:3,memberships:{main:1,homebrew:0},pending:{main:1,homebrew:0},unattachedEvidence:{reference:2},byEvidenceStatus:{pending:3},byEvidenceDomain:{reference:{pending:3}},edgeCounts:{},compatibilityCounts:{},edgeOccurrences:0,precedenceResidual:0,...flags});
+ const family=seal({...fragment,reconciliationFingerprint:reconciliation,relationshipMainDigest:mainDigest,relationshipIdentity:identity,relationshipPolicy:policy,bindings:{relationshipIdentity:identity.fingerprint,relationshipPolicy:policy.fingerprint}});
+ return {matrix,family,graph};
+}
+describe('a8.18.3 relationship milestone',()=>{
+ test('joins graph and legacy denominators without treating candidates as approval',()=>{
+  const f=relationshipFixture(),before=digest(f),r=buildRelationshipMilestoneReview(f.matrix,f.family,f.graph);
+  expect(r).toMatchObject({preservation:{legacyLinks:0,runtimeDependencies:1,runtimeAliases:0,runtimeCategories:0,policySections:13},readiness:'blocked',relationshipParityEstablished:0,writeAuthorized:false});
+  expect(r.pending).toContain('selectorAndGrantSemanticEquivalence');
+  expect(digest(f)).toBe(before);
+ });
+ test('rejects a stale graph, rehashed promotion and missing relationship blocker',()=>{
+  const f=relationshipFixture();
+  expect(()=>buildRelationshipMilestoneReview(f.matrix,f.family,{...f.graph,fingerprint:'stale'})).toThrow('relationshipMilestoneFingerprintMismatch');
+  const {fingerprint,...body}=f.graph;
+  const stale={...body,mainDigest:digest('other')};
+  expect(()=>buildRelationshipMilestoneReview(f.matrix,f.family,{...stale,fingerprint:digest(stale)})).toThrow('relationshipMilestoneBindingMismatch');
+  const promoted={...body,relationshipParityEstablished:1};
+  expect(()=>buildRelationshipMilestoneReview(f.matrix,f.family,{...promoted,fingerprint:digest(promoted)})).toThrow('invalidRelationshipMilestoneReport');
+  expect(()=>buildRelationshipMilestoneReview({...f.matrix,blockers:[]},f.family,f.graph)).toThrow('relationshipMilestoneBlockerMissing');
+ });
+});

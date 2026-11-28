@@ -459,3 +459,7 @@ Quality falhou em TS2339 no fixture de referências; auditoria rápida aprovada.
 ## Fase a8.18.2 — entrega 11/20
 
 Ver [5ETOOLS_RELATIONSHIP_POLICY_REVIEW.md](5ETOOLS_RELATIONSHIP_POLICY_REVIEW.md). Hotfix da entrega 10 aprovado. Precedência dos índices, aliases, topologia diagnóstica, declarações direcionais e políticas vinculadas ao runtime. Próxima entrega 12/20: consolidação das relações e auditoria completa.
+
+## Fase a8.18.3 — entrega 12/20
+
+Ver [5ETOOLS_RELATIONSHIP_MILESTONE.md](5ETOOLS_RELATIONSHIP_MILESTONE.md). Entrega 11 aprovada. Consolidação das relações, evidências do grafo e lacunas semânticas; auditoria completa do marco. Próxima entrega 13/20: checkpoint durável e coerente, com todos os stores e bytes do pacote runtime.
