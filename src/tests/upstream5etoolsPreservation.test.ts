@@ -601,3 +601,79 @@ describe('a8.14.2 independent persistence capture integration',()=>{
   expect(stale.captureStatus).toBe('stale');
  });
 });
+
+import {readExistingIndexedDbValue,type ExistingIndexedDbFactory} from '../storage/indexedDbStorageAdapter';
+describe('a8.14.3 existing-only IndexedDB observation',()=>{
+ const dbName='dnd-combat-math-web-storage',storeName='key-value';
+ function browserFixture(value:unknown,mode:'success'|'upgrade'|'blocked'|'abort'|'missingStore'='success'){
+  const calls:string[]=[];
+  const request:any={onsuccess:null,onerror:null,onblocked:null,onupgradeneeded:null,transaction:{abort:()=>{calls.push('abortUpgrade');Promise.resolve().then(()=>request.onerror?.());}}};
+  const get:any={result:value,onsuccess:null,onerror:null};
+  const tx:any={oncomplete:null,onabort:null,onerror:null,objectStore:(name:string)=>{
+   calls.push('store:'+name);
+   return {get:(key:string)=>{calls.push('get:'+key);Promise.resolve().then(()=>{
+    get.onsuccess?.();
+    if(mode==='abort')tx.onabort?.();else tx.oncomplete?.();
+   });return get;}};
+  }};
+  const db={version:1,objectStoreNames:{contains:(name:string)=>name===storeName&&mode!=='missingStore'},
+   close:()=>calls.push('close'),transaction:(name:string,access:string)=>{calls.push('transaction:'+name+':'+access);return tx;}};
+  request.result=db;
+  const factory:ExistingIndexedDbFactory={databases:async()=>[{name:dbName,version:1}],open:(name,version)=>{
+   calls.push('open:'+name+':'+version);
+   Promise.resolve().then(()=>{
+    if(mode==='upgrade')request.onupgradeneeded?.();
+    else if(mode==='blocked'){request.onblocked?.();Promise.resolve().then(()=>request.onsuccess?.());}
+    else request.onsuccess?.();
+   });return request;
+  }};
+  return {factory,calls};
+ }
+ test('never opens an absent, mismatched or non-enumerable database',async()=>{
+  const open=jest.fn();
+  expect(await readExistingIndexedDbValue('key',{open})).toMatchObject({status:'unavailable',code:'indexedDbEnumerationUnavailable'});
+  expect(await readExistingIndexedDbValue('key',{open,databases:async()=>[]})).toMatchObject({status:'unavailable',code:'indexedDbDatabaseAbsentOrAmbiguous'});
+  expect(await readExistingIndexedDbValue('key',{open,databases:async()=>[{name:dbName,version:2}]})).toMatchObject({status:'unavailable',code:'indexedDbVersionMismatch'});
+  expect(open).not.toHaveBeenCalled();
+ });
+ test('uses only readonly get and completes before closing; preserves missing and invalid values',async()=>{
+  const {factory,calls}=browserFixture('raw');
+  expect(await readExistingIndexedDbValue('key',factory)).toEqual({status:'read',value:'raw'});
+  expect(calls).toEqual(['open:'+dbName+':1','transaction:'+storeName+':readonly','store:'+storeName,'get:key','close']);
+  expect(await readExistingIndexedDbValue('key',browserFixture(undefined).factory)).toEqual({status:'read',value:null});
+  expect(await readExistingIndexedDbValue('key',browserFixture({invalid:true}).factory)).toMatchObject({status:'invalid',code:'indexedDbValueTypeMismatch'});
+ });
+ test('aborts raced creation or upgrade and closes late blocked success',async()=>{
+  const upgrade=browserFixture('raw','upgrade');
+  expect(await readExistingIndexedDbValue('key',upgrade.factory)).toMatchObject({status:'unavailable',code:'indexedDbUpgradeAborted'});
+  expect(upgrade.calls).toEqual(['open:'+dbName+':1','abortUpgrade']);
+  const blocked=browserFixture('raw','blocked');
+  expect(await readExistingIndexedDbValue('key',blocked.factory)).toMatchObject({status:'unavailable',code:'indexedDbOpenBlocked'});
+  await Promise.resolve();
+  expect(blocked.calls).toEqual(['open:'+dbName+':1','close']);
+ });
+ test('transaction abort and missing store cannot return a successful observation',async()=>{
+  const aborted=browserFixture('raw','abort');
+  expect(await readExistingIndexedDbValue('key',aborted.factory)).toMatchObject({status:'unavailable',code:'indexedDbReadFailed'});
+  expect(aborted.calls.at(-1)).toBe('close');
+  const absent=browserFixture('raw','missingStore');
+  expect(await readExistingIndexedDbValue('key',absent.factory)).toMatchObject({status:'unavailable',code:'indexedDbSchemaMismatch'});
+  expect(absent.calls).toEqual(['open:'+dbName+':1','close']);
+ });
+ test('feeds strict web observation into double-read capture and expires changed reads',async()=>{
+  const f=await fixture(),captureId='web-inventory',state=f.input.context.installed;
+  const raw=await f.memory.getItem(COMPENDIUM_STORAGE_KEY);
+  const frame:InventoryStoreFrame={guard:[state],blocked:false,activeBackend:'web',observations:{compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:state}}};
+  const read=async(value:unknown)=>{
+   const result=await readExistingIndexedDbValue(COMPENDIUM_STORAGE_KEY,browserFixture(value).factory);
+   return result.status==='read'?observeExistingKeyValueCompendium('web',{getItem:()=>result.value}):{...result,backend:'web' as const};
+  };
+  const ports={readStores:()=>frame,storage:f.memory};
+  const match=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:()=>read(raw)});
+  expect(match.coherence).toMatchObject({activePersistence:'webSnapshotMatch',independentPersistence:{status:'observed',backend:'web'}});
+  let reads=0;
+  const stale=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:()=>read(++reads===1?raw:'{}')});
+  expect(stale.captureStatus).toBe('stale');
+  expect(match.evidence.inventoryAcceptance).toBe('notEstablished');
+ });
+});

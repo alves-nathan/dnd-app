@@ -12,6 +12,7 @@ on:
       - 'src/compendium/importV3*.ts'
       - 'src/compendium/localInventory*.ts'
       - 'src/storage/readOnlyCompendiumObservation.ts'
+      - 'src/storage/indexedDbStorageAdapter.ts'
       - 'src/storage/sqliteCompendiumRepository.ts'
       - 'src/storage/activeCompendiumRepository.ts'
       - 'src/components/LocalV3InventoryPanel.tsx'

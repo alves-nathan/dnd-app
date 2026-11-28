@@ -4,7 +4,7 @@ import type { CompendiumRepository } from './compendiumRepository';
 import type { CompendiumPersistenceState } from './compendiumSnapshot';
 import { COMPENDIUM_STORAGE_KEY } from './compendiumSnapshot';
 import { asyncStorageAdapter } from './asyncStorageAdapter';
-import { indexedDbStorageAdapter } from './indexedDbStorageAdapter';
+import { indexedDbStorageAdapter, readExistingIndexedDbValue } from './indexedDbStorageAdapter';
 import {observeExistingKeyValueCompendium,type IndependentCompendiumObservation} from './readOnlyCompendiumObservation';
 import { SQLiteCompendiumRepository, createSQLiteCompendiumRepository } from './sqliteCompendiumRepository';
 import { ensureRequiredCharacterCreationCompendium, initializeBundledCompendium, reconcileBundledCompendium } from './bundledCompendiumBootstrap';
@@ -99,12 +99,16 @@ export const getActiveCompendiumRepositoryKind = (): ActiveCompendiumRepositoryK
 /** Opaque in-memory identity for comparing observation boundaries only. */
 export const getActiveCompendiumObservationIdentity = (): unknown => activeRepository;
 
-/** Never invokes getActiveCompendiumRepository or bootstrap. Web storage
- * currently has no retained handle, so it is intentionally unavailable. */
+/** Never invokes getActiveCompendiumRepository or bootstrap. The web
+ * audit uses enumeration and a guarded readonly transaction only. */
 export async function observeExistingActiveCompendium():Promise<IndependentCompendiumObservation>{
   const repository=activeRepository,backend=activeRepositoryKind;
   if(!repository)return {status:'unavailable',backend,code:'activeRepositoryNotInitialized'};
-  const result=backend==='legacy'?await observeExistingKeyValueCompendium('legacy',asyncStorageAdapter):
+  let result:IndependentCompendiumObservation;
+  if(backend==='web'){
+    const read=await readExistingIndexedDbValue(COMPENDIUM_STORAGE_KEY);
+    result=read.status==='read'?await observeExistingKeyValueCompendium('web',{getItem:()=>read.value}):{...read,backend:'web'};
+  }else result=backend==='legacy'?await observeExistingKeyValueCompendium('legacy',asyncStorageAdapter):
     backend==='sqlite'&&repository instanceof SQLiteCompendiumRepository?await repository.observeExistingSnapshot():
     {status:'unavailable' as const,backend,code:'nonInitializingReadUnavailable'};
   if(repository!==activeRepository||backend!==activeRepositoryKind)return {status:'stale',backend,code:'activeRepositoryChanged'};
