@@ -382,3 +382,7 @@ Ver [5ETOOLS_INDEPENDENT_CAPTURE.md](5ETOOLS_INDEPENDENT_CAPTURE.md). a8.14.1 ap
 ## Fase a8.14.3 — observação IndexedDB existing-only
 
 Ver [5ETOOLS_INDEXEDDB_EXISTING_OBSERVATION.md](5ETOOLS_INDEXEDDB_EXISTING_OBSERVATION.md). a8.14.2 aprovada. Leitura readonly com enumeração prévia, aborto de upgrade e falha fechada; próxima a8.14.4: validação de persistência independente no ambiente real e protocolo de evidências.
+
+## Fase a8.14.4 — harness de persistência real
+
+Ver [5ETOOLS_INDEPENDENT_PERSISTENCE_REHEARSAL.md](5ETOOLS_INDEPENDENT_PERSISTENCE_REHEARSAL.md). a8.14.3 aprovada. SQLite real descartável no CI, harness IndexedDB isolado e protocolo de validação. Próxima a8.14.5: revisão das evidências de persistência e cobertura dos stores auxiliares.

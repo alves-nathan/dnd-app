@@ -52,6 +52,8 @@ jobs:
           node scripts/5etools/audit-summary.js "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
       - name: Install validation dependencies
         run: npm ci
+      - name: Rehearse real SQLite engine (disposable memory only)
+        run: node scripts/5etools/independent-persistence-harness.js
       - name: Validate spell pilot (aggregate only)
         env:
           DND_UPSTREAM_SPELL_SNAPSHOT: ${{ runner.temp }}/5etools-main
