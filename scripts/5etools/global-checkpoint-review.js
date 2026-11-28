@@ -2,6 +2,7 @@
 // a8.12.1: join current-run family evidence with global aggregate evidence.
 // Neither a reviewed checkpoint nor an internally valid hash is authorization.
 const {digest}=require('./integrated-review');
+const {buildMechanicalScopeReview}=require('./mechanical-scope-review');
 const {KINDS}=require('./cutover-evidence');
 const {buildConditionMechanicsReport}=require('./condition-mechanics-preview');
 const {buildCapabilityMatrix}=require('./condition-capability-matrix');
@@ -78,7 +79,10 @@ function buildFamilyCheckpointFragment(input,reports){
  assert(mechanics.rows.length===rows.condition.upstream&&capabilities.rows.length===conditionItems.filter(i=>i.name!=='Exhaustion').length,'conditionCheckpointMismatch');
  const bindings=Object.fromEntries(Object.entries(reports).map(([k,v])=>[k,v.fingerprint]));
  bindings.conditionMechanics=mechanics.fingerprint;bindings.conditionCapabilities=capabilities.fingerprint;
- const body={schemaVersion:'dnd-upstream-family-checkpoint-fragment.v1',commits:c,bindings,reconciliationFingerprint:digest(r),rows,outside,totals,
+ const mechanicalScope=buildMechanicalScopeReview(input);
+ assert(mechanicalScope.totals.upstream===totals.upstream&&mechanicalScope.totals.historical===totals.historical&&mechanicalScope.totals.runtime===totals.runtime,'mechanicalScopeDenominatorMismatch');
+ bindings.mechanicalScope=mechanicalScope.fingerprint;
+ const body={schemaVersion:'dnd-upstream-family-checkpoint-fragment.v1',commits:c,bindings,reconciliationFingerprint:digest(r),rows,outside,totals,mechanicalScope,
   runtimeIdentity:reports.runtime.identity,conditionScope:{mechanics:mechanics.byEra,capabilities:capabilities.byEra},
   checkpointBlockers:Object.fromEntries(Object.entries(reports).filter(([,v])=>Array.isArray(v.blockers)).map(([k,v])=>[k,v.blockers])),
   approvedMappings:0,mechanicalParityEstablished:0,...flags()};

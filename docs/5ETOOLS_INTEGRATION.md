@@ -434,3 +434,7 @@ Ver [5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md](5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md)
 ## Fase a8.16.2 — entrega 6/20
 
 Ver [5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md](5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md). Entrega 5 aprovada. Verificação offline de coordenadas Git, prova de integridade e reutilização da cadeia de confiança de catálogos assinados. Auditoria completa do marco. Próxima entrega 7/20: escopo de paridade mecânica e disposições por ocorrência.
+
+## Fase a8.17.1 — entrega 7/20
+
+Ver [5ETOOLS_MECHANICAL_SCOPE_REVIEW.md](5ETOOLS_MECHANICAL_SCOPE_REVIEW.md). Entrega 6 aprovada na auditoria completa. Escopo mecânico por edição e disposição por ocorrência integrada ao fragmento de famílias. Próxima entrega 8/20: regressões dos consumidores reais do motor.

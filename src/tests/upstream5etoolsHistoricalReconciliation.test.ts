@@ -371,6 +371,8 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(Object.keys(familyCheckpoint.rows)).toHaveLength(13);
       expect(familyCheckpoint.outside.runtime).toBe(3835);
       expect(familyCheckpoint.mechanicalParityEstablished).toBe(0);
+      expect(familyCheckpoint.mechanicalScope.totals).toMatchObject({upstream:8600,historical:6335,runtime:5841});
+      expect(familyCheckpoint.mechanicalScope.mechanicalParityEstablished).toBe(0);
       writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'families',familyCheckpoint);
       console.log(JSON.stringify(familyCheckpoint));
     }
