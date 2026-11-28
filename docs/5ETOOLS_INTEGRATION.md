@@ -447,3 +447,7 @@ Ver [5ETOOLS_MECHANICAL_CONSUMER_REGRESSION.md](5ETOOLS_MECHANICAL_CONSUMER_REGR
 ## Fase a8.17.3 — entrega 9/20
 
 Ver [5ETOOLS_MECHANICAL_PRESERVATION_MILESTONE.md](5ETOOLS_MECHANICAL_PRESERVATION_MILESTONE.md). Entrega 8 aprovada. Consolidação das obrigações por família e escopo declarado dos consumidores; auditoria completa do marco. Próxima entrega 10/20: revisão de paridade de referências e dependências por identidade qualificada, sem substituição automática.
+
+## Fase a8.18.1 — entrega 10/20
+
+Ver [5ETOOLS_RELATIONSHIP_IDENTITY_REVIEW.md](5ETOOLS_RELATIONSHIP_IDENTITY_REVIEW.md). Entrega 9 aprovada. Referências físicas legadas por ocorrência e endpoints de dependências runtime por identidade qualificada. Próxima entrega 11/20: aliases, categorias e políticas de resolução, preservando precedência e ambiguidades.

@@ -158,6 +158,10 @@ if(require.main===module){
   const mechanical=require('./mechanical-preservation-review').buildMechanicalPreservationReview(families);
   assert(digest(mechanical)===digest(families.mechanicalPreservation)&&families.bindings.mechanicalPreservation===mechanical.fingerprint,'mechanicalPreservationReportMismatch');
   console.log(JSON.stringify(mechanical));
+  const relations=families.relationshipIdentity;
+  const {fingerprint:relationFingerprint,...relationBody}=relations;
+  assert(digest(relationBody)===relationFingerprint&&families.bindings.relationshipIdentity===relationFingerprint&&relations.bindings.reconciliation===families.reconciliationFingerprint&&relations.legacy.occurrences===report.totals.legacyLinks&&relations.dependencies.occurrences===report.totals.dependencies&&relations.relationshipParityEstablished===0&&relations.writeAuthorized===false,'relationshipIdentityReportMismatch');
+  console.log(JSON.stringify(relations));
   console.log(JSON.stringify(global));
   const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,families,global);
   console.log(JSON.stringify(acceptance));

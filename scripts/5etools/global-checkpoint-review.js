@@ -4,6 +4,7 @@
 const {digest}=require('./integrated-review');
 const {buildMechanicalScopeReview}=require('./mechanical-scope-review');
 const {buildMechanicalPreservationReview}=require('./mechanical-preservation-review');
+const {buildRelationshipIdentityReview}=require('./relationship-identity-review');
 const {KINDS}=require('./cutover-evidence');
 const {buildConditionMechanicsReport}=require('./condition-mechanics-preview');
 const {buildCapabilityMatrix}=require('./condition-capability-matrix');
@@ -89,7 +90,10 @@ function buildFamilyCheckpointFragment(input,reports){
   approvedMappings:0,mechanicalParityEstablished:0,...flags()};
  const mechanicalPreservation=buildMechanicalPreservationReview(body);
  body.bindings.mechanicalPreservation=mechanicalPreservation.fingerprint;
- return {...body,mechanicalPreservation,fingerprint:digest({...body,mechanicalPreservation})};
+ const relationshipIdentity=buildRelationshipIdentityReview(input);
+ assert(relationshipIdentity.legacy.occurrences===totals.legacyLinks&&relationshipIdentity.dependencies.occurrences===totals.dependencies&&relationshipIdentity.bindings.reconciliation===body.reconciliationFingerprint,'relationshipIdentityDenominatorMismatch');
+ body.bindings.relationshipIdentity=relationshipIdentity.fingerprint;
+ return {...body,mechanicalPreservation,relationshipIdentity,fingerprint:digest({...body,mechanicalPreservation,relationshipIdentity})};
 }
 function buildGlobalCheckpointReview(matrix,fragment){
  assert(matrix?.schemaVersion==='dnd-upstream-cutover-evidence.v1'&&matrix.activation==='review-required'&&matrix.executable===false&&matrix.runtimeEligible===0&&

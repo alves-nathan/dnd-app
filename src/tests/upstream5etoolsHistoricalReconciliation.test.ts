@@ -375,6 +375,9 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(familyCheckpoint.mechanicalScope.mechanicalParityEstablished).toBe(0);
       expect(familyCheckpoint.mechanicalPreservation.totals).toMatchObject({upstream:8600,historical:6335,runtime:5841,legacyPreservationRequired:12176});
       expect(familyCheckpoint.mechanicalPreservation).toMatchObject({readiness:'blocked',mechanicalParityEstablished:0,writeAuthorized:false});
+      expect(familyCheckpoint.relationshipIdentity.legacy.occurrences).toBe(input.reconciliation.summary.legacyLinks);
+      expect(familyCheckpoint.relationshipIdentity.dependencies.occurrences).toBe(15385);
+      expect(familyCheckpoint.relationshipIdentity).toMatchObject({relationshipParityEstablished:0,approvedMappings:0,writeAuthorized:false});
       writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'families',familyCheckpoint);
       console.log(JSON.stringify(familyCheckpoint));
     }

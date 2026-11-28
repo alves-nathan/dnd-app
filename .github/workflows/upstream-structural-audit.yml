@@ -63,7 +63,7 @@ jobs:
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_CREATURE_SNAPSHOT: ${{ runner.temp }}/5etools-main
-        run: npx jest src/tests/upstream5etoolsCreatureConverter.test.ts src/tests/upstream5etoolsCreatureCombatProjection.test.ts src/tests/upstream5etoolsSpellParityEvidence.test.ts src/tests/upstream5etoolsConsumerRegression.test.ts src/tests/upstream5etoolsMechanicalScope.test.ts --runInBand
+        run: npx jest src/tests/upstream5etoolsCreatureConverter.test.ts src/tests/upstream5etoolsCreatureCombatProjection.test.ts src/tests/upstream5etoolsSpellParityEvidence.test.ts src/tests/upstream5etoolsConsumerRegression.test.ts src/tests/upstream5etoolsMechanicalScope.test.ts src/tests/upstream5etoolsRelationshipIdentity.test.ts --runInBand
       - name: Validate equipment pilot (aggregate only)
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
@@ -206,7 +206,7 @@ jobs:
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts src/tests/upstream5etoolsLocalV3Preview.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
       - name: Validate migration and cutover fixtures (fast mode)
         if: env.FULL_UPSTREAM_AUDIT == 'false'
-        run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand
+        run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts src/tests/upstream5etoolsCutoverEvidence.test.ts src/tests/upstream5etoolsRelationshipIdentity.test.ts --runInBand
       - name: Reconcile cutover evidence matrix (aggregate only)
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
