@@ -406,3 +406,7 @@ Ver [5ETOOLS_COMPLEX_BUILD_REFERENCES.md](5ETOOLS_COMPLEX_BUILD_REFERENCES.md). 
 ## Fase a8.15.1 hotfix / aceleração de entregas
 
 Ver [5ETOOLS_CI_AND_EMULATOR_MILESTONES.md](5ETOOLS_CI_AND_EMULATOR_MILESTONES.md). Correção TS2352 do fixture; Quality sem duplicação para a branch com PR draft, typecheck primeiro e suíte completa uma vez. Auditoria upstream em modo rápido no push e completa em dispatch ou PR não-draft. Próxima entrega agrupada: relações táticas/instâncias/histórico, recuperação/quarentena e fechamento do inventário por evidências disponíveis; preparar smoke test no emulador sem cutover.
+
+## Fase a8.15.2 — entrega 1/20
+
+Ver [5ETOOLS_INSTANCE_TACTICAL_REFERENCES.md](5ETOOLS_INSTANCE_TACTICAL_REFERENCES.md). Hotfix aprovado; referências de instância, tática e vencedores históricos. Próxima entrega 2/20: drafts de progressão, recuperação, quarentena e transações históricas.

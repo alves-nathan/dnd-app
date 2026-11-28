@@ -3,6 +3,7 @@ import type {LocalInventoryCaptureResult} from './localInventoryPanelModel';
 import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
 import type {CharacterCompendiumLink} from '../types';
+import {collectOwnerInstanceReferences,collectScenarioInstanceReferences,collectHistoryInstanceReferences} from './localInventoryInstanceReferences';
 import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {sha256Hex} from '../catalog/catalogBundleDigest';
 
@@ -84,15 +85,22 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
   };
   for(const c of portable.characterStore.characters){
    if(c.catalogSnapshotId)add('characterSnapshot',c.id,c.catalogSnapshotId,c.catalogSnapshotId===snapshot.snapshotId?'present':'ownerMismatch');
+   for(const occurrence of collectOwnerInstanceReferences(c,c.id))add('characterInstance',[c.id,...occurrence.path],occurrence.value,occurrence.status);
    for(const occurrence of collectBuildReferenceOccurrences(c,'character'))add('characterBuildChoice',[c.id,...occurrence.path],occurrence.value,choiceStatus(occurrence.value));
    for(const [i,l] of (c.compendiumLinks??[]).entries())add('characterLink',[c.id,i],l,l.characterId!==c.id?'ownerMismatch':linkStatus(l));
   }
   for(const p of portable.buildPresets){
+   for(const occurrence of collectOwnerInstanceReferences(p.snapshot))add('presetInstance',[p.id,...occurrence.path],occurrence.value,occurrence.status);
    for(const occurrence of collectBuildReferenceOccurrences(p.snapshot,'preset'))add('presetBuildReference',[p.id,...occurrence.path],occurrence.value,choiceStatus(occurrence.value));
    for(const [i,l] of (p.snapshot.compendiumLinks??[]).entries())add('presetLink',[p.id,i],l,linkStatus(l));
   }
-  for(const s of portable.scenarios)add('scenarioCharacter',s.id,s.characterId,chars.has(s.characterId)?'present':'missing');
+  for(const s of portable.scenarios){
+   add('scenarioCharacter',s.id,s.characterId,chars.has(s.characterId)?'present':'missing');
+   for(const occurrence of collectScenarioInstanceReferences(s,portable.characterStore.characters))add('scenarioTactical',[s.id,...occurrence.path],occurrence.value,occurrence.status);
+   for(const [i,t] of (s.targets??[]).entries())for(const field of ['sourceCreatureItemId','sourceCreatureImportItemId'] as const)if(t[field]!==undefined)add('scenarioCreatureSource',[s.id,i,field],t[field],choiceStatus(t[field]));
+  }
   for(const h of portable.buildHistorySnapshots){
+   for(const occurrence of collectHistoryInstanceReferences(h))add('historyInstance',[h.id,...occurrence.path],occurrence.value,occurrence.status);
    add('historyCharacter',h.id,h.characterId,chars.has(h.characterId)?'present':'missing');
    const s=scenarios.get(h.scenario.id);
    add('historyScenario',h.id,h.scenario.id,!s?'missing':s.characterId===h.characterId?'present':'ownerMismatch');
@@ -107,7 +115,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    summary:{baselineEntries:baselineRuntime.length,loadedEntries:snapshot.entries.length,runtimeDispositions:tally(runtimeRows),referenceOccurrences:references.length,referenceLanes:lanes},
    runtimeRowsFingerprint:digest(runtimeRows),referenceRowsFingerprint:digest(references),
    obligations:[
-    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndTacticalReferences','draftRecoveryQuarantineReferences','auxiliaryPersistence']},
+    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndGeneratedActionReferences','transactionAndHistoricalSourceReferences','draftRecoveryQuarantineReferences','auxiliaryPersistence']},
     {criterion:'exactRuntimePackageAndConfigurationBinding',status:'partial',pending:['registryDependencyAliasAndCategoryDispositions','bundledBytesAndPackageTrust','configurationHistoryReferences']},
     {criterion:'legacyVersionsManualMappingsAndExternalPacksInventory',status:'pending',pending:['legacyVersionAndManualMappingReview','externalOwnerInventory']},
     {criterion:'explicitUnmatchedAndExcludedOccurrenceLedger',status:'partial',pending:['historicalLedgerJoin','ownerExclusionDecisions']}

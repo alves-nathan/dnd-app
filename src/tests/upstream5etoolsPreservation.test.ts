@@ -871,3 +871,53 @@ describe('a8.15.1 complex build reference occurrences',()=>{
   expect(JSON.stringify(result)).not.toContain('catalog:missing');
  });
 });
+
+import {collectOwnerInstanceReferences,collectScenarioInstanceReferences,collectHistoryInstanceReferences} from '../compendium/localInventoryInstanceReferences';
+describe('a8.15.2 instance and tactical reference inventory',()=>{
+ test('scopes loadout and rotations to the owning character and retains ambiguous duplicate ids',()=>{
+  const c=createDefaultCharacter('instance fixture');
+  c.weapons=[{id:'w'},{id:'w'}] as typeof c.weapons;
+  c.buildChoices={speciesChoices:[],classSkillChoices:[],classToolChoices:[],expertiseSkills:[],languages:[],spellAssignments:{},equipmentSelections:[],activeLoadout:{mainHandWeaponId:'w',offHandWeaponId:'missing',armorAccessoryIds:[]}};
+  c.rotations=[{id:'r',characterId:'other',name:'test',actions:[]}];
+  const rows=collectOwnerInstanceReferences(c,c.id);
+  expect(rows.find(r=>r.path.join('.')==='buildChoices.activeLoadout.mainHandWeaponId')?.status).toBe('ambiguous');
+  expect(rows.find(r=>r.path.join('.')==='buildChoices.activeLoadout.offHandWeaponId')?.status).toBe('missing');
+  expect(rows.find(r=>r.path.join('.')==='rotations.0.characterId')?.status).toBe('ownerMismatch');
+ });
+ test('scopes tactical relations to scenario targets and leaves generated actions unqualified',async()=>{
+  const f=await fixture(),s=f.input.portableCheckpoint.scenarios[0],c=f.input.portableCheckpoint.characterStore.characters[0];
+  s.participants=[{id:'actor',kind:'character',name:'Actor',initiative:1,hasActed:false,reactionAvailable:true,movementSpentFeet:0}];
+  s.activeParticipantId='actor';
+  s.readyActions=[{id:'ready',participantId:'actor',actionId:'generated',actionName:'Ready',trigger:'fixture',targetId:'missing',createdRound:1}];
+  s.pendingReaction={id:'reaction',kind:'ready',reactorParticipantId:'actor',readyActionId:'ready',trigger:'fixture',createdRound:1};
+  const rows=collectScenarioInstanceReferences(s,[c]);
+  expect(rows.find(r=>r.path.join('.')==='activeParticipantId')?.status).toBe('present');
+  expect(rows.find(r=>r.path.join('.')==='readyActions.0.targetId')?.status).toBe('missing');
+  expect(rows.find(r=>r.path.join('.')==='readyActions.0.actionId')?.status).toBe('unqualified');
+  expect(rows.find(r=>r.path.join('.')==='pendingReaction.readyActionId')?.status).toBe('present');
+ });
+ test('validates historical winners against archived rows, not live rotation identity',async()=>{
+  const f=await fixture(),h=f.input.portableCheckpoint.buildHistorySnapshots[0];
+  h.winners.bestByAverageRotationId=h.rows[0]?.rotationId??'missing';
+  h.winners.bestByGuaranteedRotationId='missing-history';
+  const rows=collectHistoryInstanceReferences(h);
+  expect(rows.find(r=>r.path.join('.')==='winners.bestByGuaranteedRotationId')?.status).toBe('missing');
+  if(h.rows.length)expect(rows.find(r=>r.path.join('.')==='winners.bestByAverageRotationId')?.status).toBe('present');
+ });
+ test('joins instance and tactical lanes to capture without exposing identifiers',async()=>{
+  const f=await fixture(),captureId='instance-lanes',scope='disposableFixture' as const,installed=f.input.context.installed,portable=f.input.portableCheckpoint,runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef};
+  const c=portable.characterStore.characters[0],s=portable.scenarios[0];
+  c.buildChoices={speciesChoices:[],classSkillChoices:[],classToolChoices:[],expertiseSkills:[],languages:[],spellAssignments:{},equipmentSelections:[],activeLoadout:{mainHandWeaponId:'private-missing-weapon',armorAccessoryIds:[]}};
+  s.activeParticipantId='private-missing-participant';
+  const input={captureId,scope,installed,portable,runtime,baselineRuntime:runtime.snapshot.entries.map(e=>({id:e.entityId,kind:e.kind,sourceFingerprint:nodeDigest(e)}))};
+  const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>({guard:[],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},runtime:{status:'observed',source:'catalogStore',captureId,value:runtime},portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:portable}
+  }}),storage:f.memory},scope);
+  const r=reviewLocalInventoryReferences(input,capture);
+  if(!r.ok)throw Error(r.code);
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='characterInstance')?.statuses.missing).toBeGreaterThan(0);
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='scenarioTactical')?.statuses.missing).toBeGreaterThan(0);
+  expect(r.review.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(r)).not.toMatch(/private-missing/);
+ });
+});
