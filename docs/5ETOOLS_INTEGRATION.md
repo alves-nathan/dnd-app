@@ -455,3 +455,7 @@ Ver [5ETOOLS_RELATIONSHIP_IDENTITY_REVIEW.md](5ETOOLS_RELATIONSHIP_IDENTITY_REVI
 ### Hotfix a8.18.1 — tipagem
 
 Quality falhou em TS2339 no fixture de referências; auditoria rápida aprovada. Narrowing explícito antes da mutação do payload, sem alteração de runtime. Entrega 10/20 permanece em validação.
+
+## Fase a8.18.2 — entrega 11/20
+
+Ver [5ETOOLS_RELATIONSHIP_POLICY_REVIEW.md](5ETOOLS_RELATIONSHIP_POLICY_REVIEW.md). Hotfix da entrega 10 aprovado. Precedência dos índices, aliases, topologia diagnóstica, declarações direcionais e políticas vinculadas ao runtime. Próxima entrega 12/20: consolidação das relações e auditoria completa.

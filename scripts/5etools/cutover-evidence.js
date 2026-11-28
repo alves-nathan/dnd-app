@@ -162,6 +162,10 @@ if(require.main===module){
   const {fingerprint:relationFingerprint,...relationBody}=relations;
   assert(digest(relationBody)===relationFingerprint&&families.bindings.relationshipIdentity===relationFingerprint&&relations.bindings.reconciliation===families.reconciliationFingerprint&&relations.legacy.occurrences===report.totals.legacyLinks&&relations.dependencies.occurrences===report.totals.dependencies&&relations.relationshipParityEstablished===0&&relations.writeAuthorized===false,'relationshipIdentityReportMismatch');
   console.log(JSON.stringify(relations));
+  const policy=families.relationshipPolicy;
+  const {fingerprint:policyFingerprint,...policyBody}=policy;
+  assert(digest(policyBody)===policyFingerprint&&families.bindings.relationshipPolicy===policyFingerprint&&policy.bindings.reconciliation===families.reconciliationFingerprint&&policy.bindings.runtimeBundle===relations.bindings.runtime&&policy.alias.occurrences===report.totals.aliases&&policy.category.occurrences===report.totals.categories&&policy.relationshipParityEstablished===0&&policy.writeAuthorized===false,'relationshipPolicyReportMismatch');
+  console.log(JSON.stringify(policy));
   console.log(JSON.stringify(global));
   const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,families,global);
   console.log(JSON.stringify(acceptance));

@@ -103,3 +103,42 @@ describe('a8.11.3 runtime closure review',()=>{
   expect(r.readiness).toBe('blocked');
  });
 });
+
+const {buildRelationshipPolicyReview}=require('../../scripts/5etools/relationship-policy-review');
+describe('a8.18.2 relationship policy preservation',()=>{
+ test('keeps direct lookup, directional categories and policy evidence separate',()=>{
+  const x=fixture(),before=digest(x),r=buildRelationshipPolicyReview(x,buildRuntimeContractEvidence(x));
+  expect(r.alias).toMatchObject({occurrences:1,groups:1,selectedActive:1,directEntryPrecedesAliasLookup:1});
+  expect(r.category).toMatchObject({occurrences:1,membershipOccurrences:2,entryDeclarations:1,selectedMembershipWithoutEntryDeclaration:1});
+  expect(r.policySections).toHaveLength(13);
+  expect(r).toMatchObject({relationshipParityEstablished:0,writeAuthorized:false,readiness:'blocked'});
+  expect(digest(x)).toBe(before);
+ });
+ test('reports last-record shadowing including inactive winners and duplicate categories',()=>{
+  const x=fixture(),b=x.runtimeBundle;
+  const alias={...b.aliases.entities[0],id:'last',to:'category',status:'inactive'};
+  b.aliases.entities.push(alias);
+  x.reconciliation.aliases.push({...x.reconciliation.aliases[0],...alias,statusOriginal:alias.status,fingerprint:digest(alias)});
+  x.reconciliation.summary.runtimeAliases++;
+  const c={...b.contentCategories.entities[0],memberEntityIds:['rule','rule'],memberCount:2};
+  b.contentCategories.entities.push(c);
+  x.reconciliation.categories.push({...x.reconciliation.categories[0],memberIds:c.memberEntityIds,mappedMembers:0,fingerprint:digest(c)});
+  x.reconciliation.summary.runtimeCategories++;
+  const r=buildRelationshipPolicyReview(x,buildRuntimeContractEvidence(x));
+  expect(r.alias).toMatchObject({occurrences:2,groups:1,conflictingTargetGroups:1,shadowedActive:1,activeShadowedByNonActive:1,selectedNonActive:1});
+  expect(r.category).toMatchObject({occurrences:2,groups:1,shadowedOccurrences:1,conflictingMembershipGroups:1,duplicateMembersWithinRecord:1,shadowedMembershipOccurrences:2,entryNotInSelectedCategory:1,selectedMembershipWithoutEntryDeclaration:2});
+ });
+ test('counts topology without resolving chains; stale order and policy changes fail closed',()=>{
+  const x=fixture(),b=x.runtimeBundle;
+  const alias={...b.aliases.entities[0],id:'reverse',from:'rule',to:'spell'};
+  b.aliases.entities.push(alias);
+  x.reconciliation.aliases.push({...x.reconciliation.aliases[0],...alias,fromCandidate:undefined,toCandidate:x.items[0].id,fingerprint:digest(alias)});
+  x.reconciliation.summary.runtimeAliases++;
+  const e=buildRuntimeContractEvidence(x),r=buildRelationshipPolicyReview(x,e);
+  expect(r.alias).toMatchObject({selectedActiveChainStarts:2,selectedActiveCycleMembers:2,directEntryPrecedesAliasLookup:2});
+  b.aliases.entities.reverse();
+  expect(()=>buildRelationshipPolicyReview(x,e)).toThrow('relationshipPolicyBindingMismatch');
+  const y=fixture(),f=buildRuntimeContractEvidence(y);y.runtimeBundle.activationPolicy={mode:'changed'};
+  expect(()=>buildRelationshipPolicyReview(y,f)).toThrow('relationshipPolicyBindingMismatch');
+ });
+});

@@ -366,7 +366,7 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
           featEdges:{featIdentityCandidate:42,featEndpointPending:3,featSelectionPending:4},spellEntries:{identityCandidate:25},equipmentOptions:{equipmentOptionCandidate:70,equipmentOptionPending:69}},
         approvedMappings:0,mechanicalParityEstablished:0,executable:false,writeAuthorized:false});
       console.log(JSON.stringify(originClosure));
-      const familyCheckpoint=buildFamilyCheckpointFragment(input,{equipment:report,classes:closure,spells:spellClosure,origins:originClosure,feats:featClosure,remaining:remainingClosure,runtime:runtimeClosure});
+      const familyCheckpoint=buildFamilyCheckpointFragment(input,{equipment:report,classes:closure,spells:spellClosure,origins:originClosure,feats:featClosure,remaining:remainingClosure,runtime:runtimeClosure},runtimeContracts);
       expect(familyCheckpoint.totals).toMatchObject({upstream:8600,historical:6335,runtime:5841,dependencies:15385,aliases:127,categories:57});
       expect(Object.keys(familyCheckpoint.rows)).toHaveLength(13);
       expect(familyCheckpoint.outside.runtime).toBe(3835);
@@ -378,6 +378,10 @@ const mainPath=process.env.DND_UPSTREAM_RECONCILE_MAIN,brewPath=process.env.DND_
       expect(familyCheckpoint.relationshipIdentity.legacy.occurrences).toBe(input.reconciliation.summary.legacyLinks);
       expect(familyCheckpoint.relationshipIdentity.dependencies.occurrences).toBe(15385);
       expect(familyCheckpoint.relationshipIdentity).toMatchObject({relationshipParityEstablished:0,approvedMappings:0,writeAuthorized:false});
+      expect(familyCheckpoint.relationshipPolicy.alias.occurrences).toBe(127);
+      expect(familyCheckpoint.relationshipPolicy.category.occurrences).toBe(57);
+      expect(familyCheckpoint.relationshipPolicy.policySections).toHaveLength(13);
+      expect(familyCheckpoint.relationshipPolicy).toMatchObject({relationshipParityEstablished:0,writeAuthorized:false,readiness:'blocked'});
       writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'families',familyCheckpoint);
       console.log(JSON.stringify(familyCheckpoint));
     }

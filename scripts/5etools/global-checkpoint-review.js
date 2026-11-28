@@ -5,6 +5,7 @@ const {digest}=require('./integrated-review');
 const {buildMechanicalScopeReview}=require('./mechanical-scope-review');
 const {buildMechanicalPreservationReview}=require('./mechanical-preservation-review');
 const {buildRelationshipIdentityReview}=require('./relationship-identity-review');
+const {buildRelationshipPolicyReview}=require('./relationship-policy-review');
 const {KINDS}=require('./cutover-evidence');
 const {buildConditionMechanicsReport}=require('./condition-mechanics-preview');
 const {buildCapabilityMatrix}=require('./condition-capability-matrix');
@@ -26,7 +27,7 @@ function verifyReports(reports,commits){
   verifyDigest(r,'familyReportFingerprintMismatch');
  }
 }
-function buildFamilyCheckpointFragment(input,reports){
+function buildFamilyCheckpointFragment(input,reports,runtimeEvidence){
  const r=input.reconciliation,c=r.commits;
  assert(r.schemaVersion==='dnd-upstream-historical-reconciliation.v1'&&r.activation==='review-required'&&
   r.summary.approvedMappings===0&&r.summary.mechanicalParityEstablished===0&&r.summary.retirementAuthorized===false&&Object.keys(r.summary.issues).length===0&&
@@ -93,7 +94,10 @@ function buildFamilyCheckpointFragment(input,reports){
  const relationshipIdentity=buildRelationshipIdentityReview(input);
  assert(relationshipIdentity.legacy.occurrences===totals.legacyLinks&&relationshipIdentity.dependencies.occurrences===totals.dependencies&&relationshipIdentity.bindings.reconciliation===body.reconciliationFingerprint,'relationshipIdentityDenominatorMismatch');
  body.bindings.relationshipIdentity=relationshipIdentity.fingerprint;
- return {...body,mechanicalPreservation,relationshipIdentity,fingerprint:digest({...body,mechanicalPreservation,relationshipIdentity})};
+ const relationshipPolicy=buildRelationshipPolicyReview(input,runtimeEvidence);
+ assert(relationshipPolicy.bindings.runtimeEvidence===reports.runtime.bindings.evidence&&relationshipPolicy.alias.occurrences===totals.aliases&&relationshipPolicy.category.occurrences===totals.categories&&relationshipPolicy.bindings.reconciliation===body.reconciliationFingerprint,'relationshipPolicyDenominatorMismatch');
+ body.bindings.relationshipPolicy=relationshipPolicy.fingerprint;
+ return {...body,mechanicalPreservation,relationshipIdentity,relationshipPolicy,fingerprint:digest({...body,mechanicalPreservation,relationshipIdentity,relationshipPolicy})};
 }
 function buildGlobalCheckpointReview(matrix,fragment){
  assert(matrix?.schemaVersion==='dnd-upstream-cutover-evidence.v1'&&matrix.activation==='review-required'&&matrix.executable===false&&matrix.runtimeEligible===0&&
