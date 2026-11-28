@@ -487,3 +487,7 @@ Ver [5ETOOLS_ISOLATED_TRANSACTION_EXECUTOR.md](5ETOOLS_ISOLATED_TRANSACTION_EXEC
 ## Fase a8.20.3 — entrega 17/20
 
 Ver [5ETOOLS_ISOLATED_ROLLBACK_MILESTONE.md](5ETOOLS_ISOLATED_ROLLBACK_MILESTONE.md). Entrega 16 aprovada. Rollback lógico por quarentena imutável, bloqueio de retomada, preservação de evidências e verificação do checkpoint. Próxima entrega 18/20: validação automatizada final.
+
+## Fase a8.21.1 — entrega 18/20
+
+Ver [5ETOOLS_FINAL_LIFECYCLE_VALIDATION.md](5ETOOLS_FINAL_LIFECYCLE_VALIDATION.md). Entrega 17 aprovada. Validação automatizada somente leitura do checkpoint, plano, candidato completo e candidato revertido, com fragmento agregado sintético no CI completo. Próxima entrega 19/20: conciliação com matriz global e revisão final de aceitação.

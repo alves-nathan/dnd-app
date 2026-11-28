@@ -135,3 +135,20 @@ export async function rollbackV3IsolatedMigration(plan:V3MigrationPlan,request:I
   return {ok:true as const,receipt:{...body,fingerprint:hash(body)},createdRecords,executable:false as const};
  }catch{return fail('isolatedRollbackInterrupted');}
 }
+
+/** Read-only inspection of a quarantined candidate's retained journal.
+ * Does not treat a tombstone alone as proof of preservation. */
+export async function inspectV3QuarantinedJournal(plan:V3MigrationPlan,port:Pick<IsolatedCandidatePort,'read'>){
+ const invalid={ok:false as const,executable:false as const};
+ if(!verifyV3MigrationPlanStructure(plan))return invalid;
+ try{
+  if(await inspectV3CandidateQuarantine(plan,key=>port.read(key))!=='quarantined')return invalid;
+  const observed=await inspectJournal(plan,port);
+  if(!['empty','interrupted','complete'].includes(observed.state))return invalid;
+  if(await inspectV3CandidateQuarantine(plan,key=>port.read(key))!=='quarantined')return invalid;
+  const ordered=journal(plan).ordered;
+  return {ok:true as const,retainedRecords:observed.verifiedRecords,completeJournal:observed.state==='complete',
+   retainedFingerprint:hash(ordered.slice(0,observed.verifiedRecords).map(r=>[r.key,sha256Hex(r.value)])),
+   quarantineFingerprint:sha256Hex(v3CandidateQuarantineRecord(plan).value),executable:false as const};
+ }catch{return invalid;}
+}

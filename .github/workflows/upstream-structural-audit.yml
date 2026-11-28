@@ -203,6 +203,8 @@ jobs:
           DND_UPSTREAM_ADDITIVE_MAIN: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsAdditiveStage.test.ts --runInBand
       - name: Validate local preservation and preview fixtures
+        env:
+          DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
         run: npx jest src/tests/upstream5etoolsPreservation.test.ts src/tests/upstream5etoolsLocalV3Preview.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
       - name: Validate migration and cutover fixtures (fast mode)
         if: env.FULL_UPSTREAM_AUDIT == 'false'

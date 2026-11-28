@@ -1294,6 +1294,55 @@ describe('a8.20.1 isolated additive migration plan',()=>{
   expect(rows.get(plan.operations[0].key)).toBe('foreign');
   expect(await inspectV3IsolatedExecution(plan,candidate)).toMatchObject({state:'quarantined'});
  });
+
+ const {validateV3IsolatedLifecycle}=require('../compendium/v3FinalValidation') as typeof import('../compendium/v3FinalValidation');
+ async function lifecycleSetup(){
+  const f=await setup();
+  const make=()=>{const rows=new Map<string,string>();return {rows,read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};};
+  const completed=make(),reverted=make();
+  for(const candidate of [completed,reverted])expect(await executeV3IsolatedMigration(f.plan,requestFor(f.plan),f.ports,f.archivePort,candidate)).toMatchObject({ok:true});
+  expect(await rollbackV3IsolatedMigration(f.plan,rollbackRequest(f.plan),f.ports,f.archivePort,reverted)).toMatchObject({ok:true,receipt:{status:'quarantineVerified'}});
+  return {...f,completed,reverted,validationPorts:{active:f.ports,archive:{read:f.archivePort.read},completed:{read:completed.read},reverted:{read:reverted.read}}};
+ }
+ test('validates both independent lifecycle specimens and current checkpoint without writes',async()=>{
+  const f=await lifecycleSetup(),before=f.memory.dump(),completeBefore=[...f.completed.rows],revertedBefore=[...f.reverted.rows];
+  const r=await validateV3IsolatedLifecycle(f.plan,f.validationPorts);
+  expect(r).toMatchObject({ok:true,report:{scope:'disposableCandidateReadback',readiness:'blocked',observations:{active:'checkpointMatch',completedRecords:11,artifactRecords:3,retainedRecords:11,rollback:'quarantinedFullJournalRetained'},counts:{validationWrites:0,acceptedGates:0},writeAuthorized:false,executable:false}});
+  expect(await validateV3IsolatedLifecycle(f.plan,f.validationPorts)).toEqual(r);
+  expect(f.memory.dump()).toEqual(before);expect([...f.completed.rows]).toEqual(completeBefore);expect([...f.reverted.rows]).toEqual(revertedBefore);
+  if(!r.ok)throw Error(r.code);
+  expect(JSON.stringify(r.report)).not.toContain(f.input.stage.rawText);
+  // Only synthetic aggregate evidence is handed to the full CI reconciliation.
+  if(process.env.FULL_UPSTREAM_AUDIT==='true'&&process.env.DND_UPSTREAM_EVIDENCE_DIR){
+   const {writeFragment}=require('../../scripts/5etools/cutover-evidence');
+   const {execFileSync}=require('node:child_process');
+   const applicationCommit=String(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'})).trim();
+   const {digest}=require('../../scripts/5etools/integrated-review');
+   const body={schemaVersion:'dnd-upstream-local-lifecycle-fixture.v1',scope:'syntheticFixtureOnly',applicationCommit,validation:r.report};
+   writeFragment(process.env.DND_UPSTREAM_EVIDENCE_DIR,'local-lifecycle',{...body,fingerprint:digest(body)});
+  }
+ });
+ test('fails on stale active state, aliased ports, incomplete or corrupt rollback evidence',async()=>{
+  const f=await lifecycleSetup();
+  expect(await validateV3IsolatedLifecycle(f.plan,{...f.validationPorts,reverted:f.validationPorts.completed})).toMatchObject({ok:false,code:'finalValidationInvalidScope'});
+  const key=f.plan.operations[0].key,old=f.reverted.rows.get(key)!;
+  f.reverted.rows.delete(key);
+  expect(await validateV3IsolatedLifecycle(f.plan,f.validationPorts)).toMatchObject({ok:false,code:'finalValidationLifecycleMismatch'});
+  f.reverted.rows.set(key,old);
+  f.completed.rows.set(key,old+' ');
+  expect(await validateV3IsolatedLifecycle(f.plan,f.validationPorts)).toMatchObject({ok:false,code:'finalValidationLifecycleMismatch'});
+  f.completed.rows.set(key,old);
+  f.memory.setItem('dnd-combat-math-new-recovery','changed');
+  expect(await validateV3IsolatedLifecycle(f.plan,f.validationPorts)).toMatchObject({ok:false,code:'finalValidationActiveMismatch'});
+ });
+ test('detects a candidate changed during read-only validation',async()=>{
+  const f=await lifecycleSetup();let reads=0;
+  const changed={read:async(key:string)=>{
+   if(++reads>20&&key===f.plan.operations[0].key)return 'changed';
+   return f.completed.read(key);
+  }};
+  expect(await validateV3IsolatedLifecycle(f.plan,{...f.validationPorts,completed:changed})).toMatchObject({ok:false,code:'finalValidationLifecycleChanged'});
+ });
  test('blocks stale active data, tampered plan and missing archive',async()=>{
   const {memory,ports,archivePort,id,plan}=await setup();
   const altered={...plan,operations:plan.operations.map((o,i)=>i===0?{...o,key:'dnd-combat-math-compendium'}:o)};
