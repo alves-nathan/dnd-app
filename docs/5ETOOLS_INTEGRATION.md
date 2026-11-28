@@ -402,3 +402,7 @@ Ver [5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.md](5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.m
 ## Fase a8.15.1 — referências de escolhas complexas
 
 Ver [5ETOOLS_COMPLEX_BUILD_REFERENCES.md](5ETOOLS_COMPLEX_BUILD_REFERENCES.md). a8.14.7 aprovada. Inventário de ocorrências explícitas de escolhas, referências materializadas em presets e joins de captura. Próxima a8.15.2: relações de instância, combate/tática e histórico.
+
+## Fase a8.15.1 hotfix / aceleração de entregas
+
+Ver [5ETOOLS_CI_AND_EMULATOR_MILESTONES.md](5ETOOLS_CI_AND_EMULATOR_MILESTONES.md). Correção TS2352 do fixture; Quality sem duplicação para a branch com PR draft, typecheck primeiro e suíte completa uma vez. Auditoria upstream em modo rápido no push e completa em dispatch ou PR não-draft. Próxima entrega agrupada: relações táticas/instâncias/histórico, recuperação/quarentena e fechamento do inventário por evidências disponíveis; preparar smoke test no emulador sem cutover.

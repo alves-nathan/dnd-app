@@ -2,25 +2,11 @@ name: Upstream structural audit
 
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   push:
     branches:
       - feature/5etools-integration
-    paths:
-      - 'scripts/5etools/**'
-      - 'src/tests/upstream5etools*.test.ts'
-      - 'src/tests/compendiumImportV3Staging.test.ts'
-      - 'src/compendium/importV3*.ts'
-      - 'src/compendium/localInventory*.ts'
-      - 'src/storage/readOnlyCompendiumObservation.ts'
-      - 'src/storage/indexedDbStorageAdapter.ts'
-      - 'src/storage/sqliteCompendiumRepository.ts'
-      - 'src/storage/activeCompendiumRepository.ts'
-      - 'src/components/LocalV3InventoryPanel.tsx'
-      - 'src/components/LocalV3StagePreview.tsx'
-      - 'src/compendium/importV2Schemas.ts'
-      - 'src/compendium/importSemanticValidation.ts'
-      - 'src/compendium/importDomain.ts'
-      - '.github/workflows/upstream-structural-audit.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -31,10 +17,12 @@ permissions:
 
 jobs:
   audit:
+    if: github.event_name != 'pull_request' || (github.head_ref == 'feature/5etools-integration' && !github.event.pull_request.draft)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
       GIT_TERMINAL_PROMPT: '0'
+      FULL_UPSTREAM_AUDIT: ${{ github.event_name != 'push' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -43,11 +31,20 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Audit mode
+        run: |
+          if [ "$FULL_UPSTREAM_AUDIT" = true ]; then
+            echo 'Full upstream audit (milestone / non-draft PR)' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Fast fixture audit only — full upstream audit still required before cutover' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Fetch upstream snapshots (no upstream code execution)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
           git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/5etools-mirror-3/5etools-src.git "$RUNNER_TEMP/5etools-main"
           git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/TheGiddyLimit/homebrew.git "$RUNNER_TEMP/5etools-homebrew"
       - name: Aggregate coverage only
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
           node scripts/5etools/audit-summary.js "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
       - name: Install validation dependencies
@@ -58,136 +55,164 @@ jobs:
           cat "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
           node scripts/5etools/validate-persistence-rehearsal.js "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
       - name: Validate spell pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_SPELL_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsSpellConverter.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
       - name: Validate creature pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_CREATURE_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsCreatureConverter.test.ts --runInBand
       - name: Validate equipment pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EQUIPMENT_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsEquipmentConverter.test.ts --runInBand
       - name: Validate magic item pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_MAGIC_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsMagicItemConverter.test.ts --runInBand
       - name: Validate feat and optional feature pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_FEATURE_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsFeatureConverter.test.ts --runInBand
       - name: Validate origin pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_ORIGIN_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsOriginConverter.test.ts --runInBand
       - name: Validate class graph pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_CLASS_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsClassConverter.test.ts --runInBand
       - name: Validate conditions and cross-pilot coverage (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_CONDITION_SNAPSHOT: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsConditionConverter.test.ts --runInBand
       - name: Prepare temporary aggregate evidence directory
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: mkdir "$RUNNER_TEMP/5etools-evidence"
       - name: Build integrated coverage baseline (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_BASELINE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_BASELINE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsCoverageBaseline.test.ts --runInBand
       - name: Audit source-qualified reference identities (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_REFERENCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_REFERENCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsReferenceIndex.test.ts --runInBand
       - name: Validate precedence and edition preview (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_PRECEDENCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_PRECEDENCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsPrecedencePolicy.test.ts --runInBand
       - name: Audit resolver identity and copy extensions (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_RESOLVER_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RESOLVER_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsResolverExtensions.test.ts --runInBand
       - name: Audit template, version and owner lineage previews (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_VARIANT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_VARIANT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsVariantLineage.test.ts --runInBand
       - name: Audit inline tags and UID refinements (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_TAG_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_TAG_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsTagUidPreview.test.ts --runInBand
       - name: Audit semantic eligibility and contextual grants (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_SEMANTIC_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_SEMANTIC_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsSemanticEligibility.test.ts --runInBand
       - name: Audit resource and spellcasting candidates (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_RESOURCE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RESOURCE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsResourceSpellcasting.test.ts --runInBand
       - name: Audit effect and damage semantics (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EFFECT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_EFFECT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsEffectDamage.test.ts --runInBand
       - name: Reconcile integrated review ledger (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_INTEGRATED_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_INTEGRATED_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsIntegratedReview.test.ts --runInBand
       - name: Audit homebrew source and dependency policy (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_HOMEBREW_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_HOMEBREW_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHomebrewPolicy.test.ts --runInBand
       - name: Validate isolated homebrew V3 pilot (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_BREW_PILOT_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_BREW_PILOT_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHomebrewPilot.test.ts --runInBand
       - name: Validate global staging dependency graph (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_GRAPH_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_GRAPH_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsGlobalGraph.test.ts --runInBand
       - name: Audit historical packs and runtime baseline (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_HISTORY_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_HISTORY_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHistoricalBaseline.test.ts --runInBand
       - name: Reconcile historical identities and preservation obligations (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_RECONCILE_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_RECONCILE_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsHistoricalReconciliation.test.ts src/tests/upstream5etoolsEquipmentParity.test.ts --runInBand
       - name: Validate read-only migration preview (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_EVIDENCE_DIR: ${{ runner.temp }}/5etools-evidence
           DND_UPSTREAM_MIGRATION_MAIN: ${{ runner.temp }}/5etools-main
           DND_UPSTREAM_MIGRATION_BREW: ${{ runner.temp }}/5etools-homebrew
         run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts --runInBand
       - name: Validate additive V3 staging boundary (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_ADDITIVE_MAIN: ${{ runner.temp }}/5etools-main
         run: npx jest src/tests/upstream5etoolsAdditiveStage.test.ts --runInBand
-      - name: Validate preservation checkpoint and isolated rollback (aggregate only)
-        run: npx jest src/tests/upstream5etoolsPreservation.test.ts --runInBand
-      - name: Validate isolated local V3 file preview (aggregate only)
-        run: npx jest src/tests/upstream5etoolsLocalV3Preview.test.ts --runInBand
+      - name: Validate local preservation and preview fixtures
+        run: npx jest src/tests/upstream5etoolsPreservation.test.ts src/tests/upstream5etoolsLocalV3Preview.test.ts src/tests/compendiumImportV3Staging.test.ts --runInBand
+      - name: Validate migration and cutover fixtures (fast mode)
+        if: env.FULL_UPSTREAM_AUDIT == 'false'
+        run: npx jest src/tests/upstream5etoolsMigrationPreview.test.ts src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand
       - name: Reconcile cutover evidence matrix (aggregate only)
+        if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
           npx jest src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand
           node scripts/5etools/cutover-evidence.js "$RUNNER_TEMP/5etools-evidence"
       - name: Remove upstream snapshots
-        if: always()
+        if: always() && env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
           rm -rf -- "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew" "$RUNNER_TEMP/5etools-evidence"

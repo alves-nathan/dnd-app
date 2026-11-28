@@ -2,7 +2,11 @@ name: Quality
 
 on:
   push:
+    branches-ignore:
+      # Active integration has a draft PR; validate it once on the PR merge ref.
+      - feature/5etools-integration
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
 
 concurrency:
@@ -21,7 +25,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run release:validate
-      - run: npm run benchmark:synthetic
       - uses: actions/upload-artifact@v6
         if: failure()
         with:

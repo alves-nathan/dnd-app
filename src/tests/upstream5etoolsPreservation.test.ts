@@ -854,8 +854,8 @@ describe('a8.15.1 complex build reference occurrences',()=>{
  test('binds qualified, ambiguous or unqualified occurrences to the same capture without repair',async()=>{
   const f=await fixture(),captureId='complex-build-fixture',scope='disposableFixture' as const,installed=f.input.context.installed,portable=f.input.portableCheckpoint;
   const runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef},c=portable.characterStore.characters[0],item=installed.items[0];
-  // Use explicit fixture fields rather than fabricating complete choice objects.
-  c.buildChoices={startingClassItemId:'catalog:feature.test',speciesFeatItemId:item.importItemId,spellAssignments:{'catalog:missing':'compendium:'+item.id}} as typeof c.buildChoices;
+  // Complete typed build-choice fixture; keep unrelated choices empty.
+  c.buildChoices={speciesChoices:[],classSkillChoices:[],classToolChoices:[],expertiseSkills:[],languages:[],equipmentSelections:[],startingClassItemId:'catalog:feature.test',speciesFeatItemId:item.importItemId,spellAssignments:{'catalog:missing':'compendium:'+item.id}};
   portable.buildPresets[0].snapshot.weapons=[{id:'fixture-weapon',pactWeaponSourceItemId:'compendium:'+item.id} as any];
   const input={captureId,scope,installed,runtime,portable,baselineRuntime:runtime.snapshot.entries.map(e=>({id:e.entityId,kind:e.kind,sourceFingerprint:nodeDigest(e)}))};
   const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>({guard:[],blocked:false,observations:{
