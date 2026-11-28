@@ -79,3 +79,7 @@ A1/A2/A3 antes de A4/A5; B4 após B1–B3; F4 após E e F1–F3. Reutilizar cata
 ## Política de CI revisada
 
 Cada fase 19A–F é um tema, sem limite de commits; Quality + fast por commit, full somente na conclusão do tema, correção de full falho ou candidato final (exceção se risco concreto fora do fast). A1c implementa fronteira de leitura operacional dos insumos selecionados; pendências de disposição/seleção continuam abertas e devem ser tratadas no pipeline A2/A3, sem declarar A1 funcionalmente fechado antes de reconciliar o corpus.
+
+## Handoff 19A.2a
+
+Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md). Primeiro CLI de geração real de packs V3 privados, seleção exata, validação conjunta e disposição por ocorrência. Escopo dos conversores ainda piloto; Homebrew e consulta ainda não convertidos por este CLI. Próximo passo é expansão funcional dos conversores e preparação das coleções, não novo relatório de aceitação.

@@ -515,3 +515,7 @@ Ver [5ETOOLS_FUNCTIONAL_SCOPE_SELECTION.md](5ETOOLS_FUNCTIONAL_SCOPE_SELECTION.m
 ## 19A.1c — insumos de conversão por escopo
 
 Ver [5ETOOLS_FUNCTIONAL_INPUT_PLAN.md](5ETOOLS_FUNCTIONAL_INPUT_PLAN.md). 19A.1b aprovada. Plano de entradas por coordenada, seleção e hash; leitor de valores imutáveis para conversores; atribuição de seções por publicação. Próxima: 19A.2, CLI de conversão consolidada, suporte às coleções auxiliares e resolução de pendências. Auditoria completa somente no encerramento do tema 19A.
+
+## 19A.2a — CLI consolidado de conversão privada
+
+Ver [5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md](5ETOOLS_FUNCTIONAL_CONVERSION_CLI.md). Entrega 19A.1c aprovada. Gera pacotes reais de revisão Main com validação conjunta e manifesto por ocorrência; preserva lacunas e não declara catálogo completo. Próxima: ampliar conversão Main além dos pilotos, resolver registros auxiliares e dependências; depois Homebrew e atualizações incrementais. Fast + Quality; full no fechamento 19A.
