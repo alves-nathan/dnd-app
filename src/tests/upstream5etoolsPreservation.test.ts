@@ -477,6 +477,8 @@ describe('a8.13.8 inventory closure review',()=>{
   expect(r.summary).toMatchObject({installedRows:1,historicalOccurrences:1,runtimeBaseline:1,loadedEntries:1,runtimeDispositions:{exactEntry:1},approvedMappings:0});
   expect(r).toMatchObject({criteriaAccepted:0,criteriaRequired:4,readiness:'blocked',inventoryAcceptance:'notEstablished',writeAuthorized:false});
   expect(r.obligations.every((o:any)=>o.status==='blocked'&&o.pending.length>0)).toBe(true);
+  expect(r.inventoryMilestone).toMatchObject({phase:'implementationMilestone',criteriaRequired:4,criteriaAccepted:0,inventoryAcceptance:'notEstablished',summary:{externalOwner:{binding:'notVerified',completeness:'notEstablished'}}});
+  expect(r.bindings.inventoryMilestone).toBe(r.inventoryMilestone.fingerprint);
   expect(JSON.stringify(r)).not.toMatch(/Fixture hero|Manual blade|feature\.test|closure-fixture|migration:historical/);
   expect(f.memory.dump()).toEqual(before);
  });
@@ -1013,5 +1015,38 @@ describe('a8.15.4 runtime graph and configuration inventory',()=>{
   collectConfigurationHistoryReferences(p.catalog,s,new Set(),(_lane,path,_value,status)=>rows.push({path:path.join('.'),status}));
   expect(rows.find(r=>r.path==='history.0.afterState.entityStates.missing-config-entity')?.status).toBe('missing');
   expect(rows.find(r=>r.path==='history.1.afterState.entityStates.missing-config-entity')?.status).toBe('unqualified');
+ });
+});
+
+const {reviewOwnerInventory}=require('../../scripts/5etools/inventory-milestone-review');
+describe('a8.15.5 owner inventory declaration and milestone',()=>{
+ const make=(scope:'disposableFixture'|'observedLocal'='disposableFixture')=>{
+  const captureFingerprint=nodeDigest({captureId:'owner-fixture'}),file={sha256:'a'.repeat(64),byteLength:10,format:'v3'};
+  const manifest={schemaVersion:'dnd-owner-inventory-declaration.v1',scope,captureFingerprint,areas:[
+   {area:'externalPacks',status:'declared',files:[file,file]},
+   {area:'characterBackups',status:'notInspected',files:[]},
+   {area:'catalogBackups',status:'unavailable',files:[]},
+   {area:'historicalArtifacts',status:'declared',files:[]}
+  ]};
+  const capture={evidence:{scope,captureFingerprint,surfaces:[{surface:'externalPacksAndBackups',status:'observed',fingerprint:nodeDigest(manifest)}]}};
+  return {capture,manifest};
+ };
+ test('never treats absent declaration as complete even if a surface is observed',()=>{
+  const {capture}=make(),r=reviewOwnerInventory(capture,undefined);
+  expect(r).toMatchObject({binding:'notVerified',declaredOccurrences:0,completeness:'notEstablished'});
+  expect(r.areas).toHaveLength(4);
+ });
+ test('binds declaration and counts repeated byte hashes without deduplicating occurrences',()=>{
+  const {capture,manifest}=make(),r=reviewOwnerInventory(capture,manifest);
+  expect(r).toMatchObject({binding:'declarationFingerprintBound',declaredOccurrences:2,distinctContent:1,duplicateContentOccurrences:1,completeness:'notEstablished'});
+  expect(JSON.stringify(r)).not.toContain('a'.repeat(64));
+ });
+ test('rejects cross-scope, stale and malformed declarations even with recomputed fingerprint',()=>{
+  const {capture,manifest}=make();
+  expect(()=>reviewOwnerInventory(capture,{...manifest,scope:'observedLocal'})).toThrow('ownerInventoryContextMismatch');
+  expect(()=>reviewOwnerInventory(capture,{...manifest,areas:[]})).toThrow('ownerInventoryBindingMismatch');
+  manifest.areas[1].files.push(manifest.areas[0].files[0]);
+  capture.evidence.surfaces[0].fingerprint=nodeDigest(manifest);
+  expect(()=>reviewOwnerInventory(capture,manifest)).toThrow('ownerInventoryUnavailableFiles');
  });
 });

@@ -2,6 +2,7 @@
 // Offline review only. The injected reference adapter is the app's pure
 // localInventoryReferenceReview implementation; this is not attestation.
 const {digest}=require('./integrated-review');
+const {buildInventoryMilestone}=require('./inventory-milestone-review');
 const {reviewRuntimeGraph}=require('./inventory-runtime-graph-review');
 const {buildInventoryObservationReview}=require('./inventory-observation-review');
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
@@ -13,7 +14,7 @@ function deriveRuntimeBaseline(reconciliation){
  assert(rows.every(r=>typeof r.id==='string'&&r.id.trim()&&typeof r.kind==='string'&&r.kind.trim()&&hex(r.sourceFingerprint))&&new Set(rows.map(r=>r.id)).size===rows.length,'invalidClosureRuntimeBaseline');
  return rows;
 }
-function buildInventoryClosureReview({input,preview,ledger,capture,observationReview,referenceInput,referenceReview,reviewReferences,proposals=[]}){
+function buildInventoryClosureReview({input,preview,ledger,capture,observationReview,referenceInput,referenceReview,reviewReferences,proposals=[],ownerManifest}){
  const observed=buildInventoryObservationReview(input,preview,ledger,capture,proposals);
  assert(digest(observed)===digest(observationReview),'closureObservationReviewMismatch');
  const baseline=deriveRuntimeBaseline(input.reconciliation);
@@ -46,10 +47,11 @@ function buildInventoryClosureReview({input,preview,ledger,capture,observationRe
  const runtimeGraph=reviewRuntimeGraph(input.reconciliation,referenceInput.runtime.snapshot);
  const obligations=r.obligations.map(o=>({criterion:o.criterion,status:'blocked',observedProgress:o.status,
   pending:o.pending.filter(p=>p!=='historicalLedgerJoin')}));
+ const milestone=buildInventoryMilestone({capture,observed,reference:r,ledger,installed:input.installedSnapshot,runtimeGraph,ownerManifest});
  const result={schemaVersion:'dnd-upstream-inventory-closure-review.v1',scope:observed.scope,commits:observed.commits,
-  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,runtimeGraph:runtimeGraph.fingerprint,persistenceReview:observed.persistenceReview.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
+  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,runtimeGraph:runtimeGraph.fingerprint,inventoryMilestone:milestone.fingerprint,persistenceReview:observed.persistenceReview.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
   summary:{...observed.summary,runtimeDispositions:d,loadedEntries:s.loadedEntries,referenceOccurrences:s.referenceOccurrences,referenceLanes:s.referenceLanes},
-  runtimeGraph,persistenceReview:observed.persistenceReview,obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
+  inventoryMilestone:milestone,runtimeGraph,persistenceReview:observed.persistenceReview,obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
   blockers:[...new Set([...observed.blockers,'independentBackendAndOwnerInventoryPending','fullReferenceAndRuntimeGraphCoveragePending','explicitInventoryAcceptanceMissing'])],
   readiness:'blocked',inventoryAcceptance:'notEstablished',...flags()};
  return {...result,fingerprint:digest(result)};

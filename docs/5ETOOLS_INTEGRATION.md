@@ -422,3 +422,7 @@ Quality PR 46099360348 falhou no typecheck (TS2719/TS2322): classificadores de r
 ## Fase a8.15.4 — entrega 3/20
 
 Ver [5ETOOLS_RUNTIME_GRAPH_CONFIGURATION_INVENTORY.md](5ETOOLS_RUNTIME_GRAPH_CONFIGURATION_INVENTORY.md). Hotfix aprovado. Revisão de ocorrências do grafo runtime, índices, registry, aliases, memberships e histórico de configuração. Próxima entrega 4/20: consolidação do inventário, lacunas externas e auditoria completa do marco.
+
+## Fase a8.15.5 — entrega 4/20
+
+Ver [5ETOOLS_INVENTORY_MILESTONE.md](5ETOOLS_INVENTORY_MILESTONE.md). Entrega 3/20 aprovada. Consolidação dos quatro critérios, manifesto declaratório externo e lacunas de cobertura. Auditoria completa disparada pelo marcador de marco no commit. Próxima entrega 5/20: política de direitos por fonte e escopo de uso; gate inventory permanece bloqueado até evidência real.

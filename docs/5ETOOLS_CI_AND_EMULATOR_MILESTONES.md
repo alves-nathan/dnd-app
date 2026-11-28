@@ -16,3 +16,6 @@ On Windows, in a local checkout: git fetch origin; git switch feature/5etools-in
 
 ## Owner decision — supersedes emulator milestones above
 20 grouped deliveries: inventory 4, rights/trust 2, mechanical parity 3, relationships 3, durable checkpoint 2, transaction/rollback 3, automated final validation 2, candidate cutover 1. Emulator only after delivery 20 and candidate cutover on isolated integration branch/test profile. Native acceptance, main merge and irreversible legacy retirement still require successful device tests and explicit approval. Run full audit at phase milestones. Hotfix runs 46098412124 Quality PR success (~2m36s elapsed), 46098405987 fast push audit success (~37s), 46098412218 draft PR audit skipped as intended.
+
+### Full audit milestone trigger
+A push to the integration branch with `[full-upstream-audit]` in the HEAD commit message executes the existing full audit; normal pushes still use fast fixtures. Manual dispatch/non-draft PR behavior unchanged. Use this marker only on phase milestones or structural upstream changes requiring real snapshots. Full audit verifies the current checkout, not device inventory.

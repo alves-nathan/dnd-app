@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 25
     env:
       GIT_TERMINAL_PROMPT: '0'
-      FULL_UPSTREAM_AUDIT: ${{ github.event_name != 'push' }}
+      FULL_UPSTREAM_AUDIT: ${{ github.event_name != 'push' || contains(github.event.head_commit.message, '[full-upstream-audit]') }}
     steps:
       - uses: actions/checkout@v5
         with:
