@@ -132,3 +132,27 @@ describe('functional Main classes and progression',()=>{
   expect(buildFunctionalClasses(s,[]).packs).toEqual([]);
  });
 });
+
+test('functional subclass compatibility copy retains inherited grant without changing feature owner or relaxing staging',()=>{
+ const {buildFunctionalClasses}=require('../../scripts/5etools/class-converter');
+ const oldClass=cls('PHB',{classFeatures:[]}),newClass=cls('XPHB',{classFeatures:[]});
+ const oldSubclass=sub('TCE',{classSource:'PHB',subclassFeatures:['Choice|Fixture|PHB|Path|TCE|3']});
+ const newSubclass={name:'Path',shortName:'Path',source:'TCE',className:'Fixture',classSource:'XPHB',_copy:{name:'Path',shortName:'Path',source:'TCE',className:'Fixture',classSource:'PHB'}};
+ const oldFeature=sf('TCE',{classSource:'PHB'});
+ const snapshot=fixture({class:[oldClass,newClass],subclass:[oldSubclass,newSubclass],subclassFeature:[oldFeature]});
+ const pick=(kind:string,index:number,source:string)=>({kind,index,path:'data/class/class-fixture.json',sourceId:JSON.stringify(['main',source])});
+ const selection=[pick('class',0,'PHB'),pick('class',1,'XPHB'),pick('subclass',0,'TCE'),pick('subclass',1,'TCE'),pick('subclassFeature',0,'TCE')];
+ const r=buildFunctionalClasses(snapshot,selection),items=r.packs.flatMap((p:any)=>p.items);
+ expect(items).toHaveLength(5);
+ const oldId=physicalId('subclass',oldSubclass),newId=physicalId('subclass',newSubclass),featureId=physicalId('subclassFeature',oldFeature);
+ const child=items.find((i:any)=>i.id===newId),feature=items.find((i:any)=>i.id===featureId);
+ expect(feature.payload.subclassId).toBe(oldId);
+ expect(child.payload.featureIds).toEqual([]);
+ expect(child.payload.mechanics.inheritedFeatureGrantReferences).toEqual([expect.objectContaining({ownerId:oldId,featureId,level:3,status:'inheritedGrantReviewPending'})]);
+ expect(r.diagnostics).toEqual([expect.objectContaining({code:'inheritedCrossOwnerGrantPending',index:1})]);
+ expect(combined(r).ok).toBe(true);
+ const missing=buildFunctionalClasses(snapshot,selection.filter(x=>!(x.kind==='subclass'&&x.index===0)));
+ expect(missing.packs.flatMap((p:any)=>p.items).some((i:any)=>i.id===newId)).toBe(false);
+ const forged=fixture({class:[oldClass,newClass],subclass:[oldSubclass,{...newSubclass,_copy:undefined,subclassFeatures:oldSubclass.subclassFeatures}],subclassFeature:[oldFeature]});
+ expect(buildFunctionalClasses(forged,selection).counts.TCE.blockCodes.crossOwnerFeatureReference).toBe(1);
+});

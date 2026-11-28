@@ -93,3 +93,28 @@ describe('functional copy operations',()=>{
   expect(v.candidates[0].entity.trait[0].entries).toEqual(['{@hit 7}']);
  });
 });
+
+test('binds cross-source versions to selected source and parent, preserves target pack and exact provenance',()=>{
+ const {describeVersionScope,versionAuthorization}=require('../../scripts/5etools/functional-version-scope');
+ const {assembleReviewConversion}=require('../../scripts/5etools/functional-convert');
+ const {digest}=require('../../scripts/5etools/integrated-review');
+ const parent=beast('Base',{_versions:[{name:'Foreign',source:'OTHER'},{name:'Excluded',source:'NO'}]});
+ const snapshot=fixture([parent]);
+ const descriptor={origin:'main',path:'data/bestiary/bestiary-new.json',kind:'monster',index:0,blob,rootArray:true,lane:'resolverEntity',sourceId:JSON.stringify(['main','NEW']),disposition:'included',valueFingerprint:digest(parent)};
+ const decisions=new Map([['["main","NEW"]','include'],['["main","OTHER"]','include'],['["main","NO"]','exclude']]);
+ const row={...descriptor,versions:describeVersionScope(descriptor,parent,decisions)};
+ const body={schemaVersion:'dnd-upstream-functional-input-plan.v1',scope:'privateConversionInputs',executable:false,commits:{main:commit,homebrew:'b'.repeat(40),application:'c'.repeat(40)},bindings:{corpus:'fixture',scope:'fixture'},rows:[row]};
+ const plan={...body,fingerprint:digest(body)};
+ const r=buildFunctionalIndexed(snapshot,'monster',['NEW'],versionAuthorization(plan));
+ expect(r.counts.NEW).toMatchObject({total:1,converted:1,versionsConverted:1,versionsBlocked:1});
+ expect(r.packs.map((p:any)=>p.source.id)).toEqual(['upstream:main:NEW','upstream:main:OTHER']);
+ const foreign=r.packs[1].items[0];
+ expect(foreign.provenance).toMatchObject({entityKey:identity('monster',parent),sourceCode:'OTHER',index:0});
+ const assembled=assembleReviewConversion(plan,[{stage:'a5.2',kinds:['creatureStatBlock'],result:r}],stageImportV3);
+ expect(assembled.manifest.counts).toMatchObject({partialReview:1,exportedItems:2});
+ expect(assembled.manifest.ledger[0].versions.map((v:any)=>[v.disposition,v.outputs.length])).toEqual([['included',1],['excluded',0]]);
+ foreign.metadata.versionOrigin.specFingerprint='tampered';
+ expect(()=>assembleReviewConversion(plan,[{stage:'a5.2',kinds:['creatureStatBlock'],result:r}],stageImportV3)).toThrow('functionalConversionProvenanceMismatch');
+ const excluded={...descriptor,disposition:'excluded'};
+ expect(describeVersionScope(excluded,parent,decisions).every((v:any)=>v.disposition==='parentNotIncluded')).toBe(true);
+});

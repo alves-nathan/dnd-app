@@ -24,7 +24,7 @@ function allExplicitAccess(e,lookup){
  if(!direct.length)throw Object.assign(Error('missingEligibleClassAccess'),{code:'missingEligibleClassAccess'});
  return {classes:[...new Set(direct.map(x=>x.name))].sort(cmp),direct,all:clone(entry)};
 }
-function buildFunctionalIndexed(snapshot,kind,codes){
+function buildFunctionalIndexed(snapshot,kind,codes,authorizeVersion){
  const spec=specs[kind];
  if(!spec||!Array.isArray(codes)||new Set(codes).size!==codes.length||codes.some(c=>typeof c!=='string'||!c.trim()))throw Error('functionalIndexedSelectionInvalid');
  const counts=Object.create(null),diagnostics=[],records=[],packs=[];
@@ -58,12 +58,13 @@ function buildFunctionalIndexed(snapshot,kind,codes){
  for(const r of records)if(Object.hasOwn(counts,r.entity.source)){
   const list=bySource.get(r.entity.source)||[];list.push(r);bySource.set(r.entity.source,list);
  }
- for(const code of [...codes].sort(cmp)){
-  const items=[],variants=[],pilotEra=kind==='spell'?spell.pilot[code]?.era:creature.pilot[code];
-  const packSource=projectMainSource(code,publications,null,pilotEra).source;
+ const groups=new Map(),variants=[];
+ const group=code=>{if(!groups.has(code))groups.set(code,[]);return groups.get(code);};
+ {
   const convert=(r,resolved,version)=>{
    const e=resolved.entity;
-   if(e.source!==code)throw Object.assign(Error('sourceMismatch'),{code:'sourceMismatch'});
+   const code=e.source,pilotEra=kind==='spell'?spell.pilot[code]?.era:creature.pilot[code];
+   if(!version&&e.source!==r.entity.source)throw Object.assign(Error('sourceMismatch'),{code:'sourceMismatch'});
    const {source,notes,editionEvidence}=projectMainSource(code,publications,e,pilotEra);
    let item;
    if(kind==='spell'){
@@ -83,31 +84,34 @@ function buildFunctionalIndexed(snapshot,kind,codes){
     notes.push('versionContainerReviewPending');
    }
    if(version){
-    item.metadata.versionOrigin={parentKey:r.key,versionKey:version.key,containerIndex:version.containerIndex,implementation:version.implementation};
+    item.metadata.versionOrigin={parentKey:r.key,versionKey:version.key,containerIndex:version.containerIndex,implementation:version.implementation,specFingerprint:version.specFingerprint};
     notes.push('versionSemanticsPending');
    }
    item.metadata.sourceEditionEvidence=editionEvidence;
    item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...notes])].sort(cmp);
    return item;
   };
-  const c=counts[code];c.versionCandidates=0;c.versionsConverted=0;c.versionsBlocked=0;
   const versionBlock=(r,v,reason)=>{
+   const code=r.entity.source,c=counts[code];
    c.versionsBlocked++;bump(c.blockCodes,reason);
    diagnostics.push({source:code,kind,path:r.path,index:r.index,code:reason,version:{containerIndex:v.containerIndex,implementation:v.implementation}});
   };
-  for(const r of bySource.get(code)||[]){
+  for(const code of [...codes].sort(cmp)){
+   const c=counts[code];c.versionCandidates=0;c.versionsConverted=0;c.versionsBlocked=0;
+   for(const r of bySource.get(code)||[]){
    let resolved;
    try{
     resolved=resolver.resolve(r);
     const item=convert(r,resolved);
-    items.push(item);c.converted++;
+    group(code).push(item);c.converted++;
    }catch(err){block(code,r.path,r.index,err.code||'conversionError');continue;}
-   const expanded=expandFunctionalVersions(r,resolved,existingKeys);
+   const expanded=expandFunctionalVersions(r,resolved,existingKeys,authorizeVersion);
    for(const d of expanded.diagnostics){c.versionCandidates++;versionBlock(r,d,d.code);}
    for(const v of expanded.candidates){
     c.versionCandidates++;
     variants.push({r,v,resolved});
    }
+  }
   }
   // Reject every colliding version, not only the second one. Physical IDs
   // remain the existing source/name hashes; provenance remains the raw parent.
@@ -117,13 +121,19 @@ function buildFunctionalIndexed(snapshot,kind,codes){
    try{
     if(frequencies.get(v.id)!==1)throw Object.assign(Error('versionIdentityCollision'),{code:'versionIdentityCollision'});
     const item=convert(r,{entity:v.entity,lineage:[r.id,...resolved.lineage],templateLineage:resolved.templateLineage},v);
-    items.push(item);c.versionsConverted++;
+    group(v.entity.source).push(item);counts[r.entity.source].versionsConverted++;
    }catch(err){versionBlock(r,v,err.code||'versionConversionError');}
   }
-  if(c.versionCandidates!==c.versionsConverted+c.versionsBlocked)throw Error('functionalVersionAccountingMismatch');
-  items.sort((a,b)=>cmp(a.id,b.id));
-  if(items.length)packs.push({templateVersion:'dnd-combat-import.v3',contractRevision:'canonical-v3.1',id:'upstream:main:'+code+':'+spec.suffix,source:packSource,metadata:{stage:spec.stage,activation:'review-required',conversionScope:'functionalSelectedSources'},items});
-  if(counts[code].total!==counts[code].converted+counts[code].blocked)throw Error('functionalIndexedAccountingMismatch');
+  for(const c of Object.values(counts)){
+   if(c.versionCandidates!==c.versionsConverted+c.versionsBlocked)throw Error('functionalVersionAccountingMismatch');
+   if(c.total!==c.converted+c.blocked)throw Error('functionalIndexedAccountingMismatch');
+  }
+  for(const [code,items] of [...groups].sort(([a],[b])=>cmp(a,b))){
+   const pilotEra=kind==='spell'?spell.pilot[code]?.era:creature.pilot[code];
+   const packSource=projectMainSource(code,publications,null,pilotEra).source;
+   items.sort((a,b)=>cmp(a.id,b.id));
+   if(items.length)packs.push({templateVersion:'dnd-combat-import.v3',contractRevision:'canonical-v3.1',id:'upstream:main:'+code+':'+spec.suffix,source:packSource,metadata:{stage:spec.stage,activation:'review-required',conversionScope:'functionalSelectedSources'},items});
+  }
  }
  return {commit:snapshot.commit,packs,counts,diagnostics,activation:'review-required'};
 }

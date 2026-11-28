@@ -162,6 +162,17 @@ function buildClassGraph(snapshot,codes,selected){
   const resolver=functional?require('./functional-resolver').createFunctionalResolver(snapshot,records):makeResolver(records),nodes=new Map(),selectedIds=new Set(records.filter(r=>functional?selected.has(coordinate(r.path,r.kind,r.index)):own(counts,r.entity.source)).map(r=>r.id));
   function classOwner(e){return resolver.lookup('main','class',{name:e.className,source:e.classSource});}
   function subclassOwner(e){return resolver.lookup('main','subclass',{shortName:e.subclassShortName,source:e.subclassSource,className:e.className,classSource:e.classSource});}
+  function inheritedGrant(r,resolved,target,originalOwner,field,targetKind){
+    if(!functional||!resolved.lineage.includes(originalOwner.id))fail('crossOwnerFeatureReference');
+    const a=r.entity,b=originalOwner.entity;
+    if(norm(a.name)!==norm(b.name)||r.kind==='subclass'&&(norm(a.shortName)!==norm(b.shortName)||norm(a.className)!==norm(b.className)||norm(a.source)!==norm(b.source)))fail('crossOwnerFeatureReference');
+    const old=resolver.resolve(originalOwner).entity;
+    if(!Array.isArray(old[field])||!old[field].some(raw=>{
+      try{return resolver.lookup('main',targetKind,resolver.featureTarget(targetKind,typeof raw==='string'?raw:raw?.[targetKind])).id===target.id;}catch{return false;}
+    }))fail('crossOwnerFeatureReference');
+    if(!selectedIds.has(originalOwner.id)||!selectedIds.has(target.id))fail('dependencySourceNotSelected');
+    return {ownerId:physicalId(originalOwner.kind,originalOwner.entity),featureId:physicalId(target.kind,target.entity),ownerKey:originalOwner.key,featureKey:target.key,status:'inheritedGrantReviewPending'};
+  }
   function convert(r){
     const resolved=resolver.resolve(r),e=resolved.entity,kind=outputKind(r.kind);
     if(functional&&e.source!==r.entity.source)fail('functionalClassResolvedSourceMismatch');
@@ -191,7 +202,7 @@ function buildClassGraph(snapshot,codes,selected){
       if(r.kind==='class')Object.assign(payload,projectClass(e,notes));
       const field=r.kind==='class'?'classFeatures':'subclassFeatures',targetKind=r.kind==='class'?'classFeature':'subclassFeature';
       if(!Array.isArray(e[field]))fail('invalidFeatureList');
-      const byLevel=new Map(),seen=new Set();
+      const byLevel=new Map(),seen=new Set(),inherited=[];
       for(const raw of e[field]){
         const uid=typeof raw==='string'?raw:raw?.[targetKind];
         const target=resolver.lookup('main',targetKind,resolver.featureTarget(targetKind,uid));
@@ -199,7 +210,14 @@ function buildClassGraph(snapshot,codes,selected){
         // Legacy compatibility copies may refer to another class/subclass owner.
         // Do not relabel a feature or manufacture a revised grant.
         if(classOwner(te).id!==(r.kind==='class'?r.id:owner.id)||
-          (r.kind==='subclass'&&subclassOwner(te).id!==r.id))fail('crossOwnerFeatureReference');
+          (r.kind==='subclass'&&subclassOwner(te).id!==r.id)){
+          const originalOwner=r.kind==='class'?classOwner(te):subclassOwner(te);
+          const link=inheritedGrant(r,resolved,target,originalOwner,field,targetKind);
+          dep(originalOwner);dep(target);
+          inherited.push({...link,uid,level:Number(te.level),raw:clone(raw)});
+          notes.add('inheritedCrossOwnerGrantPending');
+          continue;
+        }
         const level=Number(te.level),id=dep(target);
         if(functional&&(!Number.isInteger(level)||level<1||level>20))fail('featureLevelOutOfRange');
         links.push({uid,featureId:id,level,raw:clone(raw)});
@@ -211,6 +229,10 @@ function buildClassGraph(snapshot,codes,selected){
       payload.featureIds=[...seen];
       payload.progression=[...byLevel].sort((a,b)=>a[0]-b[0]).map(([level,featureIds])=>({level,featureIds}));
       mechanics.featureGrantReferences=links;
+      if(inherited.length){
+        mechanics.inheritedFeatureGrantReferences=inherited;
+        diagnostics.push({source:r.entity.source,kind:r.kind,path:r.path,index:r.index,code:'inheritedCrossOwnerGrantPending'});
+      }
       if(e.startingEquipment)notes.add('startingEquipmentResolutionPending');
       if(e.multiclassing)notes.add('multiclassPolicyPending');
       if(e.classTableGroups||e.subclassTableGroups)notes.add('resourceTableSemanticsPending');

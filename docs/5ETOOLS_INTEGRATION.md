@@ -547,3 +547,7 @@ Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_E
 ## 19A.2g.2 — operações e resolver funcional compartilhado
 
 Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md). Operações adicionais opt-in, reutilização em todas as famílias e emissão de versões simples de feats/optional features. Próximo: seleção de fontes aninhadas, compatibilidade de owners e execução expandida real.
+
+## 19A.2g.3 — versões entre fontes e grants herdados
+
+Ver [5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md](5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md). Autorização de versões por coordenada/spec e fonte selecionada; grants cross-owner comprovados preservados separadamente, sem enfraquecer staging. Próxima: execução real expandida e resolução dos gaps.

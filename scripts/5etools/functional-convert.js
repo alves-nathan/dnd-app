@@ -10,6 +10,7 @@ const {verifyPinnedInputs}=require('./functional-corpus');
 const {buildFunctionalInputPlan,readSelectedFunctionalInputs}=require('./functional-input-plan');
 const {converters}=require('./pilot-coverage');
 const {buildReferencePacks,validateReferencePacks}=require('./functional-reference-pack');
+const {versionAuthorization,verifyVersionOutput}=require('./functional-version-scope');
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
 const cmp=(a,b)=>a<b?-1:a>b?1:0;
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -21,10 +22,11 @@ const sorted=a=>[...a].sort(cmp);
 const originFor=p=>p.origin==='5etools'?'main':p.origin==='homebrew'?'homebrew':null;
 function collectMainRuns(main,plan){
  const {buildFunctionalIndexed}=require('./functional-indexed-converter');
+ const authorizeVersion=plan?versionAuthorization(plan):undefined;
  const selected=kind=>[...new Set(plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&r.kind===kind).map(r=>JSON.parse(r.sourceId)[1]))].sort(cmp);
- const originRuns=plan?require('./functional-origin-feature-converter').buildFunctionalOriginFeatures(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['feat','optionalfeature','race','subrace','background','condition'].includes(r.kind))):null;
+ const originRuns=plan?require('./functional-origin-feature-converter').buildFunctionalOriginFeatures(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['feat','optionalfeature','race','subrace','background','condition'].includes(r.kind)),authorizeVersion):null;
  const itemRuns=plan?require('./functional-item-converter').buildFunctionalItems(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['baseitem','item','magicvariant'].includes(r.kind))):null;
- return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:plan&&['a5.1','a5.2'].includes(c.stage)?buildFunctionalIndexed(main,c.stage==='a5.1'?'spell':'monster',selected(c.stage==='a5.1'?'spell':'monster')):itemRuns&&c.stage==='a5.3'?itemRuns.equipment:itemRuns&&c.stage==='a5.4'?itemRuns.magic:originRuns&&c.stage==='a5.5'?originRuns.features:originRuns&&c.stage==='a5.6'?originRuns.origins:originRuns&&c.stage==='a5.8'?originRuns.conditions:plan&&c.stage==='a5.7'?require('./class-converter').buildFunctionalClasses(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['class','subclass','classFeature','subclassFeature'].includes(r.kind))):require('./'+c.module).buildPilot(main)}));
+ return converters.map(c=>({stage:c.stage,kinds:c.kinds,result:plan&&['a5.1','a5.2'].includes(c.stage)?buildFunctionalIndexed(main,c.stage==='a5.1'?'spell':'monster',selected(c.stage==='a5.1'?'spell':'monster'),authorizeVersion):itemRuns&&c.stage==='a5.3'?itemRuns.equipment:itemRuns&&c.stage==='a5.4'?itemRuns.magic:originRuns&&c.stage==='a5.5'?originRuns.features:originRuns&&c.stage==='a5.6'?originRuns.origins:originRuns&&c.stage==='a5.8'?originRuns.conditions:plan&&c.stage==='a5.7'?require('./class-converter').buildFunctionalClasses(main,plan.rows.filter(r=>r.origin==='main'&&r.disposition==='included'&&r.lane==='resolverEntity'&&['class','subclass','classFeature','subclassFeature'].includes(r.kind))):require('./'+c.module).buildPilot(main)}));
 }
 // Results from real converters are not trusted until their exact provenance
 // is joined to the input plan. Filtering never mutates the original packs.
@@ -62,13 +64,13 @@ function assembleReviewConversion(plan,runs,validate,referencePacks=null){
     const p=item.provenance,origin=originFor(p??{});
     let kind;try{kind=JSON.parse(p.entityKey)[0];}catch{throw Error('functionalConversionProvenanceInvalid');}
     const k=coord(origin,p.path,kind,p.index),r=rows.get(k);
-    assert(origin==='main'&&p.commit===plan.commits.main&&r&&r.blob===p.blob&&r.sourceId===JSON.stringify([origin,p.sourceCode])&&kinds.includes(item.kind)&&item.source?.status==='needsReview'&&item.source.id===pack.source.id,'functionalConversionProvenanceMismatch');
+    assert(origin==='main'&&p.commit===plan.commits.main&&r&&r.blob===p.blob&&(item.metadata?.versionOrigin?verifyVersionOutput(r,item):r.sourceId===JSON.stringify([origin,p.sourceCode]))&&item.source.id==='upstream:main:'+p.sourceCode&&kinds.includes(item.kind)&&item.source?.status==='needsReview'&&item.source.id===pack.source.id,'functionalConversionProvenanceMismatch');
     assert(typeof item.id==='string'&&!ids.has(item.id),'functionalConversionDuplicateItem');
     ids.add(item.id);
     if(r.disposition!=='included')continue;
     assert(r.lane==='resolverEntity','functionalConversionUnexpectedLane');
     items.push(item);
-    const list=outputs.get(k)||[];list.push({id:item.id,packId:pack.id,fingerprint:digest(item)});outputs.set(k,list);
+    const list=outputs.get(k)||[];list.push({id:item.id,packId:pack.id,fingerprint:digest(item),...(item.metadata?.versionOrigin?{versionOrigin:item.metadata.versionOrigin,sourceId:JSON.stringify([origin,p.sourceCode])}:{})});outputs.set(k,list);
    }
    if(items.length)packs.push({...pack,items:items.sort((a,b)=>cmp(a.id,b.id))});
   }
@@ -107,7 +109,7 @@ function assembleReviewConversion(plan,runs,validate,referencePacks=null){
    else status=r.origin==='homebrew'?'homebrewPending':r.lane==='resolverEntity'?'conversionPending':'auxiliaryPending';
   }
   bump(counts,status);
-  ledger.push({coordinate:key,sourceId:r.sourceId,inputFingerprint:r.valueFingerprint,lane:r.lane,status,outputs:found.sort((a,b)=>cmp(a.id,b.id)),...(reference?{referenceOutput:reference}:{}),diagnostics});
+  ledger.push({coordinate:key,sourceId:r.sourceId,inputFingerprint:r.valueFingerprint,lane:r.lane,status,outputs:found.sort((a,b)=>cmp(a.id,b.id)),...(reference?{referenceOutput:reference}:{}),...(r.versions?{versions:r.versions.map(v=>({...v,outputs:found.filter(o=>o.versionOrigin?.containerIndex===v.containerIndex&&o.versionOrigin?.implementation===v.implementation).map(o=>o.id)}))}:{}),diagnostics});
  }
  assert(counts.selected===counts.convertedReview+counts.partialReview+counts.conversionPending+counts.homebrewPending+counts.auxiliaryPending+counts.validationBlocked+counts.consultationReview+counts.definitionSupportReview+counts.mechanicalReferencePending,'functionalConversionAccountingMismatch');
  const exported=valid?packs:[];

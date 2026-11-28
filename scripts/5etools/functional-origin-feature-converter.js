@@ -36,7 +36,7 @@ function convertCondition(r,resolved,source,commit){
  payload:{conditionId:condition.stagingConditionId(e),...(official?{officialCondition:true}:{}),mechanics:{upstreamCondition:clone(e),...(official?{runtimeConditionCandidate:name}:{}),conditionReviewCandidate:{rulesEra:source.rulesEra,stackPolicy:name==='exhaustion'?'editionSpecificPending':'notAssessed',effectPolicy:'unreviewed',endPolicy:'unreviewed',runtimeAlias:'unapproved'}}},
  metadata:{reviewCodes:notes.sort(cmp),upstreamReprintedAs:clone(e.reprintedAs||[])}};
 }
-function buildFunctionalOriginFeatures(snapshot,selection){
+function buildFunctionalOriginFeatures(snapshot,selection,authorizeVersion){
  const results={features:emptyResult(snapshot.commit),origins:emptyResult(snapshot.commit),conditions:emptyResult(snapshot.commit)};
  if(!Array.isArray(selection))fail('functionalOriginSelectionInvalid');
  const wanted=new Map(),seen=new Set();
@@ -119,7 +119,7 @@ function buildFunctionalOriginFeatures(snapshot,selection){
      result.diagnostics.push({source:r.entity.source,kind:r.kind,path:r.path,index:r.index,code,...(version?{version}:{})});
     };
     if(spec.group==='features'){
-     const expanded=expandFunctionalVersions(r,resolved,existingKeys);
+     const expanded=expandFunctionalVersions(r,resolved,existingKeys,authorizeVersion);
      for(const d of expanded.diagnostics)pending(d.code,{containerIndex:d.containerIndex,implementation:d.implementation});
      for(const v of expanded.candidates)versions.push({r,spec,v,resolved,pending});
     }else pending('nestedVersionExpansionPending');
@@ -134,7 +134,7 @@ function buildFunctionalOriginFeatures(snapshot,selection){
    const projection=projectMainSource(v.entity.source,publications,v.entity,spec.pilot[v.entity.source]);
    const result={entity:v.entity,lineage:[r.id,...resolved.lineage],templateLineage:resolved.templateLineage};
    const item=feature.convert(r,result,projection.source,snapshot.commit);
-   item.metadata.versionOrigin={parentKey:r.key,versionKey:v.key,containerIndex:v.containerIndex,implementation:v.implementation};
+   item.metadata.versionOrigin={parentKey:r.key,versionKey:v.key,containerIndex:v.containerIndex,implementation:v.implementation,specFingerprint:v.specFingerprint};
    item.metadata.sourceEditionEvidence=projection.editionEvidence;
    item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...projection.notes,'versionSemanticsPending'])].sort(cmp);
    retainStructuralEvidence(item,result);
@@ -152,7 +152,7 @@ function buildFunctionalOriginFeatures(snapshot,selection){
   }
   if(version)c.versionsConverted=(c.versionsConverted||0)+1;
   else {c.converted++;k.converted++;}
-  const key=JSON.stringify([spec.group,r.entity.source]),group=groups.get(key)||{spec,code:r.entity.source,items:[]};
+  const code=item.provenance.sourceCode,key=JSON.stringify([spec.group,code]),group=groups.get(key)||{spec,code,items:[]};
   group.items.push(item);groups.set(key,group);
  }
  for(const {spec,code,items} of [...groups.values()].sort((a,b)=>cmp(a.spec.group,b.spec.group)||cmp(a.code,b.code))){

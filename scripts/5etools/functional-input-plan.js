@@ -3,6 +3,7 @@
 const {digest}=require('./integrated-review');
 const {mainEntityFile,isResolverKind}=require('./resolver');
 const {selectFunctionalCorpus}=require('./functional-corpus');
+const {describeVersionScope}=require('./functional-version-scope');
 const assert=(ok,c)=>{if(!ok)throw Error(c);};
 const rec=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const text=x=>typeof x==='string'&&x.trim()?x:null;
@@ -72,7 +73,10 @@ function* enumerate(main,homebrew,inventory,sourceDecisions){
     }
     const sourceId=id(f.origin,source),decision=source===null?null:sourceDecisions.get(sourceId);
     const disposition=decision==='include'?'included':decision==='exclude'?'excluded':source===null&&['supportMetadata','supportValue'].includes(lane)?'sharedSupportPending':'sourcePending';
-    yield {descriptor:{origin:f.origin,path:f.path,blob:f.blob,kind,index:array?i:null,rootArray:array,lane,sourceId,attribution,disposition,valueFingerprint:digest(value)},value};
+    const descriptor={origin:f.origin,path:f.path,blob:f.blob,kind,index:array?i:null,rootArray:array,lane,sourceId,attribution,disposition,valueFingerprint:digest(value)};
+    const versions=describeVersionScope(descriptor,value,sourceDecisions);
+    if(versions.length)descriptor.versions=versions;
+    yield {descriptor,value};
    }
   }
  }

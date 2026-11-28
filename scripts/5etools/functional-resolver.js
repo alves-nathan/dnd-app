@@ -14,7 +14,7 @@ function createFunctionalResolver(snapshot,records){
   }
  });
 }
-function expandFunctionalVersions(record,resolved,existingKeys){
+function expandFunctionalVersions(record,resolved,existingKeys,authorize){
  const candidates=[],diagnostics=[];
  for(const [containerIndex,container] of (resolved.versions??[]).entries()){
   let specs;
@@ -24,9 +24,9 @@ function expandFunctionalVersions(record,resolved,existingKeys){
    const location={containerIndex,implementation:v.implementation};
    try{
     if(v.status)fail(v.status);
-    if(v.spec.source!==record.entity.source)fail('versionSourceSelectionPending');
+    if(authorize?!authorize(record,location,v.spec):v.spec.source!==record.entity.source)fail('versionSourceSelectionPending');
     const expanded=previewVersion(record,resolved.entity,v.spec,existingKeys,{functional:true});
-    candidates.push({...location,...expanded});
+    candidates.push({...location,...expanded,specFingerprint:require('./integrated-review').digest(v.spec)});
    }catch(e){diagnostics.push({...location,code:e.code||'versionExpansionError'});}
   }
  }
