@@ -3,6 +3,13 @@ import {captureLocalInventoryEvidence,type InventoryStoreFrame} from '../compend
 import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 const {buildInventoryObservationReview}=require('../../scripts/5etools/inventory-observation-review');
 
+import {reviewLocalInventoryReferences} from '../compendium/localInventoryReferenceReview';
+import {ContentPolicyService} from '../catalog/contentPolicyService';
+import {emptyProgressionRecoverySummary} from '../characters/progressionRecovery';
+import {emptyCompatibilityRemediationRecoverySummary} from '../characters/compatibilityRemediationRecovery';
+import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
+const {deriveRuntimeBaseline,buildInventoryClosureReview}=require('../../scripts/5etools/inventory-closure-review');
+
 import * as fs from 'node:fs';
 import { BUNDLED_COMPENDIUM_PACKS } from '../compendium/bundledCompendium';
 import { parseImportPack } from '../compendium/parseImportPack';
@@ -96,12 +103,25 @@ const mainPath=process.env.DND_UPSTREAM_MIGRATION_MAIN,brewPath=process.env.DND_
   expect(ledger.summary).toMatchObject({installed:baseline.items.length,historical:6335,runtimeBaseline:5841,approvedMappings:0,approvedExclusions:0,writes:0,deletes:0});
   expect(ledger.readiness).toBe('blocked');
   const captureId='bundled-ledger-fixture';
-  const frame:InventoryStoreFrame={guard:[installed],blocked:false,observations:{compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed}}};
+  const runtime={snapshot:new CatalogLoader().initializeFromBundle(JSON.parse(snapshot.read('assets/catalog-v4.8.0/runtime-bundle-v4.8.0.json').toString('utf8')) as RuntimeCatalogBundle),ref:{kind:'bundled'} as const};
+  const portable:PortableRestoreDataCheckpoint={characterStore:{characters:[],progressionDrafts:{},progressionRecovery:emptyProgressionRecoverySummary(),compatibilityRemediationPlans:{},compatibilityRemediationRecovery:emptyCompatibilityRemediationRecoverySummary(),compatibilityRemediationQuarantine:{}},scenarios:[],buildPresets:[],buildHistorySnapshots:[],catalog:{filterState:new ContentPolicyService(runtime.snapshot).createDefaultState(),revision:0,history:[]}};
+  const frame:InventoryStoreFrame={guard:[installed,runtime,portable],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:runtime},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:portable}
+  }};
   const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:memory},'disposableFixture');
   const observationReview=buildInventoryObservationReview({reconciliation:r,baselineSnapshot:baseline,installedSnapshot:installed,scope:'bundledFixture'},p,ledger,capture);
   console.log(JSON.stringify(observationReview));
   expect(observationReview.summary).toMatchObject({installedRows:baseline.items.length,historicalOccurrences:6335,runtimeBaseline:5841,approvedMappings:0,approvedExclusions:0});
   expect(observationReview.blockers).toContain('disposableFixtureNotInstalledEvidence');
+  const input={reconciliation:r,baselineSnapshot:baseline,installedSnapshot:installed,scope:'bundledFixture'};
+  const referenceInput={captureId,scope:'disposableFixture' as const,installed,runtime,portable};
+  const referenceReview=reviewLocalInventoryReferences({...referenceInput,baselineRuntime:deriveRuntimeBaseline(r)},capture);
+  const closure=buildInventoryClosureReview({input,preview:p,ledger,capture,observationReview,referenceInput,referenceReview,reviewReferences:reviewLocalInventoryReferences});
+  console.log(JSON.stringify(closure));
+  expect(closure.summary.runtimeDispositions).toEqual({exactEntry:5841});
+  expect(closure).toMatchObject({criteriaAccepted:0,criteriaRequired:4,inventoryAcceptance:'notEstablished',executable:false});
   expect(p.summary.issues).toEqual({});
   expect(p.summary.storageItems).toBe(baseline.items.length);
   expect(p.summary.storageItems).toBeGreaterThan(0);

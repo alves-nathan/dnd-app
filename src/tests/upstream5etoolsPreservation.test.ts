@@ -444,3 +444,55 @@ describe('a8.13.7 runtime and portable reference inventory',()=>{
  });
 });
 const {digest:nodeDigest}=require('../../scripts/5etools/integrated-review');
+
+const {buildMigrationPreview:closureMigrationPreview}=require('../../scripts/5etools/migration-preview');
+const {buildInventoryDispositionLedger:closureLedger}=require('../../scripts/5etools/inventory-disposition-ledger');
+const {buildInventoryObservationReview:closureObservation}=require('../../scripts/5etools/inventory-observation-review');
+const {deriveRuntimeBaseline:closureBaseline,buildInventoryClosureReview}=require('../../scripts/5etools/inventory-closure-review');
+describe('a8.13.8 inventory closure review',()=>{
+ async function closureFixture(){
+  const f=await fixture(),captureId='closure-fixture',scope='disposableFixture' as const,installed=f.input.context.installed;
+  const runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef},portable=f.input.portableCheckpoint;
+  const item=installed.items[0],target=f.input.catalog.entries[0];
+  const reconciliation={schemaVersion:'dnd-upstream-historical-reconciliation.v1',activation:'review-required',commits:{application:'a',main:'b',homebrew:'c'},
+   summary:{issues:{},approvedMappings:0,mechanicalParityEstablished:0,retirementAuthorized:false},
+   historical:[{id:item.importItemId,kind:item.type,sourceId:item.sourceId,path:'fixture',index:0,status:'noQualifiedNameCandidate',sourceFingerprint:nodeDigest(item.rawJson),evidenceId:'migration:historical',decision:'unreviewed',preservation:'required',activation:'review-required'}],
+   historicalGroups:[{id:item.importItemId,occurrences:1,targetIds:[],status:'preserveIdentityVariants',preservation:'required'}],
+   runtime:[{id:target.entityId,kind:target.kind,status:'runtimeContractOutsideV3',sourceFingerprint:nodeDigest(target),evidenceId:'migration:runtime',decision:'unreviewed',preservation:'required',activation:'review-required'}],
+   dependencies:[],aliases:[],categories:[],legacyLinks:[]};
+  const input={reconciliation,baselineSnapshot:installed,installedSnapshot:installed,scope:'bundledFixture'};
+  const preview=closureMigrationPreview(input),ledger=closureLedger(input,preview);
+  const read=(id:string)=>captureLocalInventoryEvidence(id,{readStores:()=>({guard:[installed,runtime,portable],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId:id,value:installed},
+   runtime:{status:'observed',source:'catalogStore',captureId:id,value:runtime},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId:id,value:portable}
+  }}),storage:f.memory},scope);
+  const capture=await read(captureId),observationReview=closureObservation(input,preview,ledger,capture);
+  const referenceInput={captureId,scope,installed,runtime,portable};
+  const referenceReview=reviewLocalInventoryReferences({...referenceInput,baselineRuntime:closureBaseline(reconciliation)},capture);
+  return {f,read,args:{input,preview,ledger,capture,observationReview,referenceInput,referenceReview,reviewReferences:reviewLocalInventoryReferences}};
+ }
+ test('joins the same capture and historical baseline without authorizing any criterion',async()=>{
+  const {f,args}=await closureFixture(),before=f.memory.dump(),r=buildInventoryClosureReview(args);
+  expect(r.summary).toMatchObject({installedRows:1,historicalOccurrences:1,runtimeBaseline:1,loadedEntries:1,runtimeDispositions:{exactEntry:1},approvedMappings:0});
+  expect(r).toMatchObject({criteriaAccepted:0,criteriaRequired:4,readiness:'blocked',inventoryAcceptance:'notEstablished',writeAuthorized:false});
+  expect(r.obligations.every((o:any)=>o.status==='blocked'&&o.pending.length>0)).toBe(true);
+  expect(JSON.stringify(r)).not.toMatch(/Fixture hero|Manual blade|feature\.test|closure-fixture|migration:historical/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('rejects cross-capture and alternate-baseline reference reports',async()=>{
+  const {args,read}=await closureFixture(),otherId='other-capture',other=await read(otherId);
+  const otherInput={...args.referenceInput,captureId:otherId};
+  const otherReview=reviewLocalInventoryReferences({...otherInput,baselineRuntime:closureBaseline(args.input.reconciliation)},other);
+  expect(()=>buildInventoryClosureReview({...args,referenceReview:otherReview})).toThrow('closureReferenceReviewMismatch');
+  const alternate=reviewLocalInventoryReferences({...args.referenceInput,baselineRuntime:[]},args.capture);
+  expect(()=>buildInventoryClosureReview({...args,referenceReview:alternate})).toThrow('closureReferenceReviewMismatch');
+ });
+ test('rejects stale raw observations, modified observation reports and promoted reference flags',async()=>{
+  const {args}=await closureFixture();
+  expect(()=>buildInventoryClosureReview({...args,observationReview:{...args.observationReview,inventoryAcceptance:'accepted'}})).toThrow('closureObservationReviewMismatch');
+  expect(()=>buildInventoryClosureReview({...args,referenceReview:{...args.referenceReview,writeAuthorized:true}})).toThrow('closureReferenceReviewMismatch');
+  args.referenceInput.portable.catalog.revision++;
+  expect(()=>buildInventoryClosureReview(args)).toThrow('closureReferenceReviewMismatch');
+ });
+});

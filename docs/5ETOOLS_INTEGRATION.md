@@ -366,3 +366,7 @@ Ver [5ETOOLS_INVENTORY_OBSERVATION_REVIEW.md](5ETOOLS_INVENTORY_OBSERVATION_REVI
 ## Fase a8.13.7 — referências runtime e portáteis
 
 Ver [5ETOOLS_INVENTORY_REFERENCE_REVIEW.md](5ETOOLS_INVENTORY_REFERENCE_REVIEW.md). a8.13.6 aprovada. Disposições de entradas runtime e referências explícitas, quatro critérios de inventário ainda bloqueados. Próxima a8.13.8: vínculo com ledger histórico e revisão de observação.
+
+## Fase a8.13.8 — consolidação de evidências do inventário
+
+Ver [5ETOOLS_INVENTORY_CLOSURE_REVIEW.md](5ETOOLS_INVENTORY_CLOSURE_REVIEW.md). a8.13.7 aprovada. Ledger, observação e referências vinculados à mesma captura e baseline; quatro critérios ainda bloqueados. Próxima a8.14.1: leitura independente do backend ativo sem inicialização ou escrita.
