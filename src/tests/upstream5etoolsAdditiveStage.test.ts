@@ -70,6 +70,9 @@ const snapshotPath=process.env.DND_UPSTREAM_ADDITIVE_MAIN;
     expect(r.ok).toBe(true);
     expect(r.stage?.writeAuthorized).toBe(false);
     expect(checkAdditiveV3Stage(r.stage!,c)).toEqual({ok:true,executable:false});
+    const coordinates=reviewLocalGitCoordinates(compendiumImportV3Schema.parse(p),{'5etools':snapshotPath});
+    expect(coordinates.allCoordinatesMatched).toBe(true);
+    expect(coordinates.itemOccurrences).toBe(r.stage!.itemIds.length);
     staged+=r.stage!.itemIds.length;
   }
   expect(staged).toBe(30);
@@ -102,5 +105,28 @@ describe('a8.16.1 private local source provenance review',()=>{
   expect(r.summary).toMatchObject({packOnlySource:1,sourceDefinitions:2,origins:{manual:1},eras:{unknown:1},publicationPrecision:{unknown:1}});
   expect(r.upstreamBytes).toBe('notVerified');
   expect(JSON.stringify(r)).not.toContain('private fixture');
+ });
+});
+
+const {reviewGitCoordinates,reviewLocalGitCoordinates}=require('../../scripts/5etools/v3-git-coordinate-review');
+describe('a8.16.2 immutable source coordinate review',()=>{
+ const sourceRow={name:'Fixture',source:'XPHB'};
+ const itemWithKey=()=>{const a=item();return {...a,provenance:{...a.provenance,entityKey:JSON.stringify(['condition','fixture','xphb'])}};};
+ const snapshot=()=>({commit:'a'.repeat(40),files:new Map([['data/conditionsdiseases.json','b'.repeat(40)]]),readJson:()=>({condition:[sourceRow]})});
+ test('matches coordinates but does not claim payload equivalence or distribution rights',()=>{
+  const p=compendiumImportV3Schema.parse(pack([itemWithKey()]));
+  const r=reviewGitCoordinates(p,{'5etools':snapshot()});
+  expect(r).toMatchObject({allCoordinatesMatched:true,statuses:{coordinateMatch:1},payloadEquivalence:'notEstablished',writeAuthorized:false,distributionAuthorized:false});
+  expect(JSON.stringify(r)).not.toContain('Fixture');
+  expect(reviewGitCoordinates(p,{}).statuses).toEqual({snapshotUnavailable:1});
+ });
+ test('detects wrong commit, blob, path, index and source key independently',()=>{
+  const a=itemWithKey(),s=snapshot();
+  const check=(patch:Partial<typeof a.provenance>)=>reviewGitCoordinates(compendiumImportV3Schema.parse(pack([{...a,provenance:{...a.provenance,...patch}}])),{'5etools':s});
+  expect(check({commit:'c'.repeat(40)}).statuses).toEqual({commitMismatch:1});
+  expect(check({blob:'c'.repeat(40)}).statuses).toEqual({blobMismatch:1});
+  expect(check({path:'data/other.json'}).statuses).toEqual({pathMissing:1});
+  expect(check({index:1}).statuses).toEqual({entityMissing:1});
+  expect(check({sourceCode:'PHB'}).statuses).toEqual({entityIdentityMismatch:1});
  });
 });

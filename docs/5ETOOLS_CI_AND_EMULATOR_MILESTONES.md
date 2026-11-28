@@ -22,3 +22,5 @@ A push to the integration branch with `[full-upstream-audit]` in the HEAD commit
 
 ### Owner scope revision (deliveries 5–6)
 Private local app for owner/table, no public publication or DRM in this roadmap. Keep public repo for CI at owner's request; do not commit any additional upstream content, real book dumps, personal data or raw audit outputs. Public distribution remains unauthorized/not established; any later publication requires separate review and redesign. Delivery 5 = provenance and edition traceability, delivery 6 = integrity and trust, then continue the 20-delivery plan. Existing acceptance matrix rightsTrust criteria are not marked accepted by this scope decision; separate public-distribution gates remain deferred, not waived.
+
+Delivery 6 ends the private provenance/integrity implementation phase. Full upstream audit marker required; continue to mechanical parity only after both Quality and full audit succeed. No new distribution authorization or DRM.

@@ -430,3 +430,7 @@ Ver [5ETOOLS_INVENTORY_MILESTONE.md](5ETOOLS_INVENTORY_MILESTONE.md). Entrega 3/
 ## Fase a8.16.1 — entrega 5/20: proveniência para uso privado
 
 Ver [5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md](5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md). Escopo definido pelo proprietário: consulta pessoal/mesa, sem publicação do app, DRM ou distribuição de dados. Revisão agregada de proveniência ligada ao staging canônico V3. Próxima entrega 6/20: integridade dos packs e cadeia de confiança, auditoria completa do marco.
+
+## Fase a8.16.2 — entrega 6/20
+
+Ver [5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md](5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md). Entrega 5 aprovada. Verificação offline de coordenadas Git, prova de integridade e reutilização da cadeia de confiança de catálogos assinados. Auditoria completa do marco. Próxima entrega 7/20: escopo de paridade mecânica e disposições por ocorrência.
