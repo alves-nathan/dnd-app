@@ -496,3 +496,52 @@ describe('a8.13.8 inventory closure review',()=>{
   expect(()=>buildInventoryClosureReview(args)).toThrow('closureReferenceReviewMismatch');
  });
 });
+
+import {observeOpenSQLiteCompendium,observeExistingKeyValueCompendium,compareIndependentCompendiumReads,INDEPENDENT_COMPENDIUM_SQL,type IndependentSQLiteReadPort} from '../storage/readOnlyCompendiumObservation';
+describe('a8.14.1 independent read-only compendium observation',()=>{
+ async function backendFixture(){
+  const f=await fixture(),state=f.input.context.installed;
+  const rows=[
+   ...state.sources.map(s=>({lane:'source',id:s.id,json:JSON.stringify(s),enabled:state.enabledSourceIds.includes(s.id)?1:0})),
+   ...state.packs.map(p=>({lane:'pack',id:p.id,json:JSON.stringify(p),source_id:p.sourceId})),
+   ...state.items.map(i=>({lane:'item',id:i.id,json:JSON.stringify(i),source_id:i.sourceId,pack_id:i.packId,import_item_id:i.importItemId,type:i.type,name:i.name,status:i.status}))
+  ];
+  const calls:string[]=[];
+  const db:IndependentSQLiteReadPort={getAllAsync:async<T>(query:string)=>{calls.push(query);return rows as unknown as T[];}};
+  return {f,state,rows,db,calls};
+ }
+ test('reads a single SELECT across all tables and binds the full hydrated snapshot',async()=>{
+  const {f,state,db,calls}=await backendFixture(),before=f.memory.dump();
+  const first=await observeOpenSQLiteCompendium(db),second=await observeOpenSQLiteCompendium(db);
+  expect(calls).toEqual([INDEPENDENT_COMPENDIUM_SQL,INDEPENDENT_COMPENDIUM_SQL]);
+  expect(first).toMatchObject({status:'observed',backend:'sqlite',counts:{items:1,packs:1}});
+  expect(compareIndependentCompendiumReads(first,second,state)).toBe('snapshotMatch');
+  expect(compareIndependentCompendiumReads(first,second,{...state,enabledSourceIds:[state.sources[0].id]})).toBe('mismatch');
+  expect(JSON.stringify(first)).not.toMatch(/Manual blade|legacy-weapon|manual review/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('does not open an uninitialized connection or hide corrupt rows',async()=>{
+  const {rows,db}=await backendFixture();
+  expect(await observeOpenSQLiteCompendium(undefined)).toMatchObject({status:'unavailable',code:'connectionNotInitialized'});
+  const item=rows.find(r=>r.lane==='item')!;
+  item.json='{bad';
+  expect(await observeOpenSQLiteCompendium(db)).toMatchObject({status:'invalid',code:'invalidPersistedRow'});
+ });
+ test('rejects mirrored-column mismatch and detects changed raw reads',async()=>{
+  const {rows,db,state}=await backendFixture(),first=await observeOpenSQLiteCompendium(db);
+  const item=rows.find(r=>r.lane==='item')!;
+  item.id='different-id';
+  const second=await observeOpenSQLiteCompendium(db);
+  expect(second).toMatchObject({status:'invalid',code:'rowIdentityMismatch'});
+  expect(compareIndependentCompendiumReads(first,second,state)).toBe('stale');
+ });
+ test('strict key-value observation distinguishes absent/corrupt/current envelopes',async()=>{
+  const {f,state}=await backendFixture(),before=f.memory.dump();
+  const first=await observeExistingKeyValueCompendium('legacy',f.memory);
+  expect(first).toMatchObject({status:'observed',backend:'legacy'});
+  expect(compareIndependentCompendiumReads(first,first,state)).toBe('snapshotMatch');
+  expect(await observeExistingKeyValueCompendium('web',{getItem:()=>null})).toMatchObject({status:'unavailable',code:'persistedSnapshotAbsent'});
+  expect(await observeExistingKeyValueCompendium('web',{getItem:()=>'{}'})).toMatchObject({status:'invalid',code:'unsupportedPersistedEnvelope'});
+  expect(f.memory.dump()).toEqual(before);
+ });
+});

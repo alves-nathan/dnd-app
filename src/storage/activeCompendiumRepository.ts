@@ -5,7 +5,8 @@ import type { CompendiumPersistenceState } from './compendiumSnapshot';
 import { COMPENDIUM_STORAGE_KEY } from './compendiumSnapshot';
 import { asyncStorageAdapter } from './asyncStorageAdapter';
 import { indexedDbStorageAdapter } from './indexedDbStorageAdapter';
-import { createSQLiteCompendiumRepository } from './sqliteCompendiumRepository';
+import {observeExistingKeyValueCompendium,type IndependentCompendiumObservation} from './readOnlyCompendiumObservation';
+import { SQLiteCompendiumRepository, createSQLiteCompendiumRepository } from './sqliteCompendiumRepository';
 import { ensureRequiredCharacterCreationCompendium, initializeBundledCompendium, reconcileBundledCompendium } from './bundledCompendiumBootstrap';
 
 export interface CompendiumBootstrapResult {
@@ -95,6 +96,18 @@ export const getActiveCompendiumRepository = (): CompendiumRepository => {
 };
 
 export const getActiveCompendiumRepositoryKind = (): ActiveCompendiumRepositoryKind => activeRepositoryKind;
+
+/** Never invokes getActiveCompendiumRepository or bootstrap. Web storage
+ * currently has no retained handle, so it is intentionally unavailable. */
+export async function observeExistingActiveCompendium():Promise<IndependentCompendiumObservation>{
+  const repository=activeRepository,backend=activeRepositoryKind;
+  if(!repository)return {status:'unavailable',backend,code:'activeRepositoryNotInitialized'};
+  const result=backend==='legacy'?await observeExistingKeyValueCompendium('legacy',asyncStorageAdapter):
+    backend==='sqlite'&&repository instanceof SQLiteCompendiumRepository?await repository.observeExistingSnapshot():
+    {status:'unavailable' as const,backend,code:'nonInitializingReadUnavailable'};
+  if(repository!==activeRepository||backend!==activeRepositoryKind)return {status:'stale',backend,code:'activeRepositoryChanged'};
+  return result;
+}
 
 /**
  * Switches the active persistence boundary to the AsyncStorage-backed legacy

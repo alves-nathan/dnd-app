@@ -370,3 +370,7 @@ Ver [5ETOOLS_INVENTORY_REFERENCE_REVIEW.md](5ETOOLS_INVENTORY_REFERENCE_REVIEW.m
 ## Fase a8.13.8 — consolidação de evidências do inventário
 
 Ver [5ETOOLS_INVENTORY_CLOSURE_REVIEW.md](5ETOOLS_INVENTORY_CLOSURE_REVIEW.md). a8.13.7 aprovada. Ledger, observação e referências vinculados à mesma captura e baseline; quatro critérios ainda bloqueados. Próxima a8.14.1: leitura independente do backend ativo sem inicialização ou escrita.
+
+## Fase a8.14.1 — observação independente de persistência
+
+Ver [5ETOOLS_INDEPENDENT_BACKEND_OBSERVATION.md](5ETOOLS_INDEPENDENT_BACKEND_OBSERVATION.md). a8.13.8 aprovada. Leitura SQLite já inicializado e envelope legado sem fallback; IndexedDB pendente. Próxima a8.14.2: vínculo da leitura independente à captura e ao painel.
