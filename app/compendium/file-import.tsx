@@ -10,6 +10,8 @@ import { IssueList } from '../../src/components/IssueList';
 import { parseLocalCompendiumFileContent, type LocalImportFileKind } from '../../src/compendium/fileImport';
 import type { CompendiumItemType } from '../../src/compendium/types';
 import { useCompendiumStore } from '../../src/store/compendiumStore';
+import { isV3StagingJson } from '../../src/compendium/importVersion';
+import { LocalV3StagePreview } from '../../src/components/LocalV3StagePreview';
 
 const kindOptions: Array<CompendiumItemType | 'auto'> = ['auto', 'class', 'subclass', 'species', 'background', 'feat', 'weapon', 'armor', 'equipment', 'magicItem', 'spell', 'feature', 'condition', 'creatureStatBlock'];
 const forceKindOptions: Array<LocalImportFileKind | 'auto'> = ['auto', 'json', 'markdown', 'text', 'unknown'];
@@ -59,8 +61,11 @@ export default function LocalFileImportScreen() {
   const isSaving = useCompendiumStore((state) => state.isSaving);
   const existingItems = useCompendiumStore((state) => state.items);
 
+  const v3Text = useMemo(() => isV3StagingJson(fileText) ? fileText :
+    isV3StagingJson(editableJson) ? editableJson : undefined, [fileText, editableJson]);
+
   const parsed = useMemo(() => {
-    if (!fileName || !fileText) return undefined;
+    if (v3Text || !fileName || !fileText) return undefined;
     return parseLocalCompendiumFileContent(
       { name: fileName, mimeType: fileMimeType, size: fileSize },
       fileText,
@@ -73,7 +78,7 @@ export default function LocalFileImportScreen() {
         existingItems
       }
     );
-  }, [book, defaultKind, existingItems, fileMimeType, fileName, fileSize, fileText, forceKind, notes, packId, page, sourceId, version]);
+  }, [book, defaultKind, existingItems, fileMimeType, fileName, fileSize, fileText, forceKind, notes, packId, page, sourceId, version, v3Text]);
 
   const outputJson = editableJson || parsed?.generatedJson || '';
 
@@ -162,6 +167,10 @@ export default function LocalFileImportScreen() {
   };
 
   const handleSave = async () => {
+    if (v3Text || isV3StagingJson(outputJson)) {
+      Alert.alert('V3 em revisão', 'O pacote não pode ser persistido.');
+      return;
+    }
     if (!outputJson.trim()) {
       Alert.alert('Nada para salvar', 'Selecione um arquivo ou cole um JSON gerado antes de salvar.');
       return;
@@ -194,12 +203,31 @@ export default function LocalFileImportScreen() {
   };
 
   const shareGeneratedJson = async () => {
+    if (v3Text || isV3StagingJson(outputJson)) {
+      Alert.alert('V3 em revisão', 'A distribuição do pacote não está autorizada.');
+      return;
+    }
     try {
       await Share.share({ message: outputJson });
     } catch {
       Alert.alert('Compartilhamento falhou', 'Não foi possível abrir o compartilhamento do sistema.');
     }
   };
+
+  if (v3Text) return (
+    <Screen title="Prévia isolada V3" subtitle="Conteúdo local em revisão, sem importação ou distribuição.">
+      <Card title="Arquivo selecionado">
+        <Text style={styles.bold}>{fileName || 'JSON colado'}</Text>
+        <Button label="Selecionar outro arquivo" onPress={handlePickFile} disabled={isSaving} />
+        <Button label="Descartar prévia V3" secondary onPress={() => {
+          setFileName(''); setFileMimeType(undefined); setFileSize(undefined);
+          setFileText(''); setEditableJson(''); setLastSavedMessage('');
+        }} />
+      </Card>
+      <LocalV3StagePreview rawText={v3Text} />
+      <Button label="Voltar ao compêndio" secondary onPress={() => router.replace('/compendium')} />
+    </Screen>
+  );
 
   return (
     <Screen

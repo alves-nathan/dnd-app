@@ -2,6 +2,7 @@ import { ZodError } from 'zod';
 import { CompendiumImportInput, CompendiumItemInput, compendiumImportSchema } from './schemas';
 import { RuleValidationIssue } from '../types';
 import { createId } from '../utils/id';
+import { isV3StagingEnvelope } from './importVersion';
 import { CompendiumImportBuildOptions, PersistedCompendiumImport, StoredCompendiumItem, StoredCompendiumItemStatus } from './types';
 
 export interface ImportPreview {
@@ -93,6 +94,11 @@ const collectImportIssues = (data: CompendiumImportInput): RuleValidationIssue[]
 export const validateCompendiumJson = (input: string): ImportPreview => {
   try {
     const parsed = JSON.parse(input) as unknown;
+    // The legacy Zod schema strips unknown fields; never let it erase V3
+    // provenance and turn staging-only data into an ordinary saved pack.
+    if (isV3StagingEnvelope(parsed)) return { ok: false, issues: [{
+      severity: 'error', code: 'IMPORT_V3_STAGING_ONLY', message: 'Import V3 aceita somente prévia isolada, sem persistência.'
+    }] };
     const data = compendiumImportSchema.parse(parsed);
     const issues = collectImportIssues(data);
 

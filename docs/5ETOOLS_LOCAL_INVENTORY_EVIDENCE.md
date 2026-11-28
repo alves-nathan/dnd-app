@@ -1,0 +1,15 @@
+# a8.13.1 — Read-only local inventory evidence contract
+
+Defines twenty mandatory observation surfaces with explicit source labels and a shared caller-supplied capture identifier. Covers active and legacy compendium persistence, portable character/scenario/preset/history/configuration state (including drafts, recovery and quarantine), character reconciliation, loaded runtime graph, package index/content, trust, update and restore sessions, distribution/cache, publication/transparency/rollout/operational stores and external owner inventory. Missing is not empty: notInspected, unavailable, busy, stale and invalid are distinct from observed.
+
+Core observations use existing typed state and validate selected identity/shape boundaries. Counts include legacy pack versions, review markers, unresolved storage references and orphan scenarios. Auxiliary observations are opaque JSON only, not validated complete domain inventories. SHA-256 fingerprints bind supplied JSON and loaded graph; no names, IDs, payloads or capture ID are returned. Loaded alias keys are not raw alias occurrences. No read of actual devices or store adapters yet, no joint capture, no independent trust, no storage durability, no authorization even if all surfaces are observed.
+
+Four synthetic tests reuse the existing disposable memory repository fixture and existing structural preservation suite. Next a8.13.2: explicit read-only observation adapter for hydrated stores and repository reads; distinguish fallback/default from actual observation, capture before/after revisions, block busy/stale reads and keep package/external obligations pending until evidence exists. No automatic hydration, repairs, network, export or writes.
+
+## a8.13.1.1 — CI correction
+
+Original Quality push 46071754021 and PR 46071759276 failed typecheck (TS2349 and dependent TS7006 diagnostics). Structural audit 46071753938 reached the preservation suite: nine tests passed, four failed with `TypeError: flags is not a function`. The immutable flag object is now spread directly, restoring the inferred result type and preserving every non-authorization flag. No test, gate or runtime behavior was relaxed. The original four regression cases remain intact. Next a8.13.2 only after all three checks pass.
+
+## a8.13.1.2 — Structural audit path coverage
+
+Correction a8.13.1.1 passed Quality push 46072836666 and PR 46072845110. The push full regression included upstream5etoolsPreservation.test.ts (overall 1218 passed, 28 skipped, 251 suites passed). Structural audit did not trigger because localInventoryEvidence.ts was outside its path filters. Add the narrow localInventory*.ts filter to cover the inventory contract and planned observation adapters without broadening to unrelated compendium changes. No additional workflow, clone, test or runtime change. Require the structural audit to pass on this HEAD before a8.13.2.

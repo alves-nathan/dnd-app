@@ -1,0 +1,7 @@
+# a8.13.6 — Inventory observation review
+
+Offline bridge between the occurrence ledger and the aggregate local capture contract. Rebuilds the ledger and verifies exact equality, capture envelope flags, scope, evidence digest, all twenty unique source-bound surface records and accounting. Requires stable observation and exact installed compendium snapshot fingerprint and denominators. A bundled fixture can only be joined to disposableFixture evidence; localSnapshot requires observedLocal. No fixture promotion. Review is aggregate only, no private row IDs, raw payloads or capture ID. Ledger exclusions remain proposed, never approved.
+
+Runtime count comparison is explicitly count-only. Other observed surfaces are not joined at the occurrence/reference level. Portable checkpoint and actual runtime entity reconciliation, independent persistence, external records, trust and durability remain pending. Mismatched coherence is reported separately, never repaired. Capture envelope hash binds supplied evidence and coherence but does not authenticate a device or guarantee atomicity. No UI wiring, network, persistence, export or mutation. Three regression tests and existing disposable bundled audit; no extra workflow or dependency.
+
+Next a8.13.7: explicit inventory review closure and remaining evidence obligations, including installed runtime and portable reference dispositions; keep all gates blocked and plan independent backend reads separately.

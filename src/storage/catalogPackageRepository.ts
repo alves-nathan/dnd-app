@@ -129,3 +129,6 @@ export const createCatalogPackageRepository = (
     }
   };
 };
+
+// Shared read-only inventory helpers: same exact persisted chunk format.
+export {CHUNK_SIZE as CATALOG_PACKAGE_CHUNK_SIZE,utf8ByteLength as catalogPackageByteLength,chunkKey as catalogPackageChunkKey};

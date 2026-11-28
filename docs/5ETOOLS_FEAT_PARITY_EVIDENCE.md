@@ -1,0 +1,7 @@
+# a8.9.1 — Feat parity evidence
+
+Read-only evidence reuses the pinned historical reconciliation callback. Every historical feat occurrence is kept independently, including repeated IDs and conflicting payloads. Candidates must match the existing publication map, name, kind and edition; emitted feats must match their physical source-qualified ID and upstream commit. Runtime rows retain reconciliation evidence and target fingerprints; they are not independent installed-character inventory.
+
+The selected payload and nested mechanics paths are compared exactly; absent, false, missing and added are distinct. Unassessed keys are counted, not discarded. A compatible subset is not equivalence. Categories, explicit/conditional/undeclared repeatability, prerequisite shapes, ASI allocations, selection schedules, and raw grant declarations are classified independently. The current feat reader has name/options-based ASI fallback and reads the first simple ability increase; neither is an approval. Raw grants and resource declarations are not executable effects. The existing feat subchoice and automatic feature resource contracts remain unchanged.
+
+Only aggregate counts and a deterministic report fingerprint are logged. No upstream payloads or detailed reports are committed. No runtime call sites, new workflow, dependencies or extra upstream clones. All approval and write/retirement/execution gates remain false/zero. The next stage, a8.9.2, qualifies prerequisites and category/edition constraints before any selection or allocation previews.

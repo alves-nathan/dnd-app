@@ -1,0 +1,15 @@
+# V1.4a5.6 — Species, subraces e backgrounds (staging)
+
+Evidência a5.5: run 45717546398, 217/218 feats e 233/233 optionalfeatures, 450 emitidos validados; 1 feat XPHB bloqueado por variantes. Não é equivalência mecânica.
+
+Piloto PHB/XPHB/AAG/MPMM/EFA/AU/WoW/ERLW/VRGR/FTD/SCAG/TCE/VGM/MTF. Snapshot anterior contém 177 races, 98 subraces, 175 backgrounds no total global. Lê todos para resolver heranças e pais; emissão só das fontes piloto. Usa fonte explícita e identidade de pai para subrace. Não gera identidade por nome isolado. Os subraces sem nome ou sem pai inequívoco ficam bloqueados. Merge conservador inspirado em Renderer.race._getMergedSubrace: campos simples substituídos, ability por alternativa posicional, entries por nome explicitamente sobrescrito, traitTags/languageProficiencies concatenados quando não overwrite, skillProficiencies apenas grupos únicos compatíveis. Não somar atributos sobrepostos, não formar produto cartesiano. Parent e child originais preservados em mechanics; lineage inclui pai e cadeia de cópias. Merges não são certificados; alternativas de proficiência e overwrites complexos ficam sinalizados.
+
+Species base com _versions é emitida somente em staging, com templates preservados separadamente e lineageVersionsPending; não expande variantes nem torna pai selecionável de forma definitiva. Parent com subraces é marcado subraceSelectionPending. Size, creatureTypes, speed, darkvision, blindsight e resistências literais são projetados quando inequívocos; fly/swim/climb true usa walk atual como projeção e sinaliza relação dinâmica. Não inferir tipo humanoid ausente. Defaults de lineage, magias, traits, efeitos e imunidades a condições permanecem pendentes. Nenhum ASI racial é aplicado ao personagem. Planos legados preservados em mechanics, inclusive raw weighted não interpretado.
+
+Background ASI 2024 só projeta padrão exato de duas alternativas weighted [2,1]/[1,1,1] sobre mesmos três atributos distintos, cap 20. Legacy e unknown não recebem essa regra. Proficiencies fixas ou escolhas simples são projetadas; demais alternativas conservadas. Feat grant UID exato pode receber candidateId do conversor a5.5, sem promover a featIds (não há garantia de resolução/ativação). UIDs com variantes de nome, sem fonte e filtros de categorias permanecem raw. Starting equipment conserva grupos obrigatórios e alternativas, moedas, quantidades e referências sem converter para inventário ativo. Traits e vínculos de features ainda precisam de IDs e validação global.
+
+Execução: node scripts/5etools/origin-converter.js ../5etools-src dist/upstream/origin-pilot
+Testes: npx jest src/tests/upstream5etoolsOriginConverter.test.ts --runInBand
+Auditoria real: DND_UPSTREAM_ORIGIN_SNAPSHOT=../5etools-src npx jest src/tests/upstream5etoolsOriginConverter.test.ts --runInBand
+
+CI publica somente contagens e códigos agregados; sem payloads. Todos os registros needsReview, não persistidos no runtime. Próximo: a5.7 classes, subclasses e progressões, incluindo relação com feats, optionalfeatures e escolhas de origem.

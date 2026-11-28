@@ -1,0 +1,42 @@
+# a8.15.1 hotfix — faster integration feedback and emulator milestones
+
+## Failure and measured bottleneck
+Quality push 46096629193 and PR 46096632904 failed at typecheck TS2352, incomplete CharacterBuildChoices fixture. Structural audit 46096629189 passed, including preservation Jest. From log, repeated real upstream stages alone span 02:11:13–02:21:17 UTC (roughly ten minutes), before setup. The major costs are separate historical reconciliation, migration preview, graph and homebrew passes, not the local preservation fixture (3.357s). Correct fixture with required typed fields, no unsafe type assertion.
+
+## CI policy
+- Quality remains full release:validate, on PR and normal pushes except exact integration feature branch with active draft PR #1. PR validation runs on merge ref. If PR closes, use workflow_dispatch or open a PR; branch push alone will no longer run full Quality. Other branches/main keep push validation. Typecheck first, remove only seven direct Jest subset invocations from validate because test:ci discovers the same files and tests. Synthetic benchmark runs in the full Jest suite; remove duplicate standalone workflow invocation. Named scripts remain available. All other release checks/harnesses stay.
+- Upstream structural audit on integration pushes now runs fast fixtures plus real disposable SQLite rehearsal, without upstream clones or external evidence assembly. Full mode via workflow_dispatch on selected branch or non-draft PR opened/reopened/synchronized/ready_for_review; all prior upstream stages and ordered evidence dependencies remain. Full audit is required on the same final candidate before approval; a green fast audit is NOT equivalent. Fast mode also runs migration/cutover fixture tests without upstream env. No new dependencies, scheduled jobs, artifacts containing upstream data or permission expansion. Existing draft PR means ordinary iterations should show Quality PR + fast audit; a skipped audit job on draft PR may also appear. Branch protection settings could not be read by the GitHub integration (403), so owner must verify required check rules before merge. No main mutation, no merge.
+- Expected faster feedback; actual time to be measured from next run. Do not claim a fixed savings until measured. Full audit runs at end of each grouped milestone and before cutover. If structural converter code changes or a real upstream regression is suspected, dispatch full audit immediately.
+
+## Consolidated delivery milestones (planning, not acceptance)
+A: finish reference inventory in grouped delivery: instance/tactical/historical, drafts/recovery/quarantine, runtime graph/configuration and explicit remaining coverage. Owner external inventory can be documented as unavailable until collected. B: usable local V3 preview/inventory and preservation smoke rehearsal in emulator; no activation or write. C: scope/rights, mechanical/relationship parity and candidate assembly, preserving unsupported records. D: durable checkpoint and transactional migration/rollback in disposable environment. E: native tests and separate explicit approval/cutover/retirement. Do not wait for final migration to test existing read-only UI.
+
+## Emulator now
+On Windows, in a local checkout: git fetch origin; git switch feature/5etools-integration (or create tracking branch if absent); git pull --ff-only; npm ci (first time or dependency change); start Android emulator; npm run android (Expo Metro, compatible existing development client required) or npx expo run:android to compile/install a development build if needed. Use test profile or emulator snapshot, not sole copy of real character data. Open compendium import/file preview with an existing valid canonical V3 fixture, review staging, preservation and local inventory capture/revalidation. Do not try to import V3 as active content; this UI is intentionally read-only. Report actual results/screenshots or errors. Full native evidence remains pending. Next commit groups the remaining internal reference inventories rather than one small commit per lane.
+
+## Owner decision — supersedes emulator milestones above
+20 grouped deliveries: inventory 4, rights/trust 2, mechanical parity 3, relationships 3, durable checkpoint 2, transaction/rollback 3, automated final validation 2, candidate cutover 1. Emulator only after delivery 20 and candidate cutover on isolated integration branch/test profile. Native acceptance, main merge and irreversible legacy retirement still require successful device tests and explicit approval. Run full audit at phase milestones. Hotfix runs 46098412124 Quality PR success (~2m36s elapsed), 46098405987 fast push audit success (~37s), 46098412218 draft PR audit skipped as intended.
+
+### Full audit milestone trigger
+A push to the integration branch with `[full-upstream-audit]` in the HEAD commit message executes the existing full audit; normal pushes still use fast fixtures. Manual dispatch/non-draft PR behavior unchanged. Use this marker only on phase milestones or structural upstream changes requiring real snapshots. Full audit verifies the current checkout, not device inventory.
+
+### Owner scope revision (deliveries 5–6)
+Private local app for owner/table, no public publication or DRM in this roadmap. Keep public repo for CI at owner's request; do not commit any additional upstream content, real book dumps, personal data or raw audit outputs. Public distribution remains unauthorized/not established; any later publication requires separate review and redesign. Delivery 5 = provenance and edition traceability, delivery 6 = integrity and trust, then continue the 20-delivery plan. Existing acceptance matrix rightsTrust criteria are not marked accepted by this scope decision; separate public-distribution gates remain deferred, not waived.
+
+Delivery 6 ends the private provenance/integrity implementation phase. Full upstream audit marker required; continue to mechanical parity only after both Quality and full audit succeed. No new distribution authorization or DRM.
+
+## Revisão funcional — supersede a sequência de 20 entregas
+
+Ver [5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md](5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md). O emulador começa após 19A–F, 20A e 20B, com conteúdo V3 ativo no candidato descartável, e não apenas em preview. Retirada dos importadores V1/V2 no candidato autorizada ao final da implementação após gates automatizados; preservação/migração de dados antigos obrigatória. Main e promoção real permanecem condicionados à aceitação nativa. Não impor limite de commits; full audit nos marcos.
+
+### Correção do requisito de disponibilidade inicial
+
+O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir o app candidato, inclusive na primeira execução offline, sem importação manual. Catálogo preparado antes do build local, bootstrap idempotente, preservar dados e filtros em upgrades. Importador V3 destina-se também a atualizações e conteúdo adicional. Ver roadmap funcional; nenhum payload upstream novo no Git público.
+
+## Otimização medida após 19A.1
+
+Run 46151057043 full: 704s; Quality 46151062484: 215s. Fetch 106s, histórico/reconciliação 79s, migration preview 66s, coverage 52s, graph 50s. Full permanece obrigatório em marcos e alterações estruturais; iterações de seleção de escopo sem alteração de converter/lock usam fast + Quality, adicionados fixtures corpus/histórico ao fast. Fetch dos dois SHAs em paralelo no mesmo runner, aguarda ambos e falha se qualquer falhar. Sem cache/artifact de upstream e sem remover suites. Ganho real precisa ser medido em próximo full; não prometer tempo. Se insuficiente, consolidar cálculo comum/leituras de snapshots sem alterar denominadores, depois avaliar paralelismo de suites com limite de memória/CPU.
+
+## Política de auditoria por tema (decisão do proprietário)
+
+Sem limite de commits. Quality + fast structural em cada entrega intermediária; full upstream no fechamento de cada tema 19A/19B/19C/19D/19E/19F e candidato final, e na correção de full falho. Antecipação excepcional se regressão relevante não detectável por fast. Não reduzir cobertura; não tratar fast como full. Usar o marker já existente apenas nesses casos; não alterar gatilhos de PR/manual.

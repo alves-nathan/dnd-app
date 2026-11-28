@@ -1,0 +1,16 @@
+# V1.4a8.5.6 — Explicit condition attack preview
+
+## Baseline
+Parent 27fbd0c7d892fe4e29f14f6e6460b950038638ca (a8.5.5); Quality push 45876312567, PR 45876323635, structural 45876312498. Main e676152ace06d5c6e5280d0a7204a259371cb9ae. All cutover restrictions remain. Review of 28 definition rows plus two Exhaustion models is not mechanical parity approval.
+
+## Implementation
+- src/rules-engine/effects/conditionAttackPreview.ts: explicitly hypothetical read-only condition instances (identity, recipient, source, era, active/expired/removed status, exhaustion level). Requires caller's complete inventory assertion, validates duplicate identities, rejects active same-recipient same-kind mixed editions and duplicate exhaustion counters. Independent ordinary instances remain distinct; only active relevant instances affect attacks. No inferred alias, automatic lifecycle or storage change.
+- Scoped ordinary single-target attack roll with action/bonus action/reaction cost, base bonus/AC/distance and separate base advantage/disadvantage flags. All roll flags combine once, not sequentially. Source-aware frightened/grappled/charmed and directional visibility for 2024 Invisible; missing context yields indeterminate. Incapacitated and implied incapacitated attackers, attacks on own charmer, terminal exhaustion block this hypothetical attack. 2014 exhaustion level 3+ disadvantage, 2024 -2 per level; near/far Prone and Paralyzed/Unconscious critical-on-hit. Unconscious preview assumes its immediate prone consequence occurred; does not apply or end instances.
+- calculateHitChance adds optional criticalOnHit: only hits become critical; natural miss and normal hit probability preserved. Existing criticalGuaranteed remains auto-hit+critical for existing callers. No CombatState schema change, no wiring into live actions, no production condition activation. Matrix updates critical-on-hit from gap to primitiveOnly, not full condition coverage. 
+- Caller explicitly supplies reviewed hypothetical condition kinds and facts; no authentication or automatic binding to imported V3 records. Not a full outcome preview: damage resistance, immunity, sight-dependent targeting, action exceptions, movement, saves/checks, timing, concentration/HP updates, lifecycle transitions, revival and other interactions remain pending. No historical migration, replacement, rights or trust approval.
+
+## Tests
+Eight added synthetic tests in conditionAttackPreview.test.ts; actual probability engine, boundary distances, cancellation, source/visibility, restrictions, exhaustion, independent instance status, invalid inventory. Existing condition suite additionally probes new probability primitive. Quality includes new tests; no extra dependencies or workflow job. CI required; full local suite not executed.
+
+## Next a8.5.7
+Review CI, then assess explicit lifecycle and movement/save/condition implications, including independent grant/expiry, prone persistence, zero-speed and concentration break. Prefer scoped evidence before runtime wiring. Follow with class/subclass/feature ownership/progression. Full historical and actual user inventories, mechanical/relations parity, durable backups, production rollback, rights/trust, native validation and separate cutover approval still required.

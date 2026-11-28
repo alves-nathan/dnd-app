@@ -1,0 +1,7 @@
+# a8.12.1 — Global checkpoint consolidation
+
+Produces an aggregate-only family fragment from the existing historical reconciliation callback. Validates current-run checkpoint schemas, flags, commits, fingerprints and selected denominators against physical items and occurrence bindings; rebuilds condition mechanics and capability reports on the same emitted condition items. Weapon/armor historical comparisons and scoped class evidence are not exhaustive mechanical coverage. No new approval follows from a checkpoint fingerprint.
+
+Joins the family fragment with the existing a8.4 matrix in the same structural workflow, after coverage, graph and migration fragments are available. Checks all thirteen canonical kinds, per-kind emitted/historical/runtime/candidate counts, outside-pilot counts, relationship denominators and snapshot commits. Keeps storage, Homebrew probes, graph closure and historical occurrences distinct. The family fragment is temporary aggregate evidence, not an independently authenticated report or a proof that all individual mechanics are implemented. Runtime readiness stays blocked; all previous global blockers and scoped blockers are retained.
+
+Existing workflow gains an environment variable and final aggregate join only, without a new workflow, clone or dependency. No payloads, runtime wiring or migration. Next a8.12.2: prioritize open gates and define an explicit acceptance matrix for local inventory, backup/rollback, trust, native validation and cutover decisions.

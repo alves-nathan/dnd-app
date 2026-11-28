@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import {observeOpenSQLiteCompendium} from './readOnlyCompendiumObservation';
 import { parseAndBuildPersistedImport } from '../compendium/importer';
 import { parseAndPreviewImportPack, parseIssuesAsPreviewIssues } from '../compendium/parseImportPreview';
 import { createCompendiumImportV2UpsertPlan } from '../compendium/importUpsertPlan';
@@ -162,6 +163,7 @@ const itemMatchesInMemorySearch = (item: StoredCompendiumItem, normalizedQuery: 
 
 export class SQLiteCompendiumRepository implements CompendiumRepository {
   private dbPromise?: Promise<SQLite.SQLiteDatabase>;
+  private initializedDatabase?: SQLite.SQLiteDatabase;
 
   constructor(private readonly databaseName: string = COMPENDIUM_SQLITE_DATABASE_NAME) {}
 
@@ -169,11 +171,15 @@ export class SQLiteCompendiumRepository implements CompendiumRepository {
     if (!this.dbPromise) {
       this.dbPromise = SQLite.openDatabaseAsync(this.databaseName).then(async (db) => {
         await initializeSQLiteCompendiumDatabase(db);
+        this.initializedDatabase = db;
         return db;
       });
     }
     return this.dbPromise;
   }
+
+  /** Audit path never calls db(), opens a database or waits for initialization. */
+  observeExistingSnapshot() { return observeOpenSQLiteCompendium(this.initializedDatabase); }
 
   async loadSnapshot(): Promise<CompendiumPersistenceState> {
     const db = await this.db();

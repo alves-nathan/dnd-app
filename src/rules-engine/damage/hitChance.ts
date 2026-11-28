@@ -26,6 +26,8 @@ export const calculateHitChance = (params: {
   rollMode: RollMode;
   critRange?: number;
   criticalGuaranteed?: boolean;
+  /** A successful hit becomes critical; the attack can still miss. */
+  criticalOnHit?: boolean;
 }): HitChanceResult => {
   if (params.criticalGuaranteed) {
     return { hitChance: 1, critChance: 1, normalHitChance: 0 };
@@ -37,7 +39,7 @@ export const calculateHitChance = (params: {
 
   for (const outcome of getOutcomes(params.rollMode)) {
     const natural = outcome.roll;
-    const isCrit = natural >= critRange;
+    const isCrit = params.criticalOnHit === true || natural >= critRange;
     const isAutoMiss = natural === 1;
     const isAutoHit = natural === 20;
     const hitsByAC = natural + params.attackBonus >= params.targetAC;

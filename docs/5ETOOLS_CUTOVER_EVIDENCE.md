@@ -1,0 +1,14 @@
+# V1.4a8.4 — Cutover evidence and gap matrix
+
+a8.3.2 approved at 619974d59fade1e574f62e2b13226233c4fe33e8: Quality push 45856056561, PR 45856073203, structural 45856056545 (job 140034618298), all success. Main e676152ace06d5c6e5280d0a7204a259371cb9ae unchanged.
+
+## Implementation
+scripts/5etools/cutover-evidence.js collects aggregate-only fragments from the existing real coverage baseline, global graph and bundled migration preview test runs. No additional upstream clone or full parse. Canonical staging counts per kind now recorded explicitly in coverage baseline. Matrix uses all 13 COMPENDIUM_ENTITY_KINDS and separates Main emitted/valid/invalid, graph hard closure and pending evidence/memberships, quarantined Homebrew probes, historical occurrence and payload comparison counts, storage preservation disposition and runtime identity status. Runtime classFeature/subclassFeature grouped under feature (same normalization as historical matching); non-V3 runtime/historical/storage kinds separately retained. Raw upstream rows by origin/raw kind remain independent of canonical output counts (one-to-many and mixed source kinds). All counts are observations, not approvals, completeness or interchangeable denominators.
+
+Fragments are written only when DND_UPSTREAM_EVIDENCE_DIR is set; CI uses a temporary directory, removes it even on failure, prints aggregate matrix only, no artifacts or payloads. Exact upstream commit pair and fragment fingerprints, fixed kind inventory, cross-kind counts, full migration input binding and preservation row accounting checked; cross-report matching at aggregate level, not proof of identical entity payloads. Existing producer checks remain required. No new app dependencies, assets, runtime or persistence edits. No additional CI job.
+
+## Validation
+Five synthetic tests cover denominators, non-V3 runtime, quarantined probes, aggregate redaction, stale/tampered fragments, cross-kind mismatch, approval and changed installed snapshot, staging failures. Run npx jest src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand. Existing real coverage/graph/migration tests produce fragments; node scripts/5etools/cutover-evidence.js <directory> reconciles. CI pending. No local full clone/test execution; native UI and SQLite device tests remain pending.
+
+## Next a8.5
+Use the CI matrix to prioritize mechanical parity review by kind; establish explicit identity/payload/dependency evidence decisions and mechanical regression fixtures before considering any runtime changes. Actual user installation, complete historical inventory (including missing legacy artifacts), backup durability, production rollback, rights/trust and separate approval remain gates. All 13 kinds remain review-required, runtimeEligible=0, retirementAuthorized=false; no cutover.

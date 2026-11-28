@@ -1,0 +1,15 @@
+# V1.4a6.2 — Índice de referências por identidade
+
+a6.1 aprovada: Quality push 45734063586, PR 45734069523, structural audit 45734063547. Snapshots main 2512db75eb48ef06f6190b086a82430887906dca, brew bfa899639c696b0ad38afb9a31c443c3b127a058. Main: 15586 observados, 231 identidade inválida, 1133 estrutura bloqueada, 14222 resolvidos; 6772 elegíveis, 6413 linhas com saída válida, 327 sem emissão, 32 templates sem saída, 8589 outputs staging válidos. Brew: 138511 observados, 1672 identidade inválida, 1537 bloqueados, 135302 resolvidos, zero outputs. Baseline issues vazio. Prioridades: XPHB 108 lacunas, PHB 75, TCE 51, XDMG/LoX 14 cada, XMM 3; 170/5841 entradas do runtime com livro não mapeado. Não confundir lacunas do piloto com paridade de livros.
+
+## Implementação
+
+reference-index.js usa o ledger de registros coletados e outputs dos oito pilotos no mesmo snapshot; indexa identidade upstream (kind, nome, fonte, owners/nível quando aplicáveis) e namespace. Confirma coordenada/blob antes de resolver. Não usa canonicalKey ou nome de exibição isolado, não seleciona variantes geradas pelo nome do template. UIDs simples exigem fonte explícita; flags, tags, displays, filtros, defaults implícitos e escolhas permanecem pendentes. Condições simples sem fonte usam política explícita PHB para 2014, XPHB para 2024, só main e edição conhecida; resultado é candidato de identidade, não efeito. Cross-era explicitamente marcado, não prova compatibilidade.
+
+Sidecar de edges com fromId, relation, path, raw, basis, status, targetId quando resolvido, crossEra quando aplicável e activation review-required. Preserva caminhos de grupos de equipamento, alternativas de feats e árvores de requisitos sem achatar AND/OR. Resolve acesso direto de spell a class, condições de spell/creature/species, feat grants, equipamento inicial literal, requisitos de classe/feat/optionalfeature/spell/item/race/background com fonte, item base/attached spells/ammo, base de variante; verifica IDs de owner/feature grant já existentes. Registra seletores de optionalfeature/feat progressions, item masteries, additional spells, proficiências e packs sem inferir escolhas. Não tenta interpretar texto, todos os grants condicionais, subclasses de acesso adicional, ou converter Homebrew nesta etapa.
+
+Estados: resolvedIdentity, sourceRequired, unsupportedExpression, missingUpstreamIdentity, targetNotEmitted, ambiguousIdentity, provenanceMismatch, wrongTargetKind, selectorPending, conditionalExpressionPending, editionRequired. Nenhuma mutação dos packs V3, flags de revisão, runtime ou assets; links ficam no sidecar para a6.3+; não é validação de elegibilidade nem grafo global. Relatório detalhado local pode conter dados upstream; CI apenas agregados por relação, status e fonte main, sem payloads/IDs. 
+
+## Execução
+npx jest src/tests/upstream5etoolsReferenceIndex.test.ts --runInBand
+DND_UPSTREAM_REFERENCE_MAIN e DND_UPSTREAM_REFERENCE_BREW apontam para clones Git, DND_UPSTREAM_REFERENCE_OUT opcional escreve JSON local (não sobrescreve). CI executa teste real e seis fixtures. Próximo a6.3: precedência, reprints e compatibilidade explícita de edição, sem ativar conteúdo.

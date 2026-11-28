@@ -22,9 +22,13 @@ export const getArmorClass = (character: Character): number => {
   const equippedArmor = getEquippedArmor(character);
   const baseArmorClass = equippedArmor
     ? equippedArmor.baseAC + (
-        equippedArmor.dexCap === undefined
-          ? dex
-          : Math.min(dex, equippedArmor.dexCap)
+        // Standard heavy armor ignores Dexterity entirely; a zero cap
+        // without that category is still a cap, not a fixed AC mode.
+        equippedArmor.armorCategory?.trim().toLowerCase() === 'heavy' && equippedArmor.dexCap === 0
+          ? 0
+          : equippedArmor.dexCap === undefined
+            ? dex
+            : Math.min(dex, equippedArmor.dexCap)
       )
     : 10 + dex;
   const accessoryBonus = getEquippedArmorAccessories(character)

@@ -279,6 +279,7 @@ export const buildWeaponFromCompendiumItem = (
   const payload = item.normalizedJson;
   const issues: RuleValidationIssue[] = [];
   const formula = formulaTextFromPayload(payload);
+  const versatileFormula = asString(payload.versatileDamageFormula);
 
   if (!formula) {
     issues.push(issue('error', 'WEAPON_DAMAGE_FORMULA_REQUIRED', `Arma importada "${item.name}" não possui damageFormula, damage ou formula no payload.`, item));
@@ -292,11 +293,18 @@ export const buildWeaponFromCompendiumItem = (
       if (text === 'STR_OR_DEX') return true;
       const options = asStringArray(asRecord(value).options)?.map((entry) => entry.toUpperCase()) ?? [];
       return options.includes('STR') && options.includes('DEX');
-    }) || Boolean(formula?.includes('STR_OR_DEX'));
+    }) || Boolean(formula?.includes('STR_OR_DEX') || versatileFormula?.includes('STR_OR_DEX'));
   const preferredFlexibleAbility: AbilityScore = character.abilities.DEX > character.abilities.STR ? 'DEX' : 'STR';
   const attackAbility = structuredAttackAbility ?? resolveAbilityReference(payload.ability, character) ?? (flexibleAbility ? preferredFlexibleAbility : undefined);
   const damageAbility = structuredDamageAbility ?? attackAbility;
-  const resolvedFormula = formula?.replace(/STR_OR_DEX/g, preferredFlexibleAbility);
+  // Both grips must resolve the same placeholder to the selected STR/DEX
+  // damage ability. Leave literal ability tokens and other custom variables alone.
+  const flexibleDamageAbility = damageAbility === 'STR' || damageAbility === 'DEX'
+    ? damageAbility
+    : preferredFlexibleAbility;
+  const resolveFlexibleFormula = (text: string | undefined) => text?.replace(/\bSTR_OR_DEX\b/g, flexibleDamageAbility);
+  const resolvedFormula = resolveFlexibleFormula(formula);
+  const resolvedVersatileFormula = resolveFlexibleFormula(versatileFormula);
   const magicBonus = asNumber(payload.magicBonus) ?? asNumber(payload.bonus) ?? 0;
   const weaponType = asString(payload.weaponType);
   const range = asRecord(payload.range);
@@ -325,8 +333,8 @@ export const buildWeaponFromCompendiumItem = (
       ammunitionPerAttack: asString(payload.ammunitionType) ? 1 : undefined,
       recoverableAmmunition: properties.some((property) => property.toLowerCase() === 'thrown'),
       damageType: asSimpleDamageType(payload.damageType),
-      versatileDamage: asString(payload.versatileDamageFormula)
-        ? buildDamageFormulaFromPayload({ ...payload, damageFormula: asString(payload.versatileDamageFormula) }, { defaultSourceType: 'weapon', fallbackRaw: asString(payload.versatileDamageFormula) ?? '0' })
+      versatileDamage: resolvedVersatileFormula
+        ? buildDamageFormulaFromPayload({ ...payload, damageFormula: resolvedVersatileFormula }, { defaultSourceType: 'weapon', fallbackRaw: resolvedVersatileFormula })
         : undefined,
       source: item.rawJson.source
     },

@@ -1,0 +1,16 @@
+# V1.4a6.3 — Precedência, reprints e compatibilidade
+
+a6.2 aprovada (Quality push 45735559995, PR 45735568730, structural 45735560005). Snapshot principal 2512db75eb48ef06f6190b086a82430887906dca; brew bfa899639c696b0ad38afb9a31c443c3b127a058. 8589 entidades; 15571 referências, 13052 resolvedIdentity, 2519 pendentes (1697 selectorPending, 499 targetNotEmitted, 139 editionRequired, 138 sourceRequired, 32 unsupportedExpression, 10 missingUpstreamIdentity, 4 conditionalExpressionPending); 748 crossEra. Zero provenanceMismatch e wrongTargetKind.
+
+## Política conservadora
+- Reprints: declaração original upstream reprintedAs do registro exato (não metadado herdado). Resolver UID qualificado, namespace, provenance e canonicalKey/scope/kind/contentType. Subclass UID de quatro campos mantém owner. Subrace, features com owner/level, variantes e mudança de tag permanecem pendentes. A declaração é old -> new; preview V3 new.reprints -> old. Requer edição conhecida e publicação inequivocamente posterior, sem inventar datas. Reprint não equivale a regras idênticas, nem autoriza substituir.
+- Supersedes: nunca inferido de data, nome, reprint ou edição. API de decisão editorial opcional exige approved, evidência, IDs, commits e blobs exatos, mesma identidade/escopo/edição conhecida e cronologia estrita. Sem decisões reais fornecidas nesta etapa. Aprovação de supersedes prevalece sobre reprint da mesma dupla; não afeta outras referências.
+- Coexists: preservação simétrica de IDs em grupo lógico de edições conhecidas diferentes, exceto par já relacionado por reprint. É uma política de não substituição, não comprovação de equivalência; não há vencedor automático entre versões da mesma edição.
+- Original: não deduzir por ausência de reprint. Somente decisão editorial explícita, com evidência vinculada ao snapshot e sem relação conflitante. Demais registros unresolved.
+- Compatibilidade de referências a6.2: sameEraIdentityOnly, crossEraReviewRequired, unknownEraReviewRequired, scopeReviewRequired, endpointMissing. Mesmo era não implica autorização de uso. Nenhum redirecionamento, seleção de versão ou alteração de character refs.
+
+O preview conserva IDs, payload, provenance, source.status; precedência é projetada em cópia, não aplicada aos packs emitidos nem runtime. Não é política de ativação. A auditoria valida schema V3 e grafo global de precedência (não valida ainda todas as dependências mecânicas). Não há alteração de V3 schema, catálogo ou importadores. Estrita ordem por intervalo de publicação impede ciclos dirigidos; CI verifica também validador V3. Casos de mudança de tipo, renomeação, alias, data desconhecida/sobreposta, múltiplos candidatos ou alvo fora do piloto continuam backlog.
+
+## Execução
+npx jest src/tests/upstream5etoolsPrecedencePolicy.test.ts --runInBand
+DND_UPSTREAM_PRECEDENCE_MAIN e DND_UPSTREAM_PRECEDENCE_BREW habilitam teste real. DND_UPSTREAM_PRECEDENCE_OUT opcional gera sidecar local (não sobrescreve); contém IDs e declarações upstream, não publicar. CI somente contagens agregadas. Próxima fase a6.4: heranças, variantes, templates e tags, incluindo UID defaults e aliases cross-owner; depois a6.5 semântica, a6.6 Homebrew e a6.7 grafo global.

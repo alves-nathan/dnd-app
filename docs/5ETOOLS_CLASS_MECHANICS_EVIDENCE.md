@@ -1,0 +1,17 @@
+# V1.4a8.6.2 — Class chassis and spellcasting table evidence
+
+## Baseline
+a8.6.1 FIX01 approved at 7f9d9c0a070afe04bda4a5692c825fb78179c0f3: Quality push 45900424929, PR 45900431371, structural 45900424945 (job 140184565359). Main remains e676152ace06d5c6e5280d0a7204a259371cb9ae. Upstream Main 2512db75eb48ef06f6190b086a82430887906dca, Brew bfa899639c696b0ad38afb9a31c443c3b127a058. Prior audit: 35 class identity candidates, all Hit Dice and saving throw proficiency fields exact; 26 spellcasting payload differences, 9 absent, 35 missing resources. 143 subclass identity candidates, all owner edition pending across historical variants.
+
+## Implementation
+- class-mechanics-evidence.js binds evidence to the prior exact class progression report fingerprint and source/target occurrence hashes. Audits 50 historical class occurrences / 35 candidates and 251 subclass occurrences / 143 candidates; compiles profiles for 27 emitted classes and 146 subclasses. No identity promotion.
+- Chassis comparison distinguishes exact values, case/order-only literal set candidates (no synonym expansion or duplicate collapse), and structured vs flat skill choice with explicit matching counts. Missing counts, complex choice shape and contradictory count stay pending. No class-name default.
+- Spellcasting subfields compared independently: ability, progression, preparation source, recovery, ritual and focus; regular slot table, Pact slot count/level, cantrips, known spells and prepared spells. Numeric table comparison requires all 20 levels, valid slot circles and nonnegative integers. Omitted slot circles in existing explicit rows compare to zero (positive-slot iteration); missing whole level is never synthesized. Pact keyed level records can be compared to arrays, not activated. No implicit mapping known to prepared, no formula evaluation, multiclass rounding or slot-pool inference.
+- Uses existing compileProfile for declared subclass tables outside payload, with no inferred active subclass binding. Counts current contract gaps (structured skill choices, profiles without runtime progression code, known limits without prepared limits, subclass tables outside payload). Aggregate-only CI output; no additional parse/clone/workflow/dependency.
+- Runtime readers examined: getClassProficiencyRequirement currently reads flat skill options; getClassSpellcastingProfile reads preparedSpellsByLevel and progression; deriveCharacterSpellSlots recognizes explicit pactMagic. Synthetic disposable fixtures probe current behavior vs explicit flat skill and Pact progression shape. Not a production adapter; no source approval, character changes, migration or mechanical parity claim.
+
+## Validation
+Six new synthetic tests plus real reconciliation assertions. CI pending; no full local run. Main and runtime untouched; no new workflow. All prior cutover gates remain.
+
+## Next a8.6.3
+Review actual a8.6.2 aggregate subfield results. Implement an isolated, provenance-bound class chassis/profile projection preview, resolving only documented representation differences and numeric tables. Explicitly separate 2014/2024 preparation/known and multiclass policy; retain Artificer exceptions and subclass ownership. Do not wire into live grants/slots until mechanical evidence and preservation gates are approved. Then review resources and feature choices/replacements. Actual installation, durable backup/rollback, trust/rights, native validation and explicit cutover authorization pending.

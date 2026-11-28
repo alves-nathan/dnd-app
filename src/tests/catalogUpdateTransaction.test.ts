@@ -60,3 +60,31 @@ describe('catalog update transaction', () => {
     expect(validateCatalogUpdateReceipt({ ...receipt, toVersion: 'tampered' })).toBe(false);
   });
 });
+
+import {generateKeyPairSync,sign} from 'node:crypto';
+import {reviewPrivateCatalogCandidate} from '../catalog/privateCatalogCandidateReview';
+import {CATALOG_SIGNATURE_ALGORITHM,CATALOG_TRUST_REGISTRY_SCHEMA,SIGNED_CATALOG_BUNDLE_SCHEMA,catalogCanonicalChecksum,catalogPublicKeyFingerprint,catalogSignaturePayload,type CatalogEcPublicJwk,type CatalogTrustRegistry,type SignedCatalogProvenance} from '../catalog/catalogTrust';
+describe('a8.16.2 private catalog candidate integrity',()=>{
+ test('uses existing signed candidate validation without advancing trust, rejects tamper/replay/revocation',async()=>{
+  const now=()=>new Date('2026-11-28T12:00:00.000Z'),at=now().toISOString();
+  const {publicKey,privateKey}=generateKeyPairSync('ec',{namedCurve:'P-256'}),publicJwk=publicKey.export({format:'jwk'}) as CatalogEcPublicJwk;
+  const bundle=minimalBundle('1.1.0','Candidate'),currentSnapshot=new CatalogLoader().initializeFromBundle(minimalBundle('1.0.0'));
+  const checksum=sha256Hex(JSON.stringify(bundle));
+  const snapshot=new CatalogLoader().initializeFromBundle(bundle,{bundleSha256:checksum});
+  const registry:CatalogTrustRegistry={schemaVersion:CATALOG_TRUST_REGISTRY_SCHEMA,revision:1,updatedAt:at,events:[],publishers:[{publisherId:'fixture',displayName:'Fixture',kind:'official',trustLevel:'pinned',status:'trusted',createdAt:at,updatedAt:at,keys:[{keyId:'fixture-key',algorithm:CATALOG_SIGNATURE_ALGORITHM,publicJwk,fingerprint:catalogPublicKeyFingerprint(publicJwk),status:'active',validFrom:at,addedAt:at}],lastAcceptedBundle:{checksum:'a'.repeat(64),sequence:0,catalogVersion:'1.0.0',snapshotId:currentSnapshot.snapshotId,keyId:'fixture-key',acceptedAt:at}}]};
+  const provenance:SignedCatalogProvenance={publisherId:'fixture',publisherName:'Fixture',publisherKind:'official',keyId:'fixture-key',algorithm:CATALOG_SIGNATURE_ALGORITHM,issuedAt:at,sequence:1,previousBundleChecksum:'a'.repeat(64),catalogChecksum:catalogCanonicalChecksum(bundle),catalogVersion:bundle.catalogVersion,snapshotId:snapshot.snapshotId};
+  const rawText=JSON.stringify({schemaVersion:SIGNED_CATALOG_BUNDLE_SCHEMA,catalog:bundle,provenance,signature:sign('sha256',Buffer.from(catalogSignaturePayload(provenance)),{key:privateKey,dsaEncoding:'ieee-p1363'}).toString('base64url')});
+  const params={rawText,currentSnapshot,trustRegistry:registry,now},before=JSON.stringify(registry);
+  const r=await reviewPrivateCatalogCandidate({...params,expectedEnvelopeChecksum:sha256Hex(rawText)});
+  expect(r).toMatchObject({ok:true,review:{trustStatus:'trusted',chainStatus:'continued',sequence:1,writeAuthorized:false,distributionAuthorized:false}});
+  expect(JSON.stringify(registry)).toBe(before);
+  expect(await reviewPrivateCatalogCandidate({...params,expectedEnvelopeChecksum:'b'.repeat(64)})).toMatchObject({ok:false});
+  const tampered=JSON.parse(rawText);tampered.catalog.catalogVersion='9.0.0';
+  expect(await reviewPrivateCatalogCandidate({...params,rawText:JSON.stringify(tampered)})).toMatchObject({ok:false});
+  registry.publishers[0].lastAcceptedBundle!.sequence=1;
+  expect(await reviewPrivateCatalogCandidate(params)).toMatchObject({ok:false});
+  registry.publishers[0].lastAcceptedBundle!.sequence=0;
+  registry.publishers[0].keys[0].status='revoked';
+  expect(await reviewPrivateCatalogCandidate(params)).toMatchObject({ok:false});
+ });
+});

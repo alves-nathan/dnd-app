@@ -60,6 +60,33 @@ describe('active equipment and combat simulation', () => {
     expect(getArmorClass(character)).toBe(15);
   });
 
+  it('ignores negative Dexterity only for standard heavy armor and preserves custom caps and shields', () => {
+    const base = buildCharacter();
+    const cases = [
+      { armorCategory: 'heavy', dexCap: 0, expected: [16,16,16] },
+      { armorCategory: ' Heavy ', dexCap: 0, expected: [16,16,16] },
+      { armorCategory: 'manual', dexCap: 0, expected: [15,16,16] },
+      { armorCategory: undefined, dexCap: 0, expected: [15,16,16] },
+      { armorCategory: 'heavy', dexCap: 1, expected: [15,16,17] },
+      { armorCategory: 'heavy', dexCap: undefined, expected: [15,16,20] },
+      { armorCategory: 'medium', dexCap: 2, expected: [15,16,18] },
+      { armorCategory: 'light', dexCap: undefined, expected: [15,16,20] }
+    ];
+    for (const {expected,...configuration} of cases) {
+      for (const [index,dex] of [8,10,18].entries()) {
+        let character: Character = {...base,abilities:{...base.abilities,DEX:dex},
+          armors:[{id:'armor',name:'Fixture armor',baseAC:16,equipped:false,...configuration}],
+          armorAccessories:[{id:'shield',name:'Shield',baseAC:0,acBonus:2,stacksWithArmor:true,armorCategory:'shield',equipped:false}]};
+        character=equipArmor(character,'armor');
+        const before=JSON.stringify(character);
+        expect(getArmorClass(character)).toBe(expected[index]);
+        expect(JSON.stringify(character)).toBe(before);
+        character=toggleArmorAccessory(character,'shield').character;
+        expect(getArmorClass(character)).toBe(expected[index]+2);
+      }
+    }
+  });
+
   it('tracks, validates and spends ammunition for a rotation', () => {
     const bow = weapon({
       id: 'shortbow',

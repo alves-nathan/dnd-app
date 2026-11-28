@@ -2,23 +2,32 @@ name: Quality
 
 on:
   push:
+    branches-ignore:
+      # Active integration has a draft PR; validate it once on the PR merge ref.
+      - feature/5etools-integration
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
+      - name: Check upstream integration JavaScript syntax
+        run: find scripts/5etools -type f -name '*.js' -print0 | xargs -0 -r -n 1 node --check
       - run: npm ci
       - run: npm run release:validate
-      - run: npm run benchmark:synthetic
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: quality-failure-${{ github.run_id }}

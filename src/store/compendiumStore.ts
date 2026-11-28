@@ -5,7 +5,7 @@ import type { CompendiumPersistenceState } from '../storage/compendiumSnapshot';
 import { activateLegacyCompendiumFallback, getActiveCompendiumRepository, getActiveCompendiumRepositoryKind, loadCompendiumSnapshotWithLegacyFallback } from '../storage/activeCompendiumRepository';
 import { ensureRequiredCharacterCreationCompendium, installBundledCompendiumPack } from '../storage/bundledCompendiumBootstrap';
 import { prepareCoreCharacterContentSnapshot } from '../compendium/coreCharacterContentPreparation';
-import { detectCompendiumImportVersion } from '../compendium/importVersion';
+import { detectCompendiumImportVersion, isV3StagingJson } from '../compendium/importVersion';
 import { IMPORT_TEMPLATE_VERSION_V2, LEGACY_IMPORT_TEMPLATE_VERSION_V1 } from '../compendium/importVersions';
 import type { RuleValidationIssue } from '../types';
 import { isRequiredCharacterCreationBundledPack } from '../compendium/bundledCompendium';
@@ -163,6 +163,10 @@ export const useCompendiumStore = create<CompendiumStore>()((set, get) => ({
   },
 
   saveImportJson: async (json) => {
+    if (isV3StagingJson(json)) return {
+      ok: false, itemCount: 0,
+      issues: [genericStorageIssue('IMPORT_V3_STAGING_ONLY', 'Import V3 aceita somente prévia isolada, sem persistência.')]
+    };
     set({ isSaving: true, lastStorageError: undefined });
     try {
       const repository = getActiveCompendiumRepository();
