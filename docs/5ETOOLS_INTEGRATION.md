@@ -467,3 +467,7 @@ Ver [5ETOOLS_RELATIONSHIP_MILESTONE.md](5ETOOLS_RELATIONSHIP_MILESTONE.md). Entr
 ## Fase a8.19.1 — entrega 13/20
 
 Ver [5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.md](5ETOOLS_DURABLE_CHECKPOINT_CAPTURE.md). Entrega 12 aprovada. Contrato de captura local em memória, export lógico do compêndio, bytes de runtime e envelopes persistidos, sem gravação ou ativação. Próxima entrega 14/20: armazenamento durável, leitura de volta e ensaio descartável de restauração.
+
+## Fase a8.19.2 — entrega 14/20
+
+Ver [5ETOOLS_DURABLE_CHECKPOINT_MILESTONE.md](5ETOOLS_DURABLE_CHECKPOINT_MILESTONE.md). Entrega 13 aprovada. Arquivo privado imutável, readback e ensaio de restauração isolado. Próxima entrega 15/20: plano transacional explícito, idempotente e sem remoção implícita.

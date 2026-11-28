@@ -1107,3 +1107,43 @@ describe('a8.19.1 in-memory durable checkpoint candidate',()=>{
   expect(r).toMatchObject({ok:false,code:'activeCompendiumNotVerified'});
  });
 });
+
+describe('a8.19.2 private archive and isolated restore rehearsal',()=>{
+ const {captureV3DurableCheckpoint}=require('../compendium/v3DurableCheckpoint') as typeof import('../compendium/v3DurableCheckpoint');
+ const {writeV3CheckpointArchive,readV3CheckpointArchive,rehearseV3CheckpointRestore}=require('../compendium/v3CheckpointArchive') as typeof import('../compendium/v3CheckpointArchive');
+ const {observeExistingKeyValueCompendium}=require('../storage/readOnlyCompendiumObservation') as typeof import('../storage/readOnlyCompendiumObservation');
+ async function captured(){
+  const {input,memory}=await fixture(),guard=[input];
+  memory.setItem('dnd-combat-math-unknown-recovery','{"private":"keep"}');
+  const r=await captureV3DurableCheckpoint({readFrame:()=>({guard,blocked:false,backend:'legacy',preservation:input,observations:{}}),storage:{getItem:memory.getItem,getAllKeys:()=>Object.keys(memory.dump())},observeActiveCompendium:()=>observeExistingKeyValueCompendium('legacy',memory),readBundledRuntimeText:async()=>JSON.stringify(minimalBundle('1.0.0'))});
+  if(!r.ok)throw Error(r.code);return {r,memory};
+ }
+ (process.platform==='win32'?test.skip:test)('syncs private file, reopens with fresh adapter and rehearses all captured logical lanes',async()=>{
+  const {r,memory}=await captured(),before=memory.dump();
+  const fs=await import('node:fs/promises'),os=await import('node:os'),path=await import('node:path');
+  const {createPrivateCheckpointFilePort}=require('../../scripts/5etools/private-checkpoint-file-port');
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dnd-checkpoint-'));
+  try{
+   const first=await createPrivateCheckpointFilePort(dir),written=await writeV3CheckpointArchive(first,r.manifest,r.payload);
+   if(!written.ok)throw Error(written.code);
+   const second=await createPrivateCheckpointFilePort(dir),id=written.receipt.archiveId;
+   expect(await readV3CheckpointArchive(second,id)).toMatchObject({manifest:r.manifest,payload:r.payload});
+   expect(await rehearseV3CheckpointRestore(second,id)).toMatchObject({ok:true,report:{scope:'disposableMemoryOnly',counts:{compendiumItems:1,characters:1,runtimeEntries:1},writeAuthorized:false}});
+   expect(await writeV3CheckpointArchive(second,r.manifest,r.payload)).toMatchObject({ok:false,code:'checkpointArchiveWriteFailed'});
+   expect((await fs.readdir(dir))).toEqual([id+'.json']);
+   expect((await fs.stat(path.join(dir,id+'.json'))).mode&0o077).toBe(0);
+   await fs.appendFile(path.join(dir,id+'.json'),' ');
+   expect(await readV3CheckpointArchive(second,id)).toBeNull();
+   expect(await rehearseV3CheckpointRestore(second,id)).toMatchObject({ok:false,code:'checkpointArchiveInvalid'});
+   expect(memory.dump()).toEqual(before);
+  }finally{await fs.rm(dir,{recursive:true,force:true});}
+ });
+ test('rejects tampering, write failure and corrupt readback before issuing receipt',async()=>{
+  const {r}=await captured();
+  const port={createExclusive:async()=>{},read:async()=>null};
+  expect(await writeV3CheckpointArchive(port,{...r.manifest,fingerprint:'wrong'},r.payload)).toMatchObject({ok:false,code:'checkpointPayloadInvalid'});
+  expect(await writeV3CheckpointArchive(port,r.manifest,r.payload)).toMatchObject({ok:false,code:'checkpointArchiveReadbackMismatch'});
+  expect(await writeV3CheckpointArchive({...port,createExclusive:async()=>{throw Error('injected');}},r.manifest,r.payload)).toMatchObject({ok:false,code:'checkpointArchiveWriteFailed'});
+  expect(await readV3CheckpointArchive(port,'../invalid')).toBeNull();
+ });
+});

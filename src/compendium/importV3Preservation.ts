@@ -63,6 +63,8 @@ const runtimeGraph = (snapshot: CatalogSnapshot) => ({
   aliases:[...snapshot.aliases],filterPolicy:snapshot.filterPolicy,readinessProfile:snapshot.readinessProfile
 });
 
+export const fingerprintV3PreservationRuntime = (snapshot: CatalogSnapshot): string => digest(runtimeGraph(snapshot));
+
 /**
  * Read-only bridge between the V3 stage and the existing backup/checkpoint APIs.
  * Never applies a restore, activates a package, or authorizes a migration.
@@ -121,7 +123,7 @@ export function prepareV3PreservationCheckpoint(input: V3PreservationInputs): V3
     const body: Omit<V3PreservationCheckpoint,'fingerprint'> = {
       schemaVersion:V3_PRESERVATION_SCHEMA,stageFingerprint:stage.fingerprint,
       compendiumFingerprint:sha256Hex(compendiumExport),characterBackupFingerprint:sha256Hex(characterBackup),
-      portableCheckpointFingerprint:digest(portableCheckpoint),runtimeFingerprint:digest(runtimeGraph(catalog)),
+      portableCheckpointFingerprint:digest(portableCheckpoint),runtimeFingerprint:fingerprintV3PreservationRuntime(catalog),
       runtimeRefFingerprint:digest(runtimeRef),runtimeSnapshotId:catalog.snapshotId,
       counts:{storageItems:context.installed.items.length,characters:entities.characters.length,
         scenarios:entities.scenarios.length,presets:entities.buildPresets.length,
