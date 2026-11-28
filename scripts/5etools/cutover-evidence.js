@@ -171,5 +171,7 @@ if(require.main===module){
   console.log(JSON.stringify(global));
   const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,families,global);
   console.log(JSON.stringify(acceptance));
+  const finalReview=require('./final-acceptance-review').buildFinalAcceptanceReview(report,families,read('relationship-graph'),read('local-lifecycle'));
+  console.log(JSON.stringify(finalReview));
 }
 

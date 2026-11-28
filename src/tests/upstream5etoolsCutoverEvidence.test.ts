@@ -176,3 +176,34 @@ describe('a8.18.3 relationship milestone',()=>{
   expect(()=>buildRelationshipMilestoneReview({...f.matrix,blockers:[]},f.family,f.graph)).toThrow('relationshipMilestoneBlockerMissing');
  });
 });
+
+const {reviewLocalLifecycleFragment}=require('../../scripts/5etools/final-acceptance-review');
+describe('a8.21.2 final acceptance lifecycle fragment',()=>{
+ const {createHash}=require('node:crypto');
+ const raw=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
+ const seal=(v:Record<string,unknown>)=>({...v,fingerprint:digest(v)});
+ const flags={activation:'review-required',runtimeEligible:false,writeAuthorized:false,distributionAuthorized:false,retirementAuthorized:false,executable:false};
+ const pending=['productionAdaptersNotVerified','fullInstalledInventoryNotVerified','candidateNativeEvidenceMissing','explicitCutoverApprovalMissing','isolatedTransactionAndRollbackNotVerified','nativeValidationPending','mechanicalParityNotApproved','relationshipParityNotApproved','durableFullCheckpointNotVerified','productionTransactionAndRollbackNotVerified'];
+ const fixture=()=>{
+  const body={schemaVersion:'dnd-v3-isolated-lifecycle-validation.v1',scope:'disposableCandidateReadback',bindings:Object.fromEntries(['candidate','plan','archive','checkpoint','preservation','restoreRehearsal','activeRuntime','activeCompendium','activeKeyValues','portable'].map(k=>[k,raw(k)])),
+   observations:{archive:'integrityMatch',restore:'disposableRehearsalMatch',active:'checkpointMatch',completed:'exactJournalAndArtifacts',rollback:'quarantinedFullJournalRetained',completedRecords:11,artifactRecords:3,retainedRecords:11,retainedFingerprint:raw('retained'),quarantineFingerprint:raw('quarantine')},
+   counts:{candidateItems:1,candidateSources:1,preservedStorageItems:1,preservedRuntimeEntries:1,preservedCharacters:1,preservedRawKeys:10,plannedCandidateWrites:3,activeWrites:0,deletes:0,replacements:0,validationWrites:0,acceptedGates:0},pending,readiness:'blocked',...flags};
+  return {body,fragment:seal({schemaVersion:'dnd-upstream-local-lifecycle-fixture.v1',scope:'syntheticFixtureOnly',applicationCommit:commits.application,validation:{...body,fingerprint:raw(body)}})};
+ };
+ test('keeps local denominator separate and never accepts production gates',()=>{
+  const {fragment}=fixture(),before=digest(fragment),r=reviewLocalLifecycleFragment(fragment,commits.application);
+  expect(r).toMatchObject({scope:'syntheticFixtureOnly',counts:{acceptedGates:0,activeWrites:0},observations:{completedRecords:11,retainedRecords:11}});
+  expect(r.pending).toContain('explicitCutoverApprovalMissing');expect(digest(fragment)).toBe(before);
+ });
+ test('rejects stale commit, missing evidence and forged promotion even if rehashed',()=>{
+  const {fragment,body}=fixture(),{fingerprint,...outer}=fragment;
+  const patch=(v:Record<string,unknown>)=>{const b={...body,...v};return seal({...outer,validation:{...b,fingerprint:raw(b)}});};
+  expect(()=>reviewLocalLifecycleFragment(fragment,'d'.repeat(40))).toThrow('finalLifecycleScopeOrCommitMismatch');
+  expect(()=>reviewLocalLifecycleFragment({...fragment,fingerprint:'stale'},commits.application)).toThrow('finalLifecycleFragmentFingerprintMismatch');
+  expect(()=>reviewLocalLifecycleFragment(patch({writeAuthorized:true}),commits.application)).toThrow('finalLifecycleNotReviewable');
+  expect(()=>reviewLocalLifecycleFragment(patch({counts:{...body.counts,acceptedGates:1}}),commits.application)).toThrow('finalLifecycleAccountingMismatch');
+  expect(()=>reviewLocalLifecycleFragment(patch({observations:{...body.observations,retainedRecords:10}}),commits.application)).toThrow('finalLifecycleObservationMismatch');
+  expect(()=>reviewLocalLifecycleFragment(patch({pending:pending.slice(1)}),commits.application)).toThrow('finalLifecyclePendingMismatch');
+  expect(()=>reviewLocalLifecycleFragment(patch({rawPack:'private'}),commits.application)).toThrow('finalLifecycleNotReviewable');
+ });
+});
