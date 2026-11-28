@@ -5,6 +5,7 @@ import {CATALOG_DOWNLOAD_CACHE_INDEX_KEY,CATALOG_DOWNLOAD_CACHE_SCHEMA} from '..
 import {observeIndexedPackageContents,compareLoadedPackage} from './localInventoryPackageObservation';
 import {compareIndependentCompendiumReads,type IndependentCompendiumObservation,type IndependentBackend} from '../storage/readOnlyCompendiumObservation';
 import {readAuxiliaryPersistence,auxiliaryReadsChanged,reviewAuxiliaryPersistence} from './localInventoryAuxiliaryPersistence';
+import {readPortablePersistence,portableReadsChanged,reviewPortablePersistence} from './localInventoryPortablePersistence';
 import type {KeyValueStorageAdapter} from '../storage/keyValueStorage';
 
 type Observations=LocalInventoryInput['observations'];
@@ -22,8 +23,9 @@ export interface LocalInventoryReadPorts {
  /** Optional for offline callers; live adapter never initializes storage. */
  readActivePersistence?:()=>Promise<IndependentCompendiumObservation>;
  observeAuxiliaryPersistence?:boolean;
+ observePortablePersistence?:boolean;
 }
-export interface InventoryCoherence {runtimePackage:string;activePersistence:string;packageCode?:string;independentPersistence?:IndependentCompendiumObservation;auxiliaryPersistence?:ReturnType<typeof reviewAuxiliaryPersistence>}
+export interface InventoryCoherence {runtimePackage:string;activePersistence:string;packageCode?:string;independentPersistence?:IndependentCompendiumObservation;auxiliaryPersistence?:ReturnType<typeof reviewAuxiliaryPersistence>;portablePersistence?:ReturnType<typeof reviewPortablePersistence>}
 async function readIndependent(ports:LocalInventoryReadPorts,backend:IndependentBackend|undefined):Promise<IndependentCompendiumObservation|undefined>{
  if(!ports.readActivePersistence||!backend)return undefined;
  try{return await ports.readActivePersistence();}catch{return {status:'unavailable',backend,code:'backendReadFailed'};}
@@ -71,6 +73,7 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
   const initial=build(before.observations);
   const independentFirst=await readIndependent(ports,before.activeBackend);
   const auxiliaryFirst=ports.observeAuxiliaryPersistence?await readAuxiliaryPersistence(ports.storage):undefined;
+  const portableFirst=ports.observePortablePersistence?await readPortablePersistence(ports.storage):undefined;
   const first=await readRaw(ports);
   const packagesFirst=await observeIndexedPackageContents(first.packageIndex.ok?first.packageIndex.raw:null,ports.storage);
   const second=await readRaw(ports);
@@ -78,6 +81,7 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
   // Re-read index after the final chunk read to catch a concurrent replacement.
   let finalIndex:ReadResult;
   try{finalIndex={ok:true,raw:await ports.storage.getItem(CATALOG_PACKAGE_INDEX_KEY)};}catch{finalIndex={ok:false};}
+  const portableSecond=ports.observePortablePersistence?await readPortablePersistence(ports.storage):undefined;
   const auxiliarySecond=ports.observeAuxiliaryPersistence?await readAuxiliaryPersistence(ports.storage):undefined;
   const independentSecond=await readIndependent(ports,before.activeBackend);
   const independentChanged=JSON.stringify(independentFirst)!==JSON.stringify(independentSecond)||
@@ -86,7 +90,7 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
    (!!independentSecond&&independentSecond.backend!==before.activeBackend);
   const indexStable=JSON.stringify(second.packageIndex)===JSON.stringify(finalIndex);
   const after=ports.readStores(captureId);
-  const changed=(!!auxiliaryFirst&&!!auxiliarySecond&&auxiliaryReadsChanged(auxiliaryFirst,auxiliarySecond))||independentChanged||!indexStable||JSON.stringify(packagesFirst)!==JSON.stringify(packagesSecond)||before.activeBackend!==after.activeBackend||after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
+  const changed=(!!portableFirst&&!!portableSecond&&portableReadsChanged(portableFirst,portableSecond))||(!!auxiliaryFirst&&!!auxiliarySecond&&auxiliaryReadsChanged(auxiliaryFirst,auxiliarySecond))||independentChanged||!indexStable||JSON.stringify(packagesFirst)!==JSON.stringify(packagesSecond)||before.activeBackend!==after.activeBackend||after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
    rawSurfaces.some(k=>{const a=first[k],b=second[k];return a.ok!==b.ok||(a.ok&&b.ok&&a.raw!==b.raw);});
   if(changed){
    const all={...before.observations,...Object.fromEntries([...rawSurfaces,'packageContents' as const].map(k=>[k,{status:'stale',source:LOCAL_INVENTORY_SURFACES[k],captureId}]))};
@@ -114,6 +118,6 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
    if(a?.status==='observed'&&b?.status==='observed')activePersistence=a.fingerprint===b.fingerprint?'legacySnapshotMatch':'mismatch';
   }
   // A stable observation is not a successful read or accepted gate.
-  return finish('stableObservation',observations,{runtimePackage,activePersistence,...(auxiliarySecond?{auxiliaryPersistence:reviewAuxiliaryPersistence(auxiliarySecond,observations)}:{}),...(independentSecond?{independentPersistence:independentSecond}:{}),...(packagesSecond.status==='observed'?{}:{packageCode:packagesSecond.code})});
+  return finish('stableObservation',observations,{runtimePackage,activePersistence,...(portableSecond?{portablePersistence:reviewPortablePersistence(portableSecond,observations)}:{}),...(auxiliarySecond?{auxiliaryPersistence:reviewAuxiliaryPersistence(auxiliarySecond,observations)}:{}),...(independentSecond?{independentPersistence:independentSecond}:{}),...(packagesSecond.status==='observed'?{}:{packageCode:packagesSecond.code})});
  }catch{return finish('unavailable',{});}
 }

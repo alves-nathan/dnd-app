@@ -390,3 +390,7 @@ Ver [5ETOOLS_INDEPENDENT_PERSISTENCE_REHEARSAL.md](5ETOOLS_INDEPENDENT_PERSISTEN
 ## Fase a8.14.5 — revisão de persistência e stores auxiliares
 
 Ver [5ETOOLS_AUXILIARY_PERSISTENCE_REVIEW.md](5ETOOLS_AUXILIARY_PERSISTENCE_REVIEW.md). a8.14.4 aprovada. Validação do relatório SQLite contra HEAD e comparação de 11 projeções auxiliares. Próxima a8.14.6: persistência de personagens, cenários, presets, históricos e configuração do catálogo.
+
+## Fase a8.14.6 — persistência portátil e configuração
+
+Ver [5ETOOLS_PORTABLE_PERSISTENCE_REVIEW.md](5ETOOLS_PORTABLE_PERSISTENCE_REVIEW.md). a8.14.5 aprovada. Cinco projeções persistidas verificadas em leitura dupla. Próxima a8.14.7: consolidação das evidências de persistência, denominadores e pendências de cobertura.

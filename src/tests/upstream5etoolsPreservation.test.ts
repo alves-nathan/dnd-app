@@ -729,3 +729,64 @@ describe('a8.14.5 auxiliary persistence and rehearsal validation',()=>{
   expect(validateRehearsal({...report,gitSha:'c'.repeat(40)},expected).status).toBe('invalid');
  });
 });
+
+import {PORTABLE_PERSISTENCE,readPortablePersistence,reviewPortablePersistence} from '../compendium/localInventoryPortablePersistence';
+import {CATALOG_FILTER_PREFERENCES_SCHEMA} from '../storage/catalogFilterPreferences';
+describe('a8.14.6 portable persistence review',()=>{
+ async function portablePersistenceFixture(){
+  const f=await fixture(),captureId='portable-persist-fixture',p=f.input.portableCheckpoint;
+  const reconciliation={version:1,changedCharacterIds:[],repairedLinkCount:0,unresolvedLinkCount:0};
+  const doc={schemaVersion:CATALOG_FILTER_PREFERENCES_SCHEMA,catalogVersion:f.input.catalog.catalogVersion,savedAt:'2026-01-01T00:00:00.000Z',filterState:p.catalog.filterState,revision:p.catalog.revision,history:p.catalog.history};
+  const defs=PORTABLE_PERSISTENCE;
+  const set=async(key:string,version:number,state:unknown)=>f.memory.setItem(key,JSON.stringify({version,state}));
+  await set(defs.characters.key,defs.characters.version,{...p.characterStore,catalogAwareReconciliation:reconciliation});
+  await set(defs.scenarios.key,defs.scenarios.version,{scenarios:p.scenarios});
+  await set(defs.presets.key,defs.presets.version,{presets:p.buildPresets});
+  await set(defs.history.key,defs.history.version,{snapshots:p.buildHistorySnapshots});
+  await f.memory.setItem(defs.catalog.key,JSON.stringify(doc));
+  const frame:InventoryStoreFrame={guard:[],blocked:false,observations:{
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:p},
+   characterReconciliation:{status:'observed',source:'characterStore',captureId,value:reconciliation},
+   runtime:{status:'observed',source:'catalogStore',captureId,value:{snapshot:f.input.catalog,ref:f.input.runtimeRef}}
+  }};
+  return {f,frame,captureId,doc,defs,set,p};
+ }
+ test('matches five exact projections and leaves unobserved savedAt explicit',async()=>{
+  const {f,frame}=await portablePersistenceFixture(),before=f.memory.dump();
+  const r=reviewPortablePersistence(await readPortablePersistence(f.memory),frame.observations);
+  expect(r.summary).toEqual({required:5,match:5,mismatch:0,unavailable:0,invalid:0,notVerified:0});
+  expect(r.rows.find(x=>x.lane==='catalog')).toMatchObject({timestampComparison:'notObserved'});
+  expect(JSON.stringify(r)).not.toMatch(/Fixture hero|portable-persist-fixture/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('distinguishes version, catalog mismatch, absent storage and lost hydration',async()=>{
+  const {f,frame,defs,set,p,doc}=await portablePersistenceFixture();
+  await set(defs.characters.key,24,p.characterStore);
+  await f.memory.removeItem(defs.presets.key);
+  await f.memory.setItem(defs.catalog.key,JSON.stringify({...doc,catalogVersion:'other'}));
+  const r=reviewPortablePersistence(await readPortablePersistence(f.memory),frame.observations);
+  expect(r.summary).toMatchObject({match:2,mismatch:1,invalid:1,unavailable:1});
+  const unhydrated=reviewPortablePersistence(await readPortablePersistence(f.memory),{});
+  expect(unhydrated.summary.notVerified).toBe(3);
+ });
+ test('preserves recovery and reconciliation and detects changes between captures',async()=>{
+  const {f,frame,defs,set,p,captureId}=await portablePersistenceFixture();
+  const ports={readStores:()=>frame,storage:f.memory,observePortablePersistence:true};
+  const a=await captureLocalInventoryEvidence(captureId,ports);
+  expect(a.coherence.portablePersistence?.summary.match).toBe(5);
+  await set(defs.characters.key,defs.characters.version,{...p.characterStore,catalogAwareReconciliation:{version:1,changedCharacterIds:[],repairedLinkCount:1,unresolvedLinkCount:0}});
+  const b=await captureLocalInventoryEvidence(captureId,ports);
+  expect(b.coherence.portablePersistence?.summary.mismatch).toBe(1);
+  expect(compareLocalInventoryRevalidation(a,b)).toBe('changed');
+  let reads=0;
+  const stale=await captureLocalInventoryEvidence(captureId,{...ports,storage:{getItem:async key=>key===defs.history.key?JSON.stringify({version:1,state:{snapshots:[{id:String(++reads)}]}}):f.memory.getItem(key)}});
+  expect(stale.captureStatus).toBe('stale');
+ });
+ test('rejects unknown persisted fields and duplicate identities without normalization',async()=>{
+  const {f,frame,defs,set,p}=await portablePersistenceFixture();
+  await set(defs.scenarios.key,defs.scenarios.version,{scenarios:[...p.scenarios,...p.scenarios]});
+  await set(defs.presets.key,defs.presets.version,{presets:p.buildPresets,unknownField:true});
+  const r=reviewPortablePersistence(await readPortablePersistence(f.memory),frame.observations);
+  expect(r.summary.invalid).toBe(2);
+ });
+});
