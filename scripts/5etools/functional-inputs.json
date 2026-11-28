@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "dnd-upstream-functional-inputs.v1",
+  "asOf": "2026-11-28",
+  "contractRevision": "canonical-v3.1",
+  "converterBaseline": "8822867082360ff0ff937fc660e18933e3f5cdfb",
+  "main": {
+    "repository": "https://github.com/5etools-mirror-3/5etools-src.git",
+    "commit": "2512db75eb48ef06f6190b086a82430887906dca"
+  },
+  "homebrew": {
+    "repository": "https://github.com/TheGiddyLimit/homebrew.git",
+    "commit": "bfa899639c696b0ad38afb9a31c443c3b127a058"
+  }
+}

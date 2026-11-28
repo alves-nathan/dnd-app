@@ -22,3 +22,7 @@ XDMG também consta no upstream. A auditoria nominal não demonstra equivalênci
 6. Remover código/fixtures legados redundantes apenas em PR separado com evidências de todos os gates e aprovação.
 
 Nenhum importador ou dado ativo foi removido nesta fase. PDFs seguem adiados.
+
+## Revisão de decisão do proprietário após entrega 19
+
+[Roadmap de conclusão funcional](5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md): remover definitivamente os importadores V1/V2 ao final (20B), na branch candidata após comprovação automatizada do cutover funcional (20A). V3 é a única ingestão de conteúdo. Preservar migrador de snapshots/backup antigos isolado, contratos compartilhados, regras 2014 e todos os dados/IDs/revisões. Remoção de importadores não significa remover recuperação legada nem excluir dados. A branch permanece reversível e separada da main; merge e promoção real só após testes nativos e aprovação. Esta revisão substitui a exigência anterior de aguardar o teste manual para retirar os importadores no candidato, não autoriza exclusão de dados nem retirada irreversível na instalação real.

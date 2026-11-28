@@ -60,7 +60,7 @@ function scopeFor(r,stageSources,indexPaths){
 }
 const counters=()=>({observed:0,identityInvalid:0,structuralBlocked:0,structuralResolved:0,eligible:0,outsidePilot:0,
   validRow:0,invalidRow:0,notEmitted:0,templateNoOutput:0,emitted:0,stagingValid:0,stagingInvalid:0,semanticReviewRequired:0,
-  invalidIdentityWithOutput:0,structuralBlockedWithOutput:0,scopeReasons:dict(),reviewCodes:dict()});
+  invalidIdentityWithOutput:0,structuralBlockedWithOutput:0,singleOutputRows:0,multipleOutputRows:0,extraOutputOccurrences:0,scopeReasons:dict(),reviewCodes:dict()});
 function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runtime,validate}){
   if(typeof validate!=='function')throw Error('stagingValidatorRequired');
   const bySource=new Map(),rows=new Map(),resolved=new Set(structural.entities.map(coord)),issues=dict(),physicalIds=new Set(),byConverter=dict(),canonical=dict(),canonicalValidation=dict();
@@ -118,6 +118,7 @@ function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runt
     const {c,scope,status,outputs,invalidOutputs,r}=row;
     if(outputs){
       c[invalidOutputs?'invalidRow':'validRow']++;
+      c[outputs===1?'singleOutputRows':'multipleOutputRows']++;c.extraOutputOccurrences+=outputs-1;
       if(status==='identityInvalid')c.invalidIdentityWithOutput++;
       if(status==='structuralBlocked')c.structuralBlockedWithOutput++;
     }else if(scope.stages.length)c[r.kind==='magicvariant'?'templateNoOutput':'notEmitted']++;
@@ -129,7 +130,7 @@ function reconcileCoverage({collection,structural,inventory,runs,indexPaths,runt
       if(c.observed!==c.identityInvalid+c.structuralBlocked+c.structuralResolved||
         c.observed!==c.eligible+c.outsidePilot||
         c.eligible!==c.validRow+c.invalidRow+c.notEmitted+c.templateNoOutput||
-        c.emitted!==c.stagingValid+c.stagingInvalid)bump(issues,'coverageAccountingMismatch');
+        c.emitted!==c.stagingValid+c.stagingInvalid||c.validRow+c.invalidRow!==c.singleOutputRows+c.multipleOutputRows||c.emitted!==c.singleOutputRows+c.multipleOutputRows+c.extraOutputOccurrences)bump(issues,'coverageAccountingMismatch');
       for(const [key,n] of Object.entries(c))if(typeof n==='number')total[key]+=n;
       for(const [key,n] of Object.entries(c.scopeReasons))bump(total.scopeReasons,key,n);
       for(const [key,n] of Object.entries(c.reviewCodes))bump(total.reviewCodes,key,n);

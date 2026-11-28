@@ -495,3 +495,15 @@ Ver [5ETOOLS_FINAL_LIFECYCLE_VALIDATION.md](5ETOOLS_FINAL_LIFECYCLE_VALIDATION.m
 ## Fase a8.21.2 — entrega 19/20
 
 Ver [5ETOOLS_FINAL_ACCEPTANCE_REVIEW.md](5ETOOLS_FINAL_ACCEPTANCE_REVIEW.md). Entrega 18 aprovada. Revisão final agrega os relatórios globais e o ciclo isolado sintético do mesmo commit, sem misturar denominadores nem liberar gates de produção. Próxima entrega 20/20: ensaio de cutover isolado e preparação de validação nativa.
+
+## Revisão de escopo após a entrega 19
+
+O [roadmap de conclusão funcional V3](5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md) substitui o passo imediato 20/20. Seis lacunas devem ser fechadas por implementação real antes dos testes manuais: pipeline, Main/Homebrew, importação V3 incremental, consumidores mecânicos, relações funcionais e persistência/rollback real. Fases 19A–F, 20A cutover funcional e 20B remoção dos importadores V1/V2 do candidato. Preservar migrador e backups antigos, sem ingestão legada; main e dados reais preservados até aceitação nativa.
+
+### Correção do requisito de disponibilidade inicial
+
+O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir o app candidato, inclusive na primeira execução offline, sem importação manual. Catálogo preparado antes do build local, bootstrap idempotente, preservar dados e filtros em upgrades. Importador V3 destina-se também a atualizações e conteúdo adicional. Ver roadmap funcional; nenhum payload upstream novo no Git público.
+
+## 19A.1 — inventário operacional e lock dos snapshots
+
+Entrega 19 aprovada. Ver [5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md](5ETOOLS_FUNCTIONAL_CORPUS_INVENTORY.md). Snapshot lock e manifesto de escopo preliminar, denominadores por fonte, expansão e observações de coleções fora do resolver. Próximo: validar auditoria real, concluir seleção e disposition do corpus, então pipeline funcional 19A.2. Sem importação/ativação ainda.

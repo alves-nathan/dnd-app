@@ -373,7 +373,7 @@ function audit(main,homebrew,collection=collect(main,homebrew)) {
     counts,bySource,issueCounts:issues,entities,diagnostics,activation:'review-required',
     scope:'structural-subset-only; variants, inline tags, external metadata and mechanical mapping not validated'};
 }
-module.exports = {identity,normalizeIdentity,collect,makeResolver,applyMods,audit};
+module.exports = {identity,normalizeIdentity,collect,makeResolver,applyMods,audit,mainEntityFile,isResolverKind:kind=>kinds.has(kind)};
 if (require.main === module) {
   try {
     const args = process.argv.slice(2);

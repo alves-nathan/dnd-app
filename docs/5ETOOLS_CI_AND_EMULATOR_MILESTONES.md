@@ -24,3 +24,11 @@ A push to the integration branch with `[full-upstream-audit]` in the HEAD commit
 Private local app for owner/table, no public publication or DRM in this roadmap. Keep public repo for CI at owner's request; do not commit any additional upstream content, real book dumps, personal data or raw audit outputs. Public distribution remains unauthorized/not established; any later publication requires separate review and redesign. Delivery 5 = provenance and edition traceability, delivery 6 = integrity and trust, then continue the 20-delivery plan. Existing acceptance matrix rightsTrust criteria are not marked accepted by this scope decision; separate public-distribution gates remain deferred, not waived.
 
 Delivery 6 ends the private provenance/integrity implementation phase. Full upstream audit marker required; continue to mechanical parity only after both Quality and full audit succeed. No new distribution authorization or DRM.
+
+## Revisão funcional — supersede a sequência de 20 entregas
+
+Ver [5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md](5ETOOLS_FUNCTIONAL_COMPLETION_ROADMAP.md). O emulador começa após 19A–F, 20A e 20B, com conteúdo V3 ativo no candidato descartável, e não apenas em preview. Retirada dos importadores V1/V2 no candidato autorizada ao final da implementação após gates automatizados; preservação/migração de dados antigos obrigatória. Main e promoção real permanecem condicionados à aceitação nativa. Não impor limite de commits; full audit nos marcos.
+
+### Correção do requisito de disponibilidade inicial
+
+O corpus Main/Homebrew acordado deve estar disponível automaticamente ao abrir o app candidato, inclusive na primeira execução offline, sem importação manual. Catálogo preparado antes do build local, bootstrap idempotente, preservar dados e filtros em upgrades. Importador V3 destina-se também a atualizações e conteúdo adicional. Ver roadmap funcional; nenhum payload upstream novo no Git público.

@@ -41,8 +41,15 @@ jobs:
       - name: Fetch upstream snapshots (no upstream code execution)
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
-          git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/5etools-mirror-3/5etools-src.git "$RUNNER_TEMP/5etools-main"
-          git clone --quiet --depth=1 --single-branch --no-checkout https://github.com/TheGiddyLimit/homebrew.git "$RUNNER_TEMP/5etools-homebrew"
+          for origin in main homebrew; do
+            url=$(node -p "require('./scripts/5etools/functional-inputs.json').$origin.repository")
+            sha=$(node -p "require('./scripts/5etools/functional-inputs.json').$origin.commit")
+            dir="$RUNNER_TEMP/5etools-$origin"
+            git init --quiet "$dir"
+            git -C "$dir" fetch --quiet --depth=1 --no-tags "$url" "$sha"
+            git -C "$dir" update-ref HEAD FETCH_HEAD
+            test "$(git -C "$dir" rev-parse HEAD)" = "$sha"
+          done
       - name: Aggregate coverage only
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         run: |
