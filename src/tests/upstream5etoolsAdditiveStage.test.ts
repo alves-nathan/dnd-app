@@ -76,3 +76,31 @@ const snapshotPath=process.env.DND_UPSTREAM_ADDITIVE_MAIN;
   expect(JSON.stringify(memory.dump())).toBe(before);
   console.log(JSON.stringify({schemaVersion:'dnd-additive-v3-stage-audit.v1',commit:pilot.commit,staged,installed:installed.items.length,runtime:c.runtimeIds.length,scope:'bundledFixture',writes:0,activation:'review-required'}));
 },120000);
+
+import {buildV3SourceProvenanceReview} from '../compendium/importV3SourceProvenance';
+import {compendiumImportV3Schema} from '../compendium/importV3Schemas';
+describe('a8.16.1 private local source provenance review',()=>{
+ const parse=(p:unknown)=>compendiumImportV3Schema.parse(p);
+ test('binds source metadata and immutable-coordinate claims without disclosing raw content',()=>{
+  const c=context(),raw=JSON.stringify(pack()),r=prepareAdditiveV3Stage(raw,c);
+  expect(r.stage?.provenanceReview).toMatchObject({scope:'privateLocalReview',upstreamBytes:'notVerified',rights:'notEstablished',summary:{itemOccurrences:1,sourceDefinitions:1,origins:{fiveTools:1},eras:{revised2024:1},publicationPrecision:{day:1}},distributionAuthorized:false});
+  expect(JSON.stringify(r.stage?.provenanceReview)).not.toContain('upstream:main:XPHB');
+  expect(checkAdditiveV3Stage(r.stage!,c).ok).toBe(true);
+  const altered={...r.stage!,provenanceReview:{...r.stage!.provenanceReview,summary:{...r.stage!.provenanceReview.summary,itemOccurrences:2}}};
+  expect(checkAdditiveV3Stage(altered,c).ok).toBe(false);
+ });
+ test('separates page metadata from publication variants and counts inconsistent blob claims',()=>{
+  const a=item(),b={...item('upstream:main:condition:second'),source:{...source,page:'42',rulesEra:'2014'},provenance:{...a.provenance,blob:'c'.repeat(40)}};
+  const r=buildV3SourceProvenanceReview(parse(pack([a,b])));
+  expect(r.summary).toMatchObject({itemOccurrences:2,sourceDefinitions:1,sourceDefinitionVariants:1,fileBlobConflicts:1,repeatedCoordinates:1,repeatedPhysicalKeys:1});
+  const pageOnly={...b,source:{...source,page:'42'},provenance:{...a.provenance,entityKey:'other',index:1}};
+  expect(buildV3SourceProvenanceReview(parse(pack([a,pageOnly]))).summary.sourceDefinitionVariants).toBe(0);
+ });
+ test('preserves origin distinctions, unknown editions and pack-only declarations',()=>{
+  const a=item(),manual={...a,source:{...source,id:'manual:source',rulesEra:'unknown',publication:{precision:'unknown',date:null,year:null,evidence:'unverified'}},provenance:{origin:'manual',reference:'private fixture'}};
+  const r=buildV3SourceProvenanceReview(parse(pack([manual])));
+  expect(r.summary).toMatchObject({packOnlySource:1,sourceDefinitions:2,origins:{manual:1},eras:{unknown:1},publicationPrecision:{unknown:1}});
+  expect(r.upstreamBytes).toBe('notVerified');
+  expect(JSON.stringify(r)).not.toContain('private fixture');
+ });
+});

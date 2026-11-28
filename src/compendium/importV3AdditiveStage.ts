@@ -1,6 +1,7 @@
 import { sha256Hex } from '../catalog/catalogBundleDigest';
 import type { CompendiumPersistenceState } from '../storage/compendiumSnapshot';
 import { stageImportV3 } from './importV3Staging';
+import {buildV3SourceProvenanceReview,type V3SourceProvenanceReview} from './importV3SourceProvenance';
 
 export const ADDITIVE_V3_STAGE_SCHEMA = 'dnd-additive-v3-stage.v1' as const;
 
@@ -22,6 +23,7 @@ export interface AdditiveV3Stage {
   itemIds: string[];
   sourceIds: string[];
   upstreamCommit: string;
+  provenanceReview: V3SourceProvenanceReview;
   validationCodes: string[];
   activation: 'review-required';
   writeAuthorized: false;
@@ -106,7 +108,7 @@ export function prepareAdditiveV3Stage(rawText: string, context: AdditiveV3Stage
       schemaVersion:ADDITIVE_V3_STAGE_SCHEMA,rawText,rawFingerprint:sha256Hex(rawText),
       contextFingerprint:fingerprint({installed,runtimeSnapshotId,runtimeIds,historicalIds}),
       packId:pack.id,itemIds:[...candidateItems].sort(),sourceIds:[...candidateSources].sort(),
-      upstreamCommit:[...commits][0],validationCodes,activation:'review-required',
+      upstreamCommit:[...commits][0],provenanceReview:buildV3SourceProvenanceReview(pack),validationCodes,activation:'review-required',
       writeAuthorized:false,distributionAuthorized:false,retirementAuthorized:false
     };
     return {ok:true,codes:validationCodes,stage:{...body,fingerprint:fingerprint(body)}};

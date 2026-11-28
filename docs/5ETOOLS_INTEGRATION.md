@@ -426,3 +426,7 @@ Ver [5ETOOLS_RUNTIME_GRAPH_CONFIGURATION_INVENTORY.md](5ETOOLS_RUNTIME_GRAPH_CON
 ## Fase a8.15.5 — entrega 4/20
 
 Ver [5ETOOLS_INVENTORY_MILESTONE.md](5ETOOLS_INVENTORY_MILESTONE.md). Entrega 3/20 aprovada. Consolidação dos quatro critérios, manifesto declaratório externo e lacunas de cobertura. Auditoria completa disparada pelo marcador de marco no commit. Próxima entrega 5/20: política de direitos por fonte e escopo de uso; gate inventory permanece bloqueado até evidência real.
+
+## Fase a8.16.1 — entrega 5/20: proveniência para uso privado
+
+Ver [5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md](5ETOOLS_PRIVATE_SOURCE_PROVENANCE.md). Escopo definido pelo proprietário: consulta pessoal/mesa, sem publicação do app, DRM ou distribuição de dados. Revisão agregada de proveniência ligada ao staging canônico V3. Próxima entrega 6/20: integridade dos packs e cadeia de confiança, auditoria completa do marco.
