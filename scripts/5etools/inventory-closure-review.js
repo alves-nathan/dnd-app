@@ -45,9 +45,9 @@ function buildInventoryClosureReview({input,preview,ledger,capture,observationRe
  const obligations=r.obligations.map(o=>({criterion:o.criterion,status:'blocked',observedProgress:o.status,
   pending:o.pending.filter(p=>p!=='historicalLedgerJoin')}));
  const result={schemaVersion:'dnd-upstream-inventory-closure-review.v1',scope:observed.scope,commits:observed.commits,
-  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
+  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,persistenceReview:observed.persistenceReview.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
   summary:{...observed.summary,runtimeDispositions:d,loadedEntries:s.loadedEntries,referenceOccurrences:s.referenceOccurrences,referenceLanes:s.referenceLanes},
-  obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
+  persistenceReview:observed.persistenceReview,obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
   blockers:[...new Set([...observed.blockers,'independentBackendAndOwnerInventoryPending','fullReferenceAndRuntimeGraphCoveragePending','explicitInventoryAcceptanceMissing'])],
   readiness:'blocked',inventoryAcceptance:'notEstablished',...flags()};
  return {...result,fingerprint:digest(result)};

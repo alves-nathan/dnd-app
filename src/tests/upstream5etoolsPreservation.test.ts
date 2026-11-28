@@ -790,3 +790,51 @@ describe('a8.14.6 portable persistence review',()=>{
   expect(r.summary.invalid).toBe(2);
  });
 });
+
+const {buildInventoryPersistenceReview}=require('../../scripts/5etools/inventory-persistence-review');
+describe('a8.14.7 consolidated persistence evidence',()=>{
+ async function consolidatedFixture(){
+  const f=await fixture(),captureId='persistence-closure',installed=f.input.context.installed,p=f.input.portableCheckpoint;
+  const registry={fixture:'private-registry'},def=AUXILIARY_PERSISTENCE.trust;
+  await f.memory.setItem(def.key,JSON.stringify({version:def.version,state:{registry}}));
+  await f.memory.setItem(PORTABLE_PERSISTENCE.scenarios.key,JSON.stringify({version:5,state:{scenarios:p.scenarios}}));
+  const frame:InventoryStoreFrame={guard:[],blocked:false,activeBackend:'legacy',observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},
+   portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:p},
+   trust:{status:'observed',source:'catalogTrustStore',captureId,value:registry}
+  }};
+  const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>frame,storage:f.memory,observeAuxiliaryPersistence:true,observePortablePersistence:true,readActivePersistence:()=>observeExistingKeyValueCompendium('legacy',f.memory)},'disposableFixture');
+  return {f,installed,capture};
+ }
+ test('accounts for all seventeen lanes without conflating projected and verified equality',async()=>{
+  const {f,installed,capture}=await consolidatedFixture(),before=f.memory.dump();
+  const r=buildInventoryPersistenceReview(capture,installed);
+  expect(r.summary).toMatchObject({required:17,match:3,unavailable:14,notInspected:0});
+  expect(r.rows.find((x:any)=>x.lane==='activeCompendium').binding).toBe('snapshotFingerprintBound');
+  expect(r.rows.find((x:any)=>x.lane==='trust').binding).toBe('projectionFingerprintBound');
+  expect(r.rows.find((x:any)=>x.lane==='scenarios').binding).toBe('reportedProjectionMatch');
+  expect(r.gaps).toContain('catalogSavedAtNotBound');
+  expect(r.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(r)).not.toMatch(/private-registry|persistence-closure/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('old captures retain all seventeen missing lanes rather than infer coverage',async()=>{
+  const {capture,installed}=await consolidatedFixture();
+  const r=buildInventoryPersistenceReview({...capture,coherence:{runtimePackage:'notVerified',activePersistence:'legacySnapshotMatch'}},installed);
+  expect(r.summary).toMatchObject({required:17,notInspected:17,match:0});
+ });
+ test('rejects altered denominator, repeated lane and forged auxiliary match even with recomputed hash',async()=>{
+  const {capture,installed}=await consolidatedFixture(),a=capture.coherence.auxiliaryPersistence!;
+  const replace=(report:any)=>({...capture,coherence:{...capture.coherence,auxiliaryPersistence:report}});
+  expect(()=>buildInventoryPersistenceReview(replace({...a,summary:{...a.summary,match:11}}),installed)).toThrow('persistenceGroupAccountingMismatch');
+  const duplicate=[...a.rows];duplicate[1]=duplicate[0];
+  expect(()=>buildInventoryPersistenceReview(replace({...a,rows:duplicate,fingerprint:nodeDigest(duplicate)}),installed)).toThrow('persistenceGroupRowInvalid');
+  const forged=a.rows.map(r=>r.surface==='trust'?{...r,fingerprint:'a'.repeat(64)}:r);
+  expect(()=>buildInventoryPersistenceReview(replace({...a,rows:forged,fingerprint:nodeDigest(forged)}),installed)).toThrow('persistenceAuxiliaryBindingMismatch');
+ });
+ test('rejects false active backend match and portable rows with unauthorized promotion',async()=>{
+  const {capture,installed}=await consolidatedFixture(),i=capture.coherence.independentPersistence!;
+  expect(()=>buildInventoryPersistenceReview({...capture,coherence:{...capture.coherence,independentPersistence:{...i,snapshotFingerprint:'b'.repeat(64)}}},installed)).toThrow('persistenceActiveBindingMismatch');
+  expect(()=>buildInventoryPersistenceReview({...capture,coherence:{...capture.coherence,portablePersistence:{...capture.coherence.portablePersistence,writeAuthorized:true}}},installed)).toThrow('persistenceGroupFingerprintMismatch');
+ });
+});

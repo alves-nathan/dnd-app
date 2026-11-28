@@ -3,6 +3,7 @@
 // A consistent digest is not authentication or a complete installed inventory.
 const {digest}=require('./integrated-review');
 const {buildInventoryDispositionLedger}=require('./inventory-disposition-ledger');
+const {buildInventoryPersistenceReview}=require('./inventory-persistence-review');
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
 const hex=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 const sources={
@@ -58,8 +59,9 @@ function buildInventoryObservationReview(input,preview,ledger,capture,proposals=
  const runtimeCountComparison=runtime.status!=='observed'||!Number.isSafeInteger(runtime.counts?.entries)?'notVerified':
   runtime.counts.entries===actual.summary.runtimeBaseline?'equalCountsOnly':'differentCounts';
  const c=capture.coherence;
+ const persistenceReview=buildInventoryPersistenceReview(capture,installed);
  const blockers=[...new Set([...actual.blockers,...capture.evidence.blockers,
-  'runtimeEntryAndPortableReferenceDispositionPending','ownerExclusionDecisionsPending',
+  'runtimeEntryAndPortableReferenceDispositionPending','ownerExclusionDecisionsPending',...persistenceReview.gaps,
   ...(c.activePersistence==='mismatch'||c.runtimePackage==='mismatch'?['observedCoherenceMismatch']:[]),
   ...(actual.scope==='bundledFixture'?['disposableFixtureNotInstalledEvidence']:[])])];
  const body={schemaVersion:'dnd-upstream-inventory-observation-review.v1',scope:actual.scope,commits:actual.commits,
@@ -70,7 +72,7 @@ function buildInventoryObservationReview(input,preview,ledger,capture,proposals=
    installedDisposition:actual.summary.installedDisposition,manualReviewMarkers:actual.summary.manualReviewMarkers,
    duplicateCanonicalRows:actual.summary.duplicateCanonicalRows,inconsistentRawOwner:actual.summary.inconsistentRawOwner,
    exclusionProposals:actual.summary.exclusionProposals,approvedExclusions:0,approvedMappings:0,writes:0,deletes:0},
-  surfaceReview,runtimeCountComparison,portableCoverage:portable.status==='observed'?'observedNotJoined':'coveragePending',
+  surfaceReview,persistenceReview,runtimeCountComparison,portableCoverage:portable.status==='observed'?'observedNotJoined':'coveragePending',
   coherence:{runtimePackage:c.runtimePackage,activePersistence:c.activePersistence,...(c.independentPersistence?{independentPersistence:c.independentPersistence}:{} )},
   readiness:'blocked',inventoryAcceptance:'notEstablished',blockers,...flags()};
  return {...body,fingerprint:digest(body)};

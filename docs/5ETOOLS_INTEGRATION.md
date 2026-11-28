@@ -394,3 +394,7 @@ Ver [5ETOOLS_AUXILIARY_PERSISTENCE_REVIEW.md](5ETOOLS_AUXILIARY_PERSISTENCE_REVI
 ## Fase a8.14.6 — persistência portátil e configuração
 
 Ver [5ETOOLS_PORTABLE_PERSISTENCE_REVIEW.md](5ETOOLS_PORTABLE_PERSISTENCE_REVIEW.md). a8.14.5 aprovada. Cinco projeções persistidas verificadas em leitura dupla. Próxima a8.14.7: consolidação das evidências de persistência, denominadores e pendências de cobertura.
+
+## Fase a8.14.7 — consolidação da persistência
+
+Ver [5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.md](5ETOOLS_PERSISTENCE_CLOSURE_REVIEW.md). a8.14.6 aprovada. Revisão de 17 lanes, bindings e lacunas vinculadas ao ledger e closure. Próxima a8.15.1: referências de escolhas complexas dos personagens e presets.
