@@ -1,3 +1,6 @@
+import {createEmptyCharacter,defaultCombatState} from '../data/mockData';
+import {parseDamageFormula} from '../rules-engine/dice/parser';
+import {calculateFormulaRange} from '../rules-engine/damage/calculateDamage';
 export {};
 const {identity}=require('../../scripts/5etools/resolver');
 const {convertCreature}=require('../../scripts/5etools/creature-converter');
@@ -40,6 +43,17 @@ describe('a8.10.2 creature combat projection',()=>{
   expect(previewCreatureCombat(x,{...q,distanceFeet:121}).status).toBe('notSatisfied');
   expect(previewCreatureCombat(x,{...q,index:2,actionFingerprint:r.actions[2].sourceFingerprint}).reason).toBe('actionContextPending');
   expect(previewCreatureCombat(x,{...q,actionFingerprint:'stale'}).status).toBe('indeterminate');
+ });
+ test('matches isolated attack dice bounds against the production damage formula consumer',()=>{
+  const x=fixture(),p=buildCreatureCombatProjection(x),r=p.rows[0],before=digest(x);
+  const q={...context(x,'Private Static'),domain:'attack',section:'action',index:1,actionFingerprint:r.actions[1].sourceFingerprint,
+   targetingPolicyConfirmed:true,otherActionDependenciesExcludedConfirmed:true,distanceFeet:30};
+  const result=previewCreatureCombat(x,q);
+  expect(result.status).toBe('attackCandidate');
+  const actual=calculateFormulaRange(parseDamageFormula('1d6 + 2'),{character:createEmptyCharacter('Fixture'),combatState:defaultCombatState});
+  expect(actual.total).toMatchObject({min:3,max:8,average:5.5});
+  expect(result.damageBounds).toMatchObject(actual.total);
+  expect(digest(x)).toBe(before);
  });
  test('conditional and combined defenses are not flattened; no damage applied',()=>{
   const x=fixture(),q={...context(x,'Private Static'),domain:'defense',damageType:'fire',defenseInventoryCompleteConfirmed:true,otherDefenseDependenciesExcludedConfirmed:true};

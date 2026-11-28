@@ -1,6 +1,9 @@
 import {buildPersistedCompendiumImport} from '../compendium/importer';
 import {applyCompendiumItemToCharacter} from '../compendium/mapper';
-import {createEmptyCharacter} from '../data/mockData';
+import {buildSpellAction} from '../rules-engine/actions/buildActions';
+import {analyzeActionDamage} from '../rules-engine/damage/calculateDamage';
+import {spellSlotCostsFromTurnAction} from '../rules-engine/resources/spellSlotManager';
+import {createEmptyCharacter,defaultCombatState} from '../data/mockData';
 const {buildPilot}=require('../../scripts/5etools/spell-converter');
 const {reconcile}=require('../../scripts/5etools/historical-reconciliation');
 const {digest}=require('../../scripts/5etools/integrated-review');
@@ -69,6 +72,31 @@ describe('a8.7.1 spell parity and runtime contract evidence',()=>{
   expect(result.ok).toBe(true);
   expect(result.character.spells[0]).toMatchObject({castingTime:'action',targeting:{targets:1}});
   expect(result.character.spells[0]?.damage).toBeUndefined();
+  expect(JSON.stringify(base)).toBe(before);
+ });
+});
+
+describe('a8.17.2 scoped spell consumer regression',()=>{
+ test('same synthetic direct-damage cantrip: converter payload and historical payload agree in actual damage consumer',()=>{
+  const f=fixture(),candidate=f.items.find((i:any)=>i.name==='Private Ray');
+  if(!candidate)throw Error('missing fixture');
+  const source={id:'fixture',book:'Fixture',version:'2024',status:'active' as const,confidence:'exact' as const};
+  const base=createEmptyCharacter('Fixture'),before=JSON.stringify(base);
+  const run=(payload:Record<string,unknown>,distance:number)=>{
+   const stored=buildPersistedCompendiumImport({id:'consumer-fixture',source,items:[{id:'synthetic-spell',kind:'spell',name:'Fixture Ray',source,payload}]}).items[0];
+   const applied=applyCompendiumItemToCharacter(base,stored);
+   if(!applied.ok)throw Error('fixture application failed');
+   const action=buildSpellAction(applied.character,applied.character.spells[0].id,'INT');
+   if(!action)throw Error('fixture action missing');
+   const result=analyzeActionDamage({action,character:applied.character,combatState:{...defaultCombatState,targetAC:15,targetDistanceFeet:distance}});
+   expect(spellSlotCostsFromTurnAction({id:'cast',name:'Fixture',actionCost:action.actionCost,action})).toEqual([]);
+   return {perHit:result.perHit,critical:result.critical,weightedAverage:result.weightedAverage,rangeWarnings:result.warnings.map(w=>w.code)};
+  };
+  for(const distance of [5,60,65]){
+   const old=run(f.rawHistorical[0].item.payload,distance),next=run(candidate.payload,distance);
+   expect(old.perHit).toMatchObject({min:1,max:6,average:3.5});
+   expect(next).toEqual(old);
+  }
   expect(JSON.stringify(base)).toBe(before);
  });
 });

@@ -438,3 +438,7 @@ Ver [5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md](5ETOOLS_PRIVATE_INTEGRITY_REVIEW.md). 
 ## Fase a8.17.1 — entrega 7/20
 
 Ver [5ETOOLS_MECHANICAL_SCOPE_REVIEW.md](5ETOOLS_MECHANICAL_SCOPE_REVIEW.md). Entrega 6 aprovada na auditoria completa. Escopo mecânico por edição e disposição por ocorrência integrada ao fragmento de famílias. Próxima entrega 8/20: regressões dos consumidores reais do motor.
+
+## Fase a8.17.2 — entrega 8/20
+
+Ver [5ETOOLS_MECHANICAL_CONSUMER_REGRESSION.md](5ETOOLS_MECHANICAL_CONSUMER_REGRESSION.md). Entrega 7 aprovada. Regressões dos consumidores reais de dano de magias, fórmulas de criaturas, recursos e slots. Próxima entrega 9/20: consolidação da preservação mecânica e auditoria completa.
