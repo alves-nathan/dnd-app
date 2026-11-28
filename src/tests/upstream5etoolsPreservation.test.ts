@@ -1190,6 +1190,64 @@ describe('a8.20.1 isolated additive migration plan',()=>{
   candidate.setItem(raw.key,raw.value+' ');
   expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'conflict'});
  });
+
+ const {executeV3IsolatedMigration,inspectV3IsolatedExecution}=require('../compendium/v3IsolatedMigrationExecutor') as typeof import('../compendium/v3IsolatedMigrationExecutor');
+ const requestFor=(plan:{fingerprint:string})=>({scope:'disposableCandidateOnly' as const,planFingerprint:plan.fingerprint,acknowledgement:'preserveActiveState' as const});
+ test('journals all operations and retries idempotently without active writes',async()=>{
+  const {plan,ports,archivePort,memory}=await setup(),before=memory.dump(),rows=new Map<string,string>();
+  const candidate={read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};
+  const r=await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate);
+  expect(r).toMatchObject({ok:true,createdRecords:11,receipt:{verifiedRecords:11,artifactRecords:3,journalRecords:8,activeWrites:0,writeAuthorized:false}});
+  expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate)).toMatchObject({ok:true,createdRecords:0});
+  expect(memory.dump()).toEqual(before);
+ });
+ test('recovers failures before or after each exclusive write with a reopened adapter',async()=>{
+  const {plan,ports,archivePort,memory}=await setup(),before=memory.dump();
+  for(const phase of ['before','after']){
+   for(let fault=1;fault<=11;fault++){
+    const rows=new Map<string,string>();let calls=0;
+    const read=async(key:string)=>rows.get(key)??null;
+    const create=async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);};
+    const interrupted={read,createExclusive:async(key:string,value:string)=>{
+     const hit=++calls===fault;if(hit&&phase==='before')throw Error('injected');
+     await create(key,value);if(hit&&phase==='after')throw Error('injected');
+    }};
+    expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,interrupted)).toMatchObject({ok:false,code:'isolatedExecutionInterrupted'});
+    const reopened={read,createExclusive:create};
+    expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,reopened)).toMatchObject({ok:true,receipt:{verifiedRecords:11,activeWrites:0}});
+    expect(rows.size).toBe(11);
+   }
+  }
+  expect(memory.dump()).toEqual(before);
+ },60000);
+ test('refuses unjournaled artifacts, stale active state and wrong acknowledgement',async()=>{
+  const {plan,ports,archivePort,memory}=await setup(),rows=new Map<string,string>();
+  const candidate={read:async(key:string)=>rows.get(key)??null,createExclusive:async(key:string,value:string)=>{if(rows.has(key))throw Error('exists');rows.set(key,value);}};
+  expect(await executeV3IsolatedMigration(plan,{...requestFor(plan),planFingerprint:'wrong'},ports,archivePort,candidate)).toMatchObject({ok:false,code:'isolatedExecutionRequestInvalid'});
+  rows.set(plan.operations[0].key,plan.operations[0].value);
+  expect(await inspectV3IsolatedExecution(plan,candidate)).toMatchObject({state:'conflict'});
+  expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate)).toMatchObject({ok:false,code:'isolatedExecutionJournalConflict'});
+  rows.clear();memory.setItem('dnd-combat-math-new-recovery','changed');
+  expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate)).toMatchObject({ok:false,code:'isolatedExecutionCheckpointStale'});
+  expect(rows.size).toBe(0);
+ });
+ (process.platform==='win32'?test.skip:test)('reopens actual isolated POSIX candidate files with no overwrite',async()=>{
+  const {plan,ports,archivePort}=await setup();
+  const fs:typeof import('node:fs/promises')=require('node:fs/promises');
+  const os:typeof import('node:os')=require('node:os');
+  const path:typeof import('node:path')=require('node:path');
+  const {createPrivateCandidateFilePort}=require('../../scripts/5etools/private-candidate-file-port');
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dnd-candidate-'));
+  try{
+   const candidate=await createPrivateCandidateFilePort(dir);
+   expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,candidate)).toMatchObject({ok:true,createdRecords:11});
+   const reopened=await createPrivateCandidateFilePort(dir);
+   expect(await executeV3IsolatedMigration(plan,requestFor(plan),ports,archivePort,reopened)).toMatchObject({ok:true,createdRecords:0});
+   await expect(reopened.createExclusive(plan.operations[0].key,'changed')).rejects.toThrow();
+   expect(await reopened.read(plan.operations[0].key)).toBe(plan.operations[0].value);
+   expect((await fs.readdir(dir)).length).toBe(11);
+  }finally{await fs.rm(dir,{recursive:true,force:true});}
+ },30000);
  test('blocks stale active data, tampered plan and missing archive',async()=>{
   const {memory,ports,archivePort,id,plan}=await setup();
   const altered={...plan,operations:plan.operations.map((o,i)=>i===0?{...o,key:'dnd-combat-math-compendium'}:o)};

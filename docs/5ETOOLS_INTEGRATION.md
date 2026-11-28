@@ -479,3 +479,7 @@ Quality e auditoria completa falharam no mesmo teste de arquivo por import dinâ
 ## Fase a8.20.1 — entrega 15/20
 
 Ver [5ETOOLS_ISOLATED_MIGRATION_PLAN.md](5ETOOLS_ISOLATED_MIGRATION_PLAN.md). Hotfix da entrega 14 aprovado. Plano aditivo determinístico, checkpoint reaberto e revalidado, operações exclusivamente em namespace isolado, classificação de estados idempotentes e conflitos. Próxima entrega 16/20: execução descartável e injeção de falhas.
+
+## Fase a8.20.2 — entrega 16/20
+
+Ver [5ETOOLS_ISOLATED_TRANSACTION_EXECUTOR.md](5ETOOLS_ISOLATED_TRANSACTION_EXECUTOR.md). Entrega 15 aprovada. Executor exclusivamente isolado, journal imutável de intenção/confirmação, readback e retomada após falhas. Próxima entrega 17/20: rollback verificado do candidato isolado e auditoria completa.
