@@ -1,5 +1,6 @@
 import { compendiumImportV3Schema, IMPORT_V3_CONTRACT_REVISION } from '../compendium/importV3Schemas';
-import { stageImportV3, validateV3Precedence } from '../compendium/importV3Staging';
+import { stageImportV3, validateV3Precedence, projectV3ToV2ForValidation } from '../compendium/importV3Staging';
+import { analyzeCompendiumImportV2Semantics } from '../compendium/importSemanticValidation';
 import { detectCompendiumImportVersion } from '../compendium/importVersion';
 import { IMPORT_TEMPLATE_VERSION_V3 } from '../compendium/importVersions';
 
@@ -69,4 +70,33 @@ describe('canonical V3 staging', () => {
     if (!('projection' in result) || !result.projection) throw Error('missing projection');
     expect(result.projection.items[0].source.status).toBe('disabled');
   });
+});
+
+test('accepts explicit alternative-only spell grants solely in a V3 upstream review pack',()=>{
+  const reviewSource={...source,status:'needsReview'};
+  const item={...makeItem(),source:reviewSource,
+    provenance:{...makeItem().provenance,repository:'5etools-mirror-3/5etools-src'},
+    metadata:{reviewCodes:['alternativeSpellAccessPending']},
+    payload:{...makeItem().payload,classes:[],mechanics:{upstreamSpell:{
+      selectedClassAccess:[],access:{subclass:{PHB:{Fixture:true}},feat:{NEW:{Fixture:true}}},
+      accessPolicy:{status:'alternativeGrantReviewPending',directClassAccess:'notObserved',alternativeKinds:['feat','subclass']}
+    }}}};
+  const reviewPack={...pack([item]),source:reviewSource,metadata:{activation:'review-required'}};
+  const result=stageImportV3(reviewPack);
+  expect(result.ok).toBe(true);
+  expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({severity:'warning',code:'V3_ALTERNATIVE_SPELL_ACCESS_REVIEW_REQUIRED'})]));
+  expect(result.activation).toBe('review-required');
+  const projection=projectV3ToV2ForValidation(compendiumImportV3Schema.parse(reviewPack));
+  expect(analyzeCompendiumImportV2Semantics(projection).valid).toBe(false);
+  expect(stageImportV3({...reviewPack,source}).ok).toBe(false);
+  expect(stageImportV3({...reviewPack,metadata:{}}).ok).toBe(false);
+  expect(stageImportV3({...reviewPack,items:[{...item,source}]}).ok).toBe(false);
+  expect(stageImportV3({...reviewPack,items:[{...item,provenance:{origin:'manual',reference:'fixture'}}]}).ok).toBe(false);
+  expect(stageImportV3({...reviewPack,items:[{...item,payload:{...item.payload,classIds:['invented']}}]}).ok).toBe(false);
+  expect(stageImportV3({...reviewPack,items:[{...item,metadata:{reviewCodes:[]}}]}).ok).toBe(false);
+  const upstream=item.payload.mechanics.upstreamSpell;
+  for(const access of [{},{feat:{}},{feat:{NEW:{Fixture:true}}},{...upstream.access,class:{PHB:{Wizard:true}}}]){
+    expect(stageImportV3({...reviewPack,items:[{...item,payload:{...item.payload,mechanics:{upstreamSpell:{...upstream,access}}}}]}).ok).toBe(false);
+  }
+  expect(stageImportV3({...reviewPack,items:[{...item,payload:{...item.payload,level:0,consumesSpellSlot:true}}]}).ok).toBe(false);
 });

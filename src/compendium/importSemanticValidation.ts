@@ -139,7 +139,10 @@ const referenceKindsLabel = (kinds: readonly CompendiumEntityKind[]): string => 
 
 export const analyzeCompendiumImportV2Semantics = (
   pack: SemanticImportPack,
-  options: ImportSemanticValidationOptions = {}
+  options: ImportSemanticValidationOptions = {},
+  // Only the V3 review boundary supplies IDs after validating raw evidence.
+  // The ordinary V2 import and runtime validation paths remain strict.
+  reviewOnlyAlternativeSpellIds: ReadonlySet<string> = new Set()
 ): ImportSemanticValidationResult => {
   const issues: ImportSemanticIssue[] = [];
   const byId = new Map<string, Item>();
@@ -618,7 +621,11 @@ export const analyzeCompendiumImportV2Semantics = (
 
     if (item.kind === 'spell') {
       if (item.payload.classes.length === 0) {
-        issues.push(makeIssue('error', 'IMPORT_V2_SPELL_CLASSES_EMPTY', `Spell ${item.id} must declare at least one class.`, { item, path: 'payload.classes' }));
+        if (reviewOnlyAlternativeSpellIds.has(item.id) && item.source.status === 'needsReview') {
+          issues.push(makeIssue('warning', 'V3_ALTERNATIVE_SPELL_ACCESS_REVIEW_REQUIRED', `Spell ${item.id} has only alternative access evidence; direct class grants are not established.`, { item, path: 'payload.classes' }));
+        } else {
+          issues.push(makeIssue('error', 'IMPORT_V2_SPELL_CLASSES_EMPTY', `Spell ${item.id} must declare at least one class.`, { item, path: 'payload.classes' }));
+        }
       }
       for (const duplicate of duplicateValues(item.payload.classes.map((name) => name.trim().toLowerCase()))) {
         issues.push(makeIssue('warning', 'IMPORT_V2_SPELL_DUPLICATE_CLASS_NAME', `Spell ${item.id} repeats class name ${duplicate}.`, { item, path: 'payload.classes' }));

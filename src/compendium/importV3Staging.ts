@@ -91,6 +91,42 @@ export const validateV3Precedence = (pack:CompendiumImportV3Input):V3StagingIssu
   return issues;
 };
 
+const record = (value:unknown):Record<string,unknown>|undefined =>
+  value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string,unknown> : undefined;
+const alternativeAccessKinds = new Set(['subclass','classVariant','feat','reward','background','optionalfeature','race']);
+
+// An empty direct class list is legitimate for an upstream spell with explicit
+// alternative grants. Admit it only as a non-active V3 review record. A label
+// alone, unknown access group, or active/manual/legacy record cannot waive V2.
+function reviewOnlyAlternativeSpellIds(pack:CompendiumImportV3Input):Set<string> {
+  const ids = new Set<string>();
+  if (pack.source.status !== 'needsReview' || pack.metadata?.activation !== 'review-required') return ids;
+  for (const item of pack.items) {
+    if (item.kind !== 'spell' || item.source.status !== 'needsReview' ||
+        item.provenance.origin !== '5etools' || item.provenance.repository !== '5etools-mirror-3/5etools-src' ||
+        item.payload.classes.length !== 0 || (item.payload.classIds?.length ?? 0) !== 0) continue;
+    const notes = item.metadata?.reviewCodes;
+    if (!Array.isArray(notes) || !notes.includes('alternativeSpellAccessPending')) continue;
+    const upstream = record(item.payload.mechanics?.upstreamSpell), policy = record(upstream?.accessPolicy), access = record(upstream?.access);
+    if (!upstream || !policy || !access ||
+        policy.status !== 'alternativeGrantReviewPending' || policy.directClassAccess !== 'notObserved' ||
+        !Array.isArray(upstream.selectedClassAccess) || upstream.selectedClassAccess.length !== 0 ||
+        (access.class !== undefined && (!record(access.class) || Object.keys(record(access.class)!).length !== 0))) continue;
+    const observed = Object.keys(access).filter(key => {
+      const group = record(access[key]);
+      return alternativeAccessKinds.has(key) && !!group && Object.values(group).some(value => {
+        const bySource = record(value);
+        return !!bySource && Object.keys(bySource).length > 0;
+      });
+    }).sort();
+    const claimed = policy.alternativeKinds;
+    if (!observed.length || !Array.isArray(claimed) || claimed.length !== observed.length ||
+        !observed.every((kind,index) => claimed[index] === kind)) continue;
+    ids.add(item.id);
+  }
+  return ids;
+}
+
 export function stageImportV3(input:unknown,options:ImportSemanticValidationOptions = {}) {
   let value = input;
   if (typeof input === 'string') {
@@ -105,7 +141,7 @@ export function stageImportV3(input:unknown,options:ImportSemanticValidationOpti
   const precedenceIssues = validateV3Precedence(parsed.data);
   if (precedenceIssues.some(i => i.severity === 'error')) return {ok:false as const,activation:'review-required' as const,issues:precedenceIssues};
   const projection = projectV3ToV2ForValidation(parsed.data);
-  const semantic = analyzeCompendiumImportV2Semantics(projection,options);
+  const semantic = analyzeCompendiumImportV2Semantics(projection,options,reviewOnlyAlternativeSpellIds(parsed.data));
   return {ok:semantic.valid,activation:'review-required' as const,pack:parsed.data,
     projection,semantic,issues:[...precedenceIssues,...semantic.issues]};
 }
