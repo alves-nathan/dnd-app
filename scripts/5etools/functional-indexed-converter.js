@@ -10,19 +10,22 @@ const norm=v=>typeof v==='string'?v.trim().toLowerCase():'';
 const clone=v=>JSON.parse(JSON.stringify(v));
 const bump=(o,k)=>o[k]=(o[k]||0)+1;
 const specs={spell:{folder:'spells',prefix:'spells-',stage:'a5.1',suffix:'spells'},monster:{folder:'bestiary',prefix:'bestiary-',stage:'a5.2',suffix:'creatures'}};
+const alternativeAccessKinds=new Set(['subclass','classVariant','feat','reward','background','optionalfeature','race']);
 function allExplicitAccess(e,lookup){
  const entry=lookup[norm(e.source)]?.[norm(e.name)];
- if(!rec(entry)||!rec(entry.class))throw Object.assign(Error('missingClassAccess'),{code:'missingClassAccess'});
+ if(!rec(entry))throw Object.assign(Error('missingClassAccess'),{code:'missingClassAccess'});
+ if(entry.class!==undefined&&!rec(entry.class))throw Object.assign(Error('invalidClassAccess'),{code:'invalidClassAccess'});
  const direct=[];
- for(const source of Object.keys(entry.class).sort(cmp)){
+ for(const source of Object.keys(entry.class??{}).sort(cmp)){
   const group=entry.class[source];if(!rec(group)||!source.trim())continue;
   for(const name of Object.keys(group).sort(cmp)){
    const details=group[name];
    if(name.trim()&&(details===true||rec(details)))direct.push({name,source,details:clone(details)});
   }
  }
- if(!direct.length)throw Object.assign(Error('missingEligibleClassAccess'),{code:'missingEligibleClassAccess'});
- return {classes:[...new Set(direct.map(x=>x.name))].sort(cmp),direct,all:clone(entry)};
+ const alternativeKinds=Object.keys(entry).filter(k=>alternativeAccessKinds.has(k)&&rec(entry[k])&&Object.keys(entry[k]).length>0).sort(cmp);
+ if(!direct.length&&!alternativeKinds.length)throw Object.assign(Error('missingEligibleClassAccess'),{code:'missingEligibleClassAccess'});
+ return {classes:[...new Set(direct.map(x=>x.name))].sort(cmp),direct,all:clone(entry),alternativeKinds};
 }
 function buildFunctionalIndexed(snapshot,kind,codes,authorizeVersion){
  const spec=specs[kind];
@@ -70,9 +73,25 @@ function buildFunctionalIndexed(snapshot,kind,codes,authorizeVersion){
    if(kind==='spell'){
     const policy=spell.pilot[code];
     const usePilot=policy&&policy.era!=='unknown'&&source.rulesEra===policy.era;
-    const access=usePilot?undefined:allExplicitAccess(e,lookup);
-    item=spell.convertSpell(r,resolved,lookup,source,policy??{era:source.rulesEra,classSources:[]},snapshot.commit,access);
-    if(access)notes.push('classIdsPending','classAccessEditionPending',...(Object.keys(access.all).some(k=>k!=='class')?['additionalAccessPending']:[]));
+    // Direct class membership is not a prerequisite for a spell's existence.
+    // A qualified alternative grant stays non-executable until C/D resolves it.
+    let access;
+    if(!usePilot)access=allExplicitAccess(e,lookup);
+    try{item=spell.convertSpell(r,resolved,lookup,source,policy??{era:source.rulesEra,classSources:[]},snapshot.commit,access);}
+    catch(err){
+     if(!usePilot||!['missingClassAccess','missingEligibleClassAccess'].includes(err.code))throw err;
+     access=allExplicitAccess(e,lookup);
+     // Do not bypass a known edition policy to grant a direct class from another era.
+     if(access.direct.length)throw err;
+     item=spell.convertSpell(r,resolved,lookup,source,policy,snapshot.commit,access);
+    }
+    if(access){
+     notes.push('classIdsPending','classAccessEditionPending',...(Object.keys(access.all).some(k=>k!=='class')?['additionalAccessPending']:[]));
+     if(!access.direct.length){
+      notes.push('alternativeSpellAccessPending');
+      item.payload.mechanics.upstreamSpell.accessPolicy={status:'alternativeGrantReviewPending',directClassAccess:'notObserved',alternativeKinds:access.alternativeKinds};
+     }
+    }
     item.payload.mechanics.upstreamSpellRecord=clone(e);
    }else item=creature.convertCreature(r,resolved,source,snapshot.commit).item;
    if(resolved.templateLineage?.length){
@@ -104,6 +123,7 @@ function buildFunctionalIndexed(snapshot,kind,codes,authorizeVersion){
     resolved=resolver.resolve(r);
     const item=convert(r,resolved);
     group(code).push(item);c.converted++;
+    if(item.metadata.reviewCodes.includes('alternativeSpellAccessPending'))diagnostics.push({source:code,kind,path:r.path,index:r.index,code:'alternativeSpellAccessPending'});
    }catch(err){block(code,r.path,r.index,err.code||'conversionError');continue;}
    const expanded=expandFunctionalVersions(r,resolved,existingKeys,authorizeVersion);
    for(const d of expanded.diagnostics){c.versionCandidates++;versionBlock(r,d,d.code);}

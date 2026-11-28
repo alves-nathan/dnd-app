@@ -119,3 +119,7 @@ Ver [5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md](5ETOOLS_FUNCTIONAL_CROSS_SOURCE
 ## Handoff 19A.2h.1
 
 Ver [5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md](5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md). Primeira execução expandida direcionada no CI; analisar logs agregados e corrigir bloqueios observados antes de avançar A3. Full no fechamento 19A.
+
+## Handoff 19A.2h.2
+
+Ver [5ETOOLS_FUNCTIONAL_CORPUS_GAPS_1.md](5ETOOLS_FUNCTIONAL_CORPUS_GAPS_1.md). Primeiro ensaio real verde, priorização de 135 magias sem class direta e wrappers de publicação. Próxima 19A.2h.3: analisar delta, edições e classificação de fontes, variantes de itens e restantes blockers reais; A3 Brew, A4/A5 updates pendentes.

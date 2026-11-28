@@ -180,3 +180,24 @@ describe('functional conversion inputs',()=>{
   expect(()=>[...readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,p)]).toThrow('functionalInputPlanMismatch');
  });
 });
+
+test('functional input plan recognizes pinned publication wrapper shapes and rejects conflicting ownership',()=>{
+ const {buildFunctionalInputPlan,readSelectedFunctionalInputs}=require('../../scripts/5etools/functional-input-plan');
+ const {buildReferencePacks}=require('../../scripts/5etools/functional-reference-pack');
+ const {digest}=require('../../scripts/5etools/integrated-review');
+ const data:Record<string,unknown>={'data/book/book-a.json':{bookData:[{id:'A',source:'A',data:[{name:'Chapter',entries:['Fixture narrative']}]}]},'data/adventure/adventure-b.json':{adventureData:[{id:'B',source:'B',data:[{name:'Adventure',entries:['Fixture encounter']}]}]},'data/book/book-c.json':{bookData:[{id:'C',source:'OTHER',data:[]}]}};
+ const main={commit:mainSha,files:new Map(Object.keys(data).map(p=>[p,'a'.repeat(40)])),readJson:(p:string)=>data[p]};
+ const homebrew={commit:brewSha,files:new Map(),readJson:()=>({})};
+ const inventory={commits:{main:mainSha,homebrew:brewSha},sources:[{origin:'main',code:'A',publications:[{kind:'book',id:'A'}],paths:[]},{origin:'main',code:'B',publications:[{kind:'adventure',id:'B'}],paths:[]},{origin:'main',code:'C',publications:[{kind:'book',id:'C'}],paths:[]}],files:Object.keys(data).map(path=>({origin:'main',path,blob:'a'.repeat(40)}))};
+ const source=(code:string|null)=>({id:JSON.stringify(['main',code]),origin:'main',source:code});
+ const body={schemaVersion:'dnd-upstream-functional-corpus.v1',scope:'privateScopeDraft',executable:false,commits:{...inventory.commits,application:'d'.repeat(40)},bindings:{inventory:digest(inventory)},sources:['A','B','C','OTHER',null].map(source),totals:{main:{resolverRows:0,otherRootRows:3},homebrew:{resolverRows:0,otherRootRows:0}}};
+ const draft={...body,fingerprint:digest(body)},selection={schemaVersion:'dnd-upstream-functional-source-selection.v1',corpusFingerprint:draft.fingerprint,decisions:['A','B','C','OTHER'].map(code=>({sourceId:source(code).id,disposition:'include',reason:'fixture'}))};
+ const plan=buildFunctionalInputPlan(main,homebrew,inventory,draft,selection);
+ expect(plan.totals.main).toMatchObject({otherRootRows:3,included:2,sourcePending:1});
+ expect(plan.rows.every((r:any)=>r.lane==='publicationSection')).toBe(true);
+ expect(plan.rows.find((r:any)=>r.path==='data/book/book-c.json')).toMatchObject({attribution:'conflictingPublicationSource',disposition:'sourcePending'});
+ const packs=buildReferencePacks(plan,readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,plan));
+ expect(packs).toHaveLength(2);
+ expect(packs.flatMap((p:any)=>p.records).map((r:any)=>r.kind).sort()).toEqual(['adventureData','bookData']);
+ expect(packs.every((p:any)=>p.usage==='consultation'&&p.runtimeEligible===false)).toBe(true);
+});

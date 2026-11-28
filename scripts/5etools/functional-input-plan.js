@@ -35,7 +35,7 @@ function ownershipIndex(inventory){
 function unique(set){return set?.size===1?[...set][0]:null;}
 function classify(origin,path,kind,scanned,isArray){
  if(scanned)return 'resolverEntity';
- if(origin==='main'&&/^data\/(?:book|adventure)\/(?:book|adventure)-[^/]+\.json$/.test(path)&&kind==='data')return 'publicationSection';
+ if(origin==='main'&&((/^data\/book\/book-[^/]+\.json$/.test(path)&&['data','bookData'].includes(kind))||(/^data\/adventure\/adventure-[^/]+\.json$/.test(path)&&['data','adventureData'].includes(kind))))return 'publicationSection';
  if(origin==='main'&&((path==='data/books.json'&&kind==='book')||(path==='data/adventures.json'&&kind==='adventure')))return 'publicationIndex';
  if(kind==='_meta'||kind.startsWith('_')||origin==='homebrew'&&path.startsWith('_generated/'))return 'supportMetadata';
  if(isArray&&isResolverKind(kind))return 'unscannedEntity';
@@ -64,8 +64,10 @@ function* enumerate(main,homebrew,inventory,sourceDecisions){
     // direct source is retained for review, not silently reassigned.
     if(lane==='publicationSection'){
      const owner=unique(index.publications.get(f.path));
-     if(owner&&(!source||source===owner)){source=owner;attribution='publicationPath';}
-     else if(owner&&source!==owner){source=null;attribution='conflictingPublicationSource';}
+     const wrapper=kind==='bookData'||kind==='adventureData';
+     const wrapperValid=!wrapper||rec(value)&&Array.isArray(value.data)&&text(value.id)&&text(value.source)&&text(value.id).toLowerCase()===f.path.slice(f.path.lastIndexOf('/')+1).replace(/^(?:book|adventure)-/,'').replace(/\.json$/,'');
+     if(owner&&wrapperValid&&(!source||source===owner)){source=owner;attribution='publicationPath';}
+     else if(owner&&source!==owner||wrapper&&!wrapperValid){source=null;attribution='conflictingPublicationSource';}
     }
     if(!source&&attribution==='unattributed'&&!scanned&&lane!=='unscannedEntity'){
      const owner=unique(index.paths.get(fileId));

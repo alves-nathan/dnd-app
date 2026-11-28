@@ -15,7 +15,7 @@ const mechanics=new Set(['itemGroup','action','status','disease','reward','vehic
 const fluff=new Set(['raceFluff','backgroundFluff','classFluff','subclassFluff','featFluff','optionalfeatureFluff','spellFluff','monsterFluff','itemFluff','conditionFluff','vehicleFluff','objectFluff','trapFluff','hazardFluff','deityFluff']);
 function referenceUsage(r){
  if(r.origin!=='main'||r.disposition!=='included')return null;
- if(r.lane==='publicationSection'&&r.kind==='data'||r.lane==='publicationIndex'&&['book','adventure'].includes(r.kind))return 'consultation';
+ if(r.lane==='publicationSection'&&['data','bookData','adventureData'].includes(r.kind)||r.lane==='publicationIndex'&&['book','adventure'].includes(r.kind))return 'consultation';
  if(['resolverEntity','unscannedEntity'].includes(r.lane)){
   if(definitions.has(r.kind))return 'definitionSupport';
   if(mechanics.has(r.kind))return 'mechanicalReferencePending';

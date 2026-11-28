@@ -104,3 +104,18 @@ describe('functional Main spell conversion beyond pilots',()=>{
   expect(buildFunctionalIndexed(snapshot,'spell',[]).packs).toEqual([]);
  });
 });
+
+test('functional spells with alternative grants are preserved without inventing direct classes',()=>{
+ const {buildFunctionalIndexed}=require('../../scripts/5etools/functional-indexed-converter');
+ const data:Record<string,unknown>={'data/books.json':{book:[{source:'NEW',name:'Fixture Supplement',published:'2025-01-01'}]},'data/spells/index.json':{NEW:'spells-new.json'},'data/spells/spells-new.json':{spell:[spell({source:'NEW',name:'Alternative Ray'}),spell({source:'NEW',name:'Missing Ray'}),spell({source:'NEW',name:'Invalid Ray'})]},'data/generated/gendata-spell-source-lookup.json':{new:{'alternative ray':{subclass:{PHB:{Fixture:true}},feat:{NEW:{Fixture:true}}},'invalid ray':{class:'bad',feat:{NEW:{Fixture:true}}}}}};
+ const snapshot={commit:'a'.repeat(40),files:new Map(Object.keys(data).map(p=>[p,'b'.repeat(40)])),readJson:(p:string)=>data[p]};
+ const r=buildFunctionalIndexed(snapshot,'spell',['NEW']),item=r.packs[0].items[0];
+ expect(r.counts.NEW).toMatchObject({total:3,converted:1,blocked:2,blockCodes:{missingClassAccess:1,invalidClassAccess:1}});
+ expect(item.payload.classes).toEqual([]);
+ expect(item.payload.classIds).toBeUndefined();
+ expect(item.payload.mechanics.upstreamSpell.access).toEqual({subclass:{PHB:{Fixture:true}},feat:{NEW:{Fixture:true}}});
+ expect(item.payload.mechanics.upstreamSpell.accessPolicy).toEqual({status:'alternativeGrantReviewPending',directClassAccess:'notObserved',alternativeKinds:['feat','subclass']});
+ expect(r.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({index:0,code:'alternativeSpellAccessPending'})]));
+ expect(stageImportV3(r.packs[0]).ok).toBe(true);
+ expect(buildPilot(fixture([spell()],{subclass:{PHB:{Fixture:true}}}),['XPHB']).counts.XPHB.blocked).toBe(1);
+});

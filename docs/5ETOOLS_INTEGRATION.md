@@ -555,3 +555,7 @@ Ver [5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md](5ETOOLS_FUNCTIONAL_CROSS_SOURCE
 ## 19A.2h.1 — ensaio real expandido
 
 Ver [5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md](5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md). CI direcionado [functional-corpus-audit] executa snapshots fixados e CLI real, com escopo descartável allObservedMain, agregados e readback privado. Não equivale ao fechamento da fase.
+
+## 19A.2h.2 — lacunas de acesso a magias e publicações
+
+Ver [5ETOOLS_FUNCTIONAL_CORPUS_GAPS_1.md](5ETOOLS_FUNCTIONAL_CORPUS_GAPS_1.md). Primeiro ensaio real aprovado: 14.021 itens e 12.109 referências. Corrigidos os caminhos para magias com grants alternativos e wrappers bookData/adventureData. Ensaio direcionado deve medir delta.
