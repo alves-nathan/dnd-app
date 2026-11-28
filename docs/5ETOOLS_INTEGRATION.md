@@ -410,3 +410,7 @@ Ver [5ETOOLS_CI_AND_EMULATOR_MILESTONES.md](5ETOOLS_CI_AND_EMULATOR_MILESTONES.m
 ## Fase a8.15.2 — entrega 1/20
 
 Ver [5ETOOLS_INSTANCE_TACTICAL_REFERENCES.md](5ETOOLS_INSTANCE_TACTICAL_REFERENCES.md). Hotfix aprovado; referências de instância, tática e vencedores históricos. Próxima entrega 2/20: drafts de progressão, recuperação, quarentena e transações históricas.
+
+## Fase a8.15.3 — entrega 2/20
+
+Ver [5ETOOLS_RECOVERY_TRANSACTION_REFERENCES.md](5ETOOLS_RECOVERY_TRANSACTION_REFERENCES.md). Entrega 1/20 aprovada. Drafts, recuperação, planos, quarentena e transações históricas vinculados à revisão. Próxima entrega 3/20: grafo runtime e histórico de configuração.

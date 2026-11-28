@@ -4,6 +4,7 @@ import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
 import type {CharacterCompendiumLink} from '../types';
 import {collectOwnerInstanceReferences,collectScenarioInstanceReferences,collectHistoryInstanceReferences} from './localInventoryInstanceReferences';
+import {collectRecoveryAndTransactionReferences} from './localInventoryRecoveryReferences';
 import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {sha256Hex} from '../catalog/catalogBundleDigest';
 
@@ -108,6 +109,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
   for(const [id,state] of Object.entries(portable.catalog.filterState.entityStates))add('filterEntity',id,state,snapshot.registry.has(id)?'present':'missing');
   for(const [id,state] of Object.entries(portable.catalog.filterState.categoryStates))add('filterCategory',id,state,snapshot.categoryById.has(id)?'present':'missing');
   for(const [id,state] of Object.entries(portable.catalog.filterState.bookStates))add('filterBook',id,state,snapshot.manifest.sourceBooks.includes(id)?'present':'missing');
+  collectRecoveryAndTransactionReferences(portable.characterStore,{snapshotId:snapshot.snapshotId,choiceStatus,linkStatus,entityExists:id=>snapshot.registry.has(id),bookExists:id=>snapshot.manifest.sourceBooks.includes(id),categoryExists:id=>snapshot.categoryById.has(id)},add);
   const lanes=[...new Set(references.map(r=>r.lane))].sort().map(lane=>({lane,total:references.filter(r=>r.lane===lane).length,statuses:tally(references.filter(r=>r.lane===lane))}));
   const result={schemaVersion:'dnd-local-inventory-reference-review.v1',scope,bindings:{capture:fingerprint,captureEnvelope:digest(capture),
    baselineRuntime:digest(baselineRuntime),installed:fresh.surfaces.find(s=>s.surface==='compendium')!.fingerprint!,
@@ -115,7 +117,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    summary:{baselineEntries:baselineRuntime.length,loadedEntries:snapshot.entries.length,runtimeDispositions:tally(runtimeRows),referenceOccurrences:references.length,referenceLanes:lanes},
    runtimeRowsFingerprint:digest(runtimeRows),referenceRowsFingerprint:digest(references),
    obligations:[
-    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndGeneratedActionReferences','transactionAndHistoricalSourceReferences','draftRecoveryQuarantineReferences','auxiliaryPersistence']},
+    {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndGeneratedActionReferences','historicalProviderAndOpaqueQuarantineSemantics','auxiliaryPersistence']},
     {criterion:'exactRuntimePackageAndConfigurationBinding',status:'partial',pending:['registryDependencyAliasAndCategoryDispositions','bundledBytesAndPackageTrust','configurationHistoryReferences']},
     {criterion:'legacyVersionsManualMappingsAndExternalPacksInventory',status:'pending',pending:['legacyVersionAndManualMappingReview','externalOwnerInventory']},
     {criterion:'explicitUnmatchedAndExcludedOccurrenceLedger',status:'partial',pending:['historicalLedgerJoin','ownerExclusionDecisions']}

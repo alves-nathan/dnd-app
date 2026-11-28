@@ -921,3 +921,60 @@ describe('a8.15.2 instance and tactical reference inventory',()=>{
   expect(JSON.stringify(r)).not.toMatch(/private-missing/);
  });
 });
+
+import {createProgressionDraft} from '../characters/progressionTransaction';
+import {collectRecoveryAndTransactionReferences} from '../compendium/localInventoryRecoveryReferences';
+describe('a8.15.3 recovery and transaction reference inventory',()=>{
+ const context={snapshotId:'catalog-current',choiceStatus:(v:unknown)=>typeof v==='string'&&v==='catalog:known'?'present' as const:'missing' as const,linkStatus:()=> 'unqualified' as const,entityExists:()=>false,bookExists:()=>false,categoryExists:()=>false};
+ function inspect(checkpoint:PortableRestoreDataCheckpoint['characterStore']){
+  const rows:Array<{lane:string;path:string;status:string}>=[];
+  collectRecoveryAndTransactionReferences(checkpoint,context,(lane,path,_value,status)=>rows.push({lane,path:path.join('.'),status}));
+  return rows;
+ }
+ test('inspects both draft snapshots, key ownership and fingerprint conflict without modifying draft',async()=>{
+  const f=await fixture(),p=f.input.portableCheckpoint.characterStore,c=p.characters[0];
+  const d=createProgressionDraft({character:c,targetCatalogSnapshotId:'catalog-current'});
+  d.workingCharacter.buildChoices={speciesChoices:[],classSkillChoices:[],classToolChoices:[],expertiseSkills:[],languages:[],equipmentSelections:[],spellAssignments:{},startingClassItemId:'catalog:known'};
+  p.progressionDrafts[c.id]=d;
+  const before=JSON.stringify(p),rows=inspect(p);
+  expect(rows.find(r=>r.path.endsWith('.baseSnapshotFingerprint'))?.status).toBe('present');
+  expect(rows.find(r=>r.path.endsWith('.workingCharacter.buildChoices.startingClassItemId'))?.status).toBe('present');
+  expect(JSON.stringify(p)).toBe(before);
+  c.level++;
+  expect(inspect(p).find(r=>r.path.endsWith('.baseFingerprint'))?.status).toBe('ownerMismatch');
+ });
+ test('keeps historical absences unqualified while detecting a transaction owned by another character',async()=>{
+  const f=await fixture(),p=f.input.portableCheckpoint.characterStore,c=p.characters[0];
+  c.resourceTransactions=[{id:'tx',characterId:'other',resourceId:'removed-resource',resourceName:'Old',amount:1,before:2,after:1,reason:'fixture',createdAt:'2026-01-01'}];
+  const rows=inspect(p);
+  expect(rows.find(r=>r.path.endsWith('.resourceTransactions.0.characterId'))?.status).toBe('ownerMismatch');
+  expect(rows.find(r=>r.path.endsWith('.resourceTransactions.0.resourceId'))?.status).toBe('unqualified');
+ });
+ test('preserves opaque quarantine and explicit recovery index, even for orphaned plans',async()=>{
+  const f=await fixture(),p=f.input.portableCheckpoint.characterStore;
+  p.compatibilityRemediationQuarantine.q={id:'q',quarantinedAt:'2026-01-01',reason:'invalid',characterId:'orphan',rawPlan:{arbitrary:'private-payload'}};
+  p.compatibilityRemediationRecovery.quarantinedPlanIds=['q','missing'];
+  const rows=inspect(p);
+  expect(rows.filter(r=>r.lane==='remediationQuarantine').map(r=>r.status)).toEqual(['present','unqualified','unqualified']);
+  expect(rows.filter(r=>r.path.startsWith('quarantinedPlanIds')).map(r=>r.status)).toEqual(['present','missing']);
+  expect(JSON.stringify(rows)).not.toContain('private-payload');
+ });
+ test('binds recovery lanes to exact capture and never exposes raw quarantine or authorizes migration',async()=>{
+  const f=await fixture(),captureId='recovery-lanes',scope='disposableFixture' as const,installed=f.input.context.installed,portable=f.input.portableCheckpoint,runtime={snapshot:f.input.catalog,ref:f.input.runtimeRef};
+  const c=portable.characterStore.characters[0];
+  portable.characterStore.progressionDrafts[c.id]=createProgressionDraft({character:c});
+  portable.characterStore.compatibilityRemediationQuarantine.q={id:'q',quarantinedAt:'2026-01-01',reason:'invalid',rawPlan:{private:'opaque-secret-fixture'}};
+  const input={captureId,scope,installed,portable,runtime,baselineRuntime:runtime.snapshot.entries.map(e=>({id:e.entityId,kind:e.kind,sourceFingerprint:nodeDigest(e)}))};
+  const capture=await captureLocalInventoryEvidence(captureId,{readStores:()=>({guard:[],blocked:false,observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:installed},runtime:{status:'observed',source:'catalogStore',captureId,value:runtime},portable:{status:'observed',source:'portableDataCheckpoint',captureId,value:portable}
+  }}),storage:f.memory},scope);
+  const r=reviewLocalInventoryReferences(input,capture);
+  if(!r.ok)throw Error(r.code);
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='progressionDraft')?.total).toBeGreaterThan(0);
+  expect(r.review.summary.referenceLanes.find(l=>l.lane==='remediationQuarantine')?.statuses.unqualified).toBe(1);
+  expect(r.review.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(r)).not.toContain('opaque-secret-fixture');
+  portable.characterStore.compatibilityRemediationQuarantine.q.rawPlan={private:'changed'};
+  expect(reviewLocalInventoryReferences(input,capture)).toMatchObject({ok:false,code:'coreObservationBindingMismatch'});
+ });
+});
