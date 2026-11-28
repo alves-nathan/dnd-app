@@ -153,9 +153,13 @@ if(require.main===module){
   const report=buildMatrix(read('coverage'),read('graph'),read('migration'));
   // Aggregates only: no entity IDs, raw rows, filenames, source codes or texts.
   console.log(JSON.stringify(report));
-  const global=require('./global-checkpoint-review').buildGlobalCheckpointReview(report,read('families'));
+  const families=read('families');
+  const global=require('./global-checkpoint-review').buildGlobalCheckpointReview(report,families);
+  const mechanical=require('./mechanical-preservation-review').buildMechanicalPreservationReview(families);
+  assert(digest(mechanical)===digest(families.mechanicalPreservation)&&families.bindings.mechanicalPreservation===mechanical.fingerprint,'mechanicalPreservationReportMismatch');
+  console.log(JSON.stringify(mechanical));
   console.log(JSON.stringify(global));
-  const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,read('families'),global);
+  const acceptance=require('./cutover-acceptance-matrix').buildCutoverAcceptanceMatrix(report,families,global);
   console.log(JSON.stringify(acceptance));
 }
 

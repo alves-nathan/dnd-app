@@ -442,3 +442,8 @@ Ver [5ETOOLS_MECHANICAL_SCOPE_REVIEW.md](5ETOOLS_MECHANICAL_SCOPE_REVIEW.md). En
 ## Fase a8.17.2 — entrega 8/20
 
 Ver [5ETOOLS_MECHANICAL_CONSUMER_REGRESSION.md](5ETOOLS_MECHANICAL_CONSUMER_REGRESSION.md). Entrega 7 aprovada. Regressões dos consumidores reais de dano de magias, fórmulas de criaturas, recursos e slots. Próxima entrega 9/20: consolidação da preservação mecânica e auditoria completa.
+
+
+## Fase a8.17.3 — entrega 9/20
+
+Ver [5ETOOLS_MECHANICAL_PRESERVATION_MILESTONE.md](5ETOOLS_MECHANICAL_PRESERVATION_MILESTONE.md). Entrega 8 aprovada. Consolidação das obrigações por família e escopo declarado dos consumidores; auditoria completa do marco. Próxima entrega 10/20: revisão de paridade de referências e dependências por identidade qualificada, sem substituição automática.

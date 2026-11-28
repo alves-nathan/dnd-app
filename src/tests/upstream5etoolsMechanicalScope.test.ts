@@ -36,3 +36,35 @@ describe('a8.17.1 mechanical scope and occurrence dispositions',()=>{
   expect(()=>buildMechanicalScopeReview(c)).toThrow('mechanicalPayloadComparisonMismatch');
  });
 });
+
+const {buildMechanicalPreservationReview}=require('../../scripts/5etools/mechanical-preservation-review');
+const {KINDS}=require('../../scripts/5etools/cutover-evidence');
+function preservationFragment(){
+ const f=fixture('2024','2024',true),scope=buildMechanicalScopeReview(f);
+ const rows=Object.fromEntries(KINDS.map((k:string)=>[k,{upstream:k==='spell'?1:0,historical:k==='spell'?1:0,runtime:0}]));
+ return {commits:scope.commits,mechanicalScope:scope,bindings:{mechanicalScope:scope.fingerprint},reconciliationFingerprint:digest(f.reconciliation),rows,outside:{historical:0,runtime:1},totals:{upstream:1,historical:1,runtime:1}};
+}
+describe('a8.17.3 mechanical preservation consolidation',()=>{
+ test('keeps all legacy obligations, including runtime-only, distinct from scoped synthetic consumer coverage',()=>{
+  const f=preservationFragment(),before=digest(f),r=buildMechanicalPreservationReview(f);
+  expect(r.totals).toMatchObject({upstream:1,historical:1,runtime:1,legacyPreservationRequired:2});
+  expect(r.byFamily.spell.historical.dispositions).toEqual({preservePayloadDifferences:1});
+  expect(r.byFamily.outsideV3.runtime.dispositions).toEqual({preserveOutsideV3:1});
+  expect(r.consumerRegressionScope).toHaveLength(3);
+  expect(r).toMatchObject({consumerEvidenceStatus:'declaredSyntheticScopeNotOccurrenceParity',mechanicalParityEstablished:0,writeAuthorized:false,readiness:'blocked'});
+  expect(digest(f)).toBe(before);
+ });
+ test('rejects stale scope binding and per-family redistribution',()=>{
+  const f=preservationFragment();
+  expect(()=>buildMechanicalPreservationReview({...f,bindings:{mechanicalScope:'stale'}})).toThrow('mechanicalPreservationBindingMismatch');
+  expect(()=>buildMechanicalPreservationReview({...f,rows:{...f.rows,spell:{upstream:0,historical:1,runtime:0}}})).toThrow('mechanicalPreservationAccountingMismatch');
+ });
+ test('rejects rehashed promotion and dropped preservation disposition',()=>{
+  const f=preservationFragment(),{fingerprint,...body}=f.mechanicalScope;
+  const promoted={...body,mechanicalParityEstablished:1};
+  expect(()=>buildMechanicalPreservationReview({...f,mechanicalScope:{...promoted,fingerprint:digest(promoted)}})).toThrow('invalidMechanicalScope');
+  const changed={...body,byFamily:{...body.byFamily,spell:{...body.byFamily.spell,historical:{...body.byFamily.spell.historical,dispositions:{}}}}};
+  const hash=digest(changed);
+  expect(()=>buildMechanicalPreservationReview({...f,mechanicalScope:{...changed,fingerprint:hash},bindings:{mechanicalScope:hash}})).toThrow('mechanicalPreservationAccountingMismatch');
+ });
+});

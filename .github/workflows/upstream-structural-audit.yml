@@ -63,7 +63,7 @@ jobs:
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:
           DND_UPSTREAM_CREATURE_SNAPSHOT: ${{ runner.temp }}/5etools-main
-        run: npx jest src/tests/upstream5etoolsCreatureConverter.test.ts --runInBand
+        run: npx jest src/tests/upstream5etoolsCreatureConverter.test.ts src/tests/upstream5etoolsCreatureCombatProjection.test.ts src/tests/upstream5etoolsSpellParityEvidence.test.ts src/tests/upstream5etoolsConsumerRegression.test.ts src/tests/upstream5etoolsMechanicalScope.test.ts --runInBand
       - name: Validate equipment pilot (aggregate only)
         if: env.FULL_UPSTREAM_AUDIT == 'true'
         env:

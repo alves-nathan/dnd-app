@@ -3,6 +3,7 @@
 // Neither a reviewed checkpoint nor an internally valid hash is authorization.
 const {digest}=require('./integrated-review');
 const {buildMechanicalScopeReview}=require('./mechanical-scope-review');
+const {buildMechanicalPreservationReview}=require('./mechanical-preservation-review');
 const {KINDS}=require('./cutover-evidence');
 const {buildConditionMechanicsReport}=require('./condition-mechanics-preview');
 const {buildCapabilityMatrix}=require('./condition-capability-matrix');
@@ -86,7 +87,9 @@ function buildFamilyCheckpointFragment(input,reports){
   runtimeIdentity:reports.runtime.identity,conditionScope:{mechanics:mechanics.byEra,capabilities:capabilities.byEra},
   checkpointBlockers:Object.fromEntries(Object.entries(reports).filter(([,v])=>Array.isArray(v.blockers)).map(([k,v])=>[k,v.blockers])),
   approvedMappings:0,mechanicalParityEstablished:0,...flags()};
- return {...body,fingerprint:digest(body)};
+ const mechanicalPreservation=buildMechanicalPreservationReview(body);
+ body.bindings.mechanicalPreservation=mechanicalPreservation.fingerprint;
+ return {...body,mechanicalPreservation,fingerprint:digest({...body,mechanicalPreservation})};
 }
 function buildGlobalCheckpointReview(matrix,fragment){
  assert(matrix?.schemaVersion==='dnd-upstream-cutover-evidence.v1'&&matrix.activation==='review-required'&&matrix.executable===false&&matrix.runtimeEligible===0&&
