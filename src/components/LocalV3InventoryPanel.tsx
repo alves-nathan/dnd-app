@@ -72,6 +72,11 @@ export function LocalV3InventoryPanel(){
    <Text style={style}>{view.summary.observed} de {view.summary.required} superfícies observadas. {view.summary.invalid} inválida(s), {view.summary.unavailable} indisponível(is), {view.summary.notInspected} não inspecionada(s), {view.summary.busy} ocupada(s), {view.summary.stale} desatualizada(s).</Text>
    <Text style={style}>Catálogo e pacote: {view.runtimePackage}</Text>
    <Text style={style}>Persistência ativa: {view.activePersistence}</Text>
+   {view.independentPersistence?<>
+    <Text style={style}>Leitura independente ({view.independentPersistence.backend}): {view.independentPersistence.status}</Text>
+    {'counts' in view.independentPersistence&&view.independentPersistence.counts?<Text style={style}>{view.independentPersistence.counts.items} item(ns) · {view.independentPersistence.counts.packs} pacote(s) · {view.independentPersistence.counts.sources} fonte(s)</Text>:null}
+    {'code' in view.independentPersistence&&view.independentPersistence.code?<Text style={style}>Diagnóstico: {view.independentPersistence.code}</Text>:null}
+   </>:null}
    {view.packageCode?<Text style={style}>Revisão do pacote: {view.packageCode}</Text>:null}
    {view.surfaces.map(s=><Text key={s.surface} style={style}>{s.label}: {s.status}</Text>)}
    <Text selectable style={style}>Fingerprint: {view.fingerprint}</Text>

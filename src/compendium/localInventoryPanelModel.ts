@@ -13,13 +13,14 @@ export const inventorySurfaceLabels:Record<InventorySurface,string>={
 };
 export const inventoryStatusLabels={observed:'Observado',notInspected:'Não inspecionado',unavailable:'Indisponível',busy:'Ocupado',invalid:'Inválido',stale:'Desatualizado'} as const;
 const captureLabels={stableObservation:'Observação estável no momento da leitura',blocked:'Captura bloqueada por operação pendente',stale:'Estado alterado durante a leitura',unavailable:'Captura indisponível'} as const;
-const coherenceLabels:Record<string,string>={notVerified:'Não verificado',storedPackageMatch:'Pacote armazenado correspondente',bundledRefOnly:'Apenas referência bundled',legacySnapshotMatch:'Snapshot legado correspondente',mismatch:'Divergência detectada'};
+const coherenceLabels:Record<string,string>={notVerified:'Não verificado',storedPackageMatch:'Pacote armazenado correspondente',bundledRefOnly:'Apenas referência bundled',legacySnapshotMatch:'Snapshot legado correspondente',sqliteSnapshotMatch:'Snapshot SQLite correspondente',webSnapshotMatch:'Snapshot IndexedDB correspondente',mismatch:'Divergência detectada'};
 export function presentLocalInventory(result:LocalInventoryCaptureResult){
  const {evidence,coherence}=result;
  return {title:captureLabels[result.captureStatus],summary:evidence.summary,
   surfaces:evidence.surfaces.map(s=>({surface:s.surface,label:inventorySurfaceLabels[s.surface],status:inventoryStatusLabels[s.status]})),
   runtimePackage:coherenceLabels[coherence.runtimePackage]??'Não verificado',
   activePersistence:coherenceLabels[coherence.activePersistence]??'Não verificado',
+  independentPersistence:coherence.independentPersistence?{backend:coherence.independentPersistence.backend,status:inventoryStatusLabels[coherence.independentPersistence.status],...(coherence.independentPersistence.status==='observed'?{counts:coherence.independentPersistence.counts}:{code:coherence.independentPersistence.code})}:undefined,
   packageCode:coherence.packageCode,fingerprint:evidence.fingerprint,
   readiness:'Migração bloqueada',canMigrate:false as const};
 }
@@ -29,5 +30,6 @@ export function compareLocalInventoryRevalidation(previous:LocalInventoryCapture
  if(previous.captureStatus!=='stableObservation'||next.captureStatus!=='stableObservation')return 'unavailable';
  return previous.evidence.fingerprint===next.evidence.fingerprint&&
   previous.coherence.runtimePackage===next.coherence.runtimePackage&&previous.coherence.activePersistence===next.coherence.activePersistence&&
-  previous.coherence.packageCode===next.coherence.packageCode?'unchanged':'changed';
+  previous.coherence.packageCode===next.coherence.packageCode&&
+  JSON.stringify(previous.coherence.independentPersistence)===JSON.stringify(next.coherence.independentPersistence)?'unchanged':'changed';
 }

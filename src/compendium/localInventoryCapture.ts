@@ -3,6 +3,7 @@ import {COMPENDIUM_STORAGE_KEY} from '../storage/compendiumSnapshot';
 import {CATALOG_PACKAGE_INDEX_KEY,CATALOG_PACKAGE_SCHEMA} from '../storage/catalogPackageRepository';
 import {CATALOG_DOWNLOAD_CACHE_INDEX_KEY,CATALOG_DOWNLOAD_CACHE_SCHEMA} from '../storage/catalogDownloadCacheRepository';
 import {observeIndexedPackageContents,compareLoadedPackage} from './localInventoryPackageObservation';
+import {compareIndependentCompendiumReads,type IndependentCompendiumObservation,type IndependentBackend} from '../storage/readOnlyCompendiumObservation';
 import type {KeyValueStorageAdapter} from '../storage/keyValueStorage';
 
 type Observations=LocalInventoryInput['observations'];
@@ -17,6 +18,13 @@ export interface InventoryStoreFrame {
 export interface LocalInventoryReadPorts {
  readStores:(captureId:string)=>InventoryStoreFrame;
  storage:Pick<KeyValueStorageAdapter,'getItem'>;
+ /** Optional for offline callers; live adapter never initializes storage. */
+ readActivePersistence?:()=>Promise<IndependentCompendiumObservation>;
+}
+export interface InventoryCoherence {runtimePackage:string;activePersistence:string;packageCode?:string;independentPersistence?:IndependentCompendiumObservation}
+async function readIndependent(ports:LocalInventoryReadPorts,backend:IndependentBackend|undefined):Promise<IndependentCompendiumObservation|undefined>{
+ if(!ports.readActivePersistence||!backend)return undefined;
+ try{return await ports.readActivePersistence();}catch{return {status:'unavailable',backend,code:'backendReadFailed'};}
 }
 const rawKeys:Record<RawSurface,string>={legacyCompendium:COMPENDIUM_STORAGE_KEY,packageIndex:CATALOG_PACKAGE_INDEX_KEY,downloadCache:CATALOG_DOWNLOAD_CACHE_INDEX_KEY};
 const rawSurfaces=Object.keys(rawKeys) as RawSurface[];
@@ -53,12 +61,13 @@ function rawObservation(surface:RawSurface,result:ReadResult,captureId:string){
  * Returns only aggregate evidence, never store data or raw storage content. */
 export async function captureLocalInventoryEvidence(captureId:string,ports:LocalInventoryReadPorts,scope:LocalInventoryInput['scope']='observedLocal'){
  const build=(observations:Observations)=>buildLocalInventoryEvidence({captureId,scope,observations});
- const finish=(captureStatus:'stableObservation'|'blocked'|'stale'|'unavailable',observations:Observations,coherence:{runtimePackage:string;activePersistence:string;packageCode?:string}={runtimePackage:'notVerified',activePersistence:'notVerified'})=>({
+ const finish=(captureStatus:'stableObservation'|'blocked'|'stale'|'unavailable',observations:Observations,coherence:InventoryCoherence={runtimePackage:'notVerified',activePersistence:'notVerified'})=>({
   captureStatus,evidence:build(observations),coherence,writeAuthorized:false as const,executable:false as const});
  try{
   const before=ports.readStores(captureId);
   if(before.blocked)return finish('blocked',statuses(before.observations,'busy',captureId));
   const initial=build(before.observations);
+  const independentFirst=await readIndependent(ports,before.activeBackend);
   const first=await readRaw(ports);
   const packagesFirst=await observeIndexedPackageContents(first.packageIndex.ok?first.packageIndex.raw:null,ports.storage);
   const second=await readRaw(ports);
@@ -66,13 +75,18 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
   // Re-read index after the final chunk read to catch a concurrent replacement.
   let finalIndex:ReadResult;
   try{finalIndex={ok:true,raw:await ports.storage.getItem(CATALOG_PACKAGE_INDEX_KEY)};}catch{finalIndex={ok:false};}
+  const independentSecond=await readIndependent(ports,before.activeBackend);
+  const independentChanged=JSON.stringify(independentFirst)!==JSON.stringify(independentSecond)||
+   independentFirst?.status==='stale'||independentSecond?.status==='stale'||
+   (!!independentFirst&&independentFirst.backend!==before.activeBackend)||
+   (!!independentSecond&&independentSecond.backend!==before.activeBackend);
   const indexStable=JSON.stringify(second.packageIndex)===JSON.stringify(finalIndex);
   const after=ports.readStores(captureId);
-  const changed=!indexStable||JSON.stringify(packagesFirst)!==JSON.stringify(packagesSecond)||before.activeBackend!==after.activeBackend||after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
+  const changed=independentChanged||!indexStable||JSON.stringify(packagesFirst)!==JSON.stringify(packagesSecond)||before.activeBackend!==after.activeBackend||after.blocked||!sameGuard(before.guard,after.guard)||initial.fingerprint!==build(after.observations).fingerprint||
    rawSurfaces.some(k=>{const a=first[k],b=second[k];return a.ok!==b.ok||(a.ok&&b.ok&&a.raw!==b.raw);});
   if(changed){
    const all={...before.observations,...Object.fromEntries([...rawSurfaces,'packageContents' as const].map(k=>[k,{status:'stale',source:LOCAL_INVENTORY_SURFACES[k],captureId}]))};
-   return finish('stale',statuses(all,'stale',captureId));
+   return finish('stale',statuses(all,'stale',captureId),{runtimePackage:'notVerified',activePersistence:'notVerified',...(independentChanged&&before.activeBackend?{independentPersistence:{status:'stale',backend:before.activeBackend,code:'independentReadChanged'} as const}:{})});
   }
   const observations={...after.observations,...Object.fromEntries(rawSurfaces.map(k=>[k,rawObservation(k,second[k],captureId)]))} as Observations;
   const packageSource=LOCAL_INVENTORY_SURFACES.packageContents;
@@ -81,15 +95,21 @@ export async function captureLocalInventoryEvidence(captureId:string,ports:Local
   const runtime=after.observations.runtime;
   const runtimePackage=compareLoadedPackage(runtime?.status==='observed'?runtime.value:undefined,packagesSecond);
   let activePersistence='notVerified';
-  // Legacy is the only backend for which we already have an independent,
-  // non-initializing raw read. Never open SQLite/IndexedDB here.
-  if(after.activeBackend==='legacy'&&second.legacyCompendium.ok&&second.legacyCompendium.raw!==null&&observations.legacyCompendium?.status==='observed'){
+  const hydrated=after.observations.compendium;
+  if(independentFirst&&independentSecond&&hydrated?.status==='observed'&&initial.surfaces.find(s=>s.surface==='compendium')?.status==='observed'){
+   const comparison=compareIndependentCompendiumReads(independentFirst,independentSecond,hydrated.value);
+   if(comparison==='snapshotMatch')activePersistence=independentSecond.backend==='sqlite'?'sqliteSnapshotMatch':independentSecond.backend==='web'?'webSnapshotMatch':'legacySnapshotMatch';
+   else if(comparison==='mismatch')activePersistence='mismatch';
+  }
+  // Compatibility for older offline callers without the independent port.
+  // The live adapter always supplies the strict read; no fallback on failure.
+  if(!ports.readActivePersistence&&after.activeBackend==='legacy'&&second.legacyCompendium.ok&&second.legacyCompendium.raw!==null&&observations.legacyCompendium?.status==='observed'){
    const raw=JSON.parse(second.legacyCompendium.raw),state=record(raw.state)?raw.state:raw;
    const stored=build({compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:state}});
    const a=stored.surfaces.find(s=>s.surface==='compendium'),b=initial.surfaces.find(s=>s.surface==='compendium');
    if(a?.status==='observed'&&b?.status==='observed')activePersistence=a.fingerprint===b.fingerprint?'legacySnapshotMatch':'mismatch';
   }
   // A stable observation is not a successful read or accepted gate.
-  return finish('stableObservation',observations,{runtimePackage,activePersistence,...(packagesSecond.status==='observed'?{}:{packageCode:packagesSecond.code})});
+  return finish('stableObservation',observations,{runtimePackage,activePersistence,...(independentSecond?{independentPersistence:independentSecond}:{}),...(packagesSecond.status==='observed'?{}:{packageCode:packagesSecond.code})});
  }catch{return finish('unavailable',{});}
 }

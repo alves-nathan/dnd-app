@@ -96,6 +96,8 @@ export const getActiveCompendiumRepository = (): CompendiumRepository => {
 };
 
 export const getActiveCompendiumRepositoryKind = (): ActiveCompendiumRepositoryKind => activeRepositoryKind;
+/** Opaque in-memory identity for comparing observation boundaries only. */
+export const getActiveCompendiumObservationIdentity = (): unknown => activeRepository;
 
 /** Never invokes getActiveCompendiumRepository or bootstrap. Web storage
  * currently has no retained handle, so it is intentionally unavailable. */

@@ -20,7 +20,7 @@ import {useCatalogRolloutAggregationStore} from '../store/catalogRolloutAggregat
 import {useCatalogOperationalAuditStore} from '../store/catalogOperationalAuditStore';
 import {useCatalogOperationalAuthorizationStore} from '../store/catalogOperationalAuthorizationStore';
 import {useCatalogOperationalFederationStore} from '../store/catalogOperationalFederationStore';
-import {getActiveCompendiumRepositoryKind} from '../storage/activeCompendiumRepository';
+import {getActiveCompendiumRepositoryKind,getActiveCompendiumObservationIdentity,observeExistingActiveCompendium} from '../storage/activeCompendiumRepository';
 
 const busySession=(status?:string)=>!!status&&['prepared','committing','rollingBack','interrupted','failed'].includes(status);
 /** Only synchronous reads of already initialized stores. No hydration, repair,
@@ -70,11 +70,11 @@ export function readHydratedInventoryStores(captureId:string):InventoryStoreFram
  observations.operationalAudit=operationalAuditReady?{status:'observed',source:'catalogOperationalAuditStore',captureId,value:{importedAudits:operationalAudit.importedAudits,events:operationalAudit.events}}:{status:'unavailable',source:'catalogOperationalAuditStore',captureId};
  observations.operationalAuthorization=operationalAuthorizationReady?{status:'observed',source:'catalogOperationalAuthorizationStore',captureId,value:{authorizations:operationalAuthorization.authorizations,confirmations:operationalAuthorization.confirmations,sessions:operationalAuthorization.sessions,receipts:operationalAuthorization.receipts,events:operationalAuthorization.events,journal:operationalAuthorization.journal,journalArchives:operationalAuthorization.journalArchives,reconciliations:operationalAuthorization.reconciliations,evidence:operationalAuthorization.evidence,recoveryAuthorizations:operationalAuthorization.recoveryAuthorizations,recoveryConfirmations:operationalAuthorization.recoveryConfirmations,recoveryExecutions:operationalAuthorization.recoveryExecutions}}:{status:'unavailable',source:'catalogOperationalAuthorizationStore',captureId};
  observations.operationalFederation=operationalFederationReady?{status:'observed',source:'catalogOperationalFederationStore',captureId,value:{importedFederations:operationalFederation.importedFederations,events:operationalFederation.events}}:{status:'unavailable',source:'catalogOperationalFederationStore',captureId};
- return {guard:[compendium,catalog,characters,scenarios,presets,history,update,restore,trust,...hydrated,distribution,distributionReady,publication,publicationReady,transparency,transparencyReady,rolloutHealth,rolloutHealthReady,rolloutAggregation,rolloutAggregationReady,operationalAudit,operationalAuditReady,operationalAuthorization,operationalAuthorizationReady,operationalFederation,operationalFederationReady,activeBackend],observations,blocked,activeBackend};
+ return {guard:[compendium,catalog,characters,scenarios,presets,history,update,restore,trust,...hydrated,distribution,distributionReady,publication,publicationReady,transparency,transparencyReady,rolloutHealth,rolloutHealthReady,rolloutAggregation,rolloutAggregationReady,operationalAudit,operationalAuditReady,operationalAuthorization,operationalAuthorizationReady,operationalFederation,operationalFederationReady,activeBackend,getActiveCompendiumObservationIdentity()],observations,blocked,activeBackend};
 }
 /** Explicit local call; not yet wired to a screen or startup lifecycle. */
 export function observeHydratedLocalInventory(captureId:string){
- return captureLocalInventoryEvidence(captureId,{readStores:readHydratedInventoryStores,storage:asyncStorageAdapter});
+ return captureLocalInventoryEvidence(captureId,{readStores:readHydratedInventoryStores,storage:asyncStorageAdapter,readActivePersistence:observeExistingActiveCompendium});
 }
 
 /** Observe changes without hydrating or calling store actions. The panel

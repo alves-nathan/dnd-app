@@ -374,3 +374,7 @@ Ver [5ETOOLS_INVENTORY_CLOSURE_REVIEW.md](5ETOOLS_INVENTORY_CLOSURE_REVIEW.md). 
 ## Fase a8.14.1 — observação independente de persistência
 
 Ver [5ETOOLS_INDEPENDENT_BACKEND_OBSERVATION.md](5ETOOLS_INDEPENDENT_BACKEND_OBSERVATION.md). a8.13.8 aprovada. Leitura SQLite já inicializado e envelope legado sem fallback; IndexedDB pendente. Próxima a8.14.2: vínculo da leitura independente à captura e ao painel.
+
+## Fase a8.14.2 — captura independente e painel
+
+Ver [5ETOOLS_INDEPENDENT_CAPTURE.md](5ETOOLS_INDEPENDENT_CAPTURE.md). a8.14.1 aprovada. Leitura independente dupla, comparação e expiração de evidência; IndexedDB ainda indisponível. Próxima a8.14.3: acesso IndexedDB existing-only, sem criação ou upgrade.

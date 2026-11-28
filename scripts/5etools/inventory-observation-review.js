@@ -31,7 +31,15 @@ function checkCapture(capture,scope){
  assert(digest(summary)===digest(e.summary),'inventorySurfaceAccountingMismatch');
  const c=capture.coherence;
  assert(c&&['notVerified','storedPackageMatch','bundledRefOnly','mismatch'].includes(c.runtimePackage)&&
-  ['notVerified','legacySnapshotMatch','mismatch'].includes(c.activePersistence),'inventoryCoherenceInvalid');
+  ['notVerified','legacySnapshotMatch','sqliteSnapshotMatch','webSnapshotMatch','mismatch'].includes(c.activePersistence),'inventoryCoherenceInvalid');
+ const independent=c.independentPersistence;
+ if(independent!==undefined){
+  assert(independent&&['sqlite','web','legacy'].includes(independent.backend)&&['observed','unavailable','invalid'].includes(independent.status),'independentPersistenceInvalid');
+  if(independent.status==='observed')assert(hex(independent.snapshotFingerprint)&&hex(independent.rawFingerprint)&&independent.counts&&['sources','packs','items','enabledSources'].every(k=>Number.isSafeInteger(independent.counts[k])&&independent.counts[k]>=0),'independentPersistenceInvalid');
+  else assert(typeof independent.code==='string'&&c.activePersistence==='notVerified','independentPersistenceInvalid');
+  const matches={sqlite:'sqliteSnapshotMatch',web:'webSnapshotMatch',legacy:'legacySnapshotMatch'};
+  assert(['notVerified','mismatch',matches[independent.backend]].includes(c.activePersistence),'independentPersistenceMismatch');
+ }else assert(!['sqliteSnapshotMatch','webSnapshotMatch'].includes(c.activePersistence),'independentPersistenceRequired');
  return rows;
 }
 function buildInventoryObservationReview(input,preview,ledger,capture,proposals=[]){
@@ -63,7 +71,7 @@ function buildInventoryObservationReview(input,preview,ledger,capture,proposals=
    duplicateCanonicalRows:actual.summary.duplicateCanonicalRows,inconsistentRawOwner:actual.summary.inconsistentRawOwner,
    exclusionProposals:actual.summary.exclusionProposals,approvedExclusions:0,approvedMappings:0,writes:0,deletes:0},
   surfaceReview,runtimeCountComparison,portableCoverage:portable.status==='observed'?'observedNotJoined':'coveragePending',
-  coherence:{runtimePackage:c.runtimePackage,activePersistence:c.activePersistence},
+  coherence:{runtimePackage:c.runtimePackage,activePersistence:c.activePersistence,...(c.independentPersistence?{independentPersistence:c.independentPersistence}:{} )},
   readiness:'blocked',inventoryAcceptance:'notEstablished',blockers,...flags()};
  return {...body,fingerprint:digest(body)};
 }

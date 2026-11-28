@@ -545,3 +545,59 @@ describe('a8.14.1 independent read-only compendium observation',()=>{
   expect(f.memory.dump()).toEqual(before);
  });
 });
+
+describe('a8.14.2 independent persistence capture integration',()=>{
+ async function independentFixture(){
+  const f=await fixture(),captureId='independent-capture',state=f.input.context.installed;
+  const legacy=await observeExistingKeyValueCompendium('legacy',f.memory);
+  if(legacy.status!=='observed')throw Error('fixture');
+  const independent={...legacy,backend:'sqlite' as const};
+  const frame:InventoryStoreFrame={guard:[state],blocked:false,activeBackend:'sqlite',observations:{
+   compendium:{status:'observed',source:'activeCompendiumRepository',captureId,value:state}
+  }};
+  return {f,frame,captureId,independent};
+ }
+ test('binds repeated independent reads and presents matching SQLite evidence',async()=>{
+  const {f,frame,captureId,independent}=await independentFixture(),before=f.memory.dump();let reads=0;
+  const ports={readStores:()=>frame,storage:f.memory,readActivePersistence:async()=>{reads++;return independent;}};
+  const first=await captureLocalInventoryEvidence(captureId,ports),second=await captureLocalInventoryEvidence(captureId,ports);
+  expect(reads).toBe(4);
+  expect(first.coherence).toMatchObject({activePersistence:'sqliteSnapshotMatch',independentPersistence:{backend:'sqlite',status:'observed'}});
+  expect(presentLocalInventory(first)).toMatchObject({activePersistence:'Snapshot SQLite correspondente',independentPersistence:{status:'Observado',counts:{items:1}}});
+  expect(compareLocalInventoryRevalidation(first,second)).toBe('unchanged');
+  expect(first.evidence.inventoryAcceptance).toBe('notEstablished');
+  expect(JSON.stringify(first)).not.toMatch(/Manual blade|legacy-weapon|independent-capture/);
+  expect(f.memory.dump()).toEqual(before);
+ });
+ test('does not fall back to legacy success when strict independent reads are invalid or unavailable',async()=>{
+  const {f,frame,captureId}=await independentFixture();
+  const legacyFrame={...frame,activeBackend:'legacy' as const};
+  const r=await captureLocalInventoryEvidence(captureId,{readStores:()=>legacyFrame,storage:f.memory,readActivePersistence:async()=>({status:'invalid',backend:'legacy',code:'unsupportedPersistedEnvelope'})});
+  expect(r.coherence).toMatchObject({activePersistence:'notVerified',independentPersistence:{status:'invalid'}});
+  const web=await captureLocalInventoryEvidence(captureId,{readStores:()=>({...frame,activeBackend:'web'}),storage:f.memory,readActivePersistence:async()=>({status:'unavailable',backend:'web',code:'nonInitializingReadUnavailable'})});
+  expect(web.coherence).toMatchObject({activePersistence:'notVerified',independentPersistence:{status:'unavailable',backend:'web'}});
+ });
+ test('distinguishes stable mismatch, raw fingerprint changes across captures and concurrent backend changes',async()=>{
+  const {f,frame,captureId,independent}=await independentFixture();
+  const ports={readStores:()=>frame,storage:f.memory};
+  const match=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:async()=>independent});
+  const mismatch=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:async()=>({...independent,snapshotFingerprint:'a'.repeat(64)})});
+  expect(mismatch.coherence.activePersistence).toBe('mismatch');
+  const rawChange=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:async()=>({...independent,rawFingerprint:'b'.repeat(64)})});
+  expect(compareLocalInventoryRevalidation(match,rawChange)).toBe('changed');
+  let reads=0;
+  const stale=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:async()=>++reads===1?independent:{...independent,rawFingerprint:'b'.repeat(64)}});
+  expect(stale).toMatchObject({captureStatus:'stale',coherence:{independentPersistence:{status:'stale'}}});
+  expect(stale.evidence.summary.observed).toBe(0);
+  const wrongBackend=await captureLocalInventoryEvidence(captureId,{...ports,readActivePersistence:async()=>({...independent,backend:'legacy'})});
+  expect(wrongBackend.captureStatus).toBe('stale');
+ });
+ test('blocks reads for active operations and invalidates replaced repository guard',async()=>{
+  const {f,frame,captureId,independent}=await independentFixture();let reads=0,frames=0;
+  const port=async()=>{reads++;return independent;};
+  const blocked=await captureLocalInventoryEvidence(captureId,{readStores:()=>({...frame,blocked:true}),storage:f.memory,readActivePersistence:port});
+  expect(blocked.captureStatus).toBe('blocked');expect(reads).toBe(0);
+  const stale=await captureLocalInventoryEvidence(captureId,{readStores:()=>++frames===1?frame:{...frame,guard:[{}]},storage:f.memory,readActivePersistence:port});
+  expect(stale.captureStatus).toBe('stale');
+ });
+});
