@@ -535,3 +535,7 @@ Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION
 ## 19A.2e — origens, feats, optional features e condições Main
 
 Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md). Hotfix 19A.2d.1 aprovado. O CLI passa a usar as oito famílias de conversores expandidas para seleção Main. Próxima: coleções consultáveis e suporte, depois resolução das lacunas e execução real. Fast + Quality; full no encerramento de 19A.
+
+## 19A.2f — coleções de consulta e suporte Main
+
+Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md). Pacotes privados separados do V3 mecânico, consulta offline por fonte/tipo/título, definição auxiliar e referência mecânica pendente; integrados ao manifesto e ledger. Próxima: tratamento de copies/variants e execução real expandida; A3 Brew e A4/A5 updates. Fast + Quality.

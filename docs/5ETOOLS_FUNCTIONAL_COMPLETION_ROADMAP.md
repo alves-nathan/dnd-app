@@ -99,3 +99,7 @@ Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION
 ## Handoff 19A.2e
 
 Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md). Expansão selecionada de espécies/subespécies/backgrounds, feats/optional features/conditions. As oito etapas de conversão Main têm caminho expandido; não significa cobertura integral. Próximo 19A.2f: consulta e coleções auxiliares (incluindo status/disease sem relabel), resolução de lacunas e regressão real antes de fechar 19A; A3 Brew e A4/A5 updates ainda pendentes.
+
+## Handoff 19A.2f
+
+Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md). Contrato local de referência, consulta offline e suporte de definições, sem relabel de entidades nem declaração de efeito funcional; ledger explícito e bytes verificáveis. Próximo 19A.2g: resolver lacunas estruturais de copies/templates/variants e preparar regressão expandida real. A3/A4/A5 pendentes; integração do leitor de referências ao app em B/C, conforme natureza dos registros.

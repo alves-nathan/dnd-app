@@ -9,6 +9,7 @@ const {openSnapshot,buildInventory}=require('./inventory');
 const {verifyPinnedInputs}=require('./functional-corpus');
 const {buildFunctionalInputPlan,readSelectedFunctionalInputs}=require('./functional-input-plan');
 const {converters}=require('./pilot-coverage');
+const {buildReferencePacks,validateReferencePacks}=require('./functional-reference-pack');
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
 const cmp=(a,b)=>a<b?-1:a>b?1:0;
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -27,7 +28,7 @@ function collectMainRuns(main,plan){
 }
 // Results from real converters are not trusted until their exact provenance
 // is joined to the input plan. Filtering never mutates the original packs.
-function assembleReviewConversion(plan,runs,validate){
+function assembleReviewConversion(plan,runs,validate,referencePacks=null){
  assert(plan?.schemaVersion==='dnd-upstream-functional-input-plan.v1'&&plan.scope==='privateConversionInputs'&&plan.executable===false&&typeof validate==='function','functionalConversionInputsInvalid');
  const {fingerprint,...body}=plan;
  assert(digest(body)===fingerprint,'functionalConversionPlanInvalid');
@@ -92,45 +93,46 @@ function assembleReviewConversion(plan,runs,validate){
    }
   }
  }
- const ledger=[],counts={selected:0,excluded:0,sourcePending:0,sharedSupportPending:0,convertedReview:0,partialReview:0,conversionPending:0,homebrewPending:0,auxiliaryPending:0,validationBlocked:0,emittedItems:all.length,exportedItems:valid?all.length:0};
+ const referenceOutputs=referencePacks===null?new Map():validateReferencePacks(plan,referencePacks);
+ const references=referencePacks??[];
+ const ledger=[],counts={selected:0,excluded:0,sourcePending:0,sharedSupportPending:0,convertedReview:0,partialReview:0,conversionPending:0,homebrewPending:0,auxiliaryPending:0,validationBlocked:0,consultationReview:0,definitionSupportReview:0,mechanicalReferencePending:0,emittedItems:all.length,exportedItems:valid?all.length:0,referenceRecords:referenceOutputs.size};
  for(const [key,r] of rows){
-  const found=outputs.get(key)||[],diagnostics=sorted(diags.get(key)||[]);
+  const found=outputs.get(key)||[],diagnostics=sorted(diags.get(key)||[]),reference=referenceOutputs.get(key);
+  assert(!reference||!found.length,'functionalReferenceMechanicalOverlap');
   let status=r.disposition;
   if(status==='included'){
    counts.selected++;
    if(found.length)status=!valid?'validationBlocked':diagnostics.length?'partialReview':'convertedReview';
+   else if(reference)status=reference.usage==='consultation'?'consultationReview':reference.usage==='definitionSupport'?'definitionSupportReview':'mechanicalReferencePending';
    else status=r.origin==='homebrew'?'homebrewPending':r.lane==='resolverEntity'?'conversionPending':'auxiliaryPending';
   }
   bump(counts,status);
-  ledger.push({coordinate:key,sourceId:r.sourceId,inputFingerprint:r.valueFingerprint,lane:r.lane,status,outputs:found.sort((a,b)=>cmp(a.id,b.id)),diagnostics});
+  ledger.push({coordinate:key,sourceId:r.sourceId,inputFingerprint:r.valueFingerprint,lane:r.lane,status,outputs:found.sort((a,b)=>cmp(a.id,b.id)),...(reference?{referenceOutput:reference}:{}),diagnostics});
  }
- assert(counts.selected===counts.convertedReview+counts.partialReview+counts.conversionPending+counts.homebrewPending+counts.auxiliaryPending+counts.validationBlocked,'functionalConversionAccountingMismatch');
+ assert(counts.selected===counts.convertedReview+counts.partialReview+counts.conversionPending+counts.homebrewPending+counts.auxiliaryPending+counts.validationBlocked+counts.consultationReview+counts.definitionSupportReview+counts.mechanicalReferencePending,'functionalConversionAccountingMismatch');
  const exported=valid?packs:[];
  const files=exported.map(pack=>({file:'pack-'+sha(pack.id)+'.v3.json',packId:pack.id,items:pack.items.length,sha256:sha(bytes(pack))}));
- const manifest=seal({schemaVersion:'dnd-upstream-functional-conversion.v1',commits:plan.commits,bindings:{inputPlan:plan.fingerprint,corpus:plan.bindings.corpus,scope:plan.bindings.scope},converterStages:sorted(stages),counts,validation:{status:all.length?(valid?'stagingValid':'stagingBlocked'):'noOutputs',codes:validationCodes},files,ledger,scope:'privateReviewPacksOnly',bootstrapRequired:true,activation:'review-required',runtimeEligible:false,complete:false,executable:false});
- return {manifest,packs:exported};
+ const referenceFiles=references.map(pack=>({file:'reference-'+sha(pack.id)+'.json',packId:pack.id,records:pack.records.length,sha256:sha(bytes(pack))}));
+ const manifest=seal({schemaVersion:'dnd-upstream-functional-conversion.v1',commits:plan.commits,bindings:{inputPlan:plan.fingerprint,corpus:plan.bindings.corpus,scope:plan.bindings.scope},converterStages:sorted(stages),counts,validation:{status:all.length?(valid?'stagingValid':'stagingBlocked'):'noOutputs',codes:validationCodes},files,referenceFiles,referenceValidation:referencePacks===null?'notRun':'inputBound',ledger,scope:'privateReviewPacksOnly',bootstrapRequired:true,activation:'review-required',runtimeEligible:false,complete:false,executable:false});
+ return {manifest,packs:exported,referencePacks:references};
 }
 function convertSelectedCorpus(main,homebrew,inventory,draft,selection,validate){
  verifyPinnedInputs(main,homebrew);
  const plan=buildFunctionalInputPlan(main,homebrew,inventory,draft,selection);
  // Read the exact selected input values to verify the operational boundary.
  // The existing converters still need the immutable full Main snapshot for copy resolution.
- let n=0;
- for(const {descriptor} of readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,plan)){
-  assert(descriptor.disposition==='included','functionalConversionSelectionMismatch');n++;
- }
- assert(n===plan.totals.main.included+plan.totals.homebrew.included,'functionalConversionSelectionMismatch');
- return assembleReviewConversion(plan,collectMainRuns(main,plan),validate);
+ const references=buildReferencePacks(plan,readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,plan));
+ return assembleReviewConversion(plan,collectMainRuns(main,plan),validate,references);
 }
 function publicConversionSummary(m){
- return {schemaVersion:m.schemaVersion,commits:m.commits,counts:m.counts,validation:m.validation.status,packCount:m.files.length,fingerprint:m.fingerprint,complete:false,runtimeEligible:false};
+ return {schemaVersion:m.schemaVersion,commits:m.commits,counts:m.counts,validation:m.validation.status,packCount:m.files.length,referencePackCount:m.referenceFiles?.length??0,fingerprint:m.fingerprint,complete:false,runtimeEligible:false};
 }
 function writePrivateReviewConversion(result,out,root){
  const parent=fs.realpathSync(path.dirname(path.resolve(out))),repo=fs.realpathSync(root),relative=path.relative(repo,parent);
  assert(relative&&(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative)),'functionalConversionOutputMustBeOutsideRepository');
  const dir=path.join(parent,path.basename(out));
- const {manifest,packs}=result;
- assert(manifest.files.length===packs.length,'functionalConversionFileMismatch');
+ const {manifest,packs,referencePacks=[]}=result;
+ assert(manifest.files.length===packs.length&&(manifest.referenceFiles??[]).length===referencePacks.length,'functionalConversionFileMismatch');
  const {fingerprint,...body}=manifest;
  assert(digest(body)===fingerprint&&manifest.runtimeEligible===false&&manifest.executable===false,'functionalConversionManifestInvalid');
  // Exclusive directory, manifest written last. On an ordinary write failure,
@@ -140,6 +142,11 @@ function writePrivateReviewConversion(result,out,root){
   for(const [i,p] of packs.entries()){
    const f=manifest.files[i],raw=bytes(p);
    assert(f.file==='pack-'+sha(p.id)+'.v3.json'&&f.packId===p.id&&f.sha256===sha(raw)&&f.items===p.items.length,'functionalConversionFileMismatch');
+   fs.writeFileSync(path.join(dir,f.file),raw,{flag:'wx',mode:0o600});
+  }
+  for(const [i,p] of referencePacks.entries()){
+   const f=manifest.referenceFiles[i],raw=bytes(p);
+   assert(f.file==='reference-'+sha(p.id)+'.json'&&f.packId===p.id&&f.sha256===sha(raw)&&f.records===p.records.length,'functionalConversionReferenceFileMismatch');
    fs.writeFileSync(path.join(dir,f.file),raw,{flag:'wx',mode:0o600});
   }
   fs.writeFileSync(path.join(dir,'manifest.json'),bytes(manifest),{flag:'wx',mode:0o600});
