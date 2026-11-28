@@ -1,6 +1,7 @@
 'use strict';
 // Expand spell/monster conversion without changing historical pilot baselines.
-const {identity,makeResolver}=require('./resolver');
+const {identity}=require('./resolver');
+const {createFunctionalResolver,expandFunctionalVersions}=require('./functional-resolver');
 const {readMainPublications,projectMainSource}=require('./functional-main-source');
 const spell=require('./spell-converter'),creature=require('./creature-converter');
 const cmp=(a,b)=>a<b?-1:a>b?1:0;
@@ -53,32 +54,73 @@ function buildFunctionalIndexed(snapshot,kind,codes){
    }catch(err){if(selected)block(e.source,path,index,err.code||'invalidIdentity');}
   }
  }
- const resolver=makeResolver(records),bySource=new Map();
+ const resolver=createFunctionalResolver(snapshot,records),bySource=new Map(),existingKeys=new Set(records.map(r=>r.id));
  for(const r of records)if(Object.hasOwn(counts,r.entity.source)){
   const list=bySource.get(r.entity.source)||[];list.push(r);bySource.set(r.entity.source,list);
  }
  for(const code of [...codes].sort(cmp)){
-  const items=[],pilotEra=kind==='spell'?spell.pilot[code]?.era:creature.pilot[code];
+  const items=[],variants=[],pilotEra=kind==='spell'?spell.pilot[code]?.era:creature.pilot[code];
   const packSource=projectMainSource(code,publications,null,pilotEra).source;
+  const convert=(r,resolved,version)=>{
+   const e=resolved.entity;
+   if(e.source!==code)throw Object.assign(Error('sourceMismatch'),{code:'sourceMismatch'});
+   const {source,notes,editionEvidence}=projectMainSource(code,publications,e,pilotEra);
+   let item;
+   if(kind==='spell'){
+    const policy=spell.pilot[code];
+    const usePilot=policy&&policy.era!=='unknown'&&source.rulesEra===policy.era;
+    const access=usePilot?undefined:allExplicitAccess(e,lookup);
+    item=spell.convertSpell(r,resolved,lookup,source,policy??{era:source.rulesEra,classSources:[]},snapshot.commit,access);
+    if(access)notes.push('classIdsPending','classAccessEditionPending',...(Object.keys(access.all).some(k=>k!=='class')?['additionalAccessPending']:[]));
+    item.payload.mechanics.upstreamSpellRecord=clone(e);
+   }else item=creature.convertCreature(r,resolved,source,snapshot.commit).item;
+   if(resolved.templateLineage?.length){
+    item.metadata.externalTemplateLineage=clone(resolved.templateLineage);
+    notes.push('externalTemplateSemanticsPending');
+   }
+   if(resolved.versions?.length){
+    item.payload.mechanics.upstreamVersionContainer=clone(resolved.versions);
+    notes.push('versionContainerReviewPending');
+   }
+   if(version){
+    item.metadata.versionOrigin={parentKey:r.key,versionKey:version.key,containerIndex:version.containerIndex,implementation:version.implementation};
+    notes.push('versionSemanticsPending');
+   }
+   item.metadata.sourceEditionEvidence=editionEvidence;
+   item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...notes])].sort(cmp);
+   return item;
+  };
+  const c=counts[code];c.versionCandidates=0;c.versionsConverted=0;c.versionsBlocked=0;
+  const versionBlock=(r,v,reason)=>{
+   c.versionsBlocked++;bump(c.blockCodes,reason);
+   diagnostics.push({source:code,kind,path:r.path,index:r.index,code:reason,version:{containerIndex:v.containerIndex,implementation:v.implementation}});
+  };
   for(const r of bySource.get(code)||[]){
+   let resolved;
    try{
-    const resolved=resolver.resolve(r),e=resolved.entity;
-    if(e.source!==code)throw Object.assign(Error('sourceMismatch'),{code:'sourceMismatch'});
-    const {source,notes,editionEvidence}=projectMainSource(code,publications,e,pilotEra);
-    let item;
-    if(kind==='spell'){
-     const policy=spell.pilot[code];
-     const usePilot=policy&&policy.era!=='unknown'&&source.rulesEra===policy.era;
-     const access=usePilot?undefined:allExplicitAccess(e,lookup);
-     item=spell.convertSpell(r,resolved,lookup,source,policy??{era:source.rulesEra,classSources:[]},snapshot.commit,access);
-     if(access)notes.push('classIdsPending','classAccessEditionPending',...(Object.keys(access.all).some(k=>k!=='class')?['additionalAccessPending']:[]));
-     item.payload.mechanics.upstreamSpellRecord=clone(e);
-    }else item=creature.convertCreature(r,resolved,source,snapshot.commit).item;
-    item.metadata.sourceEditionEvidence=editionEvidence;
-    item.metadata.reviewCodes=[...new Set([...item.metadata.reviewCodes,...notes])].sort(cmp);
-    items.push(item);counts[code].converted++;
-   }catch(err){block(code,r.path,r.index,err.code||'conversionError');}
+    resolved=resolver.resolve(r);
+    const item=convert(r,resolved);
+    items.push(item);c.converted++;
+   }catch(err){block(code,r.path,r.index,err.code||'conversionError');continue;}
+   const expanded=expandFunctionalVersions(r,resolved,existingKeys);
+   for(const d of expanded.diagnostics){c.versionCandidates++;versionBlock(r,d,d.code);}
+   for(const v of expanded.candidates){
+    c.versionCandidates++;
+    variants.push({r,v,resolved});
+   }
   }
+  // Reject every colliding version, not only the second one. Physical IDs
+  // remain the existing source/name hashes; provenance remains the raw parent.
+  const frequencies=new Map();
+  for(const {v} of variants)frequencies.set(v.id,(frequencies.get(v.id)||0)+1);
+  for(const {r,v,resolved} of variants){
+   try{
+    if(frequencies.get(v.id)!==1)throw Object.assign(Error('versionIdentityCollision'),{code:'versionIdentityCollision'});
+    const item=convert(r,{entity:v.entity,lineage:[r.id,...resolved.lineage],templateLineage:resolved.templateLineage},v);
+    items.push(item);c.versionsConverted++;
+   }catch(err){versionBlock(r,v,err.code||'versionConversionError');}
+  }
+  if(c.versionCandidates!==c.versionsConverted+c.versionsBlocked)throw Error('functionalVersionAccountingMismatch');
   items.sort((a,b)=>cmp(a.id,b.id));
   if(items.length)packs.push({templateVersion:'dnd-combat-import.v3',contractRevision:'canonical-v3.1',id:'upstream:main:'+code+':'+spec.suffix,source:packSource,metadata:{stage:spec.stage,activation:'review-required',conversionScope:'functionalSelectedSources'},items});
   if(counts[code].total!==counts[code].converted+counts[code].blocked)throw Error('functionalIndexedAccountingMismatch');

@@ -539,3 +539,7 @@ Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_
 ## 19A.2f — coleções de consulta e suporte Main
 
 Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md). Pacotes privados separados do V3 mecânico, consulta offline por fonte/tipo/título, definição auxiliar e referência mecânica pendente; integrados ao manifesto e ledger. Próxima: tratamento de copies/variants e execução real expandida; A3 Brew e A4/A5 updates. Fast + Quality.
+
+## 19A.2g.1 — resolução funcional de templates e versões
+
+Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md). Template externo e versões suportadas passam de preview a emissão funcional de revisão para magias/criaturas, com coordenadas e bloqueios. Próxima: estender transformações e resolução a outras famílias, resolver variantes cross-source e preparar execução real. Fast + Quality.

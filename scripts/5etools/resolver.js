@@ -247,7 +247,7 @@ function applyMods(entity, mods) {
   }
   return entity;
 }
-function makeResolver(records) {
+function makeResolver(records, options = {}) {
   const index = new Map(), memo = new Map();
   for (const r of records) {
     const matches = index.get(r.id) || []; matches.push(r); index.set(r.id,matches);
@@ -264,21 +264,40 @@ function makeResolver(records) {
     if (stack.has(r.id)) fail('copyCycle',r.id);
     if (stack.size >= 100) fail('copyDepthExceeded',r.id);
     if (memo.has(r.id)) return copy(memo.get(r.id));
-    let entity = copy(normalizeIdentity(r.kind,r.entity)), lineage = [];
+    let entity = copy(normalizeIdentity(r.kind,r.entity)), lineage = [], templateLineage = [], versions;
+    // Functional mode separates an explicit version container from its base.
+    // Historical audit and pilots keep their original strict behavior.
+    if (options.separateVersions && own(entity,'_versions')) {
+      if (!Array.isArray(entity._versions)) fail('invalidVersionContainer',r.id);
+      versions = copy(entity._versions);
+      delete entity._versions;
+    }
     if (entity._copy) {
       const meta = entity._copy;
       if (!isRecord(meta)) fail('invalidCopy',r.id);
-      if (Object.keys(meta).some(k => !['name','source','className','classSource','shortName','subclassShortName','subclassSource','raceName','raceSource','level','_preserve','_mod'].includes(k))) fail('unsupportedCopyMetadata',r.id);
+      const allowed=['name','source','className','classSource','shortName','subclassShortName','subclassSource','raceName','raceSource','level','_preserve','_mod'];
+      if(typeof options.resolveTemplate==='function')allowed.push('_templates');
+      if (Object.keys(meta).some(k => !allowed.includes(k))) fail('unsupportedCopyMetadata',r.id);
       const base = lookup(r.origin,r.kind,meta);
-      const parent = resolve(base,new Set([...stack,r.id]));
-      entity = merge(r.kind,parent.entity,entity);
-      if (meta._mod) applyMods(entity,meta._mod);
-      lineage = [base.id,...parent.lineage];
+      const nextStack=new Set([...stack,r.id]);
+      const parent = resolve(base,nextStack);
+      if(options.separateVersions&&parent.versions?.length&&(meta._preserve?.['*']||meta._preserve?._versions))fail('inheritedVersionContainerPending',r.id);
+      if(own(meta,'_templates')){
+        const result=options.resolveTemplate({...r,entity},{lookup,resolve:target=>resolve(target,nextStack)});
+        entity=result.entity;
+        lineage=result.baseLineage;
+        templateLineage=[...(parent.templateLineage||[]),...result.templateLineage];
+      }else{
+        entity = merge(r.kind,parent.entity,entity);
+        if (meta._mod) applyMods(entity,meta._mod);
+        lineage = [base.id,...parent.lineage];
+        templateLineage=parent.templateLineage||[];
+      }
     }
     if (entity._mod || entity._templates || entity._versions) fail('unsupportedVariantOrTemplate',r.id);
     if (r.kind==='magicvariant' && norm(entity.inherits?.source) && norm(entity.source)!==norm(entity.inherits.source)) fail('variantSourceMismatch',r.id);
     if (identity(r.kind,entity) !== r.key) fail('identityChangedByMod',r.id);
-    const value = {entity,lineage};
+    const value = {entity,lineage,...(versions===undefined?{}:{versions}),...(templateLineage.length?{templateLineage}:{})};
     memo.set(r.id,copy(value));
     return value;
   }

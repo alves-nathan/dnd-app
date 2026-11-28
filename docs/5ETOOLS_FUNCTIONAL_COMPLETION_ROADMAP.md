@@ -103,3 +103,7 @@ Ver [5ETOOLS_FUNCTIONAL_ORIGIN_FEATURE_CONVERSION.md](5ETOOLS_FUNCTIONAL_ORIGIN_
 ## Handoff 19A.2f
 
 Ver [5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md](5ETOOLS_FUNCTIONAL_REFERENCE_PACKS.md). Contrato local de referência, consulta offline e suporte de definições, sem relabel de entidades nem declaração de efeito funcional; ledger explícito e bytes verificáveis. Próximo 19A.2g: resolver lacunas estruturais de copies/templates/variants e preparar regressão expandida real. A3/A4/A5 pendentes; integração do leitor de referências ao app em B/C, conforme natureza dos registros.
+
+## Handoff 19A.2g.1
+
+Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md](5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION.md). Reuso de preview de template/versão em conversão Main spell/monster, sem mudar piloto histórico. Próximo 19A.2g.2: ampliar transformações e famílias, com regressões da fonte fixada; depois execução real expandida e fechamento de lacunas, A3/A4/A5.
