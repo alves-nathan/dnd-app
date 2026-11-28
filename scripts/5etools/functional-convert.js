@@ -118,13 +118,19 @@ function assembleReviewConversion(plan,runs,validate,referencePacks=null){
  const manifest=seal({schemaVersion:'dnd-upstream-functional-conversion.v1',commits:plan.commits,bindings:{inputPlan:plan.fingerprint,corpus:plan.bindings.corpus,scope:plan.bindings.scope},converterStages:sorted(stages),counts,validation:{status:all.length?(valid?'stagingValid':'stagingBlocked'):'noOutputs',codes:validationCodes},files,referenceFiles,referenceValidation:referencePacks===null?'notRun':'inputBound',ledger,scope:'privateReviewPacksOnly',bootstrapRequired:true,activation:'review-required',runtimeEligible:false,complete:false,executable:false});
  return {manifest,packs:exported,referencePacks:references};
 }
-function convertSelectedCorpus(main,homebrew,inventory,draft,selection,validate){
+function convertSelectedCorpus(main,homebrew,inventory,draft,selection,validate,observe=()=>{}){
  verifyPinnedInputs(main,homebrew);
+ observe('inputPlan');
  const plan=buildFunctionalInputPlan(main,homebrew,inventory,draft,selection);
  // Read the exact selected input values to verify the operational boundary.
  // The existing converters still need the immutable full Main snapshot for copy resolution.
+ observe('referenceConversion');
  const references=buildReferencePacks(plan,readSelectedFunctionalInputs(main,homebrew,inventory,draft,selection,plan));
- return assembleReviewConversion(plan,collectMainRuns(main,plan),validate,references);
+ observe('mechanicalConversion');
+ const runs=collectMainRuns(main,plan);
+ observe('mechanicalRuns',runs);
+ observe('jointStaging');
+ return assembleReviewConversion(plan,runs,validate,references);
 }
 function publicConversionSummary(m){
  return {schemaVersion:m.schemaVersion,commits:m.commits,counts:m.counts,validation:m.validation.status,packCount:m.files.length,referencePackCount:m.referenceFiles?.length??0,fingerprint:m.fingerprint,complete:false,runtimeEligible:false};
@@ -166,7 +172,7 @@ function loadStagingValidator(root){
  try{return require(path.join(root,'src/compendium/importV3Staging.ts')).stageImportV3;}
  finally{if(prior)require.extensions['.ts']=prior;else delete require.extensions['.ts'];}
 }
-function run(args){
+function run(args,{observe=()=>{},print=console.log}={}){
  assert(args.length===5,'Usage: node functional-convert.js MAIN_DIR BREW_DIR CORPUS_JSON SELECTION_JSON NEW_OUTPUT_DIR');
  const [mainDir,brewDir,draftPath,selectionPath,out]=args,root=path.resolve(__dirname,'../..');
  const lock=require('./functional-inputs.json'),read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
@@ -175,11 +181,12 @@ function run(args){
  assert(app===draft.commits.application,'functionalConversionApplicationCommitMismatch');
  execFileSync('git',['-C',root,'diff','--quiet','HEAD','--'],{stdio:'ignore'});
  const main=openSnapshot(mainDir,lock.main.commit),brew=openSnapshot(brewDir,lock.homebrew.commit);
- const result=convertSelectedCorpus(main,brew,buildInventory(main,brew,lock.asOf),draft,selection,loadStagingValidator(root));
+ observe('loadValidator');
+ const result=convertSelectedCorpus(main,brew,buildInventory(main,brew,lock.asOf),draft,selection,loadStagingValidator(root),observe);
+ observe('writeReview');
  writePrivateReviewConversion(result,out,root);
- console.log(JSON.stringify(publicConversionSummary(result.manifest)));
- // Incomplete review artifacts are useful, but cannot pass a production gate.
- process.exitCode=2;
+ print(JSON.stringify(publicConversionSummary(result.manifest)));
+ return result.manifest;
 }
-module.exports={collectMainRuns,assembleReviewConversion,convertSelectedCorpus,publicConversionSummary,writePrivateReviewConversion,loadStagingValidator};
-if(require.main===module){try{run(process.argv.slice(2));}catch(e){console.error(typeof e?.message==='string'&&/^functional[A-Za-z]+$/.test(e.message)?e.message:'functionalConversionFailed');process.exitCode=1;}}
+module.exports={collectMainRuns,assembleReviewConversion,convertSelectedCorpus,publicConversionSummary,writePrivateReviewConversion,loadStagingValidator,run};
+if(require.main===module){try{run(process.argv.slice(2));process.exitCode=2;}catch(e){console.error(typeof e?.message==='string'&&/^functional[A-Za-z]+$/.test(e.message)?e.message:'functionalConversionFailed');process.exitCode=1;}}

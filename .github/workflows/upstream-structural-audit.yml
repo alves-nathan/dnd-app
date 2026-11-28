@@ -23,6 +23,7 @@ jobs:
     env:
       GIT_TERMINAL_PROMPT: '0'
       FULL_UPSTREAM_AUDIT: ${{ github.event_name != 'push' || contains(github.event.head_commit.message, '[full-upstream-audit]') }}
+      FUNCTIONAL_CORPUS_AUDIT: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[functional-corpus-audit]') || contains(github.event.head_commit.message, '[full-upstream-audit]') }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -41,7 +42,7 @@ jobs:
             echo 'Fast fixture audit only — full upstream audit still required before cutover' >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Fetch upstream snapshots (no upstream code execution)
-        if: env.FULL_UPSTREAM_AUDIT == 'true'
+        if: env.FULL_UPSTREAM_AUDIT == 'true' || env.FUNCTIONAL_CORPUS_AUDIT == 'true'
         run: |
           fetch_snapshot() (
             set -euo pipefail
@@ -66,6 +67,9 @@ jobs:
           node scripts/5etools/audit-summary.js "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
       - name: Install validation dependencies
         run: npm ci
+      - name: Rehearse expanded functional corpus (aggregate only)
+        if: env.FUNCTIONAL_CORPUS_AUDIT == 'true'
+        run: node --max-old-space-size=6144 scripts/5etools/functional-corpus-rehearsal.js "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew"
       - name: Rehearse real SQLite engine (disposable memory only)
         run: |
           node scripts/5etools/independent-persistence-harness.js > "$RUNNER_TEMP/dnd-persistence-rehearsal.json"
@@ -235,6 +239,6 @@ jobs:
           npx jest src/tests/upstream5etoolsCutoverEvidence.test.ts --runInBand
           node scripts/5etools/cutover-evidence.js "$RUNNER_TEMP/5etools-evidence"
       - name: Remove upstream snapshots
-        if: always() && env.FULL_UPSTREAM_AUDIT == 'true'
+        if: always() && (env.FULL_UPSTREAM_AUDIT == 'true' || env.FUNCTIONAL_CORPUS_AUDIT == 'true')
         run: |
           rm -rf -- "$RUNNER_TEMP/5etools-main" "$RUNNER_TEMP/5etools-homebrew" "$RUNNER_TEMP/5etools-evidence"

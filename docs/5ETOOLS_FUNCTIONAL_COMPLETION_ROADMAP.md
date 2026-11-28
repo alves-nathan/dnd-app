@@ -115,3 +115,7 @@ Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md](5ETOOLS_FUNCTIONAL_STRUCTURAL
 ## Handoff 19A.2g.3
 
 Ver [5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md](5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md). Versões spell/monster/feat/optionalfeature de outra fonte selecionada com proveniência-pai e destino verificado; vínculos cross-owner herdados mantidos como referências pendentes de consumidor. Próxima 19A.2h: execução real expandida e reconciliação de gaps, com testes locais/CI agregados e full somente no fechamento 19A. A3/A4/A5 pendentes.
+
+## Handoff 19A.2h.1
+
+Ver [5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md](5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md). Primeira execução expandida direcionada no CI; analisar logs agregados e corrigir bloqueios observados antes de avançar A3. Full no fechamento 19A.

@@ -49,3 +49,22 @@ describe('functional conversion review packs',()=>{
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
  });
 });
+
+test('real CLI validator loader and rehearsal readback use aggregate-only evidence',()=>{
+ const {loadStagingValidator}=require('../../scripts/5etools/functional-convert');
+ const {summarizeRuns,summarizeLedger,verifyPrivateReadback}=require('../../scripts/5etools/functional-corpus-rehearsal');
+ const {plan,runs}=fixture(),validate=loadStagingValidator(process.cwd()),r=assembleReviewConversion(plan,runs,validate);
+ expect(r.manifest.validation.status).toBe('stagingValid');
+ expect(summarizeRuns(runs)['a5.1']).toMatchObject({items:2,byKind:{spell:2}});
+ const summary=summarizeLedger(r.manifest);
+ expect(summary).toMatchObject({rows:5,byOrigin:{main:{convertedReview:1,excluded:1,conversionPending:1,auxiliaryPending:1},homebrew:{homebrewPending:1}}});
+ expect(JSON.stringify(summary)).not.toContain('SECRET_BREW');
+ expect(JSON.stringify(summary)).not.toContain('Fixture spell');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'dnd-rehearsal-')),out=path.join(dir,'review');
+ try{
+  writePrivateReviewConversion(r,out,process.cwd());
+  expect(verifyPrivateReadback(out,r.manifest)).toEqual({files:2,items:1,references:0,hashesVerified:true});
+  fs.appendFileSync(path.join(out,r.manifest.files[0].file),' ');
+  expect(()=>verifyPrivateReadback(out,r.manifest)).toThrow('functionalRehearsalHashMismatch');
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

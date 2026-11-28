@@ -551,3 +551,7 @@ Ver [5ETOOLS_FUNCTIONAL_STRUCTURAL_EXPANSION_2.md](5ETOOLS_FUNCTIONAL_STRUCTURAL
 ## 19A.2g.3 — versões entre fontes e grants herdados
 
 Ver [5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md](5ETOOLS_FUNCTIONAL_CROSS_SOURCE_LINEAGE.md). Autorização de versões por coordenada/spec e fonte selecionada; grants cross-owner comprovados preservados separadamente, sem enfraquecer staging. Próxima: execução real expandida e resolução dos gaps.
+
+## 19A.2h.1 — ensaio real expandido
+
+Ver [5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md](5ETOOLS_FUNCTIONAL_CORPUS_REHEARSAL.md). CI direcionado [functional-corpus-audit] executa snapshots fixados e CLI real, com escopo descartável allObservedMain, agregados e readback privado. Não equivale ao fechamento da fase.
