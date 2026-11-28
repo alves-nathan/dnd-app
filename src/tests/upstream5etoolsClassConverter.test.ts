@@ -89,3 +89,46 @@ const snapshotPath=process.env.DND_UPSTREAM_CLASS_SNAPSHOT;
   expect(r.counts.XPHB.classFeature.converted).toBeGreaterThan(0);
   expect(r.counts.XPHB.subclassFeature.converted).toBeGreaterThan(0);
 },120000);
+
+describe('functional Main classes and progression',()=>{
+ const {buildFunctionalClasses}=require('../../scripts/5etools/class-converter');
+ const pick=(kind:string,index:number,source:string,path='data/class/class-fixture.json')=>({kind,index,path,sourceId:JSON.stringify(['main',source])});
+ test('converts non-pilot class and subclass, with qualified feature grants across publications',()=>{
+  const classRecord=cls('NEW',{edition:'one',classFeatures:[{classFeature:'Feature|Fixture|NEW|1|SUP',gainSubclassFeature:true}],spellcastingAbility:'int',casterProgression:'full',cantripProgression:Array(20).fill(2)});
+  const feature=cf('SUP',{classSource:'NEW',edition:'one'});
+  const subclass=sub('SUP',{classSource:'NEW',edition:'one',subclassFeatures:['Choice|Fixture|NEW|Path|SUP|3']});
+  const subFeature=sf('SUP',{classSource:'NEW',edition:'one'});
+  const snapshot=fixture({class:[classRecord],classFeature:[feature],subclass:[subclass],subclassFeature:[subFeature]});
+  const selection=[pick('class',0,'NEW'),pick('classFeature',0,'SUP'),pick('subclass',0,'SUP'),pick('subclassFeature',0,'SUP')];
+  const r=buildFunctionalClasses(snapshot,selection),items=r.packs.flatMap((p:any)=>p.items);
+  expect(items).toHaveLength(4);
+  const c=items.find((i:any)=>i.kind==='class'),f=items.find((i:any)=>i.payload.sourceType==='classFeature'),sc=items.find((i:any)=>i.kind==='subclass'),sf=items.find((i:any)=>i.payload.sourceType==='subclassFeature');
+  expect(c.source.rulesEra).toBe('2024');
+  expect(c.payload).toMatchObject({featureIds:[f.id],progression:[{level:1,featureIds:[f.id]}],spellcasting:{ability:'INT',cantripsKnownByLevel:Array(20).fill(2)},mechanics:{featureGrantReferences:[{raw:{gainSubclassFeature:true}}]}});
+  expect(sc.payload).toMatchObject({classId:c.id,featureIds:[sf.id]});
+  expect(sf.payload).toMatchObject({classId:c.id,subclassId:sc.id,levelGained:3});
+  expect(f.metadata.reviewCodes).toContain('crossPublicationOwnerReviewPending');
+  expect(combined(r).ok).toBe(true);
+  expect(r.counts.NEW.class).toEqual({total:1,converted:1,blocked:0});
+  expect(r.counts.SUP.classFeature).toEqual({total:1,converted:1,blocked:0});
+  expect(buildFunctionalClasses(snapshot,selection)).toEqual(r);
+ });
+ test('does not implicitly include a dependency from an unselected source',()=>{
+  const s=fixture({class:[cls('NEW',{classFeatures:['Feature|Fixture|NEW|1|SUP']})],classFeature:[cf('SUP',{classSource:'NEW'})],subclass:[sub('NEW')],subclassFeature:[sf('NEW')]});
+  const r=buildFunctionalClasses(s,[pick('class',0,'NEW'),pick('subclass',0,'NEW'),pick('subclassFeature',0,'NEW')]);
+  expect(r.packs.flatMap((p:any)=>p.items)).toHaveLength(0);
+  expect(r.counts.NEW.blockCodes).toMatchObject({dependencySourceNotSelected:1,dependencyNotEmitted:2});
+  expect(()=>buildFunctionalClasses(s,[pick('class',0,'SUP')])).toThrow('functionalClassSelectionSourceMismatch');
+  expect(()=>buildFunctionalClasses(s,[pick('class',1,'NEW')])).toThrow('functionalClassSelectionCoordinateMissing');
+ });
+ test('retains an explicit source-qualified class from a root collection and does not infer era from date',()=>{
+  const s=fixture({class:[]}),old=s.readJson;
+  s.files.set('data/custom-classes.json','c'.repeat(40));
+  s.readJson=(p:string)=>p==='data/custom-classes.json'?{class:[cls('NEW',{classFeatures:[]})]}:old(p);
+  const r=buildFunctionalClasses(s,[pick('class',0,'NEW','data/custom-classes.json')]);
+  expect(r.packs[0].items[0].source.rulesEra).toBe('unknown');
+  expect(r.packs[0].items[0].provenance.path).toBe('data/custom-classes.json');
+  expect(r.packs[0].items[0].payload.progression).toEqual([]);
+  expect(buildFunctionalClasses(s,[]).packs).toEqual([]);
+ });
+});

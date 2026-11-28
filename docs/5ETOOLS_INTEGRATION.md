@@ -527,3 +527,7 @@ Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVER
 ## 19A.2c — equipamentos e itens mágicos Main
 
 Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md). Seleção por ocorrência, conversão real de equipamentos e magia além dos pilotos, expansão de variantes compatíveis e proveniência de base. Próxima: classes/subclasses/features/origens; suporte a variantes complexas continua aberto. Fast + Quality; full no fim de 19A.
+
+## 19A.2d — classes, subclasses e features Main
+
+Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md). Conversão selecionada por coordenada, fontes além do piloto, grafo fechado com dependências qualificadas e progressão preservada. Próxima: origens, feats, optional features e conditions. Fast + Quality; full ao fechar 19A.

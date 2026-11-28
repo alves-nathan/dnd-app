@@ -2,7 +2,8 @@
 // Offline, conservative class graph staging. Never activate or synthesize mechanical effects.
 const {createHash}=require('node:crypto');
 const {openSnapshot}=require('./inventory');
-const {identity,makeResolver}=require('./resolver');
+const {identity,makeResolver,mainEntityFile}=require('./resolver');
+const {readMainPublications,projectMainSource}=require('./functional-main-source');
 const fs=require('node:fs'),path=require('node:path');
 const pilot=Object.freeze({PHB:'2014',XPHB:'2024',TCE:'2014',XGE:'2014',EFA:'2024'});
 const kinds=['class','subclass','classFeature','subclassFeature'];
@@ -104,20 +105,39 @@ function projectClass(e,notes){
   const spellcasting=projectSpellcasting(e,notes);if(spellcasting)p.spellcasting=spellcasting;
   return p;
 }
+const coordinate=(p,k,i)=>JSON.stringify([p,k,i]);
+function buildFunctionalClasses(snapshot,selection){
+  if(!Array.isArray(selection))fail('functionalClassSelectionInvalid');
+  const selected=new Map();
+  for(const r of selection){
+    if(!kinds.includes(r.kind)||typeof r.path!=='string'||!mainEntityFile(r.path)||!Number.isSafeInteger(r.index)||r.index<0)fail('functionalClassSelectionInvalid');
+    const source=JSON.parse(r.sourceId),key=coordinate(r.path,r.kind,r.index);
+    if(!Array.isArray(source)||source.length!==2||source[0]!=='main'||typeof source[1]!=='string'||!source[1].trim()||selected.has(key))fail('functionalClassSelectionInvalid');
+    selected.set(key,source[1]);
+  }
+  return buildClassGraph(snapshot,[...new Set(selected.values())].sort(),selected);
+}
 function buildPilot(snapshot,codes=Object.keys(pilot)){
   if(!Array.isArray(codes)||!codes.length||new Set(codes).size!==codes.length||codes.some(c=>!own(pilot,c)))fail('invalidPilotSources');
-  const books=snapshot.readJson('data/books.json').book,records=[],diagnostics=[],counts=Object.create(null),sources=new Map();
+  return buildClassGraph(snapshot,codes,null);
+}
+function buildClassGraph(snapshot,codes,selected){
+  const functional=selected!==null;
+  if(!codes.length)return {commit:snapshot.commit,packs:[],counts:{},diagnostics:[],activation:'review-required'};
+  const books=functional?null:snapshot.readJson('data/books.json').book;
+  const publications=functional?readMainPublications(snapshot):null;
+  const records=[],diagnostics=[],counts=Object.create(null),sources=new Map(),seenCoordinates=new Set();
   const totals=()=>({total:0,converted:0,blocked:0});
   for(const code of codes){
     counts[code]={...Object.fromEntries(kinds.map(k=>[k,totals()])),reviewCodes:{},blockCodes:{},progressionOwners:0,progressionLinks:0,spellTables:0,pactTables:0};
-    sources.set(code,sourceFor(code,books.find(b=>b.source===code)));
+    sources.set(code,functional?projectMainSource(code,publications,null,pilot[code]).source:sourceFor(code,books.find(b=>b.source===code)));
   }
   const bump=(obj,k)=>obj[k]=(obj[k]||0)+1;
   function block(source,kind,p,index,code){
     counts[source][kind].blocked++;bump(counts[source].blockCodes,code);
     diagnostics.push({source,kind,path:p,index,code});
   }
-  const paths=[...snapshot.files.keys()].filter(p=>/^data\/class\/class-[^/]+\.json$/.test(p)).sort();
+  const paths=[...snapshot.files.keys()].filter(p=>/^data\/class\/class-[^/]+\.json$/.test(p)||functional&&mainEntityFile(p)&&/^data\/[^/]+\.json$/.test(p)).sort();
   if(!paths.length)fail('missingClassFiles');
   for(const p of paths){
     const json=snapshot.readJson(p);
@@ -125,7 +145,12 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
       if(!own(json,kind))continue;
       if(!Array.isArray(json[kind]))fail('invalidClassCollection');
       for(const [index,e] of json[kind].entries()){
-        const tracked=rec(e)&&own(counts,e.source);
+        const coord=coordinate(p,kind,index);
+        const tracked=functional?selected.has(coord):rec(e)&&own(counts,e.source);
+        if(functional&&tracked){
+          if(!rec(e)||e.source!==selected.get(coord))fail('functionalClassSelectionSourceMismatch');
+          seenCoordinates.add(coord);
+        }
         if(tracked)counts[e.source][kind].total++;
         try{
           const key=identity(kind,e);records.push({id:JSON.stringify(['main',key]),key,kind,origin:'main',path:p,index,blob:snapshot.files.get(p),entity:e});
@@ -133,16 +158,24 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
       }
     }
   }
-  const resolver=makeResolver(records),nodes=new Map();
+  if(functional&&seenCoordinates.size!==selected.size)fail('functionalClassSelectionCoordinateMissing');
+  const resolver=makeResolver(records),nodes=new Map(),selectedIds=new Set(records.filter(r=>functional?selected.has(coordinate(r.path,r.kind,r.index)):own(counts,r.entity.source)).map(r=>r.id));
   function classOwner(e){return resolver.lookup('main','class',{name:e.className,source:e.classSource});}
   function subclassOwner(e){return resolver.lookup('main','subclass',{shortName:e.subclassShortName,source:e.subclassSource,className:e.className,classSource:e.classSource});}
   function convert(r){
-    const resolved=resolver.resolve(r),e=resolved.entity,source=sources.get(e.source),kind=outputKind(r.kind);
+    const resolved=resolver.resolve(r),e=resolved.entity,kind=outputKind(r.kind);
+    if(functional&&e.source!==r.entity.source)fail('functionalClassResolvedSourceMismatch');
+    const projection=functional?projectMainSource(e.source,publications,e,pilot[e.source]):null;
+    const source=projection?projection.source:sources.get(e.source);
     if(typeof e.name!=='string'||!e.name.trim()||e.name.trim()!==e.name)fail('invalidName');
-    const notes=new Set(['effectSemanticsPending','classRuntimeIntegrationPending','precedencePending']);
+    const notes=new Set(['effectSemanticsPending','classRuntimeIntegrationPending','precedencePending',...(projection?.notes||[])]);
     const deps=new Set(),links=[],mechanics={upstreamClassRecord:clone(e)};
     let payload={mechanics};
-    const dep=target=>{deps.add(target.id);return physicalId(target.kind,target.entity);};
+    const dep=target=>{
+      if(functional&&!selectedIds.has(target.id))fail('dependencySourceNotSelected');
+      deps.add(target.id);
+      return physicalId(target.kind,target.entity);
+    };
     let owner,subOwner;
     if(r.kind!=='class'){
       owner=classOwner(e);payload.classId=dep(owner);
@@ -151,6 +184,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
     }
     if(r.kind.endsWith('Feature')){
       if(!Array.isArray(e.entries))fail('invalidFeatureEntries');
+      if(functional&&(!Number.isInteger(Number(e.level))||Number(e.level)<1||Number(e.level)>20))fail('featureLevelOutOfRange');
       payload.sourceType=r.kind;payload.levelGained=Number(e.level);
       notes.add('featureGrantSemanticsPending');
     }else{
@@ -167,6 +201,7 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
         if(classOwner(te).id!==(r.kind==='class'?r.id:owner.id)||
           (r.kind==='subclass'&&subclassOwner(te).id!==r.id))fail('crossOwnerFeatureReference');
         const level=Number(te.level),id=dep(target);
+        if(functional&&(!Number.isInteger(level)||level<1||level>20))fail('featureLevelOutOfRange');
         links.push({uid,featureId:id,level,raw:clone(raw)});
         if(!seen.has(id)){
           seen.add(id);if(!byLevel.has(level))byLevel.set(level,[]);byLevel.get(level).push(id);
@@ -189,21 +224,27 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
       identity:{canonicalKey:canonicalKey(r.kind,e),precedenceScope:source.precedenceScope},
       precedence:{relation:'unresolved',supersedes:[],reprints:[],coexistsWith:[],basis:'upstreamPendingGlobalResolution'},
       provenance:{origin:'5etools',repository:'5etools-mirror-3/5etools-src',commit:snapshot.commit,blob:r.blob,path:r.path,entityKey:r.key,index:r.index,sourceCode:e.source,resolverVersion:'a5.7',lineage:resolved.lineage},
-      payload,metadata:{reviewCodes:[...notes].sort(),upstreamReprintedAs:clone(e.reprintedAs||[])}}};
+      payload,metadata:{reviewCodes:[...notes].sort(),upstreamReprintedAs:clone(e.reprintedAs||[]),...(projection?{sourceEditionEvidence:projection.editionEvidence}:{})}}};
   }
   for(const r of records){
-    const code=r.entity.source;if(!own(counts,code))continue;
+    const code=r.entity.source;if(functional?!selected.has(coordinate(r.path,r.kind,r.index)):!own(counts,code))continue;
     try{nodes.set(r.id,convert(r));}
     catch(err){block(code,r.kind,r.path,r.index,err.code||'conversionError');}
   }
   // Keep only a closed graph of emitted class/subclass/feature records.
   // Cycles of owner -> feature -> owner are valid; a missing/blocked node propagates.
-  let changed=true;
-  while(changed){
-    changed=false;
-    for(const [id,node] of nodes)if([...node.deps].some(d=>!nodes.has(d))){
-      const r=node.r;nodes.delete(id);block(r.entity.source,r.kind,r.path,r.index,'dependencyNotEmitted');changed=true;
+  // Reverse dependency traversal: each blocked node propagates once.
+  const reverse=new Map(),queue=[];
+  for(const [id,node] of nodes){
+    for(const dep of node.deps){
+      const dependents=reverse.get(dep)||[];dependents.push(id);reverse.set(dep,dependents);
     }
+    if([...node.deps].some(d=>!nodes.has(d)))queue.push(id);
+  }
+  for(let i=0;i<queue.length;i++){
+    const id=queue[i],node=nodes.get(id);if(!node)continue;
+    const r=node.r;nodes.delete(id);block(r.entity.source,r.kind,r.path,r.index,'dependencyNotEmitted');
+    for(const dependent of reverse.get(id)||[])if(nodes.has(dependent))queue.push(dependent);
   }
   const packs=[];
   for(const code of codes){
@@ -217,11 +258,12 @@ function buildPilot(snapshot,codes=Object.keys(pilot)){
       if(item.payload.spellcasting?.pactSlotsByLevel)c.pactTables++;
     }
     items.sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
-    packs.push({templateVersion:'dnd-combat-import.v3',contractRevision:'canonical-v3.1',id:'upstream:main:'+code+':classes',source,metadata:{stage:'a5.7',activation:'review-required'},items});
+    packs.push({templateVersion:'dnd-combat-import.v3',contractRevision:'canonical-v3.1',id:'upstream:main:'+code+':classes',source,metadata:{stage:'a5.7',activation:'review-required',...(functional?{conversionScope:'functionalSelectedSources'}:{})},items});
   }
+  if(functional)for(const c of Object.values(counts))for(const k of kinds)if(c[k].total!==c[k].converted+c[k].blocked)fail('functionalClassAccountingMismatch');
   return {commit:snapshot.commit,packs,counts,diagnostics,activation:'review-required'};
 }
-module.exports={buildPilot,physicalId,projectSpellcasting,projectClass};
+module.exports={buildPilot,buildFunctionalClasses,physicalId,projectSpellcasting,projectClass};
 if(require.main===module){
   try{
     const [root,out,ref]=process.argv.slice(2);if(!root||!out)fail('usage');

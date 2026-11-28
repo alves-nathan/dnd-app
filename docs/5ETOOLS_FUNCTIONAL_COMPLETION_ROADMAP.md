@@ -91,3 +91,7 @@ Ver [5ETOOLS_FUNCTIONAL_INDEXED_CONVERSION.md](5ETOOLS_FUNCTIONAL_INDEXED_CONVER
 ## Handoff 19A.2c
 
 Ver [5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md](5ETOOLS_FUNCTIONAL_ITEM_CONVERSION.md). CLI usa conversão expandida de itens por coordenada, variantes com edição explícita e diagnóstico por base. Não fechar cobertura até tratar as lacunas de transformações/identidade/coleções; próxima 19A.2d classes e features, seguida de origens/feats/conditions e coleções auxiliares.
+
+## Handoff 19A.2d
+
+Ver [5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md](5ETOOLS_FUNCTIONAL_CLASS_CONVERSION.md). Classes/subclasses/features Main além dos pilotos; fonte/edição explícitas e seleção fechada de dependências; progressão e tabelas suportadas preservadas. Próximo 19A.2e: origens, feats, optional features e conditions; depois consulta/suporte, resolução real das lacunas, Brew e updates.
