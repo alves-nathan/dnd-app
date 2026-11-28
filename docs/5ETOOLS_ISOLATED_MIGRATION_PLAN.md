@@ -1,0 +1,9 @@
+# a8.20.1 — Delivery 15/20
+
+Base 13a38600dfc2cdabbf55f7197f86065c086eb61f; delivery 14 hotfix Quality/full audit approved by owner. Branch feature/5etools-integration.
+
+Reopen the private content-addressed checkpoint, rerun disposable restore rehearsal, recapture active state and require the same manifest and stage preservation fingerprint. Deterministic single-pack plan binds exact canonical V3 raw text, source/item IDs, provenance and existing review codes. Three ordered put-if-absent operations in a dedicated dnd-v3-isolated-candidate/v1 namespace: raw pack, review index, completion marker. No V2 projection, active compendium or runtime writes, deletion, replacement, enabled-source changes, or grant resolution. Existing data remain untouched; the marker is isolated record completion only, not approval. Plan contains private raw data and is not for logs/publication. Structural verification and rederivation against fresh inputs required; hashes are integrity, not trust. Read-only classification: empty, exact matching prefix, complete, conflict (including out-of-order marker), unavailable or invalid plan. No execution or automatic repair yet. Three synthetic regression tests in existing preservation suite.
+
+Decision: isolate additive candidate artifacts rather than write canonical V3 into V1/V2 storage prematurely. This is not an active content migration and does not claim complete installed inventory, full parity, native durability, trust, atomicity or actual owner approval; all pending gates retained. Next a8.20.2 / 16 of 20: isolated executor with exclusive create/readback, journal/restart and injected storage failures, no active activation; 17 rollback and full audit. 18–19 automated final validation, 20 isolated candidate cutover; emulator after 20. Main/legacy preserved until native acceptance and explicit approval. Private table scope, no DRM or new upstream content.
+
+CI pending; no local test execution.

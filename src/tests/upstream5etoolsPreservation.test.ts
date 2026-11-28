@@ -1149,3 +1149,54 @@ describe('a8.19.2 private archive and isolated restore rehearsal',()=>{
   expect(await readV3CheckpointArchive(port,'../invalid')).toBeNull();
  });
 });
+
+describe('a8.20.1 isolated additive migration plan',()=>{
+ const {captureV3DurableCheckpoint}=require('../compendium/v3DurableCheckpoint') as typeof import('../compendium/v3DurableCheckpoint');
+ const {writeV3CheckpointArchive}=require('../compendium/v3CheckpointArchive') as typeof import('../compendium/v3CheckpointArchive');
+ const {prepareV3MigrationPlan,revalidateV3MigrationPlan,inspectV3MigrationCandidate,V3_CANDIDATE_NAMESPACE}=require('../compendium/v3MigrationPlan') as typeof import('../compendium/v3MigrationPlan');
+ const {observeExistingKeyValueCompendium}=require('../storage/readOnlyCompendiumObservation') as typeof import('../storage/readOnlyCompendiumObservation');
+ async function setup(){
+  const {input,memory}=await fixture(),guard=[input];
+  const ports={readFrame:()=>({guard,blocked:false,backend:'legacy' as const,preservation:input,observations:{}}),storage:{getItem:memory.getItem,getAllKeys:()=>Object.keys(memory.dump())},observeActiveCompendium:()=>observeExistingKeyValueCompendium('legacy',memory),readBundledRuntimeText:async()=>JSON.stringify(minimalBundle('1.0.0'))};
+  const captured=await captureV3DurableCheckpoint(ports);if(!captured.ok)throw Error(captured.code);
+  const archives=new Map<string,string>(),archivePort={createExclusive:async(id:string,raw:string)=>{if(archives.has(id))throw Error('exists');archives.set(id,raw);},read:async(id:string)=>archives.get(id)??null};
+  const written=await writeV3CheckpointArchive(archivePort,captured.manifest,captured.payload);if(!written.ok)throw Error(written.code);
+  const id=written.receipt.archiveId;
+  const prepared=await prepareV3MigrationPlan(ports,archivePort,id);if(!prepared.ok)throw Error(prepared.code);
+  return {input,memory,ports,archivePort,id,plan:prepared.plan};
+ }
+ test('binds archive and fresh capture deterministically without active writes or V2 projection',async()=>{
+  const {input,memory,ports,archivePort,id,plan}=await setup(),before=memory.dump();
+  expect(plan).toMatchObject({scope:'isolatedCandidateOnly',writeAuthorized:false,executable:false,counts:{candidateItems:1,preservedStorageItems:1,preservedRuntimeEntries:1,plannedCandidateWrites:3,activeWrites:0,deletes:0,replacements:0}});
+  expect(plan.operations.map(x=>x.role)).toEqual(['rawPack','reviewIndex','completionMarker']);
+  expect(plan.operations.every(x=>x.key.startsWith(V3_CANDIDATE_NAMESPACE))).toBe(true);
+  expect(plan.operations[0].value).toBe(input.stage.rawText);
+  expect(await prepareV3MigrationPlan(ports,archivePort,id)).toMatchObject({ok:true,plan});
+  expect(await revalidateV3MigrationPlan(plan,ports,archivePort)).toEqual({ok:true,executable:false});
+  expect(memory.dump()).toEqual(before);
+ });
+ test('classifies empty, exact interrupted prefix, complete and conflicting candidates without mutation',async()=>{
+  const {plan}=await setup(),candidate=createMemoryKeyValueStorage();
+  expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'empty',matchingRecords:0});
+  const [raw,index,marker]=plan.operations;
+  candidate.setItem(raw.key,raw.value);
+  expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'matchingPrefix',matchingRecords:1});
+  candidate.setItem(marker.key,marker.value);
+  expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'conflict'});
+  candidate.setItem(index.key,index.value);
+  const before=candidate.dump();
+  expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'complete',matchingRecords:3});
+  expect(candidate.dump()).toEqual(before);
+  candidate.setItem(raw.key,raw.value+' ');
+  expect(await inspectV3MigrationCandidate(plan,candidate)).toMatchObject({state:'conflict'});
+ });
+ test('blocks stale active data, tampered plan and missing archive',async()=>{
+  const {memory,ports,archivePort,id,plan}=await setup();
+  const altered={...plan,operations:plan.operations.map((o,i)=>i===0?{...o,key:'dnd-combat-math-compendium'}:o)};
+  expect(await inspectV3MigrationCandidate(altered,memory)).toMatchObject({state:'invalidPlan'});
+  expect(await revalidateV3MigrationPlan(altered,ports,archivePort)).toMatchObject({ok:false});
+  memory.setItem('dnd-combat-math-new-recovery','changed');
+  expect(await prepareV3MigrationPlan(ports,archivePort,id)).toMatchObject({ok:false,code:'migrationCheckpointStale'});
+  expect(await prepareV3MigrationPlan(ports,archivePort,'a'.repeat(64))).toMatchObject({ok:false,code:'migrationCheckpointArchiveInvalid'});
+ });
+});

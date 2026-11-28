@@ -475,3 +475,7 @@ Ver [5ETOOLS_DURABLE_CHECKPOINT_MILESTONE.md](5ETOOLS_DURABLE_CHECKPOINT_MILESTO
 ### Hotfix a8.19.2 — Jest
 
 Quality e auditoria completa falharam no mesmo teste de arquivo por import dinâmico incompatível com Jest. Substituição por require tipado; auditoria completa repetida. Entrega 14 permanece em validação.
+
+## Fase a8.20.1 — entrega 15/20
+
+Ver [5ETOOLS_ISOLATED_MIGRATION_PLAN.md](5ETOOLS_ISOLATED_MIGRATION_PLAN.md). Hotfix da entrega 14 aprovado. Plano aditivo determinístico, checkpoint reaberto e revalidado, operações exclusivamente em namespace isolado, classificação de estados idempotentes e conflitos. Próxima entrega 16/20: execução descartável e injeção de falhas.
