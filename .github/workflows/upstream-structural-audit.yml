@@ -31,6 +31,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Check upstream integration JavaScript syntax
+        run: find scripts/5etools -type f -name '*.js' -print0 | xargs -0 -r -n 1 node --check
       - name: Audit mode
         run: |
           if [ "$FULL_UPSTREAM_AUDIT" = true ]; then

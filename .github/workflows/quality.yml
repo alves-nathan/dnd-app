@@ -23,6 +23,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Check upstream integration JavaScript syntax
+        run: find scripts/5etools -type f -name '*.js' -print0 | xargs -0 -r -n 1 node --check
       - run: npm ci
       - run: npm run release:validate
       - uses: actions/upload-artifact@v6
