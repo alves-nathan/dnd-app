@@ -96,7 +96,7 @@ function reconcile({historical,runtime,rawHistorical,rawRuntime,items,records,co
     const i=actualRuntime.get(r.id);
     if(!i||digest(i)!==r.fingerprint)bump(issues,'runtimeFingerprintMismatch');
     const m=matchIdentity({...r,name:i?.displayName,sourceId:r.book},index,{runtime:true});
-    runtimeRows.push(add('runtime',r,m));
+    runtimeRows.push({...add('runtime',r,m),registryFingerprint:r.registryFingerprint});
   }
   // Repeated historical IDs may carry different payloads; never select one.
   const byHistoricalId=new Map();for(const row of rows)push(byHistoricalId,row.id,row);

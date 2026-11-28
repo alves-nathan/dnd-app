@@ -4,6 +4,7 @@ import type {CompendiumPersistenceState} from '../storage/compendiumSnapshot';
 import type {PortableRestoreDataCheckpoint} from '../backup/portableRestoreSession';
 import type {CharacterCompendiumLink} from '../types';
 import {collectOwnerInstanceReferences,collectScenarioInstanceReferences,collectHistoryInstanceReferences} from './localInventoryInstanceReferences';
+import {collectConfigurationHistoryReferences} from './localInventoryConfigurationReferences';
 import {collectRecoveryAndTransactionReferences,type ReferenceStatus} from './localInventoryRecoveryReferences';
 import {collectBuildReferenceOccurrences} from './localInventoryBuildReferences';
 import {sha256Hex} from '../catalog/catalogBundleDigest';
@@ -109,6 +110,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
   for(const [id,state] of Object.entries(portable.catalog.filterState.entityStates))add('filterEntity',id,state,snapshot.registry.has(id)?'present':'missing');
   for(const [id,state] of Object.entries(portable.catalog.filterState.categoryStates))add('filterCategory',id,state,snapshot.categoryById.has(id)?'present':'missing');
   for(const [id,state] of Object.entries(portable.catalog.filterState.bookStates))add('filterBook',id,state,snapshot.manifest.sourceBooks.includes(id)?'present':'missing');
+  collectConfigurationHistoryReferences(portable.catalog,snapshot,chars,add);
   collectRecoveryAndTransactionReferences(portable.characterStore,{snapshotId:snapshot.snapshotId,choiceStatus,linkStatus,entityExists:id=>snapshot.registry.has(id),bookExists:id=>snapshot.manifest.sourceBooks.includes(id),categoryExists:id=>snapshot.categoryById.has(id)},add);
   const lanes=[...new Set(references.map(r=>r.lane))].sort().map(lane=>({lane,total:references.filter(r=>r.lane===lane).length,statuses:tally(references.filter(r=>r.lane===lane))}));
   const result={schemaVersion:'dnd-local-inventory-reference-review.v1',scope,bindings:{capture:fingerprint,captureEnvelope:digest(capture),
@@ -118,7 +120,7 @@ export function reviewLocalInventoryReferences(input:ReferenceReviewInput,captur
    runtimeRowsFingerprint:digest(runtimeRows),referenceRowsFingerprint:digest(references),
    obligations:[
     {criterion:'completeInstalledCompendiumAndPortableStateInventory',status:'partial',pending:['independentBackend','buildChoiceProviderAndGeneratedActionReferences','historicalProviderAndOpaqueQuarantineSemantics','auxiliaryPersistence']},
-    {criterion:'exactRuntimePackageAndConfigurationBinding',status:'partial',pending:['registryDependencyAliasAndCategoryDispositions','bundledBytesAndPackageTrust','configurationHistoryReferences']},
+    {criterion:'exactRuntimePackageAndConfigurationBinding',status:'partial',pending:['rawAliasAndPolicyCoverage','bundledBytesAndPackageTrust','configurationRestoreSessionAndHistoricalSemantics']},
     {criterion:'legacyVersionsManualMappingsAndExternalPacksInventory',status:'pending',pending:['legacyVersionAndManualMappingReview','externalOwnerInventory']},
     {criterion:'explicitUnmatchedAndExcludedOccurrenceLedger',status:'partial',pending:['historicalLedgerJoin','ownerExclusionDecisions']}
    ],readiness:'blocked',inventoryAcceptance:'notEstablished',...flags};

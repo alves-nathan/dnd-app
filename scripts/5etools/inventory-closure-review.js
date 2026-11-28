@@ -2,6 +2,7 @@
 // Offline review only. The injected reference adapter is the app's pure
 // localInventoryReferenceReview implementation; this is not attestation.
 const {digest}=require('./integrated-review');
+const {reviewRuntimeGraph}=require('./inventory-runtime-graph-review');
 const {buildInventoryObservationReview}=require('./inventory-observation-review');
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
 const hex=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
@@ -35,19 +36,20 @@ function buildInventoryClosureReview({input,preview,ledger,capture,observationRe
  assert(Object.entries(d).every(([k,v])=>allowed.includes(k)&&integer(v))&&
   (d.exactEntry||0)+(d.changedEntry||0)+(d.missingLoadedEntry||0)===s.baselineEntries&&
   (d.exactEntry||0)+(d.changedEntry||0)+(d.loadedOnly||0)===s.loadedEntries,'closureRuntimeDispositionMismatch');
- const lanes=['characterSnapshot','characterLink','characterBuildChoice','progressionDraft','progressionRecovery','remediationPlan','remediationRecovery','remediationQuarantine','characterTransaction','progressionHistory','characterInstance','presetInstance','scenarioTactical','scenarioCreatureSource','historyInstance','presetBuildReference','presetLink','scenarioCharacter','historyCharacter','historyScenario','filterEntity','filterCategory','filterBook'];
+ const lanes=['characterSnapshot','characterLink','characterBuildChoice','progressionDraft','progressionRecovery','remediationPlan','remediationRecovery','remediationQuarantine','characterTransaction','progressionHistory','characterInstance','presetInstance','scenarioTactical','scenarioCreatureSource','historyInstance','presetBuildReference','presetLink','scenarioCharacter','historyCharacter','historyScenario','filterEntity','filterCategory','filterBook','configurationHistory'];
  const statuses=['present','missing','ambiguous','ownerMismatch','removed','unqualified'];
  assert(Array.isArray(s.referenceLanes)&&new Set(s.referenceLanes.map(l=>l.lane)).size===s.referenceLanes.length&&
   s.referenceLanes.every(l=>lanes.includes(l.lane)&&integer(l.total)&&Object.entries(l.statuses).every(([k,v])=>statuses.includes(k)&&integer(v))&&Object.values(l.statuses).reduce((a,v)=>a+v,0)===l.total)&&
   integer(s.referenceOccurrences)&&s.referenceLanes.reduce((a,l)=>a+l.total,0)===s.referenceOccurrences,'closurePortableAccountingMismatch');
  const criteria=['completeInstalledCompendiumAndPortableStateInventory','exactRuntimePackageAndConfigurationBinding','legacyVersionsManualMappingsAndExternalPacksInventory','explicitUnmatchedAndExcludedOccurrenceLedger'];
  assert(Array.isArray(r.obligations)&&digest(r.obligations.map(o=>o.criterion))===digest(criteria)&&r.obligations.every(o=>['partial','pending'].includes(o.status)&&Array.isArray(o.pending)&&o.pending.length>0&&o.pending.every(p=>typeof p==='string')),'closureObligationsMismatch');
+ const runtimeGraph=reviewRuntimeGraph(input.reconciliation,referenceInput.runtime.snapshot);
  const obligations=r.obligations.map(o=>({criterion:o.criterion,status:'blocked',observedProgress:o.status,
   pending:o.pending.filter(p=>p!=='historicalLedgerJoin')}));
  const result={schemaVersion:'dnd-upstream-inventory-closure-review.v1',scope:observed.scope,commits:observed.commits,
-  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,persistenceReview:observed.persistenceReview.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
+  bindings:{...observed.bindings,observationReview:observed.fingerprint,referenceReview:r.fingerprint,runtimeGraph:runtimeGraph.fingerprint,persistenceReview:observed.persistenceReview.fingerprint,runtimeBaseline:b.baselineRuntime,runtime:b.runtime,portable:b.portable},
   summary:{...observed.summary,runtimeDispositions:d,loadedEntries:s.loadedEntries,referenceOccurrences:s.referenceOccurrences,referenceLanes:s.referenceLanes},
-  persistenceReview:observed.persistenceReview,obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
+  runtimeGraph,persistenceReview:observed.persistenceReview,obligations,criteriaAccepted:0,criteriaRequired:criteria.length,
   blockers:[...new Set([...observed.blockers,'independentBackendAndOwnerInventoryPending','fullReferenceAndRuntimeGraphCoveragePending','explicitInventoryAcceptanceMissing'])],
   readiness:'blocked',inventoryAcceptance:'notEstablished',...flags()};
  return {...result,fingerprint:digest(result)};

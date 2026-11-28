@@ -978,3 +978,40 @@ describe('a8.15.3 recovery and transaction reference inventory',()=>{
   expect(reviewLocalInventoryReferences(input,capture)).toMatchObject({ok:false,code:'coreObservationBindingMismatch'});
  });
 });
+
+import {collectConfigurationHistoryReferences} from '../compendium/localInventoryConfigurationReferences';
+import {createCatalogConfigurationHistoryEntry} from '../catalog/catalogConfigurationHistory';
+const {reviewRuntimeGraph,compareOccurrences}=require('../../scripts/5etools/inventory-runtime-graph-review');
+describe('a8.15.4 runtime graph and configuration inventory',()=>{
+ test('counts duplicate baseline alias occurrences without silently collapsing them',()=>{
+  const a={id:'alias',from:'a',to:'b'},b={id:'alias',from:'a',to:'c'};
+  const result=compareOccurrences([{id:a.id,fingerprint:nodeDigest(a)},{id:b.id,fingerprint:nodeDigest(b)}],[a]);
+  expect(result).toMatchObject({baseline:2,loaded:1,statuses:{exact:1,missing:1}});
+ });
+ test('compares registry fingerprints and detects missing baseline dependency, alias and membership',async()=>{
+  const f=await fixture(),s=f.input.catalog,e=s.entries[0],r=s.registry.get(e.entityId)!;
+  const graph=reviewRuntimeGraph({runtime:[{id:e.entityId,registryFingerprint:nodeDigest(r)}],dependencies:[{id:'edge',fingerprint:'a'.repeat(64)}],aliases:[{id:'alias',fingerprint:'b'.repeat(64)}],categories:[{id:'category',memberIds:[e.entityId],fingerprint:'c'.repeat(64)}]},s);
+  expect(graph.registry.statuses.exact).toBe(1);
+  expect(graph.dependencies.statuses.missing).toBe(1);
+  expect(graph.aliases.statuses.missing).toBe(1);
+  expect(graph.memberships).toMatchObject({baseline:1,loaded:0,missing:1});
+  expect(graph.indexAgreement).toBe(true);
+  expect(graph.writeAuthorized).toBe(false);
+ });
+ test('keeps older registry baselines explicitly not verified',async()=>{
+  const f=await fixture(),s=f.input.catalog;
+  const graph=reviewRuntimeGraph({runtime:s.entries.map(e=>({id:e.entityId})),dependencies:[],aliases:[],categories:[]},s);
+  expect(graph.registry.coverage).toBe('partialBaseline');
+  expect(graph.registry.statuses.notVerified).toBe(s.entries.length);
+ });
+ test('retains historical config references and distinguishes current snapshot missing IDs',async()=>{
+  const f=await fixture(),s=f.input.catalog,p=f.input.portableCheckpoint,filter=p.catalog.filterState;
+  const before={...filter,entityStates:{...filter.entityStates}},after={...filter,entityStates:{...filter.entityStates,'missing-config-entity':'disabled' as const}};
+  const entry=createCatalogConfigurationHistoryEntry({revision:1,committedAt:'2026-01-01T00:00:00Z',label:'fixture',origin:'entity',catalogVersion:s.catalogVersion,catalogSnapshotId:s.snapshotId,beforeState:before,afterState:after,impact:new ContentPolicyService(s).previewImpact(before,after)});
+  p.catalog.revision=1;p.catalog.history=[entry,{...entry,id:'old-commit',catalogSnapshotId:'old-snapshot'}];
+  const rows:Array<{path:string;status:string}>=[];
+  collectConfigurationHistoryReferences(p.catalog,s,new Set(),(_lane,path,_value,status)=>rows.push({path:path.join('.'),status}));
+  expect(rows.find(r=>r.path==='history.0.afterState.entityStates.missing-config-entity')?.status).toBe('missing');
+  expect(rows.find(r=>r.path==='history.1.afterState.entityStates.missing-config-entity')?.status).toBe('unqualified');
+ });
+});

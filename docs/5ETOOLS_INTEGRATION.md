@@ -418,3 +418,7 @@ Ver [5ETOOLS_RECOVERY_TRANSACTION_REFERENCES.md](5ETOOLS_RECOVERY_TRANSACTION_RE
 ### Hotfix a8.15.3 — tipagem
 
 Quality PR 46099360348 falhou no typecheck (TS2719/TS2322): classificadores de referências declarados com a união mais ampla de estados do runtime. Auditoria rápida 46099356254 aprovada. Compartilhar `ReferenceStatus` e restringir os retornos dos classificadores, sem casts ou alteração comportamental. A entrega permanece 2/20; avançar após CI verde.
+
+## Fase a8.15.4 — entrega 3/20
+
+Ver [5ETOOLS_RUNTIME_GRAPH_CONFIGURATION_INVENTORY.md](5ETOOLS_RUNTIME_GRAPH_CONFIGURATION_INVENTORY.md). Hotfix aprovado. Revisão de ocorrências do grafo runtime, índices, registry, aliases, memberships e histórico de configuração. Próxima entrega 4/20: consolidação do inventário, lacunas externas e auditoria completa do marco.
