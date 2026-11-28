@@ -37,7 +37,9 @@ describe('a8.18.1 relationship identity and occurrence preservation',()=>{
  test('rejects missing declarations, stale source and invented dependency mapping',()=>{
   const f=fixture();f.reconciliation.legacyLinks.pop();
   expect(()=>buildRelationshipIdentityReview(f)).toThrow('relationshipLegacyDeclarationMismatch');
-  const s=fixture();s.rawHistorical[0].item.payload.featureIds?.push('missing');
+  const s=fixture(),payload=s.rawHistorical[0].item.payload;
+  if(!('featureIds' in payload)||!Array.isArray(payload.featureIds))throw Error('invalid fixture owner');
+  payload.featureIds.push('missing');
   expect(()=>buildRelationshipIdentityReview(s)).toThrow('relationshipOccurrenceBindingMismatch');
   const t=fixture();t.reconciliation.dependencies[0].toCandidate='wrong';
   expect(()=>buildRelationshipIdentityReview(t)).toThrow('relationshipDependencyMappingMismatch');

@@ -451,3 +451,7 @@ Ver [5ETOOLS_MECHANICAL_PRESERVATION_MILESTONE.md](5ETOOLS_MECHANICAL_PRESERVATI
 ## Fase a8.18.1 — entrega 10/20
 
 Ver [5ETOOLS_RELATIONSHIP_IDENTITY_REVIEW.md](5ETOOLS_RELATIONSHIP_IDENTITY_REVIEW.md). Entrega 9 aprovada. Referências físicas legadas por ocorrência e endpoints de dependências runtime por identidade qualificada. Próxima entrega 11/20: aliases, categorias e políticas de resolução, preservando precedência e ambiguidades.
+
+### Hotfix a8.18.1 — tipagem
+
+Quality falhou em TS2339 no fixture de referências; auditoria rápida aprovada. Narrowing explícito antes da mutação do payload, sem alteração de runtime. Entrega 10/20 permanece em validação.
